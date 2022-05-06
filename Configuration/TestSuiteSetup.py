@@ -2,6 +2,7 @@ import os
 
 import pandas as pd
 import paramiko
+import pandas as pd
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import ConfigReader
@@ -27,28 +28,57 @@ def ssh_connection(ip_address, routerPort, username, key_filename):
         return False
 
 
-def prepare_Consolidated_List_Of_TestcasesFile():
-    df_all_rows = pd.DataFrame()
+def prepareTestCaseDetailsDataFrame(path):
+    dataForDataFrameHeader = {
+        'Test Case ID': [],
+        'File Name': [],
+        'Directory Name': [],
+        'Category': [],
+        'Sub-Category': [],
+        'OverAll Results': [],
+        'TC Execution': [],
+        'API Val': [],
+        'DB Val': [],
+        'Portal Val': [],
+        'App Val': [],
+        'UI Val': [],
+        'Execution Time (sec)': [],
+        'Validation Time (sec)': [],
+        'Log Coll Time (sec)': [],
+        'Total Time (sec)': [],
+        'Rerun Attempts': []
+    }
 
-    if os.path.exists(ConfigReader.read_config("ExcelFiles", "FilePath_TestCasesDetail")):
-        workbook = pd.read_excel(ConfigReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"), None)
-        ls_sheets_functional = workbook.keys()
+    GlobalVariables.df_testCasesDetail = pd.DataFrame(dataForDataFrameHeader)
 
-        # Creating a DF with all testcases
-        for sheet in ls_sheets_functional:
-            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+    # Dataframe by default gets created with datatype as float. Converting the same to string
+    convert_dict = {'File Name': str,
+                    'Directory Name': str,
+                    'Category': str,
+                    'Sub-Category': str,
+                    'TC Execution': str,
+                    'API Val': str,
+                    'DB Val': str,
+                    'Portal Val': str,
+                    'App Val': str,
+                    'UI Val': str,
+                    'Rerun Attempts': str
+                    }
 
-    if os.path.exists(ConfigReader.read_config("ExcelFiles", "FilePath_testcases_surfaceUI")):
-        workbook = pd.read_excel(ConfigReader.read_config("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
-        ls_sheets_surfaceUI = workbook.keys()
+    GlobalVariables.df_testCasesDetail = GlobalVariables.df_testCasesDetail.astype(convert_dict)
 
-        # Creating a DF with all testcases
-        for sheet in ls_sheets_surfaceUI:
-            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+    df_overallTClist = pd.read_excel(path)
+    df_overallTClist.set_index(configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
 
-    print("prepare_Consolidated_List_Of_TestcasesFile")
-    print(df_all_rows)
-    # Converting DF with all TCs to an excel
-    df_all_rows.to_excel("/home/oem/PycharmProjects/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
+    i=0
+    for index in df_overallTClist.index:
+        if df_overallTClist['Execute'][index] == False or str(df_overallTClist['Execute'][index]).lower() == "false":
+            pass
+        else:
+            GlobalVariables.df_testCasesDetail.at[i, configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
+            GlobalVariables.df_testCasesDetail.at[i, 'File Name'] = df_overallTClist['File Name'][index]
+            GlobalVariables.df_testCasesDetail.at[i, 'Directory Name'] = df_overallTClist['Directory Name'][index]
+        i = i+1
+    GlobalVariables.df_testCasesDetail.set_index(configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+    return GlobalVariables.df_testCasesDetail
+
