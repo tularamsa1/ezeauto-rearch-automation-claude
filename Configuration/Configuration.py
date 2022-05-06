@@ -162,7 +162,7 @@ def prepare_Consolidated_List_Of_TestcasesFile():
     print("prepare_Consolidated_List_Of_TestcasesFile")
     print(df_all_rows)
     # Converting DF with all TCs to an excel
-    df_all_rows.to_excel("/home/oem/PycharmProjects/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
+    df_all_rows.to_excel("/home/ezetap/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
 
 # def executeSelectedTestCases():
 #     df_testcases = prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
@@ -173,7 +173,7 @@ def prepare_Consolidated_List_Of_TestcasesFile():
 # Initiating pytest execution
 def executeSelectedTestCases():
     # Creating DF only with the testcases to be executed
-    df_testcases = prepareTestCaseDetailsDataFrame("/home/oem/PycharmProjects/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
+    df_testcases = prepareTestCaseDetailsDataFrame("/home/ezetap/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
     df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
 
     os.chdir(configReader.read_config("System", "automation_suite_path")+"/TestCases")

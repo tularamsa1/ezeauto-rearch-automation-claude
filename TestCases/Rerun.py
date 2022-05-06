@@ -160,10 +160,10 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 
 
-xl_RerunCountPath = "/home/oem/PycharmProjects/EzeAuto/TestCases/RerunCount.xlsx"
+xl_RerunCountPath = "/home/ezetap/EzeAuto/TestCases/RerunCount.xlsx"
 
 
-xl_Timestamp = "/home/oem/PycharmProjects/EzeAuto/TestCases/Timestamp.xlsx"
+xl_Timestamp = "/home/ezetap/EzeAuto/TestCases/Timestamp.xlsx"
 
 
 def prepareImmediateRerunExcel():

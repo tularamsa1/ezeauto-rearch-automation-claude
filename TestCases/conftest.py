@@ -12,6 +12,7 @@ import chromedriver_autoinstaller
 from openpyxl.styles import Font, PatternFill, Side, Border
 
 from PageFactory import Base_Actions
+from Test_Setup import TestSuiteSetup
 from Utilities import configReader, DirectoryCreator
 from TestCases import server_logs, setUp, Rerun
 #from Pages import Base_Actions
@@ -34,10 +35,10 @@ now = datetime.now()
 starting_time = now.strftime("%H:%M:%S")
 
 # router_ip = '192.168.3.73'    #dev3
-router_ip = '192.168.3.81'    #dev11
-router_username = 'vineethb'
-router_port = 22
-key_filename = '/home/oem/.ssh/vineeth_ssh'
+router_ip = Base_Actions.environment("ip")  # dev11
+router_username = Base_Actions.environment("username")
+router_port = Base_Actions.environment("port")
+key_filename = Base_Actions.environment("key_filename")
 ssh = paramiko.SSHClient()
 
 
@@ -152,29 +153,29 @@ def setStylesForExcel():
     wb.save(GlobalVariables.EXCEL_reportFilePath)
 
 
-@pytest.fixture(scope="session")  # Executing once before the first test case
-def session_setup(request):
-    print("Session setup level")
-    server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
-
-    # global appium_service
-    # appium_service = AppiumService()
-    # appium_service.start()
-
-    Configuration.prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
-
-    # Executing once after the last test case
-    def fin():
-        # appium_service.stop()
-        print("Session teardown level")
-        # print("Session Teardown rerunAttempt count is: ", dictFromCsv.get("rerunAttempt"))
-        print("Printing df before starting rerun")
-
-        ssh.close()
-        # appium_service.stop()
-        convert_DF_To_Excel()
-
-    request.addfinalizer(fin)
+# @pytest.fixture(scope="session")  # Executing once before the first test case
+# def session_setup(request):
+#     print("Session setup level")
+#     server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
+#
+#     # global appium_service
+#     # appium_service = AppiumService()
+#     # appium_service.start()
+#
+#     Configuration.prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
+#
+#     # Executing once after the last test case
+#     def fin():
+#         # appium_service.stop()
+#         print("Session teardown level")
+#         # print("Session Teardown rerunAttempt count is: ", dictFromCsv.get("rerunAttempt"))
+#         print("Printing df before starting rerun")
+#
+#         ssh.close()
+#         # appium_service.stop()
+#         convert_DF_To_Excel()
+#
+#     request.addfinalizer(fin)
 
 
 def convert_DF_To_Excel():
@@ -964,7 +965,7 @@ def log_on_success(request):
 
 def pytest_sessionstart(session):
     print("Session setup level")
-    server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
+    TestSuiteSetup.ssh_connection(router_ip, router_port, router_username, key_filename)
 
 
 

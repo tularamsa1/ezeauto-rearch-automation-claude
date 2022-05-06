@@ -3,29 +3,18 @@ import paramiko
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 
-ssh = paramiko.SSHClient()
+# ssh = paramiko.SSHClient()
 env = Base_Actions.environment("env")
 
 # router_ip = '192.168.3.73'    #dev3
-router_ip = '192.168.3.81'    #dev11
-router_username = 'vineethb'
-router_port = 22
-key_filename = '/home/oem/.ssh/vineeth_ssh'
+router_ip = Base_Actions.environment("ip")  # dev11
+router_username = Base_Actions.environment("username")
+router_port = Base_Actions.environment("port")
+key_filename = Base_Actions.environment("key_filename")
 # ssh = paramiko.SSHClient()
 
 
-# Login to the server
-def ssh_connection(ip_address, routerPort, username, key_filename):
-    ssh.load_system_host_keys()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        ssh.connect(ip_address, port=routerPort, username=username,
-                    pkey=paramiko.RSAKey.from_private_key_file(key_filename))
-        return True
-    except Exception as error_message:
-        print("Unable to connect")
-        print(error_message)
-        return False
+
 
 
 # To Fetch API logs
@@ -37,7 +26,7 @@ def fetchAPILogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         ednLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + ednLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -46,7 +35,7 @@ def fetchAPILogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         ednLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + ednLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -61,7 +50,7 @@ def fetchPortalLogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         endLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -70,7 +59,7 @@ def fetchPortalLogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         endLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -85,7 +74,7 @@ def fetchMiddlewareLogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         endLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -94,7 +83,7 @@ def fetchMiddlewareLogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         endLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -109,7 +98,7 @@ def fetchCnpwareLogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         endLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -118,7 +107,7 @@ def fetchCnpwareLogs():
         logfileName = Base_Actions.pathToLogFile(typeOfLog)
         endLineNo = noOfLine(logfileName)
         command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+        ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
         for line in iter(lambda: ssh_stdout.readline(), ''):
             data_buffer += line
         return data_buffer
@@ -127,7 +116,7 @@ def fetchCnpwareLogs():
 # To get no of lines from the log file
 def noOfLine(logFileName):
     command = 'wc -l ' + logFileName
-    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     line = ssh_stdout.readline()
     number = line.split(' ')
     return number[0]

@@ -80,3 +80,4 @@ portal_password = ''
 
 app_username = ''
 app_password = ''
+ssh = ''
