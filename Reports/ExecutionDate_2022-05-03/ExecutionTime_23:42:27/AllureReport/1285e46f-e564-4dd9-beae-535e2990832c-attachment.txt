@@ -1,0 +1,26 @@
+Function setup level
+Start startLineNumberAPI no:  2253510
+Portal logs coll time:  0:00:05
+***************End of setup
+Message: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up
+Stacktrace:
+UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up
+    at UIA2Proxy.command (/tmp/.mount_Appium2Om6ro/resources/app/node_modules/appium/node_modules/appium-base-driver/lib/jsonwp-proxy/proxy.js:274:13)
+    at runMicrotasks (<anonymous>)
+    at processTicksAndRejections (internal/process/task_queues.js:85:5)
+Testcase did not complete due to exception in testcase execution
+
+Function teardown level
+Rerun.getRerunCountForAtTheEnd():  0
+log_on_failure(request)
+In logOnFailure Portal logs coll starting time:  23:47:53
+Inside capturing logs all in one file
+Fetching Logs 4th time
+Log collection end time:  23:47:57
+Testcase name test_UI_SA_CheckStatus_UPI_01
+Exec time:  45
+API VaL:  N/A
+DB VaL:  N/A
+Portal VaL:  N/A
+App VaL:  N/A
+UI VaL:  N/A

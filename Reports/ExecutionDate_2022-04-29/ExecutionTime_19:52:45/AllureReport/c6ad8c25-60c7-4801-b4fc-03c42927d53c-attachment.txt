@@ -1,0 +1,49 @@
+Function setup level
+Start startLineNumberAPI no:  1867497
+Portal logs coll time:  0:00:03
+***************End of setup
+[{'bankCode': 'HDFC', 'tenure': '3 month', 'roi': 1.0, 'loanAmount': '226.00', 'cashBackAmount': 0.0, 'emiAmount': 75.46, 'totalAmount': 226.38, 'netCostAmount': '226.38', 'title': '3 month', 'subTitle': 'Loan Amt: Rs. 226.00, Interest: 1.0% p.a.<br />EMI: Rs. 75.46, Total EMI payment: Rs. 226.38<br /><b>Net Effective Price: Rs. 226.38</b>', 'userAgreement': 'I agree to pay as per the card issuer agreement. I understand that purchase(s) would be converted into EMI at the sole discretion of the Bank by charging an interest of 1.0% on the monthly reducing balance.', 'payBackAmount': None, 'cardType': 'CREDIT'}, {'bankCode': 'SBI', 'tenure': '9 month', 'roi': 13.0, 'loanAmount': '226.00', 'cashBackAmount': 0.0, 'emiAmount': 26.49, 'totalAmount': 238.41, 'netCostAmount': '238.41', 'title': '9 Months EMI', 'subTitle': 'Loan Amt: Rs. 226.00, Interest: 13.0% p.a.<br />EMI: Rs. 26.49, Total EMI payment: Rs. 238.41<br /><b>Net Effective Price: Rs. 238.41</b>', 'userAgreement': 'I agree to pay as per the card issuer agreement. I understand that purchase(s) would be converted into EMI at the sole discretion of the Bank by charging an interest of 13.0% on the monthly reducing balance.', 'payBackAmount': None, 'cardType': 'CREDIT'}, {'bankCode': 'SBI', 'tenure': '12 month', 'roi': 16.0, 'loanAmount': '226.00', 'cashBackAmount': 0.0, 'emiAmount': 20.51, 'totalAmount': 246.12, 'netCostAmount': '246.12', 'title': '12 Months EMI', 'subTitle': 'Loan Amt: Rs. 226.00, Interest: 16.0% p.a.<br />EMI: Rs. 20.51, Total EMI payment: Rs. 246.12<br /><b>Net Effective Price: Rs. 246.12</b>', 'userAgreement': 'I agree to pay as per the card issuer agreement. I understand that purchase(s) would be converted into EMI at the sole discretion of the Bank by charging an interest of 16.0% on the monthly reducing balance.', 'payBackAmount': None, 'cardType': 'CREDIT'}]
+===============Inside validation==================
+===========Inside Try============
+=======   API Validation Started    =======
+=======   API Validation Completed  =======
+
+=======   API Validation Started    =======
+=======   API Validation Completed  =======
+
+TC Val completed time: 20:00:31
+
+
++---------------------------------------+
+|           Validation Details          |
++-------------------+-------------------+
+| Validation Type   | Validation Status |
++-------------------+-------------------+
+| API Validation    | Pass              |
+| DB Validation     | N/A               |
+| Portal Validation | N/A               |
+| App Validation    | N/A               |
+| UI Validation     | N/A               |
++-------------------+-------------------+
+
+
++-----------------------------------------------------------------+
+|                          Debugging Info                         |
++---------------------+-----+------------+---------+--------+-----+
+| Type                | API | Middleware | Cnpware | Portal | App |
++---------------------+-----+------------+---------+--------+-----+
+| Log Captured        | Yes | No         | No      | No     | N/A |
+| Screenshot Captured | N/A | N/A        | N/A     | N/A    | N/A |
++---------------------+-----+------------+---------+--------+-----+
+
+Function teardown level
+Testcase name test_API_SA_PreFetch_01
+Exec time:  12
+API VaL:  Pass
+DB VaL:  N/A
+Portal VaL:  N/A
+App VaL:  N/A
+UI VaL:  N/A
+In logOnSuccess Portal logs coll starting time:  20:00:31
+Fetching Logs 2nd time
+Log collection end time:  20:00:35

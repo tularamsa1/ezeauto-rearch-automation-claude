@@ -1,0 +1,48 @@
+Function setup level
+Start startLineNumberAPI no:  1861759
+Portal logs coll time:  0:00:03
+***************End of setup
+Exception: Message: 
+Stacktrace:
+NoSuchElementError: An element could not be located on the page using the given search parameters.
+    at AndroidUiautomator2Driver.findElOrEls (/tmp/.mount_AppiumTNClgx/resources/app/node_modules/appium/node_modules/appium-android-driver/lib/commands/find.js:75:11)
+    at runMicrotasks (<anonymous>)
+    at processTicksAndRejections (internal/process/task_queues.js:85:5)
+APP Validation did not complete due to exception
+
+TC Val completed time: 15:15:25
+
+
++---------------------------------------+
+|           Validation Details          |
++-------------------+-------------------+
+| Validation Type   | Validation Status |
++-------------------+-------------------+
+| API Validation    | N/A               |
+| DB Validation     | N/A               |
+| Portal Validation | N/A               |
+| App Validation    | Fail              |
+| UI Validation     | N/A               |
++-------------------+-------------------+
+
+
++-----------------------------------------------------------------+
+|                          Debugging Info                         |
++---------------------+-----+------------+---------+--------+-----+
+| Type                | API | Middleware | Cnpware | Portal | App |
++---------------------+-----+------------+---------+--------+-----+
+| Log Captured        | Yes | No         | No      | Yes    | N/A |
+| Screenshot Captured | N/A | N/A        | N/A     | N/A    | N/A |
++---------------------+-----+------------+---------+--------+-----+
+
+Function teardown level
+In logOnFailure Portal logs coll starting time:  15:15:25
+Fetching Logs 2nd time
+Log collection end time:  15:15:29
+Testcase name test_UI_SA_TxnHistory_Signature_01
+Exec time:  83
+API VaL:  N/A
+DB VaL:  N/A
+Portal VaL:  N/A
+App VaL:  Fail
+UI VaL:  N/A

@@ -1,0 +1,17 @@
+Function setup level
+Start startLineNumberAPI no:  1867806
+Portal logs coll time:  0:00:03
+***************End of setup
+Testcase did not complete due to exception in testcase execution
+
+Function teardown level
+In logOnFailure Portal logs coll starting time:  20:04:33
+Fetching Logs 2nd time
+Log collection end time:  20:04:36
+Testcase name test_UI_SA_Multilanguage_Hindi_02
+Exec time:  49
+API VaL:  N/A
+DB VaL:  N/A
+Portal VaL:  N/A
+App VaL:  N/A
+UI VaL:  N/A

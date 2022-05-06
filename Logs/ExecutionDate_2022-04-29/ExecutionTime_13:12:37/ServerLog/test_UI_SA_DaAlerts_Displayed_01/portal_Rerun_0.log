@@ -1,0 +1,3 @@
+TestCases/Functional/UI/SA/test_UI_SA_DaAlerts_Displayed.py::test_UI_SA_DaAlerts_Displayed_01_13:13:29.708012
+2022-04-29 07:42:33.667 [sk-scheduler-10]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+

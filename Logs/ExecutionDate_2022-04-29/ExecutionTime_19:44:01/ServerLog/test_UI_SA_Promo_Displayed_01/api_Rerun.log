@@ -1,0 +1,7 @@
+TestCases/Functional/UI/SA/test_UI_SA_Promo_Displayed.py::test_UI_SA_Promo_Displayed_01_19:46:23.058313
+2022-04-29 14:15:03.249 [ask-scheduler-6] DEBUG 3124948  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: TAGBULKUPLOAD_83
+2022-04-29 14:16:03.540 [ask-scheduler-1]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
+2022-04-29 14:16:03.540 [ask-scheduler-1] DEBUG 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
+2022-04-29 14:16:03.540 [ask-scheduler-1]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
+2022-04-29 14:16:03.541 [ask-scheduler-1]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+

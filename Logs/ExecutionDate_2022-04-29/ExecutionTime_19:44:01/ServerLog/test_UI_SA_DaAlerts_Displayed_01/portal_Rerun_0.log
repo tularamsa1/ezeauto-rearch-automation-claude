@@ -1,0 +1,7 @@
+TestCases/Functional/UI/SA/test_UI_SA_DaAlerts_Displayed.py::test_UI_SA_DaAlerts_Displayed_01_19:44:56.753928
+2022-04-29 14:12:33.783 [ask-scheduler-1]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 14:14:33.783 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
+2022-04-29 14:14:33.783 [ask-scheduler-6] DEBUG 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
+2022-04-29 14:14:33.783 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
+2022-04-29 14:14:33.783 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+

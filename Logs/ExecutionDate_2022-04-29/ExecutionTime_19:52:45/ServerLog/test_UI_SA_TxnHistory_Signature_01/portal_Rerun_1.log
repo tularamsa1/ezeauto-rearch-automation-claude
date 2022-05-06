@@ -1,0 +1,14 @@
+TestCases/Functional/UI/SA/test_UI_SA_TxnHistory_Signature.py::test_UI_SA_TxnHistory_Signature_01_19:55:07.114887
+2022-04-29 14:22:33.786 [ask-scheduler-9]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 14:24:33.786 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
+2022-04-29 14:24:33.786 [ask-scheduler-6] DEBUG 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
+2022-04-29 14:24:33.786 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
+2022-04-29 14:24:33.786 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+
+TestCases/Functional/UI/SA/test_UI_SA_TxnHistory_Signature.py::test_UI_SA_TxnHistory_Signature_01_20:08:42.198754
+2022-04-29 14:36:33.790 [ask-scheduler-3]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 14:38:33.790 [sk-scheduler-10]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
+2022-04-29 14:38:33.790 [sk-scheduler-10] DEBUG 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
+2022-04-29 14:38:33.790 [sk-scheduler-10]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
+2022-04-29 14:38:33.790 [sk-scheduler-10]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+

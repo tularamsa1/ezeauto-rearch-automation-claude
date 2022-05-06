@@ -1,0 +1,18 @@
+Function setup level
+Start startLineNumberAPI no:  2295266
+Portal logs coll time:  0:00:06
+***************End of setup
+assert 'Account' == 'Home'
+  - Home
+  + Account
+Testcase did not complete due to exception in testcase execution
+
+Function teardown level
+Testcase name test_UI_SA_CheckStatus_BQR_01
+Exec time:  42
+API VaL:  N/A
+DB VaL:  N/A
+Portal VaL:  N/A
+App VaL:  N/A
+UI VaL:  N/A
+Rerun required = False

@@ -1,0 +1,15 @@
+TestCases/Functional/UI/SA/test_UI_SA_CheckStatus_UPI.py::test_UI_SA_CheckStatus_UPI_01_19:56:55.541839
+2022-04-29 14:26:03.596 [ask-scheduler-6]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 14:26:42.682 [qtp897234481-46] DEBUG 3124948 ezetap-E01 [220429142642679E010000046---NA] com.ezetap.http.RestSecurityFilter       - Input to Auth: {"apps":[],"autoLogin":false,"microserviceCall":false,"offline":false,"requestTime":1651242402682,"scheduler":false,"selfSignUp":false,"settingVer":0,"upgrade":true,"username":"commxinternaluser"}
+2022-04-29 14:26:42.728 [qtp897234481-46] DEBUG 3124948 ezetap-E01 [220429142642679E010000046-EZETAP-commxinternaluser-NA] c.e.o.s.c.a.AuthenticationServiceImpl    - User locked: commxinternaluser
+2022-04-29 14:26:42.744 [qtp897234481-46] DEBUG 3124948 ezetap-E01 [220429142642679E010000046-EZETAP-commxinternaluser-NA] com.ezetap.http.RestSecurityFilter       - Time Taken For Auth: 63 ms.
+2022-04-29 14:26:42.752 [qtp897234481-46] DEBUG 3124948 ezetap-E01 [220429142642679E010000046-EZETAP-commxinternaluser-NA] com.ezetap.http.RestSecurityFilter       - Auth Response: {"apps":[],"errorCode":"EZETAP_0000073","errorMessage":"Invalid credentials. Verify your credentials, login again, or contact your supervisor.","message":"Invalid credentials. Verify your credentials, login again, or contact your supervisor.","realCode":"AUTH_FAILED","setting":{},"success":false,"username":"commxinternaluser"}
+2022-04-29 14:26:42.752 [qtp897234481-46] DEBUG 3124948 ezetap-E01 [220429142642679E010000046-EZETAP-commxinternaluser-NA] com.ezetap.http.RestSecurityFilter       - Unauthenticated Request
+
+TestCases/Functional/UI/SA/test_UI_SA_CheckStatus_UPI.py::test_UI_SA_CheckStatus_UPI_01_20:06:11.270496
+2022-04-29 14:34:03.641 [ask-scheduler-2]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 14:36:03.641 [ask-scheduler-5]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
+2022-04-29 14:36:03.641 [ask-scheduler-5] DEBUG 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
+2022-04-29 14:36:03.641 [ask-scheduler-5]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
+2022-04-29 14:36:03.642 [ask-scheduler-5]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+

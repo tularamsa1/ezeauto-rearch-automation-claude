@@ -1,0 +1,12 @@
+Function setup level
+Start startLineNumberAPI no:  2250826
+Portal logs coll time:  0:00:06
+***************End of setup
+Function teardown level
+Testcase name test_UI_SA_CheckStatus_UPI_01
+Exec time:  6
+API VaL:  N/A
+DB VaL:  N/A
+Portal VaL:  N/A
+App VaL:  N/A
+UI VaL:  N/A

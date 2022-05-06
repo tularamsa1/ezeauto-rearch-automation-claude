@@ -1,0 +1,214 @@
+TestCases/Functional/UI/SA/test_UI_SA_TxnHistory_Signature.py::test_UI_SA_TxnHistory_Signature_01_15:15:25.913938
+2022-04-29 09:42:33.702 [ask-scheduler-6]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 09:44:33.702 [ask-scheduler-5]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
+2022-04-29 09:44:33.702 [ask-scheduler-5] DEBUG 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
+2022-04-29 09:44:33.702 [ask-scheduler-5]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
+2022-04-29 09:44:33.702 [ask-scheduler-5]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+2022-04-29 09:45:00.030 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Found 103 org(s) for tag graph computation
+2022-04-29 09:45:00.037 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TAG_WORLD took: 7 ms.
+2022-04-29 09:45:00.038 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 19 nodes for org: TAG_WORLD
+2022-04-29 09:45:00.044 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AIRTEL_TWO took: 6 ms.
+2022-04-29 09:45:00.044 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: AIRTEL_TWO
+2022-04-29 09:45:00.048 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ACCESS_TAGS took: 4 ms.
+2022-04-29 09:45:00.048 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 9 nodes for org: ACCESS_TAGS
+2022-04-29 09:45:00.050 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: P_K_SEERVI_JEWELLERS_DEMO took: 2 ms.
+2022-04-29 09:45:00.050 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: P_K_SEERVI_JEWELLERS_DEMO
+2022-04-29 09:45:00.053 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: FASTWAY took: 3 ms.
+2022-04-29 09:45:00.054 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 9 nodes for org: FASTWAY
+2022-04-29 09:45:00.070 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: CAESARS_PALACE took: 16 ms.
+2022-04-29 09:45:00.071 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 9 nodes for org: CAESARS_PALACE
+2022-04-29 09:45:00.073 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SULTANA_AYESHA took: 2 ms.
+2022-04-29 09:45:00.073 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: SULTANA_AYESHA
+2022-04-29 09:45:00.075 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: HAPPY_HOTELS took: 2 ms.
+2022-04-29 09:45:00.075 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: HAPPY_HOTELS
+2022-04-29 09:45:00.078 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TAGS_HISTORY took: 3 ms.
+2022-04-29 09:45:00.079 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: TAGS_HISTORY
+2022-04-29 09:45:00.081 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: DEMOQA13 took: 2 ms.
+2022-04-29 09:45:00.082 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: DEMOQA13
+2022-04-29 09:45:00.091 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: DEMOQA4 took: 9 ms.
+2022-04-29 09:45:00.091 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 6 nodes for org: DEMOQA4
+2022-04-29 09:45:00.092 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: DEMOQA14 took: 1 ms.
+2022-04-29 09:45:00.093 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: DEMOQA14
+2022-04-29 09:45:00.095 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ORIGIN_649879965 took: 2 ms.
+2022-04-29 09:45:00.095 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: ORIGIN_649879965
+2022-04-29 09:45:00.096 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: RELEASEFORMARCH2015 took: 1 ms.
+2022-04-29 09:45:00.097 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 1 nodes for org: RELEASEFORMARCH2015
+2022-04-29 09:45:00.103 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: BLUECHIP_3553864 took: 6 ms.
+2022-04-29 09:45:00.103 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 22 nodes for org: BLUECHIP_3553864
+2022-04-29 09:45:01.063 [ask-scheduler-4]  WARN 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TAGTEST1_2822643 is slow: 960 ms.
+2022-04-29 09:45:01.068 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 2001 nodes for org: TAGTEST1_2822643
+2022-04-29 09:45:01.071 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TAGTEST4_3530277 took: 3 ms.
+2022-04-29 09:45:01.071 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 4 nodes for org: TAGTEST4_3530277
+2022-04-29 09:45:01.073 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TESTTTEST_809921 took: 2 ms.
+2022-04-29 09:45:01.073 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: TESTTTEST_809921
+2022-04-29 09:45:01.074 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ZIGB_95234782621 took: 1 ms.
+2022-04-29 09:45:01.074 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: ZIGB_95234782621
+2022-04-29 09:45:01.075 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TRIAL_BOX took: 1 ms.
+2022-04-29 09:45:01.075 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: TRIAL_BOX
+2022-04-29 09:45:01.076 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ZIGB1_846765146 took: 1 ms.
+2022-04-29 09:45:01.076 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: ZIGB1_846765146
+2022-04-29 09:45:01.077 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: DROP_COFFEE_REFUND took: 0 ms.
+2022-04-29 09:45:01.078 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: DROP_COFFEE_REFUND
+2022-04-29 09:45:01.078 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: VARSHATEST_54541 took: 0 ms.
+2022-04-29 09:45:01.079 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: VARSHATEST_54541
+2022-04-29 09:45:01.079 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: REFUND_698273329 took: 0 ms.
+2022-04-29 09:45:01.080 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: REFUND_698273329
+2022-04-29 09:45:01.080 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SOCH_97697997116 took: 0 ms.
+2022-04-29 09:45:01.081 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: SOCH_97697997116
+2022-04-29 09:45:01.081 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: MOBIKWIKMER_9195 took: 0 ms.
+2022-04-29 09:45:01.082 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: MOBIKWIKMER_9195
+2022-04-29 09:45:01.083 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AMEXONLYMERCHANT took: 1 ms.
+2022-04-29 09:45:01.083 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: AMEXONLYMERCHANT
+2022-04-29 09:45:01.084 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: V1_LABEL_BASED_TESTING took: 1 ms.
+2022-04-29 09:45:01.084 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: V1_LABEL_BASED_TESTING
+2022-04-29 09:45:01.085 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: CITI_ACQ_ORG_712 took: 1 ms.
+2022-04-29 09:45:01.085 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: CITI_ACQ_ORG_712
+2022-04-29 09:45:01.087 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SOCHHDFC_1118724 took: 2 ms.
+2022-04-29 09:45:01.087 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: SOCHHDFC_1118724
+2022-04-29 09:45:01.088 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AADHARRSHILA_ENROLL_SYSTE took: 1 ms.
+2022-04-29 09:45:01.088 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: AADHARRSHILA_ENROLL_SYSTE
+2022-04-29 09:45:01.090 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: VNU_415695522213 took: 2 ms.
+2022-04-29 09:45:01.090 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: VNU_415695522213
+2022-04-29 09:45:01.091 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: THILAKTEST_30395 took: 1 ms.
+2022-04-29 09:45:01.091 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: THILAKTEST_30395
+2022-04-29 09:45:01.099 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ACT_TELECOM_PVT_LIMITED took: 8 ms.
+2022-04-29 09:45:01.100 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 21 nodes for org: ACT_TELECOM_PVT_LIMITED
+2022-04-29 09:45:01.101 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: BHARTIAXA took: 1 ms.
+2022-04-29 09:45:01.101 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: BHARTIAXA
+2022-04-29 09:45:01.104 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SWR_485667032655 took: 3 ms.
+2022-04-29 09:45:01.105 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: SWR_485667032655
+2022-04-29 09:45:01.106 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SUPPORT_AIRTEL_9 took: 1 ms.
+2022-04-29 09:45:01.107 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: SUPPORT_AIRTEL_9
+2022-04-29 09:45:01.112 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: CREATE_MERCHANTS took: 5 ms.
+2022-04-29 09:45:01.112 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 13 nodes for org: CREATE_MERCHANTS
+2022-04-29 09:45:01.115 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: PORTALMER10230_6 took: 3 ms.
+2022-04-29 09:45:01.115 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: PORTALMER10230_6
+2022-04-29 09:45:01.118 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: KUNDAN_535120693 took: 3 ms.
+2022-04-29 09:45:01.118 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: KUNDAN_535120693
+2022-04-29 09:45:01.120 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ARSHIYA_TEST_805 took: 2 ms.
+2022-04-29 09:45:01.121 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: ARSHIYA_TEST_805
+2022-04-29 09:45:01.123 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: KUNDAN_FADTE_864 took: 2 ms.
+2022-04-29 09:45:01.124 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 6 nodes for org: KUNDAN_FADTE_864
+2022-04-29 09:45:01.128 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: LENOVO_894607325 took: 4 ms.
+2022-04-29 09:45:01.128 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 8 nodes for org: LENOVO_894607325
+2022-04-29 09:45:01.130 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SURYA_1257457690 took: 2 ms.
+2022-04-29 09:45:01.131 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 4 nodes for org: SURYA_1257457690
+2022-04-29 09:45:01.137 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AIRTEL took: 6 ms.
+2022-04-29 09:45:01.138 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 20 nodes for org: AIRTEL
+2022-04-29 09:45:01.140 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: WESTIDOPAX_15016 took: 2 ms.
+2022-04-29 09:45:01.140 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: WESTIDOPAX_15016
+2022-04-29 09:45:01.141 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: NEWPORTALMERCHANT14391615 took: 1 ms.
+2022-04-29 09:45:01.142 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: NEWPORTALMERCHANT14391615
+2022-04-29 09:45:01.144 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TAGSTESTWESTIDO took: 2 ms.
+2022-04-29 09:45:01.144 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: TAGSTESTWESTIDO
+2022-04-29 09:45:01.146 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: NEWYEARRELEASETEST took: 2 ms.
+2022-04-29 09:45:01.146 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 4 nodes for org: NEWYEARRELEASETEST
+2022-04-29 09:45:01.147 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AIRTELDEMOAPR2017 took: 1 ms.
+2022-04-29 09:45:01.147 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: AIRTELDEMOAPR2017
+2022-04-29 09:45:01.148 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: FASTWAYDEMOMERCHANT took: 1 ms.
+2022-04-29 09:45:01.148 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: FASTWAYDEMOMERCHANT
+2022-04-29 09:45:01.152 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: HGS_ARUNOTPAL_79 took: 4 ms.
+2022-04-29 09:45:01.152 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: HGS_ARUNOTPAL_79
+2022-04-29 09:45:01.155 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAP_JOP_97719 took: 3 ms.
+2022-04-29 09:45:01.155 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 6 nodes for org: EZETAP_JOP_97719
+2022-04-29 09:45:01.157 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAP_DHANU_627 took: 2 ms.
+2022-04-29 09:45:01.157 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: EZETAP_DHANU_627
+2022-04-29 09:45:01.159 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: POOJA_EZETAP_980 took: 2 ms.
+2022-04-29 09:45:01.160 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: POOJA_EZETAP_980
+2022-04-29 09:45:01.162 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAP_AMBIKA_19 took: 2 ms.
+2022-04-29 09:45:01.162 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: EZETAP_AMBIKA_19
+2022-04-29 09:45:01.164 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SHOPRITE_SUPERMARKET took: 2 ms.
+2022-04-29 09:45:01.164 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 6 nodes for org: SHOPRITE_SUPERMARKET
+2022-04-29 09:45:01.167 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAP_ALOK_5062 took: 3 ms.
+2022-04-29 09:45:01.167 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: EZETAP_ALOK_5062
+2022-04-29 09:45:01.170 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SUBHAM_GROUP_OF_COMPANIES took: 3 ms.
+2022-04-29 09:45:01.170 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: SUBHAM_GROUP_OF_COMPANIES
+2022-04-29 09:45:01.172 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAPSULTHAN_30 took: 2 ms.
+2022-04-29 09:45:01.173 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: EZETAPSULTHAN_30
+2022-04-29 09:45:01.175 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: HGS_DJ_634802400 took: 2 ms.
+2022-04-29 09:45:01.176 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: HGS_DJ_634802400
+2022-04-29 09:45:01.178 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: KHALEEM_9418378 took: 2 ms.
+2022-04-29 09:45:01.178 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: KHALEEM_9418378
+2022-04-29 09:45:01.181 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAP_ANJALI_37 took: 3 ms.
+2022-04-29 09:45:01.181 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: EZETAP_ANJALI_37
+2022-04-29 09:45:01.183 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: HGS_KIRAN_KUMAR took: 2 ms.
+2022-04-29 09:45:01.183 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: HGS_KIRAN_KUMAR
+2022-04-29 09:45:01.186 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: KARIMGOLI_814487 took: 3 ms.
+2022-04-29 09:45:01.186 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: KARIMGOLI_814487
+2022-04-29 09:45:01.188 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: HGS_PRATHIBHA_68 took: 2 ms.
+2022-04-29 09:45:01.189 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: HGS_PRATHIBHA_68
+2022-04-29 09:45:01.189 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AARON_MARKETING_SERVICES took: 0 ms.
+2022-04-29 09:45:01.190 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: AARON_MARKETING_SERVICES
+2022-04-29 09:45:01.192 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: MS_JEWELLERY_511 took: 2 ms.
+2022-04-29 09:45:01.192 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: MS_JEWELLERY_511
+2022-04-29 09:45:01.194 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SOWMYA_EZETAP_20 took: 2 ms.
+2022-04-29 09:45:01.194 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 4 nodes for org: SOWMYA_EZETAP_20
+2022-04-29 09:45:01.198 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: APOORVA_GUPTA_12345 took: 4 ms.
+2022-04-29 09:45:01.198 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 11 nodes for org: APOORVA_GUPTA_12345
+2022-04-29 09:45:01.201 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: UTPAL_DUTTA_12345 took: 3 ms.
+2022-04-29 09:45:01.201 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 8 nodes for org: UTPAL_DUTTA_12345
+2022-04-29 09:45:01.204 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: BALRAM_GURUNG_59 took: 3 ms.
+2022-04-29 09:45:01.204 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: BALRAM_GURUNG_59
+2022-04-29 09:45:01.207 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: MANOJ_GUPTA_RESTAURANT took: 3 ms.
+2022-04-29 09:45:01.207 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: MANOJ_GUPTA_RESTAURANT
+2022-04-29 09:45:01.209 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ASIF_ZAIN_27432200 took: 2 ms.
+2022-04-29 09:45:01.209 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 1 nodes for org: ASIF_ZAIN_27432200
+2022-04-29 09:45:01.212 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ANI_INTERNET_SOLUTION took: 3 ms.
+2022-04-29 09:45:01.213 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: ANI_INTERNET_SOLUTION
+2022-04-29 09:45:01.216 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: JAYA_SAI_ENTERPRISE took: 3 ms.
+2022-04-29 09:45:01.216 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 8 nodes for org: JAYA_SAI_ENTERPRISE
+2022-04-29 09:45:01.218 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ASHISH_RESTART_0 took: 2 ms.
+2022-04-29 09:45:01.218 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 2 nodes for org: ASHISH_RESTART_0
+2022-04-29 09:45:01.223 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ASHITH_JAIN_866 took: 5 ms.
+2022-04-29 09:45:01.223 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 11 nodes for org: ASHITH_JAIN_866
+2022-04-29 09:45:01.228 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: AKSHAT_PVT051292 took: 5 ms.
+2022-04-29 09:45:01.228 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 11 nodes for org: AKSHAT_PVT051292
+2022-04-29 09:45:01.230 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: RULY_BEAUTY_PARLOUR took: 2 ms.
+2022-04-29 09:45:01.230 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 1 nodes for org: RULY_BEAUTY_PARLOUR
+2022-04-29 09:45:01.232 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: SAI_TEXTILE_6018 took: 2 ms.
+2022-04-29 09:45:01.232 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 4 nodes for org: SAI_TEXTILE_6018
+2022-04-29 09:45:01.237 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: MADHU_PVT_LTD_46 took: 5 ms.
+2022-04-29 09:45:01.237 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 13 nodes for org: MADHU_PVT_LTD_46
+2022-04-29 09:45:01.241 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: PRADEEP_COOL_786 took: 4 ms.
+2022-04-29 09:45:01.241 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 8 nodes for org: PRADEEP_COOL_786
+2022-04-29 09:45:01.244 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: RAGHVENDRA_RAGHU78954 took: 2 ms.
+2022-04-29 09:45:01.244 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: RAGHVENDRA_RAGHU78954
+2022-04-29 09:45:01.245 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: BALRAM_GURUNG_92 took: 1 ms.
+2022-04-29 09:45:01.245 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: BALRAM_GURUNG_92
+2022-04-29 09:45:01.249 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: RAHEEM_SHOE_STORES took: 4 ms.
+2022-04-29 09:45:01.249 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 9 nodes for org: RAHEEM_SHOE_STORES
+2022-04-29 09:45:01.256 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ASIF_ZAIN took: 7 ms.
+2022-04-29 09:45:01.256 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 19 nodes for org: ASIF_ZAIN
+2022-04-29 09:45:01.260 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: HGSTEAM2_6112142 took: 4 ms.
+2022-04-29 09:45:01.260 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 11 nodes for org: HGSTEAM2_6112142
+2022-04-29 09:45:01.262 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ASHOK_KUMARQ_729 took: 2 ms.
+2022-04-29 09:45:01.263 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 5 nodes for org: ASHOK_KUMARQ_729
+2022-04-29 09:45:01.264 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: OUTH_BIHAR_ELECTRICITY_BO took: 1 ms.
+2022-04-29 09:45:01.264 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 2 nodes for org: OUTH_BIHAR_ELECTRICITY_BO
+2022-04-29 09:45:01.266 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: MINISTRY_OF_INFORMATION_A took: 2 ms.
+2022-04-29 09:45:01.266 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 4 nodes for org: MINISTRY_OF_INFORMATION_A
+2022-04-29 09:45:01.268 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: EZETAP_UMESHA_74 took: 2 ms.
+2022-04-29 09:45:01.268 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: EZETAP_UMESHA_74
+2022-04-29 09:45:01.269 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: UP_GOVT_EMPLOYEE_WELFARE took: 1 ms.
+2022-04-29 09:45:01.269 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 2 nodes for org: UP_GOVT_EMPLOYEE_WELFARE
+2022-04-29 09:45:01.271 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: CITI_BANK took: 2 ms.
+2022-04-29 09:45:01.271 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 3 nodes for org: CITI_BANK
+2022-04-29 09:45:01.272 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: FAROOQ_SHEIKH took: 1 ms.
+2022-04-29 09:45:01.272 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: FAROOQ_SHEIKH
+2022-04-29 09:45:01.273 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: DHANU_ENTERPRISES took: 1 ms.
+2022-04-29 09:45:01.273 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: DHANU_ENTERPRISES
+2022-04-29 09:45:01.274 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: UMESHTESTMERCHANT took: 1 ms.
+2022-04-29 09:45:01.274 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 1 nodes for org: UMESHTESTMERCHANT
+2022-04-29 09:45:01.275 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: PRINTCHARGESLIP took: 1 ms.
+2022-04-29 09:45:01.275 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: PRINTCHARGESLIP
+2022-04-29 09:45:01.276 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: PRINTTEST_418536 took: 1 ms.
+2022-04-29 09:45:01.276 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: PRINTTEST_418536
+2022-04-29 09:45:01.277 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ABC_CO_103197941 took: 1 ms.
+2022-04-29 09:45:01.277 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: ABC_CO_103197941
+2022-04-29 09:45:01.278 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: ServiceRequest took: 1 ms.
+2022-04-29 09:45:01.278 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 0 nodes for org: ServiceRequest
+2022-04-29 09:45:01.279 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: THILAKREGRESSIONSA7 took: 1 ms.
+2022-04-29 09:45:01.280 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 1 nodes for org: THILAKREGRESSIONSA7
+2022-04-29 09:45:01.282 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Tag Graph computation for orgCode: TAGBULKUPLOAD_83 took: 2 ms.
+2022-04-29 09:45:01.282 [ask-scheduler-4] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: TAGBULKUPLOAD_83
+

@@ -1,0 +1,84 @@
+Function setup level
+Start startLineNumberAPI no:  2252743
+Portal logs coll time:  0:00:06
+***************End of setup
+Txn id APP: 220503181503147E010062013
+Status APP: AUTHORIZED
+Status of txn: AUTHORIZED
+Expected portal values AUTHORIZED:AUTHORIZED
+Query: select status,amount,payment_mode,external_ref from txn where id='220503181503147E010062013'
+Result DB:        status  amount payment_mode external_ref
+0  AUTHORIZED   222.0          UPI         3775
+Expected DB values: AUTHORIZED:AUTHORIZED,BHARATQR:UPI,222:222
+{'success': True, 'sessionKey': '4bbc5d1a-9778-4e23-8568-d49f675dbecb', 'username': '1076810769', 'setting': {}, 'apps': [], 'ctlsConfig': [{'scheme': 'MASTER_CARD', 'cvmLimit': 500.0, 'floorLimit': 0.0, 'txnLimit': 2000.0, 'tacDenial': '0400000000', 'tacDefault': 'F85084800C', 'tacOnline': 'F85084800C', 'supportedDevices': ['A50', 'A910', 'D175', 'D180', 'D180S', 'D200']}, {'scheme': 'VISA', 'cvmLimit': 500.0, 'floorLimit': 0.0, 'txnLimit': 2000.0, 'tacDenial': '0400000000', 'tacDefault': 'F85084800C', 'tacOnline': 'F85084800C', 'supportedDevices': ['D170', 'D180', 'D180S', 'D200']}], 'txns': [{'success': True, 'username': '1076810769', 'setting': {}, 'apps': [], 'amount': 222.0, 'amountOriginal': 222.0, 'authCode': 'NA', 'currencyCode': 'INR', 'customerName': 'Test Payer', 'customerReceiptUrl': 'http://dev11.ezetap.com/r/o/y1UXDZjp/', 'externalRefNumber': '3775', 'externalRefNumber2': ' ', 'externalRefNumber3': ' ', 'txnId': '220503181503147E010062013', 'latitude': '32.2563079', 'longitude': '77.1798043', 'merchantName': 'Vineet', 'mid': 'MID9731545096BB', 'nonceStatus': 'OPEN', 'orgCode': 'VINEET_191036200', 'merchantCode': 'VINEET_191036200', 'payerName': 'Test Payer', 'paymentCardType': 'UNKNOWN', 'paymentMode': 'UPI', 'postingDate': 1651621503000, 'processCode': '_DEF_PROC', 'rrNumber': '10974000', 'settlementStatus': 'SETTLED', 'status': 'AUTHORIZED', 'states': ['SETTLED'], 'tid': '97315451', 'txnType': 'CHARGE', 'dccOpted': False, 'cardHolderCurrencyExponent': 0, 'userAgreement': '', 'signable': False, 'voidable': False, 'refundable': True, 'chargeSlipDate': '2022-05-03T23:45:03+0530', 'readableChargeSlipDate': '03/05/2022 23:45:03', 'issuerCode': 'HDFC', 'maximumPayAttemptsAllowed': 1, 'maximumSuccessfulPaymentAllowed': 1, 'noExpiryFlag': False, 'settlementTime': 1651621544000, 'receiptUrl': 'http://dev11.ezetap.com/r/o/y1UXDZjp/', 'signReqd': False, 'txnTypeDesc': 'Charge', 'acquirerCode': 'HDFC', 'createdTime': 1651621503000, 'customerNameAvailable': True, 'callbackEnabled': True, 'onlineRefundable': False, 'orderNumber': '3775', 'reverseReferenceNumber': '10974000', 'totalAmount': 222.0, 'nameOnCard': 'Test Payer', 'tipEnabled': False, 'callTC': False, 'acquisitionId': '', 'acquisitionKey': '', 'processCronOutput': False, 'externalDevice': False, 'tipAdjusted': False, 'txnMetadata': [], 'middlewareStanNumber': 0, 'otpRequired': False, 'redirect': False, 'twoStepConfirmPreAuth': False, 'reload': False}, {'success': True, 'username': '1076810769', 'setting': {}, 'apps': [], 'amount': 837.0, 'amountOriginal': 837.0, 'authCode': 'NA', 'currencyCode': 'INR', 'customerName': 'Test Payer', 'customerReceiptUrl': 'http://dev11.ezetap.com/r/o/3sP1NaKQ/', 'externalRefNumber': '407', 'externalRefNumber2': ' ', 'externalRefNumber3': ' ', 'txnId': '220503181138805E010047010', 'latitude': '32.2560037', 'longitude': '77.1781932', 'merchantName': 'Vineet', 'mid': 'MID9731545096BB', 'nonceStatus': 'OPEN', 'orgCode': 'VINEET_191036200', 'merchantCode': 'VINEET_191036200', 'payerName': 'Test Payer', 'paymentCardType': 'UNKNOWN', 'paymentMode': 'UPI', 'postingDate': 1651621299000, 'processCode': '_DEF_PROC', 'rrNumber': '26604000', 'settlementStatus': 'SETTLED', 'status': 'AUTHORIZED', 'states': ['SETTLED'], 'tid': '97315451', 'txnType': 'CHARGE', 'dccOpted': False, 'cardHolderCurrencyExponent': 0, 'userAgreement': '', 'signable': False, 'voidable': False, 'refundable': True, 'chargeSlipDate': '2022-05-03T23:41:39+0530', 'readableChargeSlipDate': '03/05/2022 23:41:39', 'issuerCode': 'HDFC', 'maximumPayAttemptsAllowed': 1, 'maximumSuccessfulPaymentAllowed': 1, 'noExpiryFlag': False, 'settlementTime': 1651621488000, 'receiptUrl': 'http://dev11.ezetap.com/r/o/3sP1NaKQ/', 'signReqd': False, 'txnTypeDesc': 'Charge', 'acquirerCode': 'HDFC', 'createdTime': 1651621299000, 'customerNameAvailable': True, 'callbackEnabled': True, 'onlineRefundable': False, 'orderNumber': '407', 'reverseReferenceNumber': '26604000', 'totalAmount': 837.0, 'nameOnCard': 'Test Payer', 'tipEnabled': False, 'callTC': False, 'acquisitionId': '', 'acquisitionKey': '', 'processCronOutput': False, 'externalDevice': False, 'tipAdjusted': False, 'txnMetadata': [], 'middlewareStanNumber': 0, 'otpRequired': False, 'redirect': False, 'twoStepConfirmPreAuth': False, 'reload': False}, {'success': True, 'username': '1076810769', 'setting': {}, 'apps': [], 'amount': 824.0, 'amountOriginal': 824.0, 'authCode': 'AE010039008', 'currencyCode': 'INR', 'customerReceiptUrl': 'http://dev11.ezetap.com/r/o/DLSw2vBK/', 'externalRefNumber': '2949', 'externalRefNumber2': ' ', 'externalRefNumber3': ' ', 'txnId': '220503180821547E010039008', 'latitude': '32.2561943', 'longitude': '77.1781395', 'merchantName': 'Vineet', 'mid': 'MID9731545096BB', 'nonceStatus': 'OPEN', 'orgCode': 'VINEET_191036200', 'merchantCode': 'VINEET_191036200', 'paymentCardType': 'UNKNOWN', 'paymentMode': 'BHARATQR', 'postingDate': 1651621102000, 'processCode': '_DEF_PROC', 'rrNumber': 'RE010039008', 'settlementStatus': 'SETTLED', 'status': 'AUTHORIZED', 'states': ['SETTLED'], 'tid': '97315451', 'txnType': 'CHARGE', 'dccOpted': False, 'cardHolderCurrencyExponent': 0, 'userAgreement': '', 'signable': False, 'voidable': False, 'refundable': True, 'chargeSlipDate': '2022-05-03T23:38:22+0530', 'readableChargeSlipDate': '03/05/2022 23:38:22', 'issuerCode': 'HDFC', 'maximumPayAttemptsAllowed': 1, 'maximumSuccessfulPaymentAllowed': 1, 'noExpiryFlag': False, 'settlementTime': 1651621144000, 'receiptUrl': 'http://dev11.ezetap.com/r/o/DLSw2vBK/', 'signReqd': False, 'txnTypeDesc': 'Charge', 'acquirerCode': 'HDFC', 'createdTime': 1651621102000, 'customerNameAvailable': False, 'callbackEnabled': True, 'onlineRefundable': False, 'orderNumber': '2949', 'reverseReferenceNumber': 'RE010039008', 'totalAmount': 824.0, 'tipEnabled': False, 'callTC': False, 'acquisitionId': '', 'acquisitionKey': '', 'processCronOutput': False, 'externalDevice': False, 'tipAdjusted': False, 'txnMetadata': [], 'middlewareStanNumber': 0, 'otpRequired': False, 'redirect': False, 'twoStepConfirmPreAuth': False, 'reload': False}, {'success': True, 'username': '1076810769', 'setting': {}, 'apps': [], 'amount': 824.0, 'amountOriginal': 824.0, 'authCode': 'NA', 'currencyCode': 'INR', 'customerName': 'Test Payer', 'customerReceiptUrl': 'http://dev11.ezetap.com/r/o/8w2neYFS/', 'externalRefNumber': '2949', 'externalRefNumber2': ' ', 'externalRefNumber3': ' ', 'txnId': '220503180526917E010040005', 'latitude': '32.2561023', 'longitude': '77.1777406', 'merchantName': 'Vineet', 'mid': 'MID9731545096BB', 'nonceStatus': 'OPEN', 'orgCode': 'VINEET_191036200', 'merchantCode': 'VINEET_191036200', 'payerName': 'Test Payer', 'paymentCardType': 'UNKNOWN', 'paymentMode': 'UPI', 'postingDate': 1651620927000, 'processCode': '_DEF_PROC', 'rrNumber': '16144000', 'settlementStatus': 'SETTLED', 'status': 'AUTHORIZED', 'states': ['SETTLED'], 'tid': '97315451', 'txnType': 'CHARGE', 'dccOpted': False, 'cardHolderCurrencyExponent': 0, 'userAgreement': '', 'signable': False, 'voidable': False, 'refundable': True, 'chargeSlipDate': '2022-05-03T23:35:27+0530', 'readableChargeSlipDate': '03/05/2022 23:35:27', 'issuerCode': 'HDFC', 'maximumPayAttemptsAllowed': 1, 'maximumSuccessfulPaymentAllowed': 1, 'noExpiryFlag': False, 'settlementTime': 1651620968000, 'receiptUrl': 'http://dev11.ezetap.com/r/o/8w2neYFS/', 'signReqd': False, 'txnTypeDesc': 'Charge', 'acquirerCode': 'HDFC', 'createdTime': 1651620927000, 'customerNameAvailable': True, 'callbackEnabled': True, 'onlineRefundable': False, 'orderNumber': '2949', 'reverseReferenceNumber': '16144000', 'totalAmount': 824.0, 'nameOnCard': 'Test Payer', 'tipEnabled': False, 'callTC': False, 'acquisitionId': '', 'acquisitionKey': '', 'processCronOutput': False, 'externalDevice': False, 'tipAdjusted': False, 'txnMetadata': [], 'middlewareStanNumber': 0, 'otpRequired': False, 'redirect': False, 'twoStepConfirmPreAuth': False, 'reload': False}, {'success': True, 'username': '1076810769', 'setting': {}, 'apps': [], 'amount': 881.0, 'amountOriginal': 881.0, 'authCode': 'AE010028003', 'currencyCode': 'INR', 'customerReceiptUrl': 'http://dev11.ezetap.com/r/o/TQuMVKpE/', 'externalRefNumber': '1274', 'externalRefNumber2': ' ', 'externalRefNumber3': ' ', 'txnId': '220503175518132E010028003', 'latitude': '32.2559493', 'longitude': '77.1783281', 'merchantName': 'Vineet', 'mid': 'MID9731545096BB', 'nonceStatus': 'OPEN', 'orgCode': 'VINEET_191036200', 'merchantCode': 'VINEET_191036200', 'paymentCardType': 'UNKNOWN', 'paymentMode': 'BHARATQR', 'postingDate': 1651620318000, 'processCode': '_DEF_PROC', 'rrNumber': 'RE010028003', 'settlementStatus': 'SETTLED', 'status': 'AUTHORIZED', 'states': ['SETTLED'], 'tid': '97315451', 'txnType': 'CHARGE', 'dccOpted': False, 'cardHolderCurrencyExponent': 0, 'userAgreement': '', 'signable': False, 'voidable': False, 'refundable': True, 'chargeSlipDate': '2022-05-03T23:25:18+0530', 'readableChargeSlipDate': '03/05/2022 23:25:18', 'issuerCode': 'HDFC', 'maximumPayAttemptsAllowed': 1, 'maximumSuccessfulPaymentAllowed': 1, 'noExpiryFlag': False, 'settlementTime': 1651620472000, 'receiptUrl': 'http://dev11.ezetap.com/r/o/TQuMVKpE/', 'signReqd': False, 'txnTypeDesc': 'Charge', 'acquirerCode': 'HDFC', 'createdTime': 1651620318000, 'customerNameAvailable': False, 'callbackEnabled': True, 'onlineRefundable': False, 'orderNumber': '1274', 'reverseReferenceNumber': 'RE010028003', 'totalAmount': 881.0, 'tipEnabled': False, 'callTC': False, 'acquisitionId': '', 'acquisitionKey': '', 'processCronOutput': False, 'externalDevice': False, 'tipAdjusted': False, 'txnMetadata': [], 'middlewareStanNumber': 0, 'otpRequired': False, 'redirect': False, 'twoStepConfirmPreAuth': False, 'reload': False}, {'success': True, 'username': '1076810769', 'setting': {}, 'apps': [], 'amount': 5000.0, 'amountAdditional': 0.0, 'amountOriginal': 5000.0, 'amountCashBack': 0.0, 'authCode': 'D46221', 'batchNumber': '1', 'cardLastFourDigit': '1073', 'currencyCode': 'INR', 'customerName': 'VINEETH                  /', 'customerMobile': '9535688680', 'customerReceiptUrl': 'http://dev11.ezetap.com/r/o/9NvyODSO/', 'deviceSerial': '0821045404', 'externalRefNumber': '56', 'externalRefNumber2': ' ', 'externalRefNumber3': ' ', 'formattedPan': '4391-23XX-XXXX-1073', 'txnId': '220503174541111E010035001', 'latitude': '32.2559493', 'longitude': '77.1783281', 'merchantName': 'Vineet', 'mid': 'MID9731545096BB', 'nonceStatus': 'OPEN', 'orgCode': 'VINEET_191036200', 'merchantCode': 'VINEET_191036200', 'payerName': 'VINEETH                  /', 'paymentCardBin': '439123', 'paymentCardBrand': 'VISA', 'paymentCardType': 'CREDIT', 'paymentMode': 'CARD', 'pgInvoiceNumber': '55', 'postingDate': 1651619753000, 'processCode': '_DEF_PROC', 'rrNumber': 'RR04B57320864C', 'settlementStatus': 'PENDING', 'status': 'AUTHORIZED', 'states': ['AUTHORIZED'], 'tid': '97315451', 'userMobile': '1076810769', 'txnType': 'CHARGE', 'dccOpted': False, 'cardHolderCurrencyExponent': 0, 'userAgreement': 'I agree to pay as per the card issuer agreement and receive chargeslip by electronic means.', 'signable': True, 'voidable': True, 'refundable': False, 'chargeSlipDate': '2022-05-03T23:15:53+0530', 'readableChargeSlipDate': '03/05/2022 23:15:53', 'cardTxnTypeDesc': 'EMV with PIN', 'issuerCode': 'HDFC', 'maximumPayAttemptsAllowed': 1, 'maximumSuccessfulPaymentAllowed': 1, 'noExpiryFlag': False, 'dxMode': 'SERIAL', 'receiptUrl': 'http://dev11.ezetap.com/r/o/9NvyODSO/', 'signReqd': True, 'txnTypeDesc': 'Charge', 'acquirerCode': 'HDFC', 'additionalParamJson': '{"FPIKSN":"FFFF0821045404000061","MCC":"5814"}', 'createdTime': 1651619743000, 'customerNameAvailable': True, 'callbackEnabled': False, 'onlineRefundable': False, 'additionalAmount': 0.0, 'orderNumber': '56', 'reverseReferenceNumber': 'RR04B57320864C', 'totalAmount': 5000.0, 'displayPAN': '1073', 'nameOnCard': 'VINEETH                  /', 'invoiceNumber': '55', 'cardType': 'VISA', 'tipEnabled': False, 'callTC': False, 'acquisitionId': '', 'acquisitionKey': '', 'processCronOutput': False, 'externalDevice': False, 'tipAdjusted': False, 'txnMetadata': [], 'middlewareStanNumber': 0, 'otpRequired': False, 'redirect': False, 'twoStepConfirmPreAuth': False, 'reload': False}], 'totalCount': 0, 'count': 6, 'netAmount': 8588.0, 'summary': [{'title': 'Authorized', 'amount': 8588.0, 'count': 6, 'priority': 1}, {'title': 'Settled', 'amount': 3588.0, 'count': 5, 'priority': 1001}, {'title': 'Settlement Pending', 'amount': 5000.0, 'count': 1, 'priority': 1002}], 'paymentModeSummary': [{'mode': 'BHARATQR', 'count': 2, 'netAmount': 1705.0}, {'mode': 'CARD', 'count': 1, 'netAmount': 5000.0}, {'mode': 'UPI', 'count': 3, 'netAmount': 1883.0}]}
+AUTHORIZED:AUTHORIZED,222:222ss
+=======   API Validation Started    =======
+expectedVal from API: 222
+actualVal from API: 222ss
+=======   API Validation Completed  =======
+
+=======   DB Validation Started     =======
+expectedVal from DB: BHARATQR
+actualVal from DB  : UPI
+=======   DB Validation Completed   =======
+
+======= Portal Validation Started   =======
+Portal Validation result:  Pass
+======= Portal Validation Completed =======
+
+=======   App Validation Started    =======
+expectedVal from app: Payment Successfulj
+actualVal from app  : Payment Successful
+=======   App Validation Completed  =======
+
+=======   API Validation Started    =======
+expectedVal from API: 222
+actualVal from API: 222ss
+=======   API Validation Completed  =======
+
+=======   DB Validation Started     =======
+expectedVal from DB: BHARATQR
+actualVal from DB  : UPI
+=======   DB Validation Completed   =======
+
+======= Portal Validation Started   =======
+Portal Validation result:  Pass
+======= Portal Validation Completed =======
+
+=======   App Validation Started    =======
+expectedVal from app: Payment Successfulj
+actualVal from app  : Payment Successful
+=======   App Validation Completed  =======
+
+TC Val completed time: 23:47:02
+
+
++---------------------------------------+
+|           Validation Details          |
++-------------------+-------------------+
+| Validation Type   | Validation Status |
++-------------------+-------------------+
+| API Validation    | Fail              |
+| DB Validation     | Fail              |
+| Portal Validation | Pass              |
+| App Validation    | Fail              |
+| UI Validation     | N/A               |
++-------------------+-------------------+
+
+
++-----------------------------------------------------------------+
+|                          Debugging Info                         |
++---------------------+-----+------------+---------+--------+-----+
+| Type                | API | Middleware | Cnpware | Portal | App |
++---------------------+-----+------------+---------+--------+-----+
+| Log Captured        | Yes | No         | No      | No     | N/A |
+| Screenshot Captured | N/A | N/A        | N/A     | Yes    | Yes |
++---------------------+-----+------------+---------+--------+-----+
+
+Function teardown level
+Rerun.getRerunCountForAtTheEnd():  0
+log_on_failure(request)
+In logOnFailure Portal logs coll starting time:  23:47:02
+Inside capturing logs all in one file
+Fetching Logs 4th time
+Log collection end time:  23:47:07
