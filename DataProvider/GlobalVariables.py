@@ -43,11 +43,11 @@ EXCEL_TC_LogColl_completed_time = 00
 
 EXCEL_testCaseName = "Default Testcase"
 EXCEL_TC_Execution = "Skip"
-EXCEL_API_Val = "N/A"
-EXCEL_DB_Val = "N/A"
-EXCEL_Portal_Val = "N/A"
-EXCEL_App_Val = "N/A"
-EXCEL_UI_Val = "N/A"
+str_api_val_result = "N/A"
+str_db_val_result = "N/A"
+str_portal_val_result = "N/A"
+str_app_val_result = "N/A"
+str_ui_val_result = "N/A"
 EXCEL_Execution_Time = 00
 EXCEL_Val_time = 00
 EXCEL_LogCollTime = 00

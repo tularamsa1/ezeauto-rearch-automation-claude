@@ -80,10 +80,6 @@ def revert_excel_global_variables():
     GlobalVariables.EXCEL_Portal_Val = "N/A"
     GlobalVariables.EXCEL_App_Val = "N/A"
     GlobalVariables.EXCEL_UI_Val = "N/A"
-    # GlobalVariables.apiLogs = False
-    # GlobalVariables.portalLogs = False
-    # GlobalVariables.cnpWareLogs = False
-    # GlobalVariables.middleWareLogs = False
 
 
 def setStylesForExcel():
@@ -158,31 +154,6 @@ def setStylesForExcel():
     wb.save(GlobalVariables.EXCEL_reportFilePath)
 
 
-# @pytest.fixture(scope="session")  # Executing once before the first test case
-# def session_setup(request):
-#     print("Session setup level")
-#     server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
-#
-#     # global appium_service
-#     # appium_service = AppiumService()
-#     # appium_service.start()
-#
-#     Configuration.prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
-#
-#     # Executing once after the last test case
-#     def fin():
-#         # appium_service.stop()
-#         print("Session teardown level")
-#         # print("Session Teardown rerunAttempt count is: ", dictFromCsv.get("rerunAttempt"))
-#         print("Printing df before starting rerun")
-#
-#         ssh.close()
-#         # appium_service.stop()
-#         convert_DF_To_Excel()
-#
-#     request.addfinalizer(fin)
-
-
 def convert_DF_To_Excel():
     i = randint(1, 10)
     # file_name = 'MarksData'+str(i)+'.xlsx'
@@ -206,45 +177,6 @@ def convert_DF_To_Excel():
     GlobalVariables.df_testCasesDetail.to_excel(file_name)
 
 
-# def startLineNoOfServerLogFile():
-#     if Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True" or Base_Actions.is_log_capture_required(
-#             "bool_capt_log_fail") == "True":
-#         global LogCollTime
-#         current = datetime.now()
-#         LogColl_Starting_Time = current.strftime("%H:%M:%S")
-#         if LogProcessor.env.__contains__('dev'):
-#             if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-#                 GlobalVariables.startLineNumberAPI = LogProcessor.noOfLine(Base_Actions.pathToLogFile('api_dev'))
-#                 print("Start startLineNumberAPI no: ", GlobalVariables.startLineNumberAPI)
-#             if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-#                 GlobalVariables.startLineNumberPortal = LogProcessor.noOfLine(Base_Actions.pathToLogFile('portal_dev'))
-#             if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-#                 GlobalVariables.is_log_capture_required = LogProcessor.noOfLine(
-#                     Base_Actions.pathToLogFile('middleware_dev'))
-#             if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-#                 GlobalVariables.startLineNumberCnpware = LogProcessor.noOfLine(Base_Actions.pathToLogFile('cnpware_dev'))
-#         else:
-#             if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-#                 GlobalVariables.startLineNumberAPI = LogProcessor.noOfLine(Base_Actions.pathToLogFile('api'))
-#             if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-#                 GlobalVariables.startLineNumberPortal = LogProcessor.noOfLine(Base_Actions.pathToLogFile('portal'))
-#             if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-#                 GlobalVariables.startLineNumberMiddlewware = LogProcessor.noOfLine(
-#                     Base_Actions.pathToLogFile('middleware'))
-#             if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-#                 GlobalVariables.startLineNumberCnpware = LogProcessor.noOfLine(Base_Actions.pathToLogFile('cnpware'))
-#
-#         current = datetime.now()
-#         LogColl_Ending_Time = current.strftime("%H:%M:%S")
-#         FMT = '%H:%M:%S'
-#         totalLogCollectionTime = datetime.strptime(LogColl_Ending_Time, FMT) - datetime.strptime(
-#             str(LogColl_Starting_Time),
-#             FMT)
-#         print("Portal logs coll time: ", str(totalLogCollectionTime))
-#         # Converting time duration to seconds
-#         LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalLogCollectionTime).split(":")))
-
-
 def updatingHighLevelReportAfterEachTCS():
     workbook = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
     sheet = workbook["Sheet1"]
@@ -255,10 +187,10 @@ def updatingHighLevelReportAfterEachTCS():
     if GlobalVariables.EXCEL_TC_Execution == 'Pass':
 
         # Pass or N/A
-        if GlobalVariables.EXCEL_API_Val != 'Fail' and GlobalVariables.EXCEL_DB_Val != 'Fail' and GlobalVariables.EXCEL_Portal_Val != 'Fail' and GlobalVariables.EXCEL_UI_Val != 'Fail':
+        if GlobalVariables.str_api_val_result != 'Fail' and GlobalVariables.str_db_val_result != 'Fail' and GlobalVariables.str_portal_val_result != 'Fail' and GlobalVariables.str_ui_val_result != 'Fail':
             Overall_Status = 'Pass'
 
-        elif GlobalVariables.EXCEL_API_Val == 'Fail' or GlobalVariables.EXCEL_DB_Val == 'Fail' or GlobalVariables.EXCEL_Portal_Val == 'Fail' or GlobalVariables.EXCEL_UI_Val == 'Fail':
+        elif GlobalVariables.str_api_val_result == 'Fail' or GlobalVariables.str_db_val_result == 'Fail' or GlobalVariables.str_portal_val_result == 'Fail' or GlobalVariables.str_ui_val_result == 'Fail':
             Overall_Status = 'Fail'
     elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
         Overall_Status = 'Fail'
@@ -275,24 +207,24 @@ def updatingHighLevelReportAfterEachTCS():
     sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_TC_Execution
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_API_Val
-    print("API VaL: ", GlobalVariables.EXCEL_API_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_val_result
+    print("API VaL: ", GlobalVariables.str_api_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'DB Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_DB_Val
-    print("DB VaL: ", GlobalVariables.EXCEL_DB_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_db_val_result
+    print("DB VaL: ", GlobalVariables.str_db_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Portal Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Portal_Val
-    print("Portal VaL: ", GlobalVariables.EXCEL_Portal_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_portal_val_result
+    print("Portal VaL: ", GlobalVariables.str_portal_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'App Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_App_Val
-    print("App VaL: ", GlobalVariables.EXCEL_App_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_app_val_result
+    print("App VaL: ", GlobalVariables.str_app_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_UI_Val
-    print("UI VaL: ", GlobalVariables.EXCEL_UI_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
+    print("UI VaL: ", GlobalVariables.str_ui_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Execution Time (sec)')
     sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Execution_Time

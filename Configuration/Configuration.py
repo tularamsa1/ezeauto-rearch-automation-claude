@@ -93,7 +93,7 @@ def prepareTestExecutionCommand(testCasesDetailDataFrame):
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
     # commandString = commandString + getValidationConfig() + " --html=0001dgsf.html --self-contained-html --css=test.html --tb=no --show-capture=stdout --capture=tee-sys"
     # commandString = commandString + getValidationConfig() + ' -n3 --alluredir="./march11"  --cache-clear --lf'
-    commandString = commandString + getValidationConfig() + ' -n2 --alluredir='+ DirectoryCreator.getDirectoryPath("AllureReport") +' --capture=tee-sys'
+    commandString = commandString + getValidationConfig() + ' --alluredir='+ DirectoryCreator.getDirectoryPath("AllureReport") +' --capture=tee-sys'
     # commandString = commandString + getValidationConfig() + ' -n3 --alluredir="/home/oem/PycharmProjects/PortalAutomation_04/PortalAutomation/TestCase/allure" --capture=tee-sys'
     print(commandString)
     return commandString
