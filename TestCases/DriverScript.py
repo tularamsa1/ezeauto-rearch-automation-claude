@@ -3,11 +3,10 @@ DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
 from Configuration import Configuration, TestSuiteSetup
 from Utilities import ConfigReader
-
-from Configuration import Configuration
+from Configuration import Configuration, TestSuiteSetup
 from Utilities import configReader
 
-# if both r enabled then add this condition: if configReader.read_config("Validations", "bool_rerun_immediately").lower()
+# if both r enabled then add this condition: if configReader.read_config("Validations", "rerun_immediately").lower()
 # == "true" and configReader.read_config("Validations", "rerun_at_the_end").lower() == "false":
 TestSuiteSetup.prepare_Consolidated_List_Of_TestcasesFile()
 

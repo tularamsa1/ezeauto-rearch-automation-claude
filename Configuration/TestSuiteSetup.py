@@ -2,7 +2,6 @@ import os
 
 import pandas as pd
 import paramiko
-import pandas as pd
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import ConfigReader
@@ -15,20 +14,19 @@ key_filename = Base_Actions.get_environment("str_ssh_key_filename")
 
 
 # Login to the server
-def ssh_connection(ip_address, routerPort, username, key_filename):
-    GlobalVariables.ssh.load_system_host_keys()
-    GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
-                    pkey=paramiko.RSAKey.from_private_key_file(key_filename))
-        return True
-    except Exception as error_message:
-        print("Unable to connect")
-        print(error_message)
-        return False
+import os
+import threading
+
+import pandas as pd
+import paramiko
+from appium.webdriver.appium_service import AppiumService
+
+from DataProvider import GlobalVariables
+from Utilities import configReader, DirectoryCreator
 
 
 def prepareTestCaseDetailsDataFrame(path):
+    # Defining the columns of dataframe
     dataForDataFrameHeader = {
         'Test Case ID': [],
         'File Name': [],
@@ -82,3 +80,174 @@ def prepareTestCaseDetailsDataFrame(path):
     GlobalVariables.df_testCasesDetail.set_index(configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
     return GlobalVariables.df_testCasesDetail
 
+
+def ssh_connection(ip_address, routerPort, username, key_filename):
+    GlobalVariables.ssh.load_system_host_keys()
+    GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
+                    pkey=paramiko.RSAKey.from_private_key_file(key_filename))
+        return True
+    except Exception as error_message:
+        print("Unable to connect")
+        print(error_message)
+        return False
+
+
+def getValidationConfig():
+    if configReader.read_config("Validations", "api_validation") == True and configReader.read_config("Validations", "db_validation") == True and configReader.read_config("Validations", "portal_validation") == True and configReader.read_config("Validations", "app_validation") == True and configReader.read_config("Validations", "ui_validation") == True :
+        commandString = ""
+    elif configReader.read_config("Validations", "api_validation") == False and configReader.read_config("Validations", "db_validation") == False and configReader.read_config("Validations", "portal_validation") == False and configReader.read_config("Validations", "app_validation") == False and configReader.read_config("Validations", "ui_validation") == False :
+        commandString = ""
+    else:
+        commandString = '-m "'
+        if (configReader.read_config("Validations", "api_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "apiVal"
+            else:
+                commandString = commandString + " or apiVal"
+
+        if (configReader.read_config("Validations", "db_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "dbVal"
+            else:
+                commandString = commandString + " or dbVal"
+        if (configReader.read_config("Validations", "portal_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "portalVal"
+            else:
+                commandString = commandString + " or portalVal"
+        if (configReader.read_config("Validations", "app_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "appVal"
+            else:
+                commandString = commandString + " or appVal"
+        if (configReader.read_config("Validations", "ui_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "uiVal"
+            else:
+                commandString = commandString + " or uiVal"
+        commandString= commandString+'"'
+
+    return commandString
+
+
+
+
+"""
+This method is used to start the desired number of servers.
+This takes the number of servers to be started as input and returns list of ports that were actually started.
+Following conditions are checked before considering a port to be assigned
+i) Port number range should be between 4720 and 4740
+ii) If the port is already in use.
+"""
+def startAppiumServers(numberOfAppiumServers: int):
+    portNumber = 4720
+    blockedPorts = []
+    for i in range(0, numberOfAppiumServers):
+        foundPort = False
+        while foundPort == False:
+            if portNumber<=4740:
+                if is_port_in_use(portNumber):
+                    portNumber = portNumber+1
+                else:
+                    try:
+                        thread = threading.Thread(target = startAppiumServer, args=[portNumber])
+                        thread.start()
+                        blockedPorts.append(portNumber)
+                        portNumber = portNumber + 1
+                        foundPort = True
+                    except Exception as e:
+                        print(e)
+                        portNumber = portNumber+1
+            else:
+                return blockedPorts
+    return blockedPorts
+"""
+This method will simply create an object for the appium service and start the appium server using the inbuild method
+This has been kept outside the start appium servers because this needs a separate thread to operate.
+This takes an integer as input for the port number on which the server needs to be started.
+"""
+def startAppiumServer(portNumber:int):
+    appium_server = AppiumService()
+    appium_server.start(args=['-p ' + str(portNumber)])
+
+"""
+This method is used to check the availability of the port.
+It returns true if port is available and returns false in case of unavailability.
+Takes an integer as input to get the port which needs to be checked.
+"""
+def is_port_in_use(port: int):
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+"""
+This method is used to kill the appium server running on a specific port
+It takes the list of port numbers as input and kills the servers one by one from the list.
+"""
+# def killAppiumServers(listOfPorts):
+#     for port in listOfPorts:
+#         try:
+#             os.system("kill $(lsof -t -i:"+str(port)+")")
+#         except Exception as e:
+#             print(e)
+
+
+def killAppiumServers():
+    try:
+        os.system("pkill -9 -f appium")
+    except Exception as e:
+        print(e)
+
+
+def prepare_Consolidated_List_Of_TestcasesFile():
+    df_all_rows = pd.DataFrame()
+
+    if os.path.exists(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail")):
+        workbook = pd.read_excel(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"), None)
+        ls_sheets_functional = workbook.keys()
+
+        # Creating a DF with all testcases
+        for sheet in ls_sheets_functional:
+            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
+            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+
+    if os.path.exists(configReader.read_config("ExcelFiles", "FilePath_testcases_surfaceUI")):
+        workbook = pd.read_excel(configReader.read_config("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
+        ls_sheets_surfaceUI = workbook.keys()
+
+        # Creating a DF with all testcases
+        for sheet in ls_sheets_surfaceUI:
+            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
+            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+
+    print("prepare_Consolidated_List_Of_TestcasesFile")
+    print(df_all_rows)
+    # Converting DF with all TCs to an excel
+    df_all_rows.to_excel(configReader.read_config("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+
+
+def executeSelectedTestCases():
+    # Creating DF only with the testcases to be executed
+    df_testcases = prepareTestCaseDetailsDataFrame("/home/ezetap-10182/Downloads/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
+    df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
+
+    os.chdir(configReader.read_config("System", "automation_suite_path")+"/TestCases")
+
+    os.system(prepareTestExecutionCommand(df_testcases))
+
+
+def prepareTestExecutionCommand(testCasesDetailDataFrame):
+    # With Directory
+    # commandString = commandString + testCasesDetailDataFrame['Directory Name'][ind]+ "/" +
+    # testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
+
+    commandString = "pytest -v -s "
+    for ind in testCasesDetailDataFrame.index:
+        commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
+    # commandString = commandString + getValidationConfig() + " --html=0001dgsf.html --self-contained-html --css=test.html --tb=no --show-capture=stdout --capture=tee-sys"
+    # commandString = commandString + getValidationConfig() + ' -n3 --alluredir="./march11"  --cache-clear --lf'
+    commandString = commandString + getValidationConfig() + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
+    # commandString = commandString + getValidationConfig() + ' -n3 --alluredir="/home/oem/PycharmProjects/PortalAutomation_04/PortalAutomation/TestCase/allure" --capture=tee-sys'
+    print(commandString)
+    return commandString

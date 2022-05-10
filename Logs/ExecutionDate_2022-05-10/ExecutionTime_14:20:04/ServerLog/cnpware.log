@@ -1,0 +1,3 @@
+TestCases/test_sample.py::test_success_14:20:12.633487
+2022-05-09 11:05:10.587 [0.0-8004-exec-1] DEBUG 1088156 mware-M01 [744626---NA] c.e.cnpware.service.RemotePayService     - Total time taken for remotepay/pay is 173
+
