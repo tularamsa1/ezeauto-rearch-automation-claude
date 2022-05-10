@@ -1,3 +1,0 @@
-TestCases/test_sample.py::test_success_18:02:47.600892
-2022-04-14 09:50:10.672 [       Timer-36] DEBUG 1088156 mware-M01 [521088-MANASACNP_273903-DqARm1Aak5vj6wraCELm-220414094702595E01CNP0856] c.e.c.scheduledjob.PendingScheduler      - Pending Scheduler skipped for cnpTxnId 220414094707779M010082037
-

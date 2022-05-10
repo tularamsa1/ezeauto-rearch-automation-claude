@@ -1,1 +1,0 @@
-[Deprecated] 'TouchAction' action is deprecated. Please use W3C actions instead.

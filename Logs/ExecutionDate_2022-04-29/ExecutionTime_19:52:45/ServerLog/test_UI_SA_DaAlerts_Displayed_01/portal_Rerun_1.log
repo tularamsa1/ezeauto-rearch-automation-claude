@@ -1,6 +1,0 @@
-TestCases/Functional/UI/SA/test_UI_SA_DaAlerts_Displayed.py::test_UI_SA_DaAlerts_Displayed_01_19:54:12.982400
-2022-04-29 14:22:33.786 [ask-scheduler-9]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-
-TestCases/Functional/UI/SA/test_UI_SA_DaAlerts_Displayed.py::test_UI_SA_DaAlerts_Displayed_01_20:05:21.419067
-2022-04-29 14:34:33.789 [ask-scheduler-2]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-

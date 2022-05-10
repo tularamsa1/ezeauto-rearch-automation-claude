@@ -1,3 +1,0 @@
-TestCases/Functional/UI/SA/test_UI_SA_TxnHistory_Signature.py::test_UI_SA_TxnHistory_Signature_01_19:45:41.018326
-2022-04-29 14:15:01.800 [ask-scheduler-9] DEBUG 1009034  [---] c.ezetap.entity.service.TagGraphService  - Computed graph contains 7 nodes for org: TAGBULKUPLOAD_83
-

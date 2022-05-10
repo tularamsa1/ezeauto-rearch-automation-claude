@@ -185,7 +185,7 @@ def validateAgainstPortal(values):
             Separate_values = values.split(",")
             success = "Pass"
             GlobalVariables.EXCEL_Portal_Val = "Pass"
-            GlobalVariables.successPortal = "Passed"
+            GlobalVariables.bool_ss_portal_val = "Passed"
             for val in Separate_values:
                 expectedVal = val.split(":")[0]
                 actualVal = val.split(":")[1]
@@ -198,7 +198,7 @@ def validateAgainstPortal(values):
                     print("actualVal from Portal  : " + actualVal)
                     success = "Fail"
                     GlobalVariables.EXCEL_Portal_Val = "Fail"
-                    GlobalVariables.successPortal = "Failed"
+                    GlobalVariables.bool_ss_portal_val = "Failed"
                     GlobalVariables.portal_ValidationFailureCount += 1
                     check.equal(expectedVal, actualVal)
                     break
@@ -222,7 +222,7 @@ def validateAgainstAPP(values):
             Separate_values = values.split(",")
             success = "Pass"
             GlobalVariables.EXCEL_App_Val = "Pass"
-            GlobalVariables.successApp = "Passed"
+            GlobalVariables.bool_ss_app_val = "Passed"
 
             for val in Separate_values:
                 expectedVal = val.split(":")[0]
@@ -235,7 +235,7 @@ def validateAgainstAPP(values):
                     print("actualVal from app  : " + actualVal)
                     success = "Fail"
                     GlobalVariables.EXCEL_App_Val = "Fail"
-                    GlobalVariables.successApp = "Failed" # SS Value
+                    GlobalVariables.bool_ss_app_val = "Failed" # SS Value
                     GlobalVariables.app_ValidationFailureCount += 1
                     check.equal(expectedVal,actualVal)
                     break
@@ -259,7 +259,7 @@ def validateAgainstUI(values):
             Separate_values = values.split(",")
             success = "Pass"
             GlobalVariables.EXCEL_UI_Val = "Pass"
-            GlobalVariables.successApp = "Passed"           #Need discussion
+            GlobalVariables.bool_ss_app_val = "Passed"           #Need discussion
 
             for val in Separate_values:
                 expectedVal = val.split(":")[0]
@@ -272,7 +272,7 @@ def validateAgainstUI(values):
                     print("actualVal from UI  : " + actualVal)
                     success = "Fail"
                     GlobalVariables.EXCEL_UI_Val = "Fail"
-                    GlobalVariables.successApp = "Failed" # SS Value           #Need discussion
+                    GlobalVariables.bool_ss_app_val = "Failed" # SS Value           #Need discussion
                     GlobalVariables.ui_ValidationFailureCount += 1
                     check.equal(expectedVal,actualVal)
                     break
@@ -351,21 +351,21 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
     # else:
     #     portalLogs = 'No'
 
-    if Base_Actions.enter_data_logs("For_Failed_TCS_fetch_Logs") == "True" or Base_Actions.enter_data_logs(
-            "For_Passed_TCS_fetch_Logs") == "True":
-        if Base_Actions.enter_data_logs("fetch_api_Logs") == "True" and GlobalVariables.apiLogs:
+    if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True" or Base_Actions.is_log_capture_required(
+            "bool_capt_log_pass") == "True":
+        if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True" and GlobalVariables.apiLogs:
             apiLogs = 'Yes'
         else:
             apiLogs = 'No'
-        if Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True" and GlobalVariables.middleWareLogs:
+        if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True" and GlobalVariables.middleWareLogs:
             mWareLogs = 'Yes'
         else:
             mWareLogs = 'No'
-        if Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True" and GlobalVariables.cnpWareLogs:
+        if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True" and GlobalVariables.cnpWareLogs:
             cnpWareLogs = 'Yes'
         else:
             cnpWareLogs = 'No'
-        if Base_Actions.enter_data_logs("fetch_portal_Logs") == "True" and GlobalVariables.portalLogs:
+        if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True" and GlobalVariables.portalLogs:
             portalLogs = 'Yes'
         else:
             portalLogs = 'No'
@@ -376,7 +376,7 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
         portalLogs = 'No'
 
     # if BaseActions.enter_data_logs("fetch_ss") == "False":
-    # if BaseActions.enter_data_logs("For_Failed_TCS_fetch_Logs") == "True" or BaseActions.enter_data_logs("For_Passed_TCS_fetch_Logs") == "True":
+    # if BaseActions.enter_data_logs("bool_capt_log_fail") == "True" or BaseActions.enter_data_logs("bool_capt_log_pass") == "True":
     if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.EXCEL_API_Val == "Fail" or GlobalVariables.EXCEL_DB_Val == "Fail" or GlobalVariables.EXCEL_Portal_Val == "Fail" or GlobalVariables.EXCEL_App_Val == "Fail" or GlobalVariables.EXCEL_UI_Val == "Fail":
         myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
         # else:
@@ -388,23 +388,35 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
     # SCREENSHOT INFO
     appSS = 'N/A'
     portalSS = 'N/A'
-    if Base_Actions.enter_data_logs("fetch_ss") == "True":
-        if GlobalVariables.successPortal != "N/A":
+    # if Base_Actions.is_ss_capture_required("fetch_ss") == "True":
+    #     if GlobalVariables.successPortal != "N/A":
+    #         portalSS = 'Yes'
+    #     if GlobalVariables.successApp != "N/A":
+    #         appSS = 'Yes'
+    #
+    # if Base_Actions.is_ss_capture_required("fetch_ss") == "False":
+    #     if GlobalVariables.successPortal == "Failed":
+    #         portalSS = 'Yes'
+    #     else:
+    #         portalSS = "N/A"
+    #
+    #     if GlobalVariables.successApp == "Failed":
+    #         appSS = 'Yes'
+    #     else:
+    #         appSS = "N/A"
+
+    if Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
+        if GlobalVariables.bool_ss_portal_val == "Passed" or portalVal == 'Pass':
             portalSS = 'Yes'
-        if GlobalVariables.successApp != "N/A":
+        if GlobalVariables.bool_ss_app_val == "Passed" or appVal == 'Pass':
             appSS = 'Yes'
 
-    if Base_Actions.enter_data_logs("fetch_ss") == "False":
-        if GlobalVariables.successPortal == "Failed":
+    if Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
+        if GlobalVariables.bool_ss_portal_val == "Failed" or portalVal == 'Failed':
             portalSS = 'Yes'
-        else:
-            portalSS = "N/A"
 
-        if GlobalVariables.successApp == "Failed":
+        if GlobalVariables.bool_ss_app_val == "Failed" or appVal == 'Failed':
             appSS = 'Yes'
-        else:
-            appSS = "N/A"
-
     myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", portalSS, appSS])
     myTable1.align = 'l'
 

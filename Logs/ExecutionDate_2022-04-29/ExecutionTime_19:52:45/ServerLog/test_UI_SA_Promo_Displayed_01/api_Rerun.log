@@ -1,6 +1,0 @@
-TestCases/Functional/UI/SA/test_UI_SA_Promo_Displayed.py::test_UI_SA_Promo_Displayed_01_19:56:01.271191
-2022-04-29 14:24:23.019 [orFactoryBean-1] DEBUG 3124948 ezetap-E01 [220429141907878E010000066-VINEET_191036200-1076810769_schedulerService-B70F959870824262846FBF1AEB4BD09B] c.e.s.s.UpiCheckStatusSchedulerTask      - txn with id 220429141907938E010066748 is with status AUTHORIZED so we are not calling checkStatus
-
-TestCases/Functional/UI/SA/test_UI_SA_Promo_Displayed.py::test_UI_SA_Promo_Displayed_01_20:02:58.000879
-2022-04-29 14:32:03.599 [ask-scheduler-9]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-

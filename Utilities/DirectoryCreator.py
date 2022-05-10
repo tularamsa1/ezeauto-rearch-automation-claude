@@ -27,8 +27,9 @@ def createReportDirectories(currentDate, currentTime):
             currentPath = currentPath.replace("/"+directory, "")
         return reportDir
     except Exception as e:
-        return None
         print("Unable to create the report directories due to error "+e)
+        return None
+
 
 def createLogDirectories(currentDate, currentTime):
     try:
@@ -53,8 +54,8 @@ def createLogDirectories(currentDate, currentTime):
             currentPath = currentPath.replace("/" + directory, "")
         return logDir
     except Exception as e:
-        return None
         print("Unable to create the log directories due to error "+e)
+        return None
 
 
 def createExecutionDirectoriesConfigurationFile(currentDate, currentTime):

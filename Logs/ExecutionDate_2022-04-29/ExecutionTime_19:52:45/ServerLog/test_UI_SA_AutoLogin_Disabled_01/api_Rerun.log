@@ -1,6 +1,0 @@
-TestCases/Functional/UI/SA/test_UI_SA_AutoLogin_Disabled.py::test_UI_SA_AutoLogin_Disabled_01_19:57:48.525050
-2022-04-29 14:26:42.752 [qtp897234481-46] DEBUG 3124948 ezetap-E01 [220429142642679E010000046-EZETAP-commxinternaluser-NA] com.ezetap.http.RestSecurityFilter       - Unauthenticated Request
-
-TestCases/Functional/UI/SA/test_UI_SA_AutoLogin_Disabled.py::test_UI_SA_AutoLogin_Disabled_01_20:09:24.995585
-2022-04-29 14:38:03.642 [ask-scheduler-9]  INFO 3124948  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-

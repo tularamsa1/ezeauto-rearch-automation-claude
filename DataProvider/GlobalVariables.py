@@ -1,8 +1,10 @@
 # These values are for updating number of each type of validations (API|DB, Portal, DB and App) in html report
 import openpyxl
-from Utilities import DirectoryCreator
+from Utilities import DirectoryCreator, configReader
 
 #These variables are for adding to the second table (Validation) in HTML report
+from Utilities import configReader
+
 Incomplete_ExecutionCount = 0
 api_ValidationFailureCount = 0
 db_ValidationFailureCount = 0
@@ -55,8 +57,8 @@ EXCEL_testCaseFileName = ''
 # For screenshots of App and Portal
 appSS = False
 portalSS = False
-successApp = "N/A"
-successPortal = "N/A"
+bool_ss_app_val = "N/A"
+bool_ss_portal_val = "N/A"
 appDriver = ''
 portalDriver = ''
 

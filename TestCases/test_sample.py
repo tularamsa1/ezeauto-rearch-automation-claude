@@ -87,13 +87,16 @@ def test_success():
             else:
                 pytest.fail()
 
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
 def test_success_2():
 
-    GlobalVariables.apiLogs = True
-    GlobalVariables.portalLogs = True
+    # GlobalVariables.apiLogs = True
+    # GlobalVariables.portalLogs = True
     GlobalVariables.cnpWareLogs = True
-    GlobalVariables.middleWareLogs = False
+    # GlobalVariables.middleWareLogs = False
     global success_Val_Execution
     success_Val_Execution = True
 
@@ -130,8 +133,8 @@ def test_success_2():
             time.sleep(1)
             # expectedDBValues = "10.0:10.0,787878:787878"
             i = randint(1,3)
-            expectedDBValues = str(i)+":2"
-            # expectedDBValues = str(3)+":2"
+            # expectedDBValues = str(i)+":2"
+            expectedDBValues = str(2)+":2"
         except:
             print("DB Validation did not complete due to exception in reading values from DB")
             print("")
@@ -143,8 +146,8 @@ def test_success_2():
         try:
             time.sleep(1)
             i = randint(1, 3)
-            expectedPortalValues = str(i)+":2"
-            # expectedPortalValues = "CASH:CASH,909090:909090"
+            # expectedPortalValues = str(i)+":2"
+            expectedPortalValues = "CASH:CASH,909090:909090"
         except:
             print("Portal Validation did not complete due to exception in reading values from portal")
             print("")
@@ -160,6 +163,8 @@ def test_success_2():
                 pass
             else:
                 pytest.fail()
+
+
 def test_success_1():
 
     GlobalVariables.apiLogs = True

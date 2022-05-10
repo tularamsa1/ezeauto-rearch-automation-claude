@@ -1,7 +1,0 @@
-Function setup level
-Start startLineNumberAPI no:  2304197
-Portal logs coll time:  0:00:07
-***************End of setup
-Function teardown level
-Rerun.getRerunCountForAtTheEnd():  0
-log_on_failure(request)
