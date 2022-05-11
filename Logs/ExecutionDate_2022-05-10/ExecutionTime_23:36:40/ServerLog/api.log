@@ -1,0 +1,3 @@
+TestCases/test_sample.py::test_success_2_23:36:54.802836
+2022-05-10 18:06:42.811 [qtp897234481-27] DEBUG 3765642 ezetap-E01 [220510180642679E010000027-EZETAP-commxinternaluser-NA] com.ezetap.http.RestSecurityFilter       - Unauthenticated Request
+

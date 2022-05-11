@@ -1,0 +1,6 @@
+TestCases/test_sample.py::test_success_23:43:21.300607
+2022-05-10 18:12:40.443 [ask-scheduler-2]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+
+TestCases/test_sample.py::test_success_2_23:43:29.673992
+2022-05-10 18:12:40.443 [ask-scheduler-2]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
+

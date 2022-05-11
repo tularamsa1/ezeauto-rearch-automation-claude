@@ -21,7 +21,7 @@ from pathlib import Path
 import openpyxl
 import pytest
 from DataProvider import GlobalVariables
-from TestCases import ExcelProcessor
+from Utilities import ExcelProcessor
 from Utilities.ReportProcessor import revert_excel_global_variables, setStylesForExcel, \
     updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
 
