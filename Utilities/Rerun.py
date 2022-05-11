@@ -1,12 +1,11 @@
 import os
-from datetime import datetime
 
 import openpyxl
 import pandas as pd
 
-from PageFactory import Base_Actions
-from TestCases import  ExcelProcessor, conftest
 from DataProvider import GlobalVariables
+from PageFactory import Base_Actions
+from TestCases import ExcelProcessor, conftest
 from Utilities import configReader, DirectoryCreator
 
 immediateRerun = True
@@ -160,17 +159,17 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 
 
-xl_RerunCountPath = "/home/ezetap/EzeAuto/TestCases/RerunCount.xlsx"
+xl_RerunCountPath = str(configReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
 
 
-xl_Timestamp = "/home/ezetap/EzeAuto/TestCases/Timestamp.xlsx"
+xl_Timestamp = str(configReader.read_config_paths("System","automation_suite_path"))+"/TestCases/Timestamp.xlsx"
 
 
 def prepareImmediateRerunExcel():
     # df_overallTClist = pd.read_excel("/home/oem/PycharmProjects/EzeAuto/DataProvider/TestCasesDetail.xlsx")
 
     # Added on Apr 11
-    df_overallTClist = pd.read_excel("/home/ezetap/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
+    df_overallTClist = pd.read_excel(str(configReader.read_config("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx"))
 
     df_overallTClist.set_index('Test Case ID', inplace=True)
     # df_overallTClist.drop(columns=['File Name', 'Execute'], inplace=True)
@@ -200,28 +199,6 @@ def prepareAtTheEndRerunExcel():
     writer = pd.ExcelWriter(xl_RerunCountPath, engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Rerun At The End', index=False)
     writer.save()
-
-
-# def suiteTriggringTime():
-#     df = pd.DataFrame({'time': [str(datetime.now().time())]})
-#     print(df)
-#     writer = pd.ExcelWriter(xl_Timestamp, engine='xlsxwriter')
-#     df.to_excel(writer, sheet_name='timestamp', index=False)
-#     writer.save()
-
-
-# def getTimeStamp():
-#     try:
-#         df_TClist = pd.read_excel(xl_Timestamp, sheet_name="timestamp")
-#         # df_TClist.set_index('Test Case ID', inplace=True)
-#         try:
-#             # breakpoint()
-#             # print(df_TClist['Rerun Count'][0])
-#             return df_TClist['time'][0]
-#         except:
-#             None
-#     except:
-#         return -2
 
 
 def getRerunCount(testCaseID):
@@ -280,35 +257,3 @@ def setRerunCount(testCaseID, rerunCount):
             return True
         except:
             return False
-
-
-# def getRerunCountForAtTheEnd():
-#     try:
-#         df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun At The End")
-#         # df_TClist.set_index('Test Case ID', inplace=True)
-#         try:
-#             # breakpoint()
-#             # print(df_TClist['Rerun Count'][0])
-#             return df_TClist['Rerun Count'][0]
-#         except:
-#             None
-#     except:
-#         return -2
-
-
-# def setRerunCountForAtTheEnd(rerunCount):
-#     try:
-#         workbook = openpyxl.load_workbook(xl_RerunCountPath)
-#         sheet = workbook["Rerun At The End"]
-#
-#         rowNumber = 2
-#         columnNumber = 1
-#         sheet.cell(row=rowNumber, column=columnNumber).value = rerunCount
-#
-#         workbook.save(xl_RerunCountPath)
-#         workbook.close()
-#         return True
-#     except:
-#         return False
-
-# prepareImmediateRerunExcel()

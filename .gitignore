@@ -1,5 +1,6 @@
 **/Reports/
 **/Logs/
 **/.pytest_cache/
-**/.pyc
+**.pyc
 **/__pycache__/
+/Configuration/ExecutionDirectories.conf
