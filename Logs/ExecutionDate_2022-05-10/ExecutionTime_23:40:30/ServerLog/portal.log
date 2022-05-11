@@ -1,7 +1,0 @@
-TestCases/test_sample.py::test_success_2_23:40:44.807341
-2022-05-10 18:08:40.442 [ask-scheduler-7]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-2022-05-10 18:10:40.442 [ask-scheduler-3]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Starting Cron checkAlternateDSLastModifiedTS
-2022-05-10 18:10:40.442 [ask-scheduler-3] DEBUG 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - Secondary DS Key : crateLastUpdatedTS NOT FOUND.
-2022-05-10 18:10:40.442 [ask-scheduler-3]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastUpdatedTS : -1
-2022-05-10 18:10:40.443 [ask-scheduler-3]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-

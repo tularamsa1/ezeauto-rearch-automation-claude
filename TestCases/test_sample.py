@@ -4,40 +4,15 @@ from datetime import datetime
 from random import randint
 import pytest
 from DataProvider import GlobalVariables
-from TestCases import setUp
+from Utilities import ReportProcessor, Validator
 
 # API|DB VAL WILL FAIL
-from Utilities import configReader
-
-
-def updateTestCaseResult(msg):
-    ls_validation_msg = []
-    if success_Val_Execution:
-        if GlobalVariables.str_api_val_result == "Fail":
-            ls_validation_msg.append("API validation Failed!!")
-        if GlobalVariables.str_db_val_result == "Fail":
-            ls_validation_msg.append("DB validation Failed!!")
-        if GlobalVariables.str_portal_val_result == "Fail":
-            ls_validation_msg.append("PORTAL validation Failed!!")
-        if GlobalVariables.str_app_val_result == "Fail":
-            ls_validation_msg.append("APP validation Failed!!")
-        if GlobalVariables.str_ui_val_result == "Fail":
-            ls_validation_msg.append("UI validation Failed!!")
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-            message = ""
-            for validation_msg in ls_validation_msg:
-                message = message + "\n" + validation_msg
-            pytest.fail(message)
-
-    if not success_Val_Execution:
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-            pass
-        else:
-            pytest.fail(msg)
+from Utilities import ConfigReader
+from Utilities.ReportProcessor import updateTestCaseResult
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-# @pytest.mark.usefixtures("method_setup", "session_setup")
+# @pytest.mark.usefixtures("method_ReportProcessor", "session_ReportProcessor")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
@@ -49,36 +24,34 @@ def test_success():
         GlobalVariables.cnpWareLogs = True
         GlobalVariables.middleWareLogs = False
 
-        global success_Val_Execution
-        success_Val_Execution = True
         msg = ""
 
         try:
             print("EXECUTING FIRST TEST CASE : SUCCESS")
             time.sleep(1)
             # i = 1/00
-            setUp.get_TC_Exe_Time()  # Get execution time
+            ReportProcessor.get_TC_Exe_Time()  # Get execution time
         except Exception as e:
             print("Exception is: ", e)
-            setUp.get_TC_Exe_Time()
+            ReportProcessor.get_TC_Exe_Time()
             print("Testcase did not complete due to exception in testcase execution")
             print("")
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
-            # setUp.createStatusTable1()
+            # ReportProcessor.createStatusTable1()
             pytest.fail("Testcase did not complete due to exception in testcase execution")
 
         GlobalVariables.EXCEL_TC_Execution = "Pass"
         current = datetime.now()
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
-        if (configReader.read_config("Validations", "api_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 time.sleep(1)
                 expectedAPIVal = {'amount': 90, 'Type': 'CASH', }
                 actualAPIVal = {'amount': 90, 'Type': 'CASH', }
                 # i = 1 / 00
-                setUp.validationAgainstAPI(expectedAPIVal, actualAPIVal)
+                Validator.validationAgainstAPI(expectedAPIVal, actualAPIVal)
             except Exception as e:
                 print("Exception is: ", e)
                 print("API Validation did not complete due to exception")
@@ -88,16 +61,16 @@ def test_success():
                 # expectedAPIVal = "Failed"
                 # actualAPIVal = "Failed"
                 GlobalVariables.str_api_val_result = "Fail"
-                success_Val_Execution = False
-            # setUp.validationAgainstAPI(expectedAPIVal, actualAPIVal)
+                GlobalVariables.bool_val_exe = False
+            # ReportProcessor.validationAgainstAPI(expectedAPIVal, actualAPIVal)
 
-        if (configReader.read_config("Validations", "db_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             try:
                 time.sleep(1)
                 expectedDBVal = {'amount': 90, 'Type': 'CASH',}
                 actualDBVal = {'amount': 90, 'Type': 'CASH', }
                 # i = 1 / 00
-                setUp.validateAgainstDB(expectedDBVal, actualDBVal)
+                Validator.validateAgainstDB(expectedDBVal, actualDBVal)
             except Exception as e:
                 print("Exception is: ", e)
                 print("DB Validation did not complete due to exception in reading values from DB")
@@ -107,16 +80,16 @@ def test_success():
                 # expectedDBVal = 'Failed'
                 # actualDBVal = 'Failed'
                 GlobalVariables.str_db_val_result = "Fail"
-                success_Val_Execution = False
-            # setUp.validateAgainstDB(expectedDBVal, actualDBVal)
+                GlobalVariables.bool_val_exe = False
+            # ReportProcessor.validateAgainstDB(expectedDBVal, actualDBVal)
 
-        if (configReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
                 time.sleep(1)
                 expectedPortalVal = {'amount': 90, 'Type': 'CASH', }
                 actualPortalVal = {'amount': 90, 'Type': 'CASH', }
                 # i = 1 / 00
-                setUp.validateAgainstPortal(expectedPortalVal, actualPortalVal)
+                Validator.validateAgainstPortal(expectedPortalVal, actualPortalVal)
             except Exception as e:
                 print("Exception is: ", e)
                 print("Portal Validation did not complete due to exception in reading values from portal")
@@ -126,12 +99,11 @@ def test_success():
                 # expectedPortalVal = "Failed"
                 # actualPortalVal = "Failed"
                 GlobalVariables.str_portal_val_result = "Fail"
-                success_Val_Execution = False
-            # setUp.validateAgainstPortal(expectedPortalVal, actualPortalVal)
+                GlobalVariables.bool_val_exe = False
+            # ReportProcessor.validateAgainstPortal(expectedPortalVal, actualPortalVal)
 
     finally:
-        setUp.createStatusTable()
-        updateTestCaseResult(msg)
+        ReportProcessor.updateTestCaseResult(msg)
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -144,23 +116,22 @@ def test_success_2():
         # GlobalVariables.portalLogs = True
         # GlobalVariables.cnpWareLogs = True
         # GlobalVariables.middleWareLogs = False
-        global success_Val_Execution
-        success_Val_Execution = True
+
         msg = ""
 
         try:
             print("EXECUTING FIRST TEST CASE : SUCCESS")
             time.sleep(1)
             # i = 1/00
-            setUp.get_TC_Exe_Time()  # Get execution time
+            ReportProcessor.get_TC_Exe_Time()  # Get execution time
         except Exception as e:
             print("Exception is: ", e)
-            setUp.get_TC_Exe_Time()
+            ReportProcessor.get_TC_Exe_Time()
             print("Testcase did not complete due to exception in testcase execution")
             print("")
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
-            # setUp.createStatusTable1()
+            # ReportProcessor.createStatusTable1()
             pytest.fail("Testcase did not complete due to exception in testcase execution")
 
         GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -215,13 +186,12 @@ def test_success_2():
             GlobalVariables.str_portal_val_result = "Fail"
             success_Val_Execution = False
 
-        setUp.validationAgainstAPI(expectedAPIVal, actualAPIVal)
-        setUp.validateAgainstDB(expectedDBVal, actualDBVal)
-        setUp.validateAgainstPortal(expectedPortalVal, actualPortalVal)
+        Validator.validationAgainstAPI(expectedAPIVal, actualAPIVal)
+        Validator.validateAgainstDB(expectedDBVal, actualDBVal)
+        Validator.validateAgainstPortal(expectedPortalVal, actualPortalVal)
 
     finally:
-        setUp.createStatusTable()
-        updateTestCaseResult(msg)
+        ReportProcessor.updateTestCaseResult(msg)
 
 
 def test_success_1():
@@ -235,9 +205,9 @@ def test_success_1():
     try:
         print("EXECUTING FIRST TEST CASE : SUCCESS")
         time.sleep(1)
-        setUp.get_TC_Exe_Time()  # Get execution time
+        ReportProcessor.get_TC_Exe_Time()  # Get execution time
     except:
-        setUp.get_TC_Exe_Time()
+        ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -285,7 +255,7 @@ def test_success_1():
             GlobalVariables.EXCEL_Portal_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+        success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 
         if success_Val_Execution == False:
             if success == False:
@@ -299,7 +269,7 @@ def test_success_1():
 @pytest.mark.portalVal
 @pytest.mark.usefixtures("log_on_failure", "log_on_success")
 # @pytest.mark.flaky(reruns = 2)
-def test_Exe_Failure(method_setup):
+def test_Exe_Failure(method_ReportProcessor):
     GlobalVariables.apiLogs = True
     GlobalVariables.portalLogs = True
     GlobalVariables.cnpWareLogs = True
@@ -312,9 +282,9 @@ def test_Exe_Failure(method_setup):
         time.sleep(2)
         # a = randint(1,2)
 
-        setUp.get_TC_Exe_Time()  # Get execution time
+        ReportProcessor.get_TC_Exe_Time()  # Get execution time
     except:
-        setUp.get_TC_Exe_Time()
+        ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -363,7 +333,7 @@ def test_Exe_Failure(method_setup):
             GlobalVariables.EXCEL_Portal_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+        success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 
         if success_Val_Execution == False:
             if success == False:
@@ -391,9 +361,9 @@ def test_api_val_exe_failure(method_setup):
     try:
         print("EXECUTING THIRD TEST CASE : API|DB VAL EXE FAILURE")
         time.sleep(3)
-        setUp.get_TC_Exe_Time()  # Get execution time
+        ReportProcessor.get_TC_Exe_Time()  # Get execution time
     except:
-        setUp.get_TC_Exe_Time()
+        ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -443,7 +413,7 @@ def test_api_val_exe_failure(method_setup):
             GlobalVariables.EXCEL_Portal_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+        success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 
         if success_Val_Execution == False:
             if success == False:
@@ -452,7 +422,7 @@ def test_api_val_exe_failure(method_setup):
                 pytest.fail()
 
 # @pytest.mark.usefixtures("log_on_failure","log_on_success")
-# def test_DB_Val_Exe_Failure(method_setup, session_setup):
+# def test_DB_Val_Exe_Failure(method_ReportProcessor, session_ReportProcessor):
 #     GlobalVariables.apiLogs = False
 #     GlobalVariables.portalLogs = False
 #     GlobalVariables.cnpWareLogs = False
@@ -463,9 +433,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING FOURTH TEST CASE : DB VAL EXE FAILURE")
 #         time.sleep(2)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -513,7 +483,7 @@ def test_api_val_exe_failure(method_setup):
 #             GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -524,7 +494,7 @@ def test_api_val_exe_failure(method_setup):
 #
 #
 # @pytest.mark.usefixtures("log_on_failure","log_on_success")
-# def test_portal_val_exe_failure(method_setup, session_setup):
+# def test_portal_val_exe_failure(method_ReportProcessor, session_ReportProcessor):
 #     GlobalVariables.apiLogs = False
 #     GlobalVariables.portalLogs = False
 #     GlobalVariables.cnpWareLogs = False
@@ -535,9 +505,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING FIFTH TEST CASE : PORTAL VAL EXE FAILURE")
 #         time.sleep(2)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -585,7 +555,7 @@ def test_api_val_exe_failure(method_setup):
 #             GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -596,7 +566,7 @@ def test_api_val_exe_failure(method_setup):
 #
 #
 # @pytest.mark.usefixtures("log_on_failure","log_on_success")
-# def test_api_val_failure(method_setup, session_setup):
+# def test_api_val_failure(method_ReportProcessor, session_ReportProcessor):
 #     GlobalVariables.apiLogs = False
 #     GlobalVariables.portalLogs = False
 #     GlobalVariables.cnpWareLogs = False
@@ -607,9 +577,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING SIXTH TEST CASE : API|DB VALIDATION FAILURE")
 #         time.sleep(2)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -656,7 +626,7 @@ def test_api_val_exe_failure(method_setup):
 #             GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -667,7 +637,7 @@ def test_api_val_exe_failure(method_setup):
 #
 #
 # @pytest.mark.usefixtures("log_on_failure","log_on_success")
-# def test_DB_val_failure(method_setup, session_setup):
+# def test_DB_val_failure(method_ReportProcessor, session_ReportProcessor):
 #     GlobalVariables.apiLogs = False
 #     GlobalVariables.portalLogs = False
 #     GlobalVariables.cnpWareLogs = False
@@ -678,9 +648,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING SEVENTH TEST CASE : DB VAL FAILURE")
 #         time.sleep(2)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -726,7 +696,7 @@ def test_api_val_exe_failure(method_setup):
 #             GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -738,7 +708,7 @@ def test_api_val_exe_failure(method_setup):
 #
 #
 # @pytest.mark.usefixtures("log_on_failure","log_on_success")
-# def test_portal_val_failure(method_setup, session_setup):
+# def test_portal_val_failure(method_ReportProcessor, session_ReportProcessor):
 #     GlobalVariables.apiLogs = False
 #     GlobalVariables.portalLogs = False
 #     GlobalVariables.cnpWareLogs = False
@@ -749,9 +719,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING EIGHT TEST CASE : PORTAL VAL FAILURE")
 #         time.sleep(2)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -798,7 +768,7 @@ def test_api_val_exe_failure(method_setup):
 #             GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -822,9 +792,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING FIRST TEST CASE : SUCCESS")
 #         time.sleep(1)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         # GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -870,7 +840,7 @@ def test_api_val_exe_failure(method_setup):
 #             # GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -893,9 +863,9 @@ def test_api_val_exe_failure(method_setup):
 #         print("EXECUTING SECOND TEST CASE : EXECUTION FAILURE")
 #         time.sleep(1)
 #         a = 1/0
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         # GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -941,7 +911,7 @@ def test_api_val_exe_failure(method_setup):
 #             # GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:
@@ -964,9 +934,9 @@ def test_api_val_exe_failure(method_setup):
 #     try:
 #         print("EXECUTING THIRD TEST CASE : API|DB VAL EXE FAILURE")
 #         time.sleep(1)
-#         setUp.get_TC_Exe_Time() # Get execution time
+#         ReportProcessor.get_TC_Exe_Time() # Get execution time
 #     except:
-#         setUp.get_TC_Exe_Time()
+#         ReportProcessor.get_TC_Exe_Time()
 #         print("Testcase did not complete due to exception in testcase execution")
 #         print("")
 #         # GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -1013,7 +983,7 @@ def test_api_val_exe_failure(method_setup):
 #             # GlobalVariables.EXCEL_Portal_Val = "Fail"
 #             success_Val_Execution = False
 #
-#         success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
+#         success = ReportProcessor.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, "")
 #
 #         if success_Val_Execution == False:
 #             if success == False:

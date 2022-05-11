@@ -1,3 +1,0 @@
-TestCases/test_sample.py::test_success_2_23:36:54.802836
-2022-05-10 18:06:40.441 [ask-scheduler-1]  INFO 1009034  [---] c.e.p.p.c.s.AlternateDSLagCheckerService - lastSqlUpdatedTS : 2022-03-03 13:41:54
-

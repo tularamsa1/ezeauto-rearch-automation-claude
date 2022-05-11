@@ -5,9 +5,9 @@ import pandas as pd
 
 import DataProvider.GlobalConstants
 from PageFactory import Base_Actions
-from TestCases import ExcelProcessor, conftest
+from TestCases import conftest
 from DataProvider import GlobalVariables
-from Utilities import ConfigReader, DirectoryCreator
+from Utilities import ConfigReader, DirectoryCreator, ExcelProcessor
 
 immediateRerun = True
 

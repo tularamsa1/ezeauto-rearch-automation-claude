@@ -12,7 +12,7 @@ import chromedriver_autoinstaller
 from openpyxl.styles import Font, PatternFill, Side, Border
 
 import DataProvider.GlobalConstants
-import Utilities.ReportProcessor
+from Utilities import ReportProcessor
 from PageFactory import Base_Actions
 from Configuration import TestSuiteSetup
 from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
@@ -657,7 +657,7 @@ def log_on_failure(request):
                 rerun_file = Path(path + "/cnpware.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        Utilities.ReportProcessor.get_Log_Collection_Time()
+        ReportProcessor.get_Log_Collection_Time()
 
         if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
@@ -923,7 +923,7 @@ def log_on_success(request):
                 rerun_file = Path(path + "/cnpware.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        Utilities.ReportProcessor.get_Log_Collection_Time()
+        ReportProcessor.get_Log_Collection_Time()
 
         if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",

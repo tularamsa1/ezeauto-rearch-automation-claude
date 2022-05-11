@@ -1,6 +1,8 @@
 # These values are for updating number of each type of validations (API|DB, Portal, DB and App) in html report
 from DataProvider.GlobalConstants import EXCEL_reportFilePath
 
+bool_val_exe = True
+
 #These variables are for adding to the second table (Validation) in HTML report
 
 Incomplete_ExecutionCount = 0

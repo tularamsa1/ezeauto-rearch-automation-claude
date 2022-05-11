@@ -22,7 +22,7 @@ import paramiko
 from appium.webdriver.appium_service import AppiumService
 
 from DataProvider import GlobalVariables
-from Utilities import configReader, DirectoryCreator
+from Utilities import ConfigReader, DirectoryCreator
 
 
 def prepareTestCaseDetailsDataFrame(path):
@@ -66,18 +66,18 @@ def prepareTestCaseDetailsDataFrame(path):
     GlobalVariables.df_testCasesDetail = GlobalVariables.df_testCasesDetail.astype(convert_dict)
 
     df_overallTClist = pd.read_excel(path)
-    df_overallTClist.set_index(configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+    df_overallTClist.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
 
     i=0
     for index in df_overallTClist.index:
         if df_overallTClist['Execute'][index] == False or str(df_overallTClist['Execute'][index]).lower() == "false":
             pass
         else:
-            GlobalVariables.df_testCasesDetail.at[i, configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
+            GlobalVariables.df_testCasesDetail.at[i, ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
             GlobalVariables.df_testCasesDetail.at[i, 'File Name'] = df_overallTClist['File Name'][index]
             GlobalVariables.df_testCasesDetail.at[i, 'Directory Name'] = df_overallTClist['Directory Name'][index]
         i = i+1
-    GlobalVariables.df_testCasesDetail.set_index(configReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+    GlobalVariables.df_testCasesDetail.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
     return GlobalVariables.df_testCasesDetail
 
 
@@ -95,34 +95,34 @@ def ssh_connection(ip_address, routerPort, username, key_filename):
 
 
 def getValidationConfig():
-    if configReader.read_config("Validations", "api_validation") == True and configReader.read_config("Validations", "db_validation") == True and configReader.read_config("Validations", "portal_validation") == True and configReader.read_config("Validations", "app_validation") == True and configReader.read_config("Validations", "ui_validation") == True :
+    if ConfigReader.read_config("Validations", "api_validation") == True and ConfigReader.read_config("Validations", "db_validation") == True and ConfigReader.read_config("Validations", "portal_validation") == True and ConfigReader.read_config("Validations", "app_validation") == True and ConfigReader.read_config("Validations", "ui_validation") == True :
         commandString = ""
-    elif configReader.read_config("Validations", "api_validation") == False and configReader.read_config("Validations", "db_validation") == False and configReader.read_config("Validations", "portal_validation") == False and configReader.read_config("Validations", "app_validation") == False and configReader.read_config("Validations", "ui_validation") == False :
+    elif ConfigReader.read_config("Validations", "api_validation") == False and ConfigReader.read_config("Validations", "db_validation") == False and ConfigReader.read_config("Validations", "portal_validation") == False and ConfigReader.read_config("Validations", "app_validation") == False and ConfigReader.read_config("Validations", "ui_validation") == False :
         commandString = ""
     else:
         commandString = '-m "'
-        if (configReader.read_config("Validations", "api_validation")).lower() == "true":
+        if (ConfigReader.read_config("Validations", "api_validation")).lower() == "true":
             if commandString == '-m "':
                 commandString = commandString + "apiVal"
             else:
                 commandString = commandString + " or apiVal"
 
-        if (configReader.read_config("Validations", "db_validation")).lower() == "true":
+        if (ConfigReader.read_config("Validations", "db_validation")).lower() == "true":
             if commandString == '-m "':
                 commandString = commandString + "dbVal"
             else:
                 commandString = commandString + " or dbVal"
-        if (configReader.read_config("Validations", "portal_validation")).lower() == "true":
+        if (ConfigReader.read_config("Validations", "portal_validation")).lower() == "true":
             if commandString == '-m "':
                 commandString = commandString + "portalVal"
             else:
                 commandString = commandString + " or portalVal"
-        if (configReader.read_config("Validations", "app_validation")).lower() == "true":
+        if (ConfigReader.read_config("Validations", "app_validation")).lower() == "true":
             if commandString == '-m "':
                 commandString = commandString + "appVal"
             else:
                 commandString = commandString + " or appVal"
-        if (configReader.read_config("Validations", "ui_validation")).lower() == "true":
+        if (ConfigReader.read_config("Validations", "ui_validation")).lower() == "true":
             if commandString == '-m "':
                 commandString = commandString + "uiVal"
             else:
@@ -203,8 +203,8 @@ def killAppiumServers():
 def prepare_Consolidated_List_Of_TestcasesFile():
     df_all_rows = pd.DataFrame()
 
-    if os.path.exists(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail")):
-        workbook = pd.read_excel(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"), None)
+    if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail")):
+        workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail"), None)
         ls_sheets_functional = workbook.keys()
 
         # Creating a DF with all testcases
@@ -212,8 +212,8 @@ def prepare_Consolidated_List_Of_TestcasesFile():
             df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
             df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
 
-    if os.path.exists(configReader.read_config("ExcelFiles", "FilePath_testcases_surfaceUI")):
-        workbook = pd.read_excel(configReader.read_config("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
+    if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI")):
+        workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
         ls_sheets_surfaceUI = workbook.keys()
 
         # Creating a DF with all testcases
@@ -224,7 +224,7 @@ def prepare_Consolidated_List_Of_TestcasesFile():
     print("prepare_Consolidated_List_Of_TestcasesFile")
     print(df_all_rows)
     # Converting DF with all TCs to an excel
-    df_all_rows.to_excel(configReader.read_config("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+    df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
 
 
 def executeSelectedTestCases():
@@ -232,7 +232,7 @@ def executeSelectedTestCases():
     df_testcases = prepareTestCaseDetailsDataFrame("/home/ezetap-10182/Downloads/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
     df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
 
-    os.chdir(configReader.read_config("System", "automation_suite_path")+"/TestCases")
+    os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases")
 
     os.system(prepareTestExecutionCommand(df_testcases))
 

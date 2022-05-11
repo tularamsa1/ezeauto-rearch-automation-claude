@@ -1,13 +1,14 @@
 from datetime import datetime
 
 import openpyxl
+import pytest
 from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
 
 import DataProvider.GlobalConstants
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from TestCases import ExcelProcessor
+from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
 
 def get_TC_Exe_Time():
@@ -55,18 +56,21 @@ def get_Log_Collection_Time():
     # Converting time duration to milliseconds
     # GlobalVariables.EXCEL_LogCollTime = Val_Time_Sec * 1000
 
+def createStatusTable():
+    apiVal = GlobalVariables.str_api_val_result
+    dbVal = GlobalVariables.str_db_val_result
+    portalVal = GlobalVariables.str_portal_val_result
+    appVal = GlobalVariables.str_app_val_result
+    uiVal = GlobalVariables.str_ui_val_result
 
-def createStatusTable(apiVal, dbVal, portalVal, appVal):
     get_TC_Val_Time()
-
+    print("portalVal: ", portalVal)
     print("")
     print("")
 
-    #VALIDATION TABLE DETAILS
+    # VALIDATION TABLE DETAILS
     myTable = PrettyTable(["Validation Type", "Validation Status"])
     myTable.title = 'Validation Details'
-
-
 
     if apiVal == "Failed":
         myTable.add_row(["API Validation", "Fail"])
@@ -87,36 +91,21 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
         myTable.add_row(["App Validation", "Fail"])
     else:
         myTable.add_row(["App Validation", appVal])
-    myTable.add_row(["UI Validation", "N/A"])
+
+    if appVal == "Failed":
+        myTable.add_row(["UI Validation", "Fail"])
+    else:
+        myTable.add_row(["UI Validation", uiVal])
 
     myTable.align = 'l'
     print(myTable)
     print("")
     print("")
 
-
     myTable1 = PrettyTable()
     myTable1.title = 'Debugging Info'
     myTable1.header = True
     myTable1.field_names = ["Type", "API", "Middleware", "Cnpware", "Portal", "App"]
-
-    # LOG INFO
-    # if GlobalVariables.apiLogs:
-    #     apiLogs = 'Yes'
-    # else:
-    #     apiLogs = 'No'
-    # if GlobalVariables.middleWareLogs:
-    #     mWareLogs = 'Yes'
-    # else:
-    #     mWareLogs = 'No'
-    # if GlobalVariables.cnpWareLogs:
-    #     cnpWareLogs = 'Yes'
-    # else:
-    #     cnpWareLogs = 'No'
-    # if GlobalVariables.portalLogs:
-    #     portalLogs = 'Yes'
-    # else:
-    #     portalLogs = 'No'
 
     if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True" or Base_Actions.is_log_capture_required(
             "bool_capt_log_pass") == "True":
@@ -124,7 +113,8 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
             apiLogs = 'Yes'
         else:
             apiLogs = 'No'
-        if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True" and GlobalVariables.middleWareLogs:
+        if Base_Actions.is_log_capture_required(
+                "bool_capt_log_middleware") == "True" and GlobalVariables.middleWareLogs:
             mWareLogs = 'Yes'
         else:
             mWareLogs = 'No'
@@ -142,35 +132,14 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
         cnpWareLogs = 'No'
         portalLogs = 'No'
 
-    # if BaseActions.enter_data_logs("fetch_ss") == "False":
-    # if BaseActions.enter_data_logs("bool_capt_log_fail") == "True" or BaseActions.enter_data_logs("bool_capt_log_pass") == "True":
     if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
         myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
-        # else:
-        #     myTable1.add_row(["Log Captured", 'NO', 'NO', 'NO', 'NO', "N/A"])
     else:
         myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
 
-
     # SCREENSHOT INFO
-    appSS = 'N/A'
-    portalSS = 'N/A'
-    # if Base_Actions.is_ss_capture_required("fetch_ss") == "True":
-    #     if GlobalVariables.successPortal != "N/A":
-    #         portalSS = 'Yes'
-    #     if GlobalVariables.successApp != "N/A":
-    #         appSS = 'Yes'
-    #
-    # if Base_Actions.is_ss_capture_required("fetch_ss") == "False":
-    #     if GlobalVariables.successPortal == "Failed":
-    #         portalSS = 'Yes'
-    #     else:
-    #         portalSS = "N/A"
-    #
-    #     if GlobalVariables.successApp == "Failed":
-    #         appSS = 'Yes'
-    #     else:
-    #         appSS = "N/A"
+    appSS = 'No'
+    portalSS = 'No'
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
         if GlobalVariables.bool_ss_portal_val == "Passed" or portalVal == 'Pass':
@@ -184,11 +153,13 @@ def createStatusTable(apiVal, dbVal, portalVal, appVal):
 
         if GlobalVariables.bool_ss_app_val == "Failed" or appVal == 'Failed':
             appSS = 'Yes'
+
     myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", portalSS, appSS])
     myTable1.align = 'l'
 
     print(myTable1)
     print("")
+
 
 
 def revert_excel_global_variables():
@@ -397,3 +368,30 @@ def updateExcel_With_Category_And_Subcategory():
                 sheet.cell(row=i, column=colNum_subCategory).value = subCategory
 
     wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+
+
+def updateTestCaseResult(msg):
+    createStatusTable()
+
+    ls_validation_msg = []
+    if GlobalVariables.bool_val_exe:
+        if GlobalVariables.str_api_val_result == "Fail":
+            ls_validation_msg.append("API validation Failed!!")
+        if GlobalVariables.str_db_val_result == "Fail":
+            ls_validation_msg.append("DB validation Failed!!")
+        if GlobalVariables.str_portal_val_result == "Fail":
+            ls_validation_msg.append("PORTAL validation Failed!!")
+        if GlobalVariables.str_app_val_result == "Fail":
+            ls_validation_msg.append("APP validation Failed!!")
+        if GlobalVariables.str_ui_val_result == "Fail":
+            ls_validation_msg.append("UI validation Failed!!")
+        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
+            message = ""
+            for validation_msg in ls_validation_msg:
+                message = message + "\n" + validation_msg
+            pytest.fail(message)
+    else:
+        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
+            pass
+        else:
+            pytest.fail(msg)
