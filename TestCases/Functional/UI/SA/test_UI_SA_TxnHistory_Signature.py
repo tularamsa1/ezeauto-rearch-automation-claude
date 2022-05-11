@@ -1,6 +1,8 @@
 from datetime import datetime
 import pytest
 
+import Utilities.ReportProcessor
+import Utilities.Validator
 from PageFactory.App_FiltersPage import FiltersPage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_HomePage import PortalHomePage
@@ -10,11 +12,11 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from DataProvider.config import TestData
 from DataProvider import GlobalVariables
 from TestCases import setUp
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.usefixtures("log_on_success")
-@pytest.mark.appVal
+#@pytest.mark.appVal
 def test_UI_SA_TxnHistory_Signature_01(method_setup, appium_driver):
     GlobalVariables.apiLogs = True
     GlobalVariables.portalLogs = True
@@ -43,10 +45,10 @@ def test_UI_SA_TxnHistory_Signature_01(method_setup, appium_driver):
         transactionsHistoryPage.click_status_arrow_button()
 
 
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except Exception as e:
         print(e)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -71,7 +73,7 @@ def test_UI_SA_TxnHistory_Signature_01(method_setup, appium_driver):
             GlobalVariables.EXCEL_App_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues("", "", "", expectedAPPValues)
+        success = Utilities.Validator.validateValues("", "", "", expectedAPPValues)
         if success_Val_Execution == False:
             if success == False:
                 pass

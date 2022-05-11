@@ -1,6 +1,10 @@
 from datetime import datetime
 import pytest
 
+import Utilities.APIProcessor
+import Utilities.DBProcessor
+import Utilities.ReportProcessor
+import Utilities.Validator
 from DataProvider import GlobalVariables
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.Portal_HomePage import PortalHomePage
@@ -9,7 +13,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from DataProvider.config import TestData
 from TestCases import setUp
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.usefixtures("log_on_success")
@@ -52,10 +56,10 @@ def test_UI_SA_CheckStatus_BQR_01(method_setup,appium_driver,ui_driver):
         homePage.enter_amount_and_order_number(amount, order_num)
         homePage.perform_check_status()
 
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except Exception as e:
         print(e)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -91,7 +95,6 @@ def test_UI_SA_CheckStatus_BQR_01(method_setup,appium_driver,ui_driver):
 
         try:
             driver_ui = GlobalVariables.portalDriver
-            f
             loginPagePortal= PortalLoginPage(driver_ui)
             username_portal = read_config("credentials", 'username_portal')
             password_portal = read_config('credentials', 'password_portal')
@@ -119,7 +122,7 @@ def test_UI_SA_CheckStatus_BQR_01(method_setup,appium_driver,ui_driver):
             query = "select status,amount,payment_mode,external_ref from txn where id='"+txn_id+"'"
            # query = "select status from txn where rr_number='" +rr_num+ "'"
             print("Query:", query)
-            result = setUp.getValueFromDB(query)
+            result = Utilities.DBProcessor.getValueFromDB(query)
             status_db = result["status"].iloc[0]
             payment_mode_db = result["payment_mode"].iloc[0]
             amount_db = int(result["amount"].iloc[0])
@@ -139,7 +142,7 @@ def test_UI_SA_CheckStatus_BQR_01(method_setup,appium_driver,ui_driver):
 
         # =========================API validation===========================
         try:
-            response = setUp.post(TestData.payload, TestData.API)
+            response = Utilities.APIProcessor.post(TestData.payload, TestData.API)
             print(response)
             list = response["txns"]
             status_api = ''
@@ -149,7 +152,7 @@ def test_UI_SA_CheckStatus_BQR_01(method_setup,appium_driver,ui_driver):
                     status_api = li["status"]
                     amount_api = int(li["amount"])
 
-            expectedAPIValues =""+status+":"+status_api+","+str(amount)+":"+str(amount_api)+"ss"
+            expectedAPIValues =""+status+":"+status_api+","+str(amount)+":"+str(amount_api)
             print(expectedAPIValues)
         except Exception as e:
             print(e)
@@ -159,7 +162,7 @@ def test_UI_SA_CheckStatus_BQR_01(method_setup,appium_driver,ui_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, expectedAPPValues)
+        success = Utilities.Validator.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, expectedAPPValues)
         if success_Val_Execution == False:
             if success == False:
                 pass

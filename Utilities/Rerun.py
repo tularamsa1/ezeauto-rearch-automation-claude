@@ -3,10 +3,11 @@ import os
 import openpyxl
 import pandas as pd
 
-from DataProvider import GlobalVariables
+import DataProvider.GlobalConstants
 from PageFactory import Base_Actions
-from TestCases import ExcelProcessor, conftest
-from Utilities import configReader, DirectoryCreator
+from TestCases import  ExcelProcessor, conftest
+from DataProvider import GlobalVariables
+from Utilities import ConfigReader, DirectoryCreator
 
 immediateRerun = True
 
@@ -14,7 +15,7 @@ immediateRerun = True
 def rerunTestAtTheEnd():
     # print("Rerun count is: ", rerunCount)
     df_rerunTestCases = pd.DataFrame(
-        pd.read_excel(GlobalVariables.EXCEL_reportFilePath))
+        pd.read_excel(DataProvider.GlobalConstants.EXCEL_reportFilePath))
 
     df_rerunTestCases.set_index("Test Case ID", inplace=True)
 
@@ -32,33 +33,33 @@ def rerunTestAtTheEnd():
     for ind in df_rerunTestCases.index:
         testCaseName = str(df_rerunTestCases['File Name'][ind]) + ".py::" + str(ind)
 
-        if str(df_rerunTestCases['TC Execution'][ind]).lower() == 'fail' and configReader.read_config("Validations",
+        if str(df_rerunTestCases['TC Execution'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                       "bool_rerun_exe_val") == "True":
             exeFail.append(testCaseName)
             setOfTest.add(testCaseName)
             # Added on Apr 11
             setOfRerunTest.add(str(ind))
-        if str(df_rerunTestCases['API Val'][ind]).lower() == 'fail' and configReader.read_config("Validations",
+        if str(df_rerunTestCases['API Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                  "bool_rerun_api_val") == "True":
             apiValFail.append(testCaseName)
             setOfTest.add(testCaseName)
             setOfRerunTest.add(str(ind))
-        if str(df_rerunTestCases['DB Val'][ind]).lower() == 'fail' and configReader.read_config("Validations",
+        if str(df_rerunTestCases['DB Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                 "bool_rerun_db_val") == "True":
             dbValFail.append(testCaseName)
             setOfTest.add(testCaseName)
             setOfRerunTest.add(str(ind))
-        if str(df_rerunTestCases['Portal Val'][ind]).lower() == 'fail' and configReader.read_config("Validations",
+        if str(df_rerunTestCases['Portal Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                     "bool_rerun_portal_val") == "True":
             portalValFail.append(testCaseName)
             setOfTest.add(testCaseName)
             setOfRerunTest.add(str(ind))
-        if str(df_rerunTestCases['App Val'][ind]).lower() == 'fail' and configReader.read_config("Validations",
+        if str(df_rerunTestCases['App Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                  "bool_rerun_app_val") == "True":
             appValFail.append(testCaseName)
             setOfTest.add(testCaseName)
             setOfRerunTest.add(str(ind))
-        if str(df_rerunTestCases['UI Val'][ind]).lower() == 'fail' and configReader.read_config("Validations",
+        if str(df_rerunTestCases['UI Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                 "bool_rerun_ui_val") == "True":
             uiValFail.append(testCaseName)
             setOfTest.add(testCaseName)
@@ -88,28 +89,28 @@ def rerunTestAtTheEnd():
 def isRerunRequiredImmediately(testCaseID):
     isRerunRequired = False
     df_rerunTestCases = pd.DataFrame(
-        pd.read_excel(GlobalVariables.EXCEL_reportFilePath))
+        pd.read_excel(DataProvider.GlobalConstants.EXCEL_reportFilePath))
 
     df_rerunTestCases.set_index("Test Case ID", inplace=True)
 
     testCaseName = str(df_rerunTestCases['File Name'][testCaseID]) + ".py::" + str(testCaseID)
 
-    if str(df_rerunTestCases['TC Execution'][testCaseID]).lower() == 'fail' and configReader.read_config("Validations",
+    if str(df_rerunTestCases['TC Execution'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                          "bool_rerun_exe_val") == "True":
         isRerunRequired = True
-    if str(df_rerunTestCases['API Val'][testCaseID]).lower() == 'fail' and configReader.read_config("Validations",
+    if str(df_rerunTestCases['API Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                     "bool_rerun_api_val") == "True":
         isRerunRequired = True
-    if str(df_rerunTestCases['DB Val'][testCaseID]).lower() == 'fail' and configReader.read_config("Validations",
+    if str(df_rerunTestCases['DB Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                    "bool_rerun_db_val") == "True":
         isRerunRequired = True
-    if str(df_rerunTestCases['Portal Val'][testCaseID]).lower() == 'fail' and configReader.read_config("Validations",
+    if str(df_rerunTestCases['Portal Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                        "bool_rerun_portal_val") == "True":
         isRerunRequired = True
-    if str(df_rerunTestCases['App Val'][testCaseID]).lower() == 'fail' and configReader.read_config("Validations",
+    if str(df_rerunTestCases['App Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                     "bool_rerun_app_val") == "True":
         isRerunRequired = True
-    if str(df_rerunTestCases['UI Val'][testCaseID]).lower() == 'fail' and configReader.read_config("Validations",
+    if str(df_rerunTestCases['UI Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                    "bool_rerun_ui_val") == "True":
         isRerunRequired = True
     print("Rerun required = " + str(isRerunRequired))
@@ -119,7 +120,7 @@ def isRerunRequiredImmediately(testCaseID):
 # To change the value of rerun testcases overall_status to empty in Report excel, so that it will set as Broken in
 # case of any connectivity issues
 def changeOverallStatusToEmpty(ls_TestCasesForRerun):
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     for rerun_tesecase in ls_TestCasesForRerun:
@@ -130,7 +131,7 @@ def changeOverallStatusToEmpty(ls_TestCasesForRerun):
             if testcase == rerun_tesecase:
                 colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
                 sheet.cell(row=i, column=colNum_overallStatus).value = ""
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
+    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
 
 
 def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
@@ -149,7 +150,7 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
 
             print("$$$$$$$$$$$$$$$$$$$$ Rerun Immediately #################")
             os.system(rerunCommand)
-        if rerunCount == -1 and configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required("forLastRun_Capture_Logs") == "True":
+        if rerunCount == -1 and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required("forLastRun_Capture_Logs") == "True":
             # print("log on failure method calling")
             # print("testCaseID", testCaseID)
             # print("getRerunCount(testCaseID)", int(getRerunCount(testCaseID)))
@@ -159,17 +160,17 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 
 
-xl_RerunCountPath = str(configReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
+xl_RerunCountPath = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
 
 
-xl_Timestamp = str(configReader.read_config_paths("System","automation_suite_path"))+"/TestCases/Timestamp.xlsx"
+xl_Timestamp = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/Timestamp.xlsx"
 
 
 def prepareImmediateRerunExcel():
     # df_overallTClist = pd.read_excel("/home/oem/PycharmProjects/EzeAuto/DataProvider/TestCasesDetail.xlsx")
 
     # Added on Apr 11
-    df_overallTClist = pd.read_excel(str(configReader.read_config("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx"))
+    df_overallTClist = pd.read_excel(str(ConfigReader.read_config("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx"))
 
     df_overallTClist.set_index('Test Case ID', inplace=True)
     # df_overallTClist.drop(columns=['File Name', 'Execute'], inplace=True)
@@ -183,7 +184,7 @@ def prepareImmediateRerunExcel():
     for i in range(0, len(df_overallTClist.index)):
         # reRunCount.append(GlobalVariables.int_immediateRerunCount)
         try:
-            configuredImmediateRerunCount = int(configReader.read_config("Validations", "int_rerun_count"))
+            configuredImmediateRerunCount = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             reRunCount.append(configuredImmediateRerunCount)
         except ValueError:
             print("Configured Immediate Rerun Count is Invalid")
@@ -194,7 +195,7 @@ def prepareImmediateRerunExcel():
 
 
 def prepareAtTheEndRerunExcel():
-    df = pd.DataFrame({'Rerun Count': [int(configReader.read_config("Validations", "int_rerun_count"))]})
+    df = pd.DataFrame({'Rerun Count': [int(ConfigReader.read_config("Validations", "int_rerun_count"))]})
     print(df)
     writer = pd.ExcelWriter(xl_RerunCountPath, engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Rerun At The End', index=False)
@@ -202,7 +203,7 @@ def prepareAtTheEndRerunExcel():
 
 
 def getRerunCount(testCaseID):
-    if configReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
+    if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
         try:
             df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun Count")
             df_TClist.set_index('Test Case ID', inplace=True)
@@ -212,7 +213,7 @@ def getRerunCount(testCaseID):
                 None
         except:
             return -2
-    if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
+    if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
         try:
             df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun At The End")
             # df_TClist.set_index('Test Case ID', inplace=True)
@@ -227,7 +228,7 @@ def getRerunCount(testCaseID):
 
 
 def setRerunCount(testCaseID, rerunCount):
-    if configReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
+    if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
         try:
             workbook = openpyxl.load_workbook(xl_RerunCountPath)
             sheet = workbook["Rerun Count"]
@@ -243,7 +244,7 @@ def setRerunCount(testCaseID, rerunCount):
         except:
             return False
 
-    if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
+    if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
         try:
             workbook = openpyxl.load_workbook(xl_RerunCountPath)
             sheet = workbook["Rerun At The End"]

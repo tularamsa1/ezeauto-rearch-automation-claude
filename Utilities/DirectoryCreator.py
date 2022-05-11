@@ -1,9 +1,11 @@
 import configparser
+from Utilities import ConfigReader
 import datetime
 import os
 from os.path import dirname, abspath
-from Utilities import configReader
 
+
+#automationSuitePath = ConfigReader.read_config("System","automation_suite_path")
 
 def createReportDirectories(currentDate, currentTime, automationSuitePath):
     try:
@@ -116,7 +118,7 @@ Following values can only be passed as arguments.
 
 
 def getDirectoryPath(directoryName):
-    automationSuitePath = configReader.read_config_paths("System", "automation_suite_path")
+    automationSuitePath = ConfigReader.read_config_paths("System", "automation_suite_path")
     filePath = automationSuitePath+"/Configuration/ExecutionDirectories.conf"
     if os.path.isfile(filePath):
         try:
@@ -138,3 +140,5 @@ def getDirectoryPath(directoryName):
     else:
         print("Execution directories file does not exists. So path cannot be returned.")
         return None
+
+

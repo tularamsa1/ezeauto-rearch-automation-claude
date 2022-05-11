@@ -11,16 +11,20 @@ from datetime import datetime
 import chromedriver_autoinstaller
 from openpyxl.styles import Font, PatternFill, Side, Border
 
+import DataProvider.GlobalConstants
+import Utilities.ReportProcessor
 from PageFactory import Base_Actions
 from Configuration import TestSuiteSetup
-from Utilities import configReader, DirectoryCreator, LogProcessor, Rerun
-from TestCases import setUp
+from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
 #from Pages import Base_Actions
 from pathlib import Path
 import openpyxl
 import pytest
 from DataProvider import GlobalVariables
 from TestCases import ExcelProcessor
+from Utilities.ReportProcessor import revert_excel_global_variables, setStylesForExcel, \
+    updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
+
 tests_count = 0
 passed1 = 0
 failed1 = 0
@@ -80,6 +84,10 @@ def revert_excel_global_variables():
     GlobalVariables.EXCEL_Portal_Val = "N/A"
     GlobalVariables.EXCEL_App_Val = "N/A"
     GlobalVariables.EXCEL_UI_Val = "N/A"
+    # GlobalVariables.apiLogs = False
+    # GlobalVariables.portalLogs = False
+    # GlobalVariables.cnpWareLogs = False
+    # GlobalVariables.middleWareLogs = False
 
 
 def setStylesForExcel():
@@ -152,6 +160,31 @@ def setStylesForExcel():
             sheet.cell(row, column).border = border
 
     wb.save(GlobalVariables.EXCEL_reportFilePath)
+
+
+# @pytest.fixture(scope="session")  # Executing once before the first test case
+# def session_setup(request):
+#     print("Session setup level")
+#     server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
+#
+#     # global appium_service
+#     # appium_service = AppiumService()
+#     # appium_service.start()
+#
+#     Configuration.prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
+#
+#     # Executing once after the last test case
+#     def fin():
+#         # appium_service.stop()
+#         print("Session teardown level")
+#         # print("Session Teardown rerunAttempt count is: ", dictFromCsv.get("rerunAttempt"))
+#         print("Printing df before starting rerun")
+#
+#         ssh.close()
+#         # appium_service.stop()
+#         convert_DF_To_Excel()
+#
+#     request.addfinalizer(fin)
 
 
 def convert_DF_To_Excel():
@@ -242,10 +275,10 @@ def updatingHighLevelReportAfterEachTCS():
     # To add the rerun count after every executed testcases
     # if bool_rerun_at_the_end & bool_rerun_immediately are enabled, bool_rerun_at_the_end will be considered
     # if (bool_rerun_at_the_end is TRUE) OR (bool_rerun_at_the_end & bool_rerun_immediately are TRUE)
-    if (configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and configReader.read_config(
+    if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
             "Validations", "bool_rerun_immediately").lower() == "false") \
             or (
-            configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and configReader.read_config(
+            ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
         "Validations", "bool_rerun_immediately").lower() == "true"):
         columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Attempts')
 
@@ -257,7 +290,7 @@ def updatingHighLevelReportAfterEachTCS():
             sheet.cell(row=rowNumber, column=columnNumber).value = currentRetryCountsheet + 1
     # =====================================================================================
 
-    workbook.save(GlobalVariables.EXCEL_reportFilePath)
+    workbook.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
     workbook.close()
 
 
@@ -265,8 +298,7 @@ def updatingHighLevelReportAfterEachTCS():
 def method_setup(request):
     # breakpoint()
     print("Function setup level")
-    global LogCollTime
-    LogCollTime = LogProcessor.startLineNoOfServerLogFile()
+    GlobalVariables.LogCollTime = LogProcessor.startLineNoOfServerLogFile()
 
     current = datetime.now()
     GlobalVariables.EXCEL_TC_Exe_Starting_Time = current.strftime("%H:%M:%S")
@@ -280,30 +312,29 @@ def method_setup(request):
         # Write data to dataframe
         # write_TC_Details_To_Dataframe()
 
-        if configReader.read_config("Validations","bool_rerun_at_the_end").lower() == "false" and configReader.read_config("Validations","bool_rerun_immediately").lower() == "false":
+        if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
             log_on_failure(request)
 
-        if Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]) == 0 and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True"  and configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
+        if Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]) == 0 and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True"  and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
             # breakpoint()
             print("Rerun.getRerunCountForAtTheEnd(): ", Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]))
             print("log_on_failure(request)")
             log_on_failure(request)
 
-        if configReader.read_config("Validations",
+        if ConfigReader.read_config("Validations",
                                     "bool_rerun_at_the_end").lower() == "true" and Base_Actions.is_log_capture_required(
                 "bool_capt_log_each_run") == "True":
             log_on_failure(request)
 
-        global LogCollTime
-        GlobalVariables.EXCEL_LogCollTime = LogCollTime + GlobalVariables.EXCEL_LogCollTime
+        GlobalVariables.EXCEL_LogCollTime = GlobalVariables.LogCollTime + GlobalVariables.EXCEL_LogCollTime
         GlobalVariables.EXCEL_Tot_Time = int(GlobalVariables.EXCEL_Execution_Time) + int(
             GlobalVariables.EXCEL_Val_time) + int(GlobalVariables.EXCEL_LogCollTime)
 
         updatingHighLevelReportAfterEachTCS()
 
         # rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
-        if configReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) \
-                and configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
+        if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) \
+                and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
 
             # Added on Apr 11
             rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
@@ -384,71 +415,10 @@ def appium_driver(request):
 
 def pytest_deselected(items):
     print("INSIDE DESELCTED METHOD")
-    global list_deselected_testcases
     for item in items:
         print(item.nodeid)
         testcase = str((item.nodeid)).split('::')[1]
-        list_deselected_testcases.append(testcase)
-
-
-def updateExcel_With_Deselect_And_Broken():
-    # breakpoint()
-    print("GlobalVariables.EXCEL_reportFilePath", GlobalVariables.EXCEL_reportFilePath)
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    for i in range(2, sheet.max_row + 1):
-        colNum_testcase = ExcelProcessor.getColumnNumberFromName("", sheet, 'Test Case ID')
-        testcase = (sheet.cell(row=i, column=colNum_testcase)).value
-        if testcase in list_deselected_testcases:
-
-            colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-            sheet.cell(row=i, column=colNum_overallStatus).value = "Deselected"
-
-            colNum_execution = ExcelProcessor.getColumnNumberFromName("", sheet, 'TC Execution')
-            sheet.cell(row=i, column=colNum_execution).value = "N/A"
-
-            colNum_APIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'API Val')
-            sheet.cell(row=i, column=colNum_APIval).value = "N/A"
-
-            colNum_DBval = ExcelProcessor.getColumnNumberFromName("", sheet, 'DB Val')
-            sheet.cell(row=i, column=colNum_DBval).value = "N/A"
-
-            colNum_PortalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
-            sheet.cell(row=i, column=colNum_PortalVal).value = "N/A"
-
-            colNum_AppVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
-            sheet.cell(row=i, column=colNum_AppVal).value = "N/A"
-
-            colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
-            sheet.cell(row=i, column=colNum_UIval).value = "N/A"
-
-        else:
-            colNum_overallResult = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-            cellValue = (sheet.cell(row=i, column=colNum_overallResult)).value
-            if cellValue is None:
-                colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-                sheet.cell(row=i, column=colNum_overallStatus).value = "Broken"
-
-                colNum_execution = ExcelProcessor.getColumnNumberFromName("", sheet, 'TC Execution')
-                sheet.cell(row=i, column=colNum_execution).value = "N/A"
-
-                colNum_APIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'API Val')
-                sheet.cell(row=i, column=colNum_APIval).value = "N/A"
-
-                colNum_DBval = ExcelProcessor.getColumnNumberFromName("", sheet, 'DB Val')
-                sheet.cell(row=i, column=colNum_DBval).value = "N/A"
-
-                colNum_PortalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
-                sheet.cell(row=i, column=colNum_PortalVal).value = "N/A"
-
-                colNum_AppVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
-                sheet.cell(row=i, column=colNum_AppVal).value = "N/A"
-
-                colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
-                sheet.cell(row=i, column=colNum_UIval).value = "N/A"
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
+        GlobalVariables.list_deselected_testcases.append(testcase)
 
 
 def log_on_failure(request):
@@ -533,9 +503,9 @@ def log_on_failure(request):
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
         if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                "bool_capt_log_each_run") == "True" and configReader.read_config("Validations",
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                   "bool_rerun_at_the_end").lower() == "true":
-            i = int(configReader.read_config("Validations", "int_rerun_count"))
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 2nd time")
 
@@ -547,7 +517,7 @@ def log_on_failure(request):
             logFileName = str(finalTestCaseID).split('::')[1]
             #logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "int_rerun_count")):
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
                     # Added on 26 Apr
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
@@ -581,10 +551,10 @@ def log_on_failure(request):
                 j += 1
 
         if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                "bool_capt_log_each_run") == "True" and configReader.read_config("Validations",
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                   "bool_rerun_immediately").lower() == "true":
 
-            i = int(configReader.read_config("Validations", "int_rerun_count"))
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 3rd time")
 
@@ -596,7 +566,7 @@ def log_on_failure(request):
             logFileName = str(finalTestCaseID).split('::')[1]
             #logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "int_rerun_count")):
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
 
                     #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
@@ -687,7 +657,7 @@ def log_on_failure(request):
                 rerun_file = Path(path + "/cnpware.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        setUp.get_Log_Collection_Time()
+        Utilities.ReportProcessor.get_Log_Collection_Time()
 
         if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
@@ -799,9 +769,9 @@ def log_on_success(request):
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
         if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                "bool_capt_log_each_run") == "True" and configReader.read_config("Validations",
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                   "bool_rerun_at_the_end").lower() == "true":
-            i = int(configReader.read_config("Validations", "int_rerun_count"))
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 2nd time")
 
@@ -813,7 +783,7 @@ def log_on_success(request):
             logFileName = str(finalTestCaseID).split('::')[1]
             #logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "int_rerun_count")):
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
                     # Added on 26 Apr
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
@@ -847,10 +817,10 @@ def log_on_success(request):
                 j += 1
 
         if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                "bool_capt_log_each_run") == "True" and configReader.read_config("Validations",
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                   "bool_rerun_immediately").lower() == "true":
 
-            i = int(configReader.read_config("Validations", "int_rerun_count"))
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 3rd time")
 
@@ -862,7 +832,7 @@ def log_on_success(request):
             logFileName = str(finalTestCaseID).split('::')[1]
            # logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "int_rerun_count")):
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
 
                     #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
@@ -953,7 +923,7 @@ def log_on_success(request):
                 rerun_file = Path(path + "/cnpware.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        setUp.get_Log_Collection_Time()
+        Utilities.ReportProcessor.get_Log_Collection_Time()
 
         if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
@@ -999,57 +969,6 @@ def pytest_sessionfinish(session, exitstatus):
     # appium_service.stop()
     
 # Added on Apr 11
-def updateExcel_With_RerunAttempts():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    if configReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and configReader.read_config(
-            "Validations", "bool_rerun_at_the_end").lower() == "false":
-        colNum_rerunAttempts = ExcelProcessor.getColumnNumberFromName("", sheet, 'Rerun Attempts')
-        for i in range(2, sheet.max_row + 1):
-            colNum_testcase = ExcelProcessor.getColumnNumberFromName("", sheet, 'Test Case ID')
-            testcase = (sheet.cell(row=i, column=colNum_testcase)).value
-
-            rerunCount = Rerun.getRerunCount(testcase)
-            if rerunCount >= 0:
-                cellValue_rerunAttempts = int(configReader.read_config("Validations", "int_rerun_count")) - rerunCount
-                sheet.cell(row=i, column=colNum_rerunAttempts).value = cellValue_rerunAttempts
-            else:
-                cellValue_rerunAttempts = configReader.read_config("Validations", "int_rerun_count")
-                sheet.cell(row=i, column=colNum_rerunAttempts).value = int(cellValue_rerunAttempts)
-
-    # If both bool_rerun_at_the_end and bool_rerun_immediately are disabled, setting value as N/A for Rerun Attempts
-    if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and configReader.read_config(
-            "Validations", "bool_rerun_immediately").lower() == "false":
-        colNum_RerunAttempts = ExcelProcessor.getColumnNumberFromName("", sheet, 'Rerun Attempts')
-        for i in range(2, sheet.max_row + 1):
-            sheet.cell(row=i, column=colNum_RerunAttempts).value = "N/A"
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
 
 
 # Added on Apr 11
-def updateExcel_With_Category_And_Subcategory():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    for i in range(2, sheet.max_row + 1):
-        colNum_directoryName = ExcelProcessor.getColumnNumberFromName("", sheet, 'Directory Name')
-        directoryName = (sheet.cell(row=i, column=colNum_directoryName)).value
-
-        category = directoryName.split("/")[0]
-        subCategory = directoryName.split("/")[1]
-
-        colNum_category = ExcelProcessor.getColumnNumberFromName("", sheet, 'Category')
-        colNum_subCategory = ExcelProcessor.getColumnNumberFromName("", sheet, 'Sub-Category')
-
-        cellValue_category = (sheet.cell(row=i, column=colNum_category)).value
-        cellValue_subCategory = (sheet.cell(row=i, column=colNum_subCategory)).value
-
-        if cellValue_category is None:
-            sheet.cell(row=i, column=colNum_category).value = category
-
-            if cellValue_subCategory is None:
-                sheet.cell(row=i, column=colNum_subCategory).value = subCategory
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)

@@ -1,6 +1,8 @@
 import allure
 import pytest
 
+import Utilities.ReportProcessor
+import Utilities.Validator
 from DataProvider import GlobalVariables
 from PageFactory.App_AccountPage import AccountPage
 from PageFactory.App_LoginPage import LoginPage
@@ -9,9 +11,9 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from TestCases import setUp
 from allure_commons.types import AttachmentType
 from datetime import datetime
-from Utilities import configReader
+from Utilities import ConfigReader
 from Utilities.APIPost import post
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.appVal
@@ -45,12 +47,12 @@ def test_UI_SA_Multilanguage_English_01(method_setup,appium_driver):
         accountPage = AccountPage(driver)
         accountPage.click_on_setting()
         LangText = accountPage.get_Lang_text()
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
 
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                       attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -87,8 +89,8 @@ def test_UI_SA_Multilanguage_English_01(method_setup,appium_driver):
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             current = datetime.now()
             #GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-            login_payload = {'username' : configReader.read_config("credentials", "username_EngLang"), 'password' : configReader.read_config("credentials", "password")}
-            list = post(login_payload,configReader.read_config("credentials", "loginurl"))
+            login_payload = {'username' : ConfigReader.read_config("credentials", "username_EngLang"), 'password' : ConfigReader.read_config("credentials", "password")}
+            list = post(login_payload, ConfigReader.read_config("credentials", "loginurl"))
             result = list['setting']['userAppOptions']['preferences']['language']['value']
             expectedAPIValue = "English:" + str(result)
         except:
@@ -101,7 +103,7 @@ def test_UI_SA_Multilanguage_English_01(method_setup,appium_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValue, "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues(expectedAPIValue, "", "", expectedAPPValue)
 
         if success_Val_Execution == False:
             if success == False:
@@ -143,12 +145,12 @@ def test_UI_SA_Multilanguage_Hindi_02(method_setup,appium_driver):
         accountPage = AccountPage(driver)
         accountPage.click_on_setting()
         LangText = accountPage.get_Lang_text()
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
 
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                       attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -186,8 +188,8 @@ def test_UI_SA_Multilanguage_Hindi_02(method_setup,appium_driver):
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             current = datetime.now()
             #GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-            login_payload = {'username' : configReader.read_config("credentials", "username_HindiLang"), 'password' : configReader.read_config("credentials", "password")}
-            list = post(login_payload,configReader.read_config("credentials", "loginurl"))
+            login_payload = {'username' : ConfigReader.read_config("credentials", "username_HindiLang"), 'password' : ConfigReader.read_config("credentials", "password")}
+            list = post(login_payload, ConfigReader.read_config("credentials", "loginurl"))
             result = list['setting']['userAppOptions']['preferences']['language']['value']
             expectedAPIValue = "Hindi:" + str(result)
         except:
@@ -200,7 +202,7 @@ def test_UI_SA_Multilanguage_Hindi_02(method_setup,appium_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValue, "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues(expectedAPIValue, "", "", expectedAPPValue)
 
         if success_Val_Execution == False:
             if success == False:
@@ -249,12 +251,12 @@ def test_UI_SA_Multilanguage_English_to_Hindi_03(method_setup,appium_driver):
         homePage.click_on_merchant_name()
         accountPage.click_on_setting()
         LangText = accountPage.get_Lang_text()
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
 
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                   attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -292,9 +294,9 @@ def test_UI_SA_Multilanguage_English_to_Hindi_03(method_setup,appium_driver):
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             current = datetime.now()
             # GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-            login_payload = {'username': configReader.read_config("credentials", "username_EngLang"),
-                     'password': configReader.read_config("credentials", "password")}
-            list = post(login_payload, configReader.read_config("credentials", "loginurl"))
+            login_payload = {'username': ConfigReader.read_config("credentials", "username_EngLang"),
+                     'password': ConfigReader.read_config("credentials", "password")}
+            list = post(login_payload, ConfigReader.read_config("credentials", "loginurl"))
             result = list['setting']['userAppOptions']['preferences']['language']['value']
             expectedAPIValue = "Hindi:" + str(result)
         except:
@@ -307,7 +309,7 @@ def test_UI_SA_Multilanguage_English_to_Hindi_03(method_setup,appium_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValue, "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues(expectedAPIValue, "", "", expectedAPPValue)
 
         if success_Val_Execution == False:
             if success == False:
@@ -355,11 +357,11 @@ def test_UI_SA_Multilanguage_Hindi_to_English_04(method_setup,appium_driver):
         homePage.click_on_merchant_name()
         accountPage.click_on_setting()
         LangText = accountPage.get_Lang_text()
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                   attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -398,9 +400,9 @@ def test_UI_SA_Multilanguage_Hindi_to_English_04(method_setup,appium_driver):
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             current = datetime.now()
             # GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-            login_payload = {'username': configReader.read_config("credentials", "username_EngLang"),
-                     'password': configReader.read_config("credentials", "password")}
-            list = post(login_payload, configReader.read_config("credentials", "loginurl"))
+            login_payload = {'username': ConfigReader.read_config("credentials", "username_EngLang"),
+                     'password': ConfigReader.read_config("credentials", "password")}
+            list = post(login_payload, ConfigReader.read_config("credentials", "loginurl"))
             result = list['setting']['userAppOptions']['preferences']['language']['value']
             expectedAPIValue = "English:" + str(result)
         except:
@@ -413,7 +415,7 @@ def test_UI_SA_Multilanguage_Hindi_to_English_04(method_setup,appium_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValue, "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues(expectedAPIValue, "", "", expectedAPPValue)
 
         if success_Val_Execution == False:
             if success == False:
@@ -465,12 +467,12 @@ def test_UI_SA_Multilanguage_Lang_selection_05(method_setup,appium_driver):
         homePage.click_on_merchant_name()
         accountHomePage.click_on_setting()
         LangText = accountHomePage.get_Lang_text()
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
 
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                   attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution: Language selection is not enabled")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -509,9 +511,9 @@ def test_UI_SA_Multilanguage_Lang_selection_05(method_setup,appium_driver):
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             current = datetime.now()
             # GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-            login_payload = {'username': configReader.read_config("credentials", "username_EngLang"),
-                     'password': configReader.read_config("credentials", "password")}
-            list = post(login_payload, configReader.read_config("credentials", "loginurl"))
+            login_payload = {'username': ConfigReader.read_config("credentials", "username_EngLang"),
+                     'password': ConfigReader.read_config("credentials", "password")}
+            list = post(login_payload, ConfigReader.read_config("credentials", "loginurl"))
             result = list['setting']['userAppOptions']['preferences']['language']['value']
             expectedAPIValue = "English:" + str(result)
         except:
@@ -524,7 +526,7 @@ def test_UI_SA_Multilanguage_Lang_selection_05(method_setup,appium_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValue, "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues(expectedAPIValue, "", "", expectedAPPValue)
 
         if success_Val_Execution == False:
             if success == False:

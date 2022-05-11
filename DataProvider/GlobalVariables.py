@@ -1,6 +1,5 @@
 # These values are for updating number of each type of validations (API|DB, Portal, DB and App) in html report
-import openpyxl
-from Utilities import DirectoryCreator, configReader
+from DataProvider.GlobalConstants import EXCEL_reportFilePath
 
 #These variables are for adding to the second table (Validation) in HTML report
 
@@ -61,8 +60,7 @@ count = 1
 
 
 df_testCasesDetail = ""
-EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
-print("Excel Report path:",EXCEL_reportFilePath)
+#EXCEL_reportFilePath = "/home/oem/PycharmProjects/EzeAuto/TestCase/Report.xlsx"
 
 portal_username = ''
 portal_password = ''
@@ -70,3 +68,6 @@ portal_password = ''
 app_username = ''
 app_password = ''
 ssh = ''
+
+LogCollTime = 0
+list_deselected_testcases=[]

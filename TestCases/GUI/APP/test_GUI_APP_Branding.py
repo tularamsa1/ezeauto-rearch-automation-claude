@@ -2,6 +2,8 @@ from datetime import datetime
 
 import pytest
 
+import Utilities.ReportProcessor
+import Utilities.Validator
 from DataProvider.config import TestData
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_HomePage import HomePage
@@ -12,7 +14,7 @@ from DataProvider import GlobalVariables
 import allure
 from allure_commons.types import AttachmentType
 
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.appVal
@@ -39,11 +41,11 @@ def test_GUI_APP_Branding_Ezetap_01(method_setup,appium_driver):
         ele.screenshot("/home/oem/PycharmProjects/EzeAuto/Images/EZETAPComp.png")
         originalImg = cv2.imread("/home/oem/PycharmProjects/EzeAuto/Images/EZETAP.png")
         ActualImg = cv2.imread("/home/oem/PycharmProjects/EzeAuto/Images/EZETAPComp.png")
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                       attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -82,7 +84,7 @@ def test_GUI_APP_Branding_Ezetap_01(method_setup,appium_driver):
             success_Val_Execution = False
             print(expectedAPPValue)
 
-        success = setUp.validateValues("", "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues("", "", "", expectedAPPValue)
         if success_Val_Execution == False:
             if success == False:
                 pass
@@ -112,11 +114,11 @@ def test_GUI_APP_Branding_Axis_02(method_setup,appium_driver):
         ele.screenshot("/home/oem/PycharmProjects/EzeAuto/Images/AXISComp.png")
         originalImg = cv2.imread("/home/oem/PycharmProjects/EzeAuto/Images/AXIS.png")
         ActualImg = cv2.imread("/home/oem/PycharmProjects/EzeAuto/Images/AXISComp.png")
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                       attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -152,7 +154,7 @@ def test_GUI_APP_Branding_Axis_02(method_setup,appium_driver):
             success_Val_Execution = False
             print(expectedAPPValue)
 
-        success = setUp.validateValues("", "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues("", "", "", expectedAPPValue)
         if success_Val_Execution == False:
             if success == False:
                 pass
@@ -183,11 +185,11 @@ def test_GUI_APP_Branding_Hdfc_03(method_setup,appium_driver):
         ele.screenshot("/home/oem/PycharmProjects/EzeAuto/Images/HDFCComp.png")
         originalImg = cv2.imread("/home/oem/PycharmProjects/EzeAuto/Images/HDFC.png")
         ActualImg = cv2.imread("/home/oem/PycharmProjects/EzeAuto/Images/HDFCComp.png")
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                       attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -223,7 +225,7 @@ def test_GUI_APP_Branding_Hdfc_03(method_setup,appium_driver):
             success_Val_Execution = False
             print(expectedAPPValue)
 
-        success = setUp.validateValues("", "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues("", "", "", expectedAPPValue)
         if success_Val_Execution == False:
             if success == False:
                 pass

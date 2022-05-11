@@ -2,12 +2,14 @@ from datetime import datetime
 
 import pytest
 
+import Utilities.ReportProcessor
+import Utilities.Validator
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from DataProvider.config import TestData
 from TestCases import setUp
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.usefixtures("log_on_success")
@@ -35,10 +37,10 @@ def test_UI_SA_AutoLogin_Enabled_01(method_setup, appium_driver):
         driver.activate_app("com.ezetap.basicapp")
         loginPage = LoginPage(driver)
 
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except Exception as e:
         print(e)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -69,7 +71,7 @@ def test_UI_SA_AutoLogin_Enabled_01(method_setup, appium_driver):
             GlobalVariables.EXCEL_App_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues("", "", "", expectedAPPValues)
+        success = Utilities.Validator.validateValues("", "", "", expectedAPPValues)
         if success_Val_Execution == False:
             if success == False:
                 pass

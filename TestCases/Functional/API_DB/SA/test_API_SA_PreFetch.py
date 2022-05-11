@@ -4,6 +4,9 @@ import random
 import allure
 import pytest
 from datetime import datetime
+
+import Utilities.ReportProcessor
+import Utilities.Validator
 from DataProvider import GlobalVariables
 from TestCases import setUp
 from Utilities.APIPost import post
@@ -38,13 +41,13 @@ def test_API_SA_PreFetch_01(method_setup):
         prefetch_payload = {'username' : username, 'password' : password, 'amount': amount}
         prefetch_payload_resp = post(prefetch_payload,url)
         resultValuelist = prefetch_payload_resp['emiDetails']
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print(resultValuelist)
 
     except:
         # allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
         #               attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -82,7 +85,7 @@ def test_API_SA_PreFetch_01(method_setup):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValue, "", "", "")
+        success = Utilities.Validator.validateValues(expectedAPIValue, "", "", "")
         if success_Val_Execution == False:
             if success == False:
                 pass

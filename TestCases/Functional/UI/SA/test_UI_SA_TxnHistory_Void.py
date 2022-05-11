@@ -1,6 +1,10 @@
 from datetime import datetime
 import pytest
 
+import Utilities.APIProcessor
+import Utilities.DBProcessor
+import Utilities.ReportProcessor
+import Utilities.Validator
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -10,12 +14,12 @@ from PageFactory.App_FiltersPage import FiltersPage
 from DataProvider.config import TestData
 from DataProvider import GlobalVariables
 from TestCases import setUp
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.usefixtures("log_on_success")
-@pytest.mark.portalVal
-@pytest.mark.appVal
+#@pytest.mark.portalVal
+#@pytest.mark.appVal
 def test_UI_SA_TxnHistory_Void_01(method_setup,appium_driver, ui_driver):
 
     GlobalVariables.apiLogs = True
@@ -49,9 +53,9 @@ def test_UI_SA_TxnHistory_Void_01(method_setup,appium_driver, ui_driver):
         text = text.split(":")[1]
         auth_code = transactionsHistoryPage.fetch_auth_code_text()
 
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
     except:
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -108,7 +112,7 @@ def test_UI_SA_TxnHistory_Void_01(method_setup,appium_driver, ui_driver):
             query = "select status from txn where auth_code = '" +auth_code+"' and org_code = '"+read_config("testdata","org_code") +"'"
            # query = "select status from txn where rr_number='" +rr_num+ "'"
             print("Query:", query)
-            result = setUp.getValueFromDB(query)
+            result = Utilities.DBProcessor.getValueFromDB(query)
             result = result["status"].iloc[0]
             print("Result DB:", result)
             expectedDBValues = result + ":VOIDED"
@@ -121,7 +125,7 @@ def test_UI_SA_TxnHistory_Void_01(method_setup,appium_driver, ui_driver):
 
         # -------------------API validation---------------------------------
         try:
-            response = setUp.post(TestData.payload, TestData.API)
+            response = Utilities.APIProcessor.post(TestData.payload, TestData.API)
             print(response)
             list = response["txns"]
             print("Response list: ", list)
@@ -138,7 +142,7 @@ def test_UI_SA_TxnHistory_Void_01(method_setup,appium_driver, ui_driver):
             GlobalVariables.EXCEL_API_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, expectedAPPValues)
+        success = Utilities.Validator.validateValues(expectedAPIValues, expectedDBValues, expectedPortalValues, expectedAPPValues)
         if success_Val_Execution == False:
             if success == False:
                 pass

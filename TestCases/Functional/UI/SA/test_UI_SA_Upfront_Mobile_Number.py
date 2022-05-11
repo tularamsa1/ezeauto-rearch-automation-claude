@@ -1,6 +1,8 @@
 import allure
 import pytest
 
+import Utilities.ReportProcessor
+import Utilities.Validator
 from DataProvider import GlobalVariables
 from PageFactory.App_AccountPage import AccountPage
 from PageFactory.App_LoginPage import LoginPage
@@ -11,9 +13,9 @@ from TestCases import setUp
 from allure_commons.types import AttachmentType
 from datetime import datetime
 from DataProvider.config import TestData
-from Utilities import configReader
+from Utilities import ConfigReader
 from Utilities.APIPost import post
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 @pytest.mark.appVal
@@ -36,12 +38,12 @@ def test_UI_SA_Upfront_Mobile_Number_01(method_setup,appium_driver):
         homePage = HomePage(driver)
         homePage.wait_for_home_page_load()
         homePage.enter_amount_order_number_and_customer_details(TestData.AMOUNT, TestData.ORDER_NUMBER,read_config("credentials","Mobile_Number"),read_config("credentials","Email"))
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
 
     except:
         allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                       attachment_type=AttachmentType.PNG)
-        setUp.get_TC_Exe_Time()
+        Utilities.ReportProcessor.get_TC_Exe_Time()
         print("Testcase did not complete due to exception in testcase execution")
         print("")
         GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -79,7 +81,7 @@ def test_UI_SA_Upfront_Mobile_Number_01(method_setup,appium_driver):
             GlobalVariables.EXCEL_App_Val = "Fail"
             success_Val_Execution = False
 
-        success = setUp.validateValues("", "", "", expectedAPPValue)
+        success = Utilities.Validator.validateValues("", "", "", expectedAPPValue)
         if success_Val_Execution == False:
             if success == False:
                 pass
