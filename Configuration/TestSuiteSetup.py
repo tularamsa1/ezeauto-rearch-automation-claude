@@ -1,10 +1,6 @@
-import os
-
-import pandas as pd
 import paramiko
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import ConfigReader
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -132,8 +128,6 @@ def getValidationConfig():
     return commandString
 
 
-
-
 """
 This method is used to start the desired number of servers.
 This takes the number of servers to be started as input and returns list of ports that were actually started.
@@ -185,12 +179,6 @@ def is_port_in_use(port: int):
 This method is used to kill the appium server running on a specific port
 It takes the list of port numbers as input and kills the servers one by one from the list.
 """
-# def killAppiumServers(listOfPorts):
-#     for port in listOfPorts:
-#         try:
-#             os.system("kill $(lsof -t -i:"+str(port)+")")
-#         except Exception as e:
-#             print(e)
 
 
 def killAppiumServers():
@@ -229,25 +217,16 @@ def prepare_Consolidated_List_Of_TestcasesFile():
 
 def executeSelectedTestCases():
     # Creating DF only with the testcases to be executed
-    df_testcases = prepareTestCaseDetailsDataFrame("/home/ezetap-10182/Downloads/EzeAuto/TestCases/AllTestcaseSuite.xlsx")
+    df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
     df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
-
     os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases")
-
     os.system(prepareTestExecutionCommand(df_testcases))
 
 
 def prepareTestExecutionCommand(testCasesDetailDataFrame):
-    # With Directory
-    # commandString = commandString + testCasesDetailDataFrame['Directory Name'][ind]+ "/" +
-    # testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
-
     commandString = "pytest -v -s "
     for ind in testCasesDetailDataFrame.index:
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
-    # commandString = commandString + getValidationConfig() + " --html=0001dgsf.html --self-contained-html --css=test.html --tb=no --show-capture=stdout --capture=tee-sys"
-    # commandString = commandString + getValidationConfig() + ' -n3 --alluredir="./march11"  --cache-clear --lf'
     commandString = commandString + getValidationConfig() + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
-    # commandString = commandString + getValidationConfig() + ' -n3 --alluredir="/home/oem/PycharmProjects/PortalAutomation_04/PortalAutomation/TestCase/allure" --capture=tee-sys'
     print(commandString)
     return commandString
