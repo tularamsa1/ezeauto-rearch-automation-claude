@@ -9,14 +9,12 @@ from selenium import webdriver
 from appium import webdriver as app_webdriver
 from datetime import datetime
 import chromedriver_autoinstaller
-from openpyxl.styles import Font, PatternFill, Side, Border
 
 import DataProvider.GlobalConstants
 from Utilities import ReportProcessor, ResourceAssigner
 from PageFactory import Base_Actions
 from Configuration import TestSuiteSetup
 from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
-#from Pages import Base_Actions
 from pathlib import Path
 import openpyxl
 import pytest
@@ -68,98 +66,6 @@ def pytest_runtest_makereport(item, call):
 
     return report
 
-
-def revert_excel_global_variables():
-    GlobalVariables.EXCEL_TC_Exe_Starting_Time = 00
-    GlobalVariables.EXCEL_TC_Exe_completed_time = 00
-
-    GlobalVariables.EXCEL_TC_Val_Starting_Time = 00
-    GlobalVariables.EXCEL_TC_Val_completed_time = 00
-
-    GlobalVariables.EXCEL_TC_LogColl_Starting_Time = 00
-    GlobalVariables.EXCEL_TC_LogColl_completed_time = 00
-    GlobalVariables.EXCEL_TC_Execution = "Skip"
-    GlobalVariables.EXCEL_API_Val = "N/A"
-    GlobalVariables.EXCEL_DB_Val = "N/A"
-    GlobalVariables.EXCEL_Portal_Val = "N/A"
-    GlobalVariables.EXCEL_App_Val = "N/A"
-    GlobalVariables.EXCEL_UI_Val = "N/A"
-    # GlobalVariables.apiLogs = False
-    # GlobalVariables.portalLogs = False
-    # GlobalVariables.cnpWareLogs = False
-    # GlobalVariables.middleWareLogs = False
-
-
-def setStylesForExcel():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    max_row = sheet.max_row
-
-    colNum_overall = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-    colNum_execution = ExcelProcessor.getColumnNumberFromName("", sheet, 'TC Execution')
-    colNum_apiVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'API Val')
-    colNum_dbVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'DB Val')
-    colNum_portalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
-    colNum_appVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
-    colNum_uiVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
-
-    column_list = [colNum_overall, colNum_execution, colNum_apiVal, colNum_dbVal, colNum_portalVal, colNum_appVal, colNum_uiVal]
-
-    for column in column_list:
-        for row in range(2, max_row + 1):
-            if sheet.cell(row, column).value == "Pass":
-                sheet.cell(row, column).fill = PatternFill(start_color='90EE90', end_color='90EE90', fill_type='solid')
-            elif sheet.cell(row, column).value == "Fail":
-                sheet.cell(row, column).fill = PatternFill(start_color='FF6347', end_color='FF6347', fill_type='solid')
-
-    for i in range(2, sheet.max_row + 1):
-        colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-        if sheet.cell(row=i, column=colNum_overallStatus).value == "Broken":
-            sheet.cell(row=i, column=colNum_overallStatus).fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
-
-        if sheet.cell(row=i, column=colNum_overallStatus).value == "Deselected":
-            sheet.cell(row=i, column=colNum_overallStatus).fill = PatternFill(start_color='FFA500', end_color='FFA500', fill_type='solid')
-
-
-
-    # Set width for all cells
-    sheet.column_dimensions['A'].width = 70 #Test Case ID
-    sheet.column_dimensions['B'].width = 15 #File Name
-    sheet.column_dimensions['C'].width = 18 #Directory Name
-    sheet.column_dimensions['D'].width = 18 #Category
-    sheet.column_dimensions['E'].width = 18 #Sub-Category
-    sheet.column_dimensions['F'].width = 18 #OverAll Results
-    sheet.column_dimensions['G'].width = 18 #TC Execution
-    sheet.column_dimensions['H'].width = 15 #API Val
-    sheet.column_dimensions['I'].width = 15 #DB Val
-    sheet.column_dimensions['J'].width = 15 #Portal Val
-    sheet.column_dimensions['K'].width = 15 #App Val
-    sheet.column_dimensions['L'].width = 15 #UI Val
-    sheet.column_dimensions['M'].width = 22 #Execution Time (sec)
-    sheet.column_dimensions['N'].width = 22 #Validation Time (sec)
-    sheet.column_dimensions['O'].width = 22 #Log Coll Time (sec)
-    sheet.column_dimensions['P'].width = 18 #Total Time (sec)
-    sheet.column_dimensions['Q'].width = 18 #Rerun Attempts
-
-
-    # Set background color and font style
-    fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')
-    font = Font(size=11, bold=True, color="121103")
-
-    for x in range(1, sheet.max_column + 1):
-        sheet.cell(row=1, column=x).font = font
-        sheet.cell(row=1, column=x).fill = fill_pattern
-
-    # Set border for all the cells
-    side = Side(border_style="thin", color="000000")
-
-    border = Border(left=side, right=side, top=side, bottom=side)
-    for column in range(1, sheet.max_column + 1):
-        for row in range(1, sheet.max_row + 1):
-            sheet.cell(row, column).border = border
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
 
 
 # @pytest.fixture(scope="session")  # Executing once before the first test case
@@ -220,10 +126,10 @@ def updatingHighLevelReportAfterEachTCS():
     if GlobalVariables.EXCEL_TC_Execution == 'Pass':
 
         # Pass or N/A
-        if GlobalVariables.str_api_val_result != 'Fail' and GlobalVariables.str_db_val_result != 'Fail' and GlobalVariables.str_portal_val_result != 'Fail' and GlobalVariables.str_ui_val_result != 'Fail':
+        if GlobalVariables.str_api_val_result != 'Fail' and GlobalVariables.str_app_val_result != 'Fail' and GlobalVariables.str_db_val_result != 'Fail' and GlobalVariables.str_portal_val_result != 'Fail' and GlobalVariables.str_ui_val_result != 'Fail':
             Overall_Status = 'Pass'
 
-        elif GlobalVariables.str_api_val_result == 'Fail' or GlobalVariables.str_db_val_result == 'Fail' or GlobalVariables.str_portal_val_result == 'Fail' or GlobalVariables.str_ui_val_result == 'Fail':
+        elif GlobalVariables.str_api_val_result == 'Fail' or GlobalVariables.str_app_val_result == 'Fail' or GlobalVariables.str_db_val_result == 'Fail' or GlobalVariables.str_portal_val_result == 'Fail' or GlobalVariables.str_ui_val_result == 'Fail':
             Overall_Status = 'Fail'
     elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
         Overall_Status = 'Fail'
@@ -369,15 +275,15 @@ def method_setup(request):
 
 def write_TC_Details_To_Dataframe():
     # breakpoint()
-    print("################", GlobalVariables.EXCEL_Portal_Val)
+    print("################", GlobalVariables.str_portal_val_result)
     TestCaseName = os.environ.get('PYTEST_CURRENT_TEST').replace(" (teardown)", '').replace("test_sample.py::",
                                                                                             '').replace("TestCase/", '')
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'TC Execution'] = GlobalVariables.EXCEL_TC_Execution
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'API Val'] = GlobalVariables.EXCEL_API_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'DB Val'] = GlobalVariables.EXCEL_DB_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Portal Val'] = GlobalVariables.EXCEL_Portal_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'App Val'] = GlobalVariables.EXCEL_App_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'UI Val'] = GlobalVariables.EXCEL_UI_Val
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'API Val'] = GlobalVariables.str_api_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'DB Val'] = GlobalVariables.str_db_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Portal Val'] = GlobalVariables.str_portal_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'App Val'] = GlobalVariables.str_app_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'UI Val'] = GlobalVariables.str_ui_val_result
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Execution Time (sec)'] = GlobalVariables.EXCEL_Execution_Time
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Validation Time (sec)'] = GlobalVariables.EXCEL_Val_time
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Log Coll Time (sec)'] = GlobalVariables.EXCEL_LogCollTime
