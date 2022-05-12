@@ -12,7 +12,7 @@ import chromedriver_autoinstaller
 from openpyxl.styles import Font, PatternFill, Side, Border
 
 import DataProvider.GlobalConstants
-from Utilities import ReportProcessor
+from Utilities import ReportProcessor, ResourceAssigner
 from PageFactory import Base_Actions
 from Configuration import TestSuiteSetup
 from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
@@ -399,18 +399,23 @@ def ui_driver(request):
 
 @pytest.fixture(scope="function")
 def appium_driver(request):
+    testcaseid = request.node.name
+    deviceDetails = ResourceAssigner.getDeviceFromDB(testcaseid)
+    appiumserverDetails = ResourceAssigner.getAppiumServerFromDB(testcaseid)
+    print(testcaseid+" will be using the device "+deviceDetails['DeviceId'])
+    print(testcaseid + " will be running on the appium server port " + appiumserverDetails['PortNumber'])
     desired_cap = {
         "platformName": "Android",
-        "deviceName": "0821045404",
-        "udid": "0821045404",
+        "deviceName": deviceDetails['DeviceId'],
+        "udid": deviceDetails['DeviceId'],
         "appPackage": "com.ezetap.basicapp",
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
-        "noReset": "true",
+        "noReset": "false",
         "autoGrantPermissions": "true",
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2"
     }
-    GlobalVariables.appDriver = app_webdriver.Remote("http://localhost:4723/wd/hub", desired_cap)
+    GlobalVariables.appDriver = app_webdriver.Remote('http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub', desired_cap)
     GlobalVariables.appDriver.implicitly_wait(30)
 
 def pytest_deselected(items):

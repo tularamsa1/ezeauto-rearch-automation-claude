@@ -1,18 +1,24 @@
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
+from Utilities import ResourceAssigner
 from Utilities import Rerun
-from Configuration import Configuration, TestSuiteSetup
 from Utilities import ConfigReader
-from Configuration import Configuration, TestSuiteSetup
+from Configuration import TestSuiteSetup
 
-# if both r enabled then add this condition: if configReader.read_config("Validations", "rerun_immediately").lower()
-# == "true" and configReader.read_config("Validations", "rerun_at_the_end").lower() == "false":
+ResourceAssigner.clearAssignerTables()
+TestSuiteSetup.startEmulators(3)
+devices = TestSuiteSetup.getDevicesList()
+appium_server_ports = TestSuiteSetup.startAppiumServers(len(devices))
+# # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
+ResourceAssigner.updateDevicesInDB(devices)
+ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
+# # ResourceAssigner.updateUsersInDB(users)
+
+
 TestSuiteSetup.prepare_Consolidated_List_Of_TestcasesFile()
 
 if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
     Rerun.prepareImmediateRerunExcel()
-
-# Rerun.suiteTriggringTime()
 
 TestSuiteSetup.executeSelectedTestCases()
 
@@ -26,3 +32,5 @@ if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "
         Rerun.setRerunCount("",rerunCount)
         Rerun.rerunTestAtTheEnd()
     Rerun.prepareAtTheEndRerunExcel()
+
+TestSuiteSetup.killAppiumServers()

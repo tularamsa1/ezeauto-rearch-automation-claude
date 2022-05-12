@@ -3,7 +3,9 @@ import sqlite3
 import time
 from datetime import datetime
 
-dbPath = '/home/ezetap-10182/PycharmProjects/Myframework/Database/ezeauto.db'
+from Utilities import ConfigReader
+
+dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
 
 def getDeviceFromDB(testCaseID):
     proceed = False
@@ -298,7 +300,7 @@ def clearAssignerTables():
         conn.commit()
         conn.close()
     except Exception as e:
-        print("Unable to clear the user tables due to error : "+e)
+        print("Unable to clear the user tables due to error : "+str(e))
         conn.close()
 
 """
@@ -311,7 +313,6 @@ Make sure the dictionary for each user contains the below two keys
 def updateUsersInDB(listOfDictionariesWithUserDetails : []):
     try:
         conn = sqlite3.connect(dbPath)
-        # conn = sqlite3.connect("/home/ezetap-10182/PycharmProjects/Automation/Database/ezeauto.db")
         cursor = conn.cursor()
         if len(listOfDictionariesWithUserDetails)>0:
             for userDetails in listOfDictionariesWithUserDetails:

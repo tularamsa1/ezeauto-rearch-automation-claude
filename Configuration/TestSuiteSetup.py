@@ -1,6 +1,13 @@
+import configparser
+import os
+import subprocess
+import time
+
+import pandas as pd
 import paramiko
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
+import Configuration
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -188,6 +195,74 @@ def killAppiumServers():
         print(e)
 
 
+def getDevicesList():
+    try:
+        adb_ouput = subprocess.check_output(["adb", "devices"])
+        encoding = 'utf-8'
+        devices = str(adb_ouput, encoding)
+        lst = (devices.split("\n"))
+        ListOfDevices = pd.DataFrame(lst)
+        ListOfDevices.columns = ["devices"]
+
+        try:
+            ListOfDevices[["device", "status"]] = ListOfDevices.devices.str.split(pat="\t",expand=True)
+            DevicesList = pd.DataFrame().assign(Devices=ListOfDevices['device'], Status=ListOfDevices['status'])
+            print('\n')
+            #this will remove the rows with empty cells.
+            DevicesList.dropna(inplace = True)
+            # rows, columns = DevicesList.shape
+            l2=[]
+            for index, row in DevicesList.iterrows():
+                if row["Status"] == "device":
+                    l1 = [row["Devices"]]
+                    l2.append(l1)
+                else:
+                    print("Device in not connected properly or "+row["Devices"]+" is unauthorized.\n")
+            flat_list = [item for sublist in l2 for item in sublist]
+            print("Available devices are: ", flat_list)
+            #Convert list to Dataframe
+            #==========================
+            # AvailableDevices = pd.DataFrame(res)
+            # print(AvailableDevices)
+            return flat_list
+
+        except:
+            print("No devices connected.")
+
+    except subprocess.CalledProcessError as e:
+        print("No devices connected.")
+        print(e.returncode)
+
+
+def startEmulators(noOfEmulatorsToStart):
+    try:
+        b=1
+        adb_ouput = subprocess.check_output(["emulator", "-list-avds"])
+        encoding = 'utf-8'
+        devices = str(adb_ouput, encoding)
+        lst = (devices.split("\n"))
+        emulatorsList = ' '.join(lst).split()
+        emulatorsCount = len(emulatorsList)
+
+        if noOfEmulatorsToStart <= emulatorsCount:
+            for emulator in emulatorsList:
+                if b <= noOfEmulatorsToStart:
+                    try:
+                        os.system(os.getenv("ANDROID_HOME")+"/emulator/emulator -avd "+emulator+" &")
+                        print(emulator+" started successfully")
+                        b += 1
+
+                    except Exception as e:
+                        print(str(e))
+                else:
+                    break
+            time.sleep(5)
+        else:
+            print("Configured Emulators are less than no of processes.")
+    except Exception as e:
+        print(e)
+
+
 def prepare_Consolidated_List_Of_TestcasesFile():
     df_all_rows = pd.DataFrame()
 
@@ -223,10 +298,33 @@ def executeSelectedTestCases():
     os.system(prepareTestExecutionCommand(df_testcases))
 
 
+def calculateTestCasesCountForParallelExecution():
+    config = configparser.ConfigParser()
+    config.read(ConfigReader.read_config_paths("System","automation_suite_path")+"/Configuration/config.ini")
+    testCasesCount = config.get("ParallelExecution","NumberOfTestCases")
+    try:
+        testCasesCount = int(testCasesCount)
+        if testCasesCount < 0:
+            testCasesCount = 0
+        elif testCasesCount > 5:
+            print("Maximum of only 5 test cases can be run in parallel.")
+            testCasesCount = 5
+    except Exception as e:
+        print("Count of test cases is configured with a non-integer value. Hence sequential execution is initiated.")
+        testCasesCount = 0
+    if testCasesCount == 0 or testCasesCount == 1:
+        return ""
+    else:
+        return "-n"+str(testCasesCount)+" "
+
+
+
 def prepareTestExecutionCommand(testCasesDetailDataFrame):
+
     commandString = "pytest -v -s "
     for ind in testCasesDetailDataFrame.index:
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
     commandString = commandString + getValidationConfig() + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
+    commandString = commandString + getValidationConfig() +" "+calculateTestCasesCountForParallelExecution()+'--alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
     print(commandString)
     return commandString

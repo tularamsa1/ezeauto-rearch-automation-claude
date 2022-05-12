@@ -1,11 +1,17 @@
-# Added on Apr 11
+from DataProvider import GlobalVariables
+from Utilities import ReportProcessor, ResourceAssigner
+import configparser
 
-# def executeSelectedTestCases():
-#     df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
-#     df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
-#     os.system(prepareTestExecutionCommand(df_testcases))
 
-# Preparing Report excel
-# Initiating pytest execution
+def configureLogCaptureVariables(apiLog : bool, portalLog : bool, cnpwareLog : bool, middlewareLog : bool):
+    GlobalVariables.apiLogs = apiLog
+    GlobalVariables.portalLogs = portalLog
+    GlobalVariables.cnpWareLogs = cnpwareLog
+    GlobalVariables.middleWareLogs = middlewareLog
 
+def executeFinallyBlock(testcaseID):
+    ReportProcessor.createStatusTable()
+    ResourceAssigner.releaseUserInDBUsingTestCaseID(testcaseID)
+    ResourceAssigner.releaseDeviceInDBusingTestCaseID(testcaseID)
+    ResourceAssigner.releaseAppiumServerInDBUsingTestCaseID(testcaseID)
 
