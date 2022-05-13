@@ -1,3 +1,5 @@
+import time
+
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
 from Utilities import ResourceAssigner
@@ -5,15 +7,16 @@ from Utilities import Rerun
 from Utilities import ConfigReader
 from Configuration import TestSuiteSetup
 
-ResourceAssigner.clearAssignerTables()
-TestSuiteSetup.startEmulators(3)
-devices = TestSuiteSetup.getDevicesList()
-appium_server_ports = TestSuiteSetup.startAppiumServers(len(devices))
-# # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
-ResourceAssigner.updateDevicesInDB(devices)
-ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
+# ResourceAssigner.clearAssignerTables()
+# TestSuiteSetup.startEmulators(TestSuiteSetup.getThreadCount())
+# #time.sleep(15)
+# devices = TestSuiteSetup.getDevicesList()
+# appium_server_ports = TestSuiteSetup.startAppiumServers(len(devices))
+# # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
+# ResourceAssigner.updateDevicesInDB(devices)
+# ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
 # # ResourceAssigner.updateUsersInDB(users)
-
+TestSuiteSetup.prepareDevicesAndDB()
 
 TestSuiteSetup.prepare_Consolidated_List_Of_TestcasesFile()
 

@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytest
 
+from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -15,7 +16,7 @@ from Utilities import Validator, ReportProcessor, ConfigReader
 def test_UI_SA_AutoLogin_Enabled_01():
     try:
         # Set the below variables depending on the log capturing need of the test case.
-        #Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, MiddlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, MiddlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -43,7 +44,7 @@ def test_UI_SA_AutoLogin_Enabled_01():
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
-            pytest.fail("Test case execution failed due to the exception -"+e)
+            pytest.fail("Test case execution failed due to the exception -"+str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
@@ -68,7 +69,7 @@ def test_UI_SA_AutoLogin_Enabled_01():
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                print("App Validation failed due to exception - "+e)
+                print("App Validation failed due to exception - "+str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -83,7 +84,7 @@ def test_UI_SA_AutoLogin_Enabled_01():
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
             except Exception as e:
-                print("API Validation failed due to exception - "+e)
+                print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -102,7 +103,7 @@ def test_UI_SA_AutoLogin_Enabled_01():
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
             except Exception as e:
-                print("DB Validation failed due to exception - "+e)
+                print("DB Validation failed due to exception - "+str(e))
                 msg = msg + "DB Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -121,7 +122,7 @@ def test_UI_SA_AutoLogin_Enabled_01():
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                print("Portal Validation failed due to exception - "+e)
+                print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -132,4 +133,4 @@ def test_UI_SA_AutoLogin_Enabled_01():
 
     finally:
         ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # executeFinallyBlock()
+        Configuration.executeFinallyBlock("test_UI_SA_AutoLogin_Enabled_01")

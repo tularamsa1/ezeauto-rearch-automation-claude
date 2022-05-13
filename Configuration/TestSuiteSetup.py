@@ -25,7 +25,7 @@ import paramiko
 from appium.webdriver.appium_service import AppiumService
 
 from DataProvider import GlobalVariables
-from Utilities import ConfigReader, DirectoryCreator
+from Utilities import ConfigReader, DirectoryCreator, ResourceAssigner
 
 
 def prepareTestCaseDetailsDataFrame(path):
@@ -219,11 +219,11 @@ def getDevicesList():
                 else:
                     print("Device in not connected properly or "+row["Devices"]+" is unauthorized.\n")
             flat_list = [item for sublist in l2 for item in sublist]
+            if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
+                for item in flat_list:
+                    if item.__contains__("emulator"):
+                        flat_list.remove(item)
             print("Available devices are: ", flat_list)
-            #Convert list to Dataframe
-            #==========================
-            # AvailableDevices = pd.DataFrame(res)
-            # print(AvailableDevices)
             return flat_list
 
         except:
@@ -256,7 +256,7 @@ def startEmulators(noOfEmulatorsToStart):
                         print(str(e))
                 else:
                     break
-            time.sleep(5)
+            #time.sleep(50)
         else:
             print("Configured Emulators are less than no of processes.")
     except Exception as e:
@@ -324,7 +324,41 @@ def prepareTestExecutionCommand(testCasesDetailDataFrame):
     commandString = "pytest -v -s "
     for ind in testCasesDetailDataFrame.index:
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
-    commandString = commandString + getValidationConfig() + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
     commandString = commandString + getValidationConfig() +" "+calculateTestCasesCountForParallelExecution()+'--alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
     print(commandString)
     return commandString
+
+def getThreadCount():
+    config = configparser.ConfigParser()
+    config.read(ConfigReader.read_config_paths("System","automation_suite_path")+"/Configuration/config.ini")
+    testCasesCount = config.get("ParallelExecution","NumberOfTestCases")
+    try:
+        testCasesCount = int(testCasesCount)
+        if testCasesCount < 1:
+            testCasesCount = 1
+        elif testCasesCount > 5:
+            print("Maximum of only 5 test cases can be run in parallel.")
+            testCasesCount = 5
+    except Exception as e:
+        print("Count of test cases is configured with a non-integer value. Hence sequential execution is initiated.")
+        testCasesCount = 1
+    return testCasesCount
+
+def prepareDevicesAndDB():
+
+    global devices, appiumServerCount
+    if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
+        devices = getDevicesList()
+        appiumServerCount = len(devices) + 1
+    else:
+        devices = getDevicesList()
+        additionalEmulatorsRequired = getThreadCount() - len(devices)
+        if (additionalEmulatorsRequired > 0):
+            startEmulators(additionalEmulatorsRequired)
+        appiumServerCount = getThreadCount() + 1
+    appium_server_ports = startAppiumServers(appiumServerCount)
+    # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
+    ResourceAssigner.clearAssignerTables()
+    ResourceAssigner.updateDevicesInDB(devices)
+    ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
+    # # ResourceAssigner.updateUsersInDB(users)

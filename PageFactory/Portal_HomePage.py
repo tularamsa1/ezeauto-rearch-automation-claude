@@ -1,3 +1,5 @@
+from time import sleep
+
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from PageFactory.Portal_BasePage import BasePage
@@ -38,7 +40,7 @@ class PortalHomePage(BasePage):
         return self.fetch_text(self.lbl_status)
 
     def click_charge_slip_of_transaction(self):
-        self.driver.implicitly_wait(10)
+        sleep(5)
         self.perform_click(self.lbl_date)
         self.perform_click(self.btn_chargeSlip)
         self.driver.switch_to.window(self.driver.window_handles[1])

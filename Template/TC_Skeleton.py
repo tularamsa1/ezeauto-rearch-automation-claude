@@ -17,12 +17,10 @@ from Utilities import Validator, ReportProcessor, ConfigReader
 def test_SubFeatureCode(): #Make sure to add the test case name as same as the sub feature code.
     try:
         # Set the below variables depending on the log capturing need of the test case.
-        # Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, MiddlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
-        global bool_val_exe
-        bool_val_exe = True
         msg = ""
 
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -44,6 +42,26 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
         # -----------------------------------------Start of Validation----------------------------------------
         current = datetime.now()
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                expectedAppValues = {}
+                #
+                # Write the test case app validation code block here. Set this to pass if not required.
+                #
+                actualAppValues = {}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
+            except Exception as e:
+                print("App Validation failed due to exception - " + str(e))
+                msg = msg + "App Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_app_val_result="Fail"
+
+        # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
@@ -58,7 +76,9 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
-                bool_val_exe = False
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_api_val_result= "Fail"
+
 
         # -----------------------------------------End of API Validation---------------------------------------
 
@@ -76,7 +96,9 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
             except Exception as e:
                 print("DB Validation failed due to exception - "+str(e))
                 msg = msg + "DB Validation did not complete due to exception.\n"
-                bool_val_exe = False
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_db_val_result= 'Fail'
+
 
         # -----------------------------------------End of DB Validation---------------------------------------
 
@@ -94,27 +116,11 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
             except Exception as e:
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
-                bool_val_exe = False
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
 
-        # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            try:
-                # --------------------------------------------------------------------------------------------
-                expectedAppValues = {}
-                #
-                # Write the test case app validation code block here. Set this to pass if not required.
-                #
-                actualAppValues = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
-            except Exception as e:
-                print("App Validation failed due to exception - "+str(e))
-                msg = msg + "App Validation did not complete due to exception.\n"
-                bool_val_exe = False
-
-        # -----------------------------------------End of App Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 

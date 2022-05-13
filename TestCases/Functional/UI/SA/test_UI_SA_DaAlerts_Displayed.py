@@ -1,74 +1,127 @@
 from datetime import datetime
 import pytest
-
-import Utilities.ReportProcessor
-import Utilities.Validator
-from DataProvider import GlobalVariables
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from DataProvider.config import TestData
-from TestCases import setUp
 from Utilities.ConfigReader import read_config
+from Configuration import Configuration
+from DataProvider import GlobalVariables
+from Utilities import Validator, ReportProcessor, ConfigReader
 
 
-@pytest.mark.usefixtures("log_on_success")
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.usefixtures("appium_driver")
 @pytest.mark.appVal
-def test_UI_SA_DaAlerts_Displayed_01(method_setup, appium_driver):
-
-    GlobalVariables.apiLogs = True
-    GlobalVariables.portalLogs = True
-    GlobalVariables.cnpWareLogs = False
-    GlobalVariables.middleWareLogs = False
-    print("Inside test case 1 ")
-    global success_Val_Execution
-    success_Val_Execution = True
-
+def test_UI_SA_DaAlerts_Displayed_01():
     try:
+        global bool_val_exe
+        bool_val_exe = True
+        msg = ""
 
-        driver = GlobalVariables.appDriver
-        loginPage = LoginPage(driver)
-        username = read_config("credentials", 'username_dev11')
-        password = read_config("credentials", 'password_dev11')
-        loginPage.perform_login(username, password)
-        homePage = HomePage(driver)
-        homepage_text = homePage.check_home_page_logo()
-        assert homepage_text == TestData.HOMEPAGE_TEXT
-        homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
+        #-----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            # ------------------------------------------------------------------------------------------------
+            #
+            driver = GlobalVariables.appDriver
+            loginPage = LoginPage(driver)
+            username = read_config("credentials", 'username_dev11')
+            password = read_config("credentials", 'password_dev11')
+            loginPage.perform_login(username, password)
+            homePage = HomePage(driver)
+            homepage_text = homePage.check_home_page_logo()
+            assert homepage_text == TestData.HOMEPAGE_TEXT
+            homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
+            paymentPage = PaymentPage(driver)
+            da_message = paymentPage.fetch_da_alert_message()
+            #
+            # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+        except Exception as e:
+            GlobalVariables.EXCEL_TC_Execution = "Fail"
+            GlobalVariables.Incomplete_ExecutionCount += 1
+            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+            pytest.fail("Test case execution failed due to the exception -"+str(e))
+        # -----------------------------------------End of Test Execution--------------------------------------
 
-        Utilities.ReportProcessor.get_TC_Exe_Time()
-    except:
-        Utilities.ReportProcessor.get_TC_Exe_Time()
-        print("Testcase did not complete due to exception in testcase execution")
-        print("")
-        GlobalVariables.EXCEL_TC_Execution = "Fail"
-        pytest.fail()
-    else:
-        #validation execution part
-        paymentPage = PaymentPage(driver)
-        da_message = paymentPage.fetch_da_alert_message()
-        print(da_message)
-        #Validation Part
-        GlobalVariables.EXCEL_TC_Execution = "Pass"
+        # -----------------------------------------Start of Validation----------------------------------------
         current = datetime.now()
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
-        #"actual:expected,actual2:expected2,actual3:expected3"
-        try:
-            expectedAPPValues = da_message+":"+ TestData.DA_ALERT_MESSAGE
-            #expectedAPPval = {"message":TestData.DA_ALERT_MESSAGE}
-            #actualAPPval = {"message":da_message}
-        except:
-            print("APP Validation did not complete due to exception")
-            print("")
-            expectedAPPValues = "Failed"
-            GlobalVariables.EXCEL_App_Val = "Fail"
-            success_Val_Execution = False
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                expectedAppValues = {"Message": TestData.DA_ALERT_MESSAGE}
+                #
+                actualAppValues = {"Message": da_message}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
+            except Exception as e:
+                print("App Validation failed due to exception - " + str(e))
+                msg = msg + "App Validation did not complete due to exception.\n"
+                bool_val_exe = False
 
-        success = Utilities.Validator.validateValues("", "", "", expectedAPPValues)
-        #success = setUp.validateValues("","","","","","",expectedAPPval,actualAPPval)
-        if success_Val_Execution == False:
-            if success == False:
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                expectedAPIValues = {}
+                #
                 pass
-            else:
-                pytest.fail()
+                #
+                actualAPIValues = {}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
+            except Exception as e:
+                print("API Validation failed due to exception - "+str(e))
+                msg = msg + "API Validation did not complete due to exception.\n"
+                bool_val_exe = False
+
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                expectedDBValues = {}
+                #
+                pass
+                #
+                actualDBValues = {}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
+            except Exception as e:
+                print("DB Validation failed due to exception - "+str(e))
+                msg = msg + "DB Validation did not complete due to exception.\n"
+                bool_val_exe = False
+
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                expectedPortalValues = {}
+                #
+                pass
+                #
+                actualPortalValues = {}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
+            except Exception as e:
+                print("Portal Validation failed due to exception - "+str(e))
+                msg = msg + "Portal Validation did not complete due to exception.\n"
+                bool_val_exe = False
+
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
+
+    # -------------------------------------------End of Validation---------------------------------------------
+
+    finally:
+        ReportProcessor.updateTestCaseResult(msg)
+        Configuration.executeFinallyBlock("test_UI_SA_DaAlerts_Displayed_01")

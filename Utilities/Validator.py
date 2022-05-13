@@ -209,7 +209,7 @@ def validateAgainstUI(values):
 def validateAgainstPortal(expectedPortal, actualPortal):
     if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
         print("=======   PORTAL Validation Started    =======")
-        if len(expectedPortal) == len(actualPortal) and expectedPortal != "" and actualPortal != ""  and expectedPortal != "Failed" and actualPortal != "Failed":
+        if len(expectedPortal) == len(actualPortal) and expectedPortal != {} and actualPortal != {}  and expectedPortal != "Failed" and actualPortal != "Failed":
             GlobalVariables.str_portal_val_result = "Pass" # To update the testcase result in the Excel report & Validation Table.
             GlobalVariables.bool_ss_portal_val = "Passed"
             for key in expectedPortal:
@@ -227,7 +227,7 @@ def validateAgainstPortal(expectedPortal, actualPortal):
                     print("Both expected and actual dictionary are having different keys")
                     GlobalVariables.str_portal_val_result = "Fail"
                     break
-        elif expectedPortal == "" or actualPortal == "":
+        elif expectedPortal == {} or actualPortal == {}:
             GlobalVariables.str_portal_val_result = "N/A"
         elif len(expectedPortal) == len(actualPortal) and expectedPortal != "" and actualPortal != ""  and expectedPortal != "Failed" or actualPortal != "Failed":
             print("Both expected and actual dictionary are having different no. of keys")
@@ -244,7 +244,7 @@ def validateAgainstPortal(expectedPortal, actualPortal):
 def validateAgainstAPP(expectedApp, actualApp):
     if (ConfigReader.read_config("Validations", "app_validation")) == "True":
         print("=======   APP Validation Started    =======")
-        if len(expectedApp) == len(actualApp) and expectedApp != "" and actualApp != "" and expectedApp != "Failed" and actualApp != "Failed":
+        if len(expectedApp) == len(actualApp) and expectedApp != {} and actualApp != {} and expectedApp != "Failed" and actualApp != "Failed":
             GlobalVariables.str_app_val_result = "Pass"
             GlobalVariables.bool_ss_app_val = "Passed"
             for key in expectedApp:
@@ -262,7 +262,7 @@ def validateAgainstAPP(expectedApp, actualApp):
                     print("Both expected and actual dictionary are having different keys")
                     GlobalVariables.str_app_val_result = "Fail"
                     break
-        elif expectedApp == "" or actualApp == "" or expectedApp is None or actualApp is None:
+        elif expectedApp == {} or actualApp == {} or expectedApp is None or actualApp is None:
             GlobalVariables.str_app_val_result = "N/A"
         elif len(expectedApp) == len(actualApp) and expectedApp != "" and actualApp != "" and expectedApp != "Failed" or actualApp != "Failed":
             print("Both expected and actual dictionary are having different no. of keys")
@@ -312,7 +312,7 @@ def validationAgainstAPI(expectedAPI, actualAPI):
 def validateAgainstDB(expectedDB, actualDB):
     if (ConfigReader.read_config("Validations", "db_validation")) == "True":
         print("=======   DB Validation Started    =======")
-        if len(expectedDB) == len(actualDB) and expectedDB != "" and actualDB != "" and expectedDB != "Failed" and actualDB != "Failed":
+        if len(expectedDB) == len(actualDB) and expectedDB != {} and actualDB != {} and expectedDB != "Failed" and actualDB != "Failed":
             GlobalVariables.str_db_val_result = "Pass"
             for key in expectedDB:
                 if key in actualDB:
@@ -328,7 +328,7 @@ def validateAgainstDB(expectedDB, actualDB):
                     print("Both expected and actual dictionary are having different keys")
                     GlobalVariables.str_db_val_result = "Fail"
                     break
-        elif expectedDB == "" or actualDB == "":
+        elif expectedDB == {} or actualDB == {}:
             GlobalVariables.str_db_val_result = "N/A"
         elif len(expectedDB) != len(actualDB) and expectedDB != "" and actualDB != "" and expectedDB != "Failed" or actualDB != "Failed":
             print("Both expected and actual dictionary are having different no. of keys")

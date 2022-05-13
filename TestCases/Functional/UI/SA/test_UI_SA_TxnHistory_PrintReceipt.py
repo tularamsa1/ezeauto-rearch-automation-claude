@@ -8,7 +8,6 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from DataProvider.config import TestData
 from DataProvider import GlobalVariables
-from TestCases import setUp
 from Utilities.ConfigReader import read_config
 
 

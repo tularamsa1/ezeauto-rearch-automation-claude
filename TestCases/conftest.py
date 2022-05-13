@@ -321,8 +321,9 @@ def appium_driver(request):
         "autoGrantPermissions": "true",
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2"
     }
+    print("appum server url:", 'http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub')
     GlobalVariables.appDriver = app_webdriver.Remote('http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub', desired_cap)
-    GlobalVariables.appDriver.implicitly_wait(30)
+#    GlobalVariables.appDriver.implicitly_wait(30)
 
 def pytest_deselected(items):
     print("INSIDE DESELCTED METHOD")

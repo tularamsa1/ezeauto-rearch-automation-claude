@@ -1,5 +1,7 @@
 from datetime import datetime
 import pytest
+
+from Configuration import Configuration
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
@@ -22,7 +24,7 @@ from Utilities import Validator, ReportProcessor, ConfigReader, APIProcessor, DB
 def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as same as the sub feature code.
     try:
         # Set the below variables depending on the log capturing need of the test case.
-        # Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, MiddlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -64,7 +66,7 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
-            pytest.fail("Test case execution failed due to the exception -"+e)
+            pytest.fail("Test case execution failed due to the exception -"+str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
@@ -87,7 +89,7 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                print("App Validation failed due to exception - " + e)
+                print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -114,7 +116,7 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
             except Exception as e:
-                print("API Validation failed due to exception - "+e)
+                print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -138,7 +140,7 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
             except Exception as e:
-                print("DB Validation failed due to exception - "+e)
+                print("DB Validation failed due to exception - "+str(e))
                 msg = msg + "DB Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -166,7 +168,7 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                print("Portal Validation failed due to exception - "+e)
+                print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 bool_val_exe = False
 
@@ -177,5 +179,5 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
 
     finally:
         ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # executeFinallyBlock()
+        Configuration.executeFinallyBlock("test_UI_SA_CheckStatus_UPI_01")
 
