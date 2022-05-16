@@ -48,7 +48,11 @@ class HomePage(BasePage):
         super().__init__(driver)
 
     def check_home_page_logo(self):
+<<<<<<< HEAD
         return self.fetch_text(self.lbl_home)
+=======
+        return self.fetch_text(self.lbl_home, 50)
+>>>>>>> second commit
 
     def check_home_page_for_invalid_Login(self):
         return self.fetch_text(self.lbl_home, 5)
