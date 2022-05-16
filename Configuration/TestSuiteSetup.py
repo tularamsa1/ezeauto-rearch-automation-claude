@@ -347,15 +347,14 @@ def getThreadCount():
 def prepareDevicesAndDB():
 
     global devices, appiumServerCount
+    devices = getDevicesList()
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
-        devices = getDevicesList()
         if devices == None:
-            print("No physical device is configured. So cannot start the execution since device only option is configured.")
+            print("No physical device is connected. So cannot start the execution since device only option is configured.")
             return False
         else:
             appiumServerCount = len(devices) + 1
     else:
-        devices = getDevicesList()
         if devices == None:
             additionalEmulatorsRequired = getThreadCount()
         else:
@@ -367,7 +366,11 @@ def prepareDevicesAndDB():
     appium_server_ports = startAppiumServers(appiumServerCount)
     # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
     ResourceAssigner.clearAssignerTables()
-    ResourceAssigner.updateDevicesInDB(devices)
+    devices = getDevicesList()
+    if devices == None :
+        print("No devices available. Hence DB update operation for adding devices is skipped.")
+    else:
+        ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
     # # ResourceAssigner.updateUsersInDB(users)
     return True
