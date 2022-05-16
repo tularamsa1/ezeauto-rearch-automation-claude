@@ -1,11 +1,13 @@
-import os
-import datetime
 import configparser
-from Utilities import configReader
+from Utilities import ConfigReader
+import datetime
+import os
+from os.path import dirname, abspath
 
-automationSuitePath = configReader.read_config("System","automation_suite_path")
 
-def createReportDirectories(currentDate, currentTime):
+#automationSuitePath = ConfigReader.read_config("System","automation_suite_path")
+
+def createReportDirectories(currentDate, currentTime, automationSuitePath):
     try:
         reportDir = {}
         os.chdir(automationSuitePath)
@@ -27,10 +29,11 @@ def createReportDirectories(currentDate, currentTime):
             currentPath = currentPath.replace("/"+directory, "")
         return reportDir
     except Exception as e:
+        print("Unable to create the report directories due to error "+str(e))
         return None
-        print("Unable to create the report directories due to error "+e)
 
-def createLogDirectories(currentDate, currentTime):
+
+def createLogDirectories(currentDate, currentTime, automationSuitePath):
     try:
         logDir = {}
         os.chdir(automationSuitePath)
@@ -53,11 +56,11 @@ def createLogDirectories(currentDate, currentTime):
             currentPath = currentPath.replace("/" + directory, "")
         return logDir
     except Exception as e:
+        print("Unable to create the log directories due to error "+str(e))
         return None
-        print("Unable to create the log directories due to error "+e)
 
 
-def createExecutionDirectoriesConfigurationFile(currentDate, currentTime):
+def createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automationSuitePath):
     try:
         os.chdir(automationSuitePath)
         currentPath = automationSuitePath + "/" + "Configuration"
@@ -65,7 +68,9 @@ def createExecutionDirectoriesConfigurationFile(currentDate, currentTime):
             os.mkdir(currentPath)
         os.chdir(currentPath)
         config = configparser.ConfigParser()
-        config['Stamp'] = {"Datestamp" : currentDate, "Timestamp" : currentTime}
+        config['Stamp'] = {"Datestamp": currentDate, "Timestamp": currentTime}
+        config['System'] = {"automation_suite_path": automationSuitePath}
+        config['ExcelFiles'] = {"FilePath_testcases_surfaceUI": automationSuitePath+"/DataProvider/TestCases_SurfaceUI.xlsx", "FilePath_TestCasesDetail": automationSuitePath+"/DataProvider/TestCasesDetail.xlsx"}
         config['Reports'] = {"ExcelReportPath" : "","AllureReportPath" : "","PDFReportPath" : ""}
         config['Logs'] = {"ExecutionLogPath" : "", "ServerLogPath" : ""}
         currentPath = currentPath+"/"+'ExecutionDirectories.conf'
@@ -76,19 +81,22 @@ def createExecutionDirectoriesConfigurationFile(currentDate, currentTime):
         print("Unable to create Execution directories configuration file")
         return None
 
+
 def createExecutionDirectories():
     try:
+        automation_suite_path = dirname(dirname(abspath("./config.ini")))
+        print("automation_suite_path", automation_suite_path)
         currentDateTime = datetime.datetime.now()
         currentDate = currentDateTime.strftime("%Y-%m-%d")
         currentTime = currentDateTime.strftime("%H:%M:%S")
-        filePath = createExecutionDirectoriesConfigurationFile(currentDate, currentTime)
-        directories = createReportDirectories(currentDate, currentTime)
+        filePath = createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automation_suite_path)
+        directories = createReportDirectories(currentDate, currentTime, automation_suite_path)
         config = configparser.ConfigParser()
         config.read(filePath)
         config.set('Reports', 'excelreportpath', directories['ExcelReport'])
         config.set('Reports', 'allurereportpath', directories['AllureReport'])
         config.set('Reports', 'pdfreportpath', directories['PDFReport'])
-        directories = createLogDirectories(currentDate, currentTime)
+        directories = createLogDirectories(currentDate, currentTime, automation_suite_path)
         config.set('Logs', 'executionlogpath', directories['ExecutionLog'])
         config.set('Logs', 'serverlogpath', directories['ServerLog'])
         with open(filePath,'w') as configFile:
@@ -107,7 +115,10 @@ Following values can only be passed as arguments.
 4. ExecutionLog
 5. ServerLog
 """
+
+
 def getDirectoryPath(directoryName):
+    automationSuitePath = ConfigReader.read_config_paths("System", "automation_suite_path")
     filePath = automationSuitePath+"/Configuration/ExecutionDirectories.conf"
     if os.path.isfile(filePath):
         try:

@@ -9,19 +9,20 @@ from selenium import webdriver
 from appium import webdriver as app_webdriver
 from datetime import datetime
 import chromedriver_autoinstaller
-from openpyxl.styles import Font, PatternFill, Side, Border
 
+import DataProvider.GlobalConstants
+from Utilities import ReportProcessor, ResourceAssigner
 from PageFactory import Base_Actions
-from Utilities import configReader, DirectoryCreator
-from TestCases import server_logs, setUp, Rerun
-#from Pages import Base_Actions
-from Configuration import  Configuration
-from TestCases.server_logs import env
+from Configuration import TestSuiteSetup
+from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
 from pathlib import Path
 import openpyxl
 import pytest
 from DataProvider import GlobalVariables
-from TestCases import ExcelProcessor
+from Utilities import ExcelProcessor
+from Utilities.ReportProcessor import revert_excel_global_variables, setStylesForExcel, \
+    updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
+
 tests_count = 0
 passed1 = 0
 failed1 = 0
@@ -34,10 +35,10 @@ now = datetime.now()
 starting_time = now.strftime("%H:%M:%S")
 
 # router_ip = '192.168.3.73'    #dev3
-router_ip = '192.168.3.81'    #dev11
-router_username = 'vineethb'
-router_port = 22
-key_filename = '/home/oem/.ssh/vineeth_ssh'
+router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
+router_username = Base_Actions.get_environment("str_ssh_username")
+router_port = Base_Actions.get_environment("int_exe_env_port")
+key_filename = Base_Actions.get_environment("str_ssh_key_filename")
 ssh = paramiko.SSHClient()
 
 
@@ -67,114 +68,29 @@ def pytest_runtest_makereport(item, call):
 
 
 
-def revert_excel_global_variables():
-    GlobalVariables.EXCEL_TC_Exe_Starting_Time = 00
-    GlobalVariables.EXCEL_TC_Exe_completed_time = 00
-
-    GlobalVariables.EXCEL_TC_Val_Starting_Time = 00
-    GlobalVariables.EXCEL_TC_Val_completed_time = 00
-
-    GlobalVariables.EXCEL_TC_LogColl_Starting_Time = 00
-    GlobalVariables.EXCEL_TC_LogColl_completed_time = 00
-    GlobalVariables.EXCEL_TC_Execution = "Skip"
-    GlobalVariables.EXCEL_API_Val = "N/A"
-    GlobalVariables.EXCEL_DB_Val = "N/A"
-    GlobalVariables.EXCEL_Portal_Val = "N/A"
-    GlobalVariables.EXCEL_App_Val = "N/A"
-    GlobalVariables.EXCEL_UI_Val = "N/A"
-
-
-def setStylesForExcel():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    max_row = sheet.max_row
-
-    colNum_overall = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-    colNum_execution = ExcelProcessor.getColumnNumberFromName("", sheet, 'TC Execution')
-    colNum_apiVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'API Val')
-    colNum_dbVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'DB Val')
-    colNum_portalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
-    colNum_appVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
-    colNum_uiVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
-
-    column_list = [colNum_overall, colNum_execution, colNum_apiVal, colNum_dbVal, colNum_portalVal, colNum_appVal, colNum_uiVal]
-
-    for column in column_list:
-        for row in range(2, max_row + 1):
-            if sheet.cell(row, column).value == "Pass":
-                sheet.cell(row, column).fill = PatternFill(start_color='90EE90', end_color='90EE90', fill_type='solid')
-            elif sheet.cell(row, column).value == "Fail":
-                sheet.cell(row, column).fill = PatternFill(start_color='FF6347', end_color='FF6347', fill_type='solid')
-
-    for i in range(2, sheet.max_row + 1):
-        colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-        if sheet.cell(row=i, column=colNum_overallStatus).value == "Broken":
-            sheet.cell(row=i, column=colNum_overallStatus).fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
-
-        if sheet.cell(row=i, column=colNum_overallStatus).value == "Deselected":
-            sheet.cell(row=i, column=colNum_overallStatus).fill = PatternFill(start_color='FFA500', end_color='FFA500', fill_type='solid')
-
-
-
-    # Set width for all cells
-    sheet.column_dimensions['A'].width = 70 #Test Case ID
-    sheet.column_dimensions['B'].width = 15 #File Name
-    sheet.column_dimensions['C'].width = 18 #OverAll Results
-    sheet.column_dimensions['D'].width = 15 #TC Execution
-    sheet.column_dimensions['E'].width = 15 #API Val
-    sheet.column_dimensions['F'].width = 15 #DB Val
-    sheet.column_dimensions['G'].width = 15 #Portal Val
-    sheet.column_dimensions['H'].width = 15 #App Val
-    sheet.column_dimensions['I'].width = 15 #UI Val
-    sheet.column_dimensions['J'].width = 22 #Execution Time
-    sheet.column_dimensions['K'].width = 22 #Validation Time
-    sheet.column_dimensions['L'].width = 20 #Log Coll Time
-    sheet.column_dimensions['M'].width = 17 #Total Time
-
-
-    # Set background color and font style
-    fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')
-    font = Font(size=11, bold=True, color="121103")
-
-    for x in range(1, sheet.max_column):
-        sheet.cell(row=1, column=x).font = font
-        sheet.cell(row=1, column=x).fill = fill_pattern
-
-    # Set border for all the cells
-    side = Side(border_style="thin", color="000000")
-
-    border = Border(left=side, right=side, top=side, bottom=side)
-    for column in range(1, sheet.max_column + 1):
-        for row in range(1, sheet.max_row + 1):
-            sheet.cell(row, column).border = border
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
-
-
-@pytest.fixture(scope="session")  # Executing once before the first test case
-def session_setup(request):
-    print("Session setup level")
-    server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
-
-    # global appium_service
-    # appium_service = AppiumService()
-    # appium_service.start()
-
-    Configuration.prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
-
-    # Executing once after the last test case
-    def fin():
-        # appium_service.stop()
-        print("Session teardown level")
-        # print("Session Teardown rerunAttempt count is: ", dictFromCsv.get("rerunAttempt"))
-        print("Printing df before starting rerun")
-
-        ssh.close()
-        # appium_service.stop()
-        convert_DF_To_Excel()
-
-    request.addfinalizer(fin)
+# @pytest.fixture(scope="session")  # Executing once before the first test case
+# def session_setup(request):
+#     print("Session setup level")
+#     server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
+#
+#     # global appium_service
+#     # appium_service = AppiumService()
+#     # appium_service.start()
+#
+#     Configuration.prepareTestCaseDetailsDataFrame(configReader.read_config("ExcelFiles", "FilePath_TestCasesDetail"))
+#
+#     # Executing once after the last test case
+#     def fin():
+#         # appium_service.stop()
+#         print("Session teardown level")
+#         # print("Session Teardown rerunAttempt count is: ", dictFromCsv.get("rerunAttempt"))
+#         print("Printing df before starting rerun")
+#
+#         ssh.close()
+#         # appium_service.stop()
+#         convert_DF_To_Excel()
+#
+#     request.addfinalizer(fin)
 
 
 def convert_DF_To_Excel():
@@ -200,45 +116,6 @@ def convert_DF_To_Excel():
     GlobalVariables.df_testCasesDetail.to_excel(file_name)
 
 
-def startLineNoOfServerLogFile():
-    if Base_Actions.enter_data_logs("For_Passed_TCS_fetch_Logs") == "True" or Base_Actions.enter_data_logs(
-            "For_Failed_TCS_fetch_Logs") == "True":
-        global LogCollTime
-        current = datetime.now()
-        LogColl_Starting_Time = current.strftime("%H:%M:%S")
-        if env.__contains__('dev'):
-            if Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                GlobalVariables.startLineNumberAPI = server_logs.noOfLine(Base_Actions.pathToLogFile('api_dev'))
-                print("Start startLineNumberAPI no: ", GlobalVariables.startLineNumberAPI)
-            if Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                GlobalVariables.startLineNumberPortal = server_logs.noOfLine(Base_Actions.pathToLogFile('portal_dev'))
-            if Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                GlobalVariables.startLineNumberMiddlewware = server_logs.noOfLine(
-                    Base_Actions.pathToLogFile('middleware_dev'))
-            if Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                GlobalVariables.startLineNumberCnpware = server_logs.noOfLine(Base_Actions.pathToLogFile('cnpware_dev'))
-        else:
-            if Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                GlobalVariables.startLineNumberAPI = server_logs.noOfLine(Base_Actions.pathToLogFile('api'))
-            if Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                GlobalVariables.startLineNumberPortal = server_logs.noOfLine(Base_Actions.pathToLogFile('portal'))
-            if Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                GlobalVariables.startLineNumberMiddlewware = server_logs.noOfLine(
-                    Base_Actions.pathToLogFile('middleware'))
-            if Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                GlobalVariables.startLineNumberCnpware = server_logs.noOfLine(Base_Actions.pathToLogFile('cnpware'))
-
-        current = datetime.now()
-        LogColl_Ending_Time = current.strftime("%H:%M:%S")
-        FMT = '%H:%M:%S'
-        totalLogCollectionTime = datetime.strptime(LogColl_Ending_Time, FMT) - datetime.strptime(
-            str(LogColl_Starting_Time),
-            FMT)
-        print("Portal logs coll time: ", str(totalLogCollectionTime))
-        # Converting time duration to seconds
-        LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalLogCollectionTime).split(":")))
-
-
 def updatingHighLevelReportAfterEachTCS():
     workbook = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
     sheet = workbook["Sheet1"]
@@ -249,10 +126,10 @@ def updatingHighLevelReportAfterEachTCS():
     if GlobalVariables.EXCEL_TC_Execution == 'Pass':
 
         # Pass or N/A
-        if GlobalVariables.EXCEL_API_Val != 'Fail' and GlobalVariables.EXCEL_DB_Val != 'Fail' and GlobalVariables.EXCEL_Portal_Val != 'Fail' and GlobalVariables.EXCEL_UI_Val != 'Fail':
+        if GlobalVariables.str_api_val_result != 'Fail' and GlobalVariables.str_app_val_result != 'Fail' and GlobalVariables.str_db_val_result != 'Fail' and GlobalVariables.str_portal_val_result != 'Fail' and GlobalVariables.str_ui_val_result != 'Fail':
             Overall_Status = 'Pass'
 
-        elif GlobalVariables.EXCEL_API_Val == 'Fail' or GlobalVariables.EXCEL_DB_Val == 'Fail' or GlobalVariables.EXCEL_Portal_Val == 'Fail' or GlobalVariables.EXCEL_UI_Val == 'Fail':
+        elif GlobalVariables.str_api_val_result == 'Fail' or GlobalVariables.str_app_val_result == 'Fail' or GlobalVariables.str_db_val_result == 'Fail' or GlobalVariables.str_portal_val_result == 'Fail' or GlobalVariables.str_ui_val_result == 'Fail':
             Overall_Status = 'Fail'
     elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
         Overall_Status = 'Fail'
@@ -269,24 +146,24 @@ def updatingHighLevelReportAfterEachTCS():
     sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_TC_Execution
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_API_Val
-    print("API VaL: ", GlobalVariables.EXCEL_API_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_val_result
+    print("API VaL: ", GlobalVariables.str_api_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'DB Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_DB_Val
-    print("DB VaL: ", GlobalVariables.EXCEL_DB_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_db_val_result
+    print("DB VaL: ", GlobalVariables.str_db_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Portal Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Portal_Val
-    print("Portal VaL: ", GlobalVariables.EXCEL_Portal_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_portal_val_result
+    print("Portal VaL: ", GlobalVariables.str_portal_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'App Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_App_Val
-    print("App VaL: ", GlobalVariables.EXCEL_App_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_app_val_result
+    print("App VaL: ", GlobalVariables.str_app_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_UI_Val
-    print("UI VaL: ", GlobalVariables.EXCEL_UI_Val)
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
+    print("UI VaL: ", GlobalVariables.str_ui_val_result)
 
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Execution Time (sec)')
     sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Execution_Time
@@ -302,13 +179,13 @@ def updatingHighLevelReportAfterEachTCS():
 
     # Added on Apr 11
     # To add the rerun count after every executed testcases
-    # if rerun_at_the_end & rerun_immediately are enabled, rerun_at_the_end will be considered
-    # if (rerun_at_the_end is TRUE) OR (rerun_at_the_end & rerun_immediately are TRUE)
-    if (configReader.read_config("Validations", "rerun_at_the_end").lower() == "true" and configReader.read_config(
-            "Validations", "rerun_immediately").lower() == "false") \
+    # if bool_rerun_at_the_end & bool_rerun_immediately are enabled, bool_rerun_at_the_end will be considered
+    # if (bool_rerun_at_the_end is TRUE) OR (bool_rerun_at_the_end & bool_rerun_immediately are TRUE)
+    if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
+            "Validations", "bool_rerun_immediately").lower() == "false") \
             or (
-            configReader.read_config("Validations", "rerun_at_the_end").lower() == "true" and configReader.read_config(
-        "Validations", "rerun_immediately").lower() == "true"):
+            ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
+        "Validations", "bool_rerun_immediately").lower() == "true"):
         columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Attempts')
 
         if sheet.cell(row=rowNumber, column=columnNumber).value is None:
@@ -319,15 +196,15 @@ def updatingHighLevelReportAfterEachTCS():
             sheet.cell(row=rowNumber, column=columnNumber).value = currentRetryCountsheet + 1
     # =====================================================================================
 
-    workbook.save(GlobalVariables.EXCEL_reportFilePath)
+    workbook.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
     workbook.close()
+
 
 @pytest.fixture(scope="function")  # Executing once before every testcases
 def method_setup(request):
     # breakpoint()
     print("Function setup level")
-
-    startLineNoOfServerLogFile()
+    GlobalVariables.LogCollTime = LogProcessor.startLineNoOfServerLogFile()
 
     current = datetime.now()
     GlobalVariables.EXCEL_TC_Exe_Starting_Time = current.strftime("%H:%M:%S")
@@ -341,32 +218,34 @@ def method_setup(request):
         # Write data to dataframe
         # write_TC_Details_To_Dataframe()
 
-        if Rerun.getRerunCountForAtTheEnd() == 0 and Base_Actions.enter_data_logs("forLastRun_Capture_Logs") == "True":
+        if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
+            log_on_failure(request)
+
+        if Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]) == 0 and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True"  and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
             # breakpoint()
-            print("Rerun.getRerunCountForAtTheEnd(): ", Rerun.getRerunCountForAtTheEnd())
+            print("Rerun.getRerunCountForAtTheEnd(): ", Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]))
             print("log_on_failure(request)")
             log_on_failure(request)
 
-        if configReader.read_config("Validations",
-                                    "rerun_at_the_end").lower() == "true" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True":
+        if ConfigReader.read_config("Validations",
+                                    "bool_rerun_at_the_end").lower() == "true" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True":
             log_on_failure(request)
 
-        global LogCollTime
-        GlobalVariables.EXCEL_LogCollTime = LogCollTime + GlobalVariables.EXCEL_LogCollTime
+        GlobalVariables.EXCEL_LogCollTime = GlobalVariables.LogCollTime + GlobalVariables.EXCEL_LogCollTime
         GlobalVariables.EXCEL_Tot_Time = int(GlobalVariables.EXCEL_Execution_Time) + int(
             GlobalVariables.EXCEL_Val_time) + int(GlobalVariables.EXCEL_LogCollTime)
 
         updatingHighLevelReportAfterEachTCS()
 
         # rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
-        if configReader.read_config("Validations", "rerun_immediately").lower() == "true" and Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) \
-                and configReader.read_config("Validations", "rerun_at_the_end").lower() == "false":
+        if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) \
+                and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
 
             # Added on Apr 11
             rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
-            if Base_Actions.enter_data_logs("forEachRun_Capture_Logs") == "True":
+            if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
                 log_on_failure(request)
             if rerunCount >= 0:
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
@@ -396,15 +275,15 @@ def method_setup(request):
 
 def write_TC_Details_To_Dataframe():
     # breakpoint()
-    print("################", GlobalVariables.EXCEL_Portal_Val)
+    print("################", GlobalVariables.str_portal_val_result)
     TestCaseName = os.environ.get('PYTEST_CURRENT_TEST').replace(" (teardown)", '').replace("test_sample.py::",
                                                                                             '').replace("TestCase/", '')
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'TC Execution'] = GlobalVariables.EXCEL_TC_Execution
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'API Val'] = GlobalVariables.EXCEL_API_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'DB Val'] = GlobalVariables.EXCEL_DB_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Portal Val'] = GlobalVariables.EXCEL_Portal_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'App Val'] = GlobalVariables.EXCEL_App_Val
-    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'UI Val'] = GlobalVariables.EXCEL_UI_Val
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'API Val'] = GlobalVariables.str_api_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'DB Val'] = GlobalVariables.str_db_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Portal Val'] = GlobalVariables.str_portal_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'App Val'] = GlobalVariables.str_app_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'UI Val'] = GlobalVariables.str_ui_val_result
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Execution Time (sec)'] = GlobalVariables.EXCEL_Execution_Time
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Validation Time (sec)'] = GlobalVariables.EXCEL_Val_time
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Log Coll Time (sec)'] = GlobalVariables.EXCEL_LogCollTime
@@ -425,98 +304,82 @@ def ui_driver(request):
 
 
 @pytest.fixture(scope="function")
-def appium_driver():
+def appium_driver(request):
+    testcaseid = request.node.name
+    deviceDetails = ResourceAssigner.getDeviceFromDB(testcaseid)
+    appiumserverDetails = ResourceAssigner.getAppiumServerFromDB(testcaseid)
+    print(testcaseid+" will be using the device "+deviceDetails['DeviceId'])
+    print(testcaseid + " will be running on the appium server port " + appiumserverDetails['PortNumber'])
     desired_cap = {
         "platformName": "Android",
-        "deviceName": "0821045404",
-        "udid": "0821045404",
+        "deviceName": deviceDetails['DeviceId'],
+        "udid": deviceDetails['DeviceId'],
         "appPackage": "com.ezetap.basicapp",
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
-        "noReset": "true",
+        "noReset": "false",
         "autoGrantPermissions": "true",
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2"
     }
-    GlobalVariables.appDriver = app_webdriver.Remote("http://localhost:4723/wd/hub", desired_cap)
-    GlobalVariables.appDriver.implicitly_wait(30)
+    print("appum server url:", 'http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub')
+    GlobalVariables.appDriver = app_webdriver.Remote('http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub', desired_cap)
+#    GlobalVariables.appDriver.implicitly_wait(30)
 
 def pytest_deselected(items):
     print("INSIDE DESELCTED METHOD")
-    global list_deselected_testcases
     for item in items:
         print(item.nodeid)
         testcase = str((item.nodeid)).split('::')[1]
-        list_deselected_testcases.append(testcase)
-
-
-def updateExcel_With_Deselect_And_Broken():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    for i in range(2, sheet.max_row + 1):
-        colNum_testcase = ExcelProcessor.getColumnNumberFromName("", sheet, 'Test Case ID')
-        testcase = (sheet.cell(row=i, column=colNum_testcase)).value
-        if testcase in list_deselected_testcases:
-
-            colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-            sheet.cell(row=i, column=colNum_overallStatus).value = "Deselected"
-
-            colNum_execution = ExcelProcessor.getColumnNumberFromName("", sheet, 'TC Execution')
-            sheet.cell(row=i, column=colNum_execution).value = "N/A"
-
-            colNum_APIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'API Val')
-            sheet.cell(row=i, column=colNum_APIval).value = "N/A"
-
-            colNum_DBval = ExcelProcessor.getColumnNumberFromName("", sheet, 'DB Val')
-            sheet.cell(row=i, column=colNum_DBval).value = "N/A"
-
-            colNum_PortalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
-            sheet.cell(row=i, column=colNum_PortalVal).value = "N/A"
-
-            colNum_AppVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
-            sheet.cell(row=i, column=colNum_AppVal).value = "N/A"
-
-            colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
-            sheet.cell(row=i, column=colNum_UIval).value = "N/A"
-
-        else:
-            colNum_overallResult = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-            cellValue = (sheet.cell(row=i, column=colNum_overallResult)).value
-            if cellValue is None:
-                colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
-                sheet.cell(row=i, column=colNum_overallStatus).value = "Broken"
-
-                colNum_execution = ExcelProcessor.getColumnNumberFromName("", sheet, 'TC Execution')
-                sheet.cell(row=i, column=colNum_execution).value = "N/A"
-
-                colNum_APIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'API Val')
-                sheet.cell(row=i, column=colNum_APIval).value = "N/A"
-
-                colNum_DBval = ExcelProcessor.getColumnNumberFromName("", sheet, 'DB Val')
-                sheet.cell(row=i, column=colNum_DBval).value = "N/A"
-
-                colNum_PortalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
-                sheet.cell(row=i, column=colNum_PortalVal).value = "N/A"
-
-                colNum_AppVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
-                sheet.cell(row=i, column=colNum_AppVal).value = "N/A"
-
-                colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
-                sheet.cell(row=i, column=colNum_UIval).value = "N/A"
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
+        GlobalVariables.list_deselected_testcases.append(testcase)
 
 
 def log_on_failure(request):
     item = request.node
-    if item.rep_call.failed and Base_Actions.enter_data_logs("For_Failed_TCS_fetch_Logs") == "True":
+    if item.rep_call.failed and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
         current = datetime.now()
         GlobalVariables.EXCEL_TC_LogColl_Starting_Time = current.strftime("%H:%M:%S")
 
+        # if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and \
+        #         configReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
+        #
+        #     testCaseID = str(item.nodeid).split('/')
+        #     finalTestCaseID = testCaseID[len(testCaseID) - 1]
+        #     # logFileName =  str(finalTestCaseID).replace("::", "_")
+        #     logFileName = str(finalTestCaseID).split('::')[1]
+        #     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+        #     #          path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
+        #     Path(path).mkdir(parents=True, exist_ok=True)
+        #     print("Fetching Logs zeroth time")
+        #
+        #     TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+        #
+        #     if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+        #         apiLogs = LogProcessor.fetchAPILogs()
+        #         rerun_file = Path(path + "/api.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+        #
+        #     if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required(
+        #             "bool_capt_log_portal") == "True":
+        #         portalLogs = LogProcessor.fetchPortalLogs()
+        #         rerun_file = Path(path + "/portal.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+        #
+        #     if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required(
+        #             "bool_capt_log_middleware") == "True":
+        #         mwareLogs = LogProcessor.fetchMiddlewareLogs()
+        #         rerun_file = Path(path + "/middleware.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+        #
+        #     if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required(
+        #             "bool_capt_log_cnpware") == "True":
+        #         cnpWareLogs = LogProcessor.fetchCnpwareLogs()
+        #         rerun_file = Path(path + "/cnpware.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
         print("In logOnFailure Portal logs coll starting time: ", str(GlobalVariables.EXCEL_TC_LogColl_Starting_Time))
 
-        if Base_Actions.enter_data_logs("capturing_indivisually_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forLastRun_Capture_Logs") == "True":
+        if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_last_run") == "True":
 
             testCaseID = str(item.nodeid).split('/')
             finalTestCaseID = testCaseID[len(testCaseID) - 1]
@@ -531,30 +394,30 @@ def log_on_failure(request):
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
             TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
-            if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                apiLogs = server_logs.fetchAPILogs()
+            if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                apiLogs = LogProcessor.fetchAPILogs()
                 rerun_file = Path(path + "/api.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                portalLogs = server_logs.fetchPortalLogs()
+            if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                portalLogs = LogProcessor.fetchPortalLogs()
                 rerun_file = Path(path + "/portal.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-            if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                mwareLogs = server_logs.fetchMiddlewareLogs()
+            if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                mwareLogs = LogProcessor.fetchMiddlewareLogs()
                 rerun_file = Path(path + "/middleware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-            if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                cnpWareLogs = server_logs.fetchCnpwareLogs()
+            if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                 rerun_file = Path(path + "/cnpware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        if Base_Actions.enter_data_logs("capturing_indivisually_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True" and configReader.read_config("Validations",
-                                                                                  "rerun_at_the_end").lower() == "true":
-            i = int(configReader.read_config("Validations", "rerun_count"))
+        if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
+                                                                                  "bool_rerun_at_the_end").lower() == "true":
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 2nd time")
 
@@ -566,44 +429,44 @@ def log_on_failure(request):
             logFileName = str(finalTestCaseID).split('::')[1]
             #logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "rerun_count")):
-                if Rerun.getRerunCountForAtTheEnd() == i:
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
+                if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
                     # Added on 26 Apr
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                     #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
 
                     Path(path).mkdir(parents=True, exist_ok=True)
 
-                    if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                        apiLogs = server_logs.fetchAPILogs()
+                    if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        apiLogs = LogProcessor.fetchAPILogs()
                         rerun_file = Path(path + "/api_Rerun.log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                    if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                        portalLogs = server_logs.fetchPortalLogs()
+                    if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        portalLogs = LogProcessor.fetchPortalLogs()
                         rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-                    if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs(
-                            "fetch_middleware_Logs") == "True":
-                        mwareLogs = server_logs.fetchMiddlewareLogs()
+                    if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_middleware") == "True":
+                        mwareLogs = LogProcessor.fetchMiddlewareLogs()
                         rerun_file = Path(
                             path + "/middleware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                    if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                        cnpWareLogs = server_logs.fetchCnpwareLogs()
+                    if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                         rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
                 i -= 1
                 j += 1
 
-        if Base_Actions.enter_data_logs("capturing_indivisually_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True" and configReader.read_config("Validations",
-                                                                                  "rerun_immediately").lower() == "true":
+        if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
+                                                                                  "bool_rerun_immediately").lower() == "true":
 
-            i = int(configReader.read_config("Validations", "rerun_count"))
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 3rd time")
 
@@ -615,40 +478,40 @@ def log_on_failure(request):
             logFileName = str(finalTestCaseID).split('::')[1]
             #logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "rerun_count")):
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
 
                     #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                     Path(path).mkdir(parents=True, exist_ok=True)
 
-                    if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                        apiLogs = server_logs.fetchAPILogs()
+                    if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        apiLogs = LogProcessor.fetchAPILogs()
                         rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                    if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                        portalLogs = server_logs.fetchPortalLogs()
+                    if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        portalLogs = LogProcessor.fetchPortalLogs()
                         rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-                    if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs(
-                            "fetch_middleware_Logs") == "True":
-                        mwareLogs = server_logs.fetchMiddlewareLogs()
+                    if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_middleware") == "True":
+                        mwareLogs = LogProcessor.fetchMiddlewareLogs()
                         rerun_file = Path(
                             path + "/middleware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                    if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                        cnpWareLogs = server_logs.fetchCnpwareLogs()
+                    if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                         rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
                 i -= 1
                 j += 1
 
-        if Base_Actions.enter_data_logs("capturing_allInOneFile_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forLastRun_Capture_Logs") == "True":
+        if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_last_run") == "True":
             path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
             #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/"
             print("Inside capturing logs all in one file")
@@ -656,28 +519,28 @@ def log_on_failure(request):
 
             Path(path).mkdir(parents=True, exist_ok=True)
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-            if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                apiLogs = server_logs.fetchAPILogs()
+            if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                apiLogs = LogProcessor.fetchAPILogs()
                 rerun_file = Path(path + "/api.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                portalLogs = server_logs.fetchPortalLogs()
+            if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                portalLogs = LogProcessor.fetchPortalLogs()
                 rerun_file = Path(path + "/portal.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-            if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                mwareLogs = server_logs.fetchMiddlewareLogs()
+            if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                mwareLogs = LogProcessor.fetchMiddlewareLogs()
                 rerun_file = Path(path + "/middleware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-            if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                cnpWareLogs = server_logs.fetchCnpwareLogs()
+            if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                 rerun_file = Path(path + "/cnpware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        if Base_Actions.enter_data_logs("capturing_allInOneFile_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True":
+        if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True":
             path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
             #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/"
             print("Inside capturing logs all in one file")
@@ -685,38 +548,38 @@ def log_on_failure(request):
 
             Path(path).mkdir(parents=True, exist_ok=True)
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-            if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                apiLogs = server_logs.fetchAPILogs()
+            if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                apiLogs = LogProcessor.fetchAPILogs()
                 print("TCIdWithTimeStamp", TCIdWithTimeStamp)
                 rerun_file = Path(path + "/api.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                portalLogs = server_logs.fetchPortalLogs()
+            if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                portalLogs = LogProcessor.fetchPortalLogs()
                 rerun_file = Path(path + "/portal.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-            if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                mwareLogs = server_logs.fetchMiddlewareLogs()
+            if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                mwareLogs = LogProcessor.fetchMiddlewareLogs()
                 rerun_file = Path(path + "/middleware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-            if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                cnpWareLogs = server_logs.fetchCnpwareLogs()
+            if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                 rerun_file = Path(path + "/cnpware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        setUp.get_Log_Collection_Time()
+        ReportProcessor.get_Log_Collection_Time()
 
-        if GlobalVariables.successApp == 'Failed' and GlobalVariables.appDriver != '':
+        if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
-            GlobalVariables.successApp = 'Passed'
+            GlobalVariables.bool_ss_app_val = 'Passed'
 
-        if GlobalVariables.successPortal == 'Failed' and GlobalVariables.portalDriver != '':
+        if GlobalVariables.bool_ss_portal_val == 'Failed' and GlobalVariables.portalDriver != ''and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
-            GlobalVariables.successPortal = 'Passed'
+            GlobalVariables.bool_ss_portal_val = 'Passed'
 
         if GlobalVariables.portalDriver != '':
             # GlobalVariables.portalDriver.quit()
@@ -729,8 +592,8 @@ def log_on_failure(request):
             GlobalVariables.appDriver = ''
             # variables.appSS = False
 
-        GlobalVariables.successPortal = "N/A"
-        GlobalVariables.successApp = "N/A"
+        GlobalVariables.bool_ss_portal_val = "N/A"
+        GlobalVariables.bool_ss_app_val = "N/A"
 
 
 @pytest.fixture(scope='function')
@@ -738,14 +601,51 @@ def log_on_success(request):
     yield
     item = request.node
 
-    if item.rep_call.passed and Base_Actions.enter_data_logs("For_Passed_TCS_fetch_Logs") == "True":
+    if item.rep_call.passed and Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
         current = datetime.now()
         GlobalVariables.EXCEL_TC_LogColl_Starting_Time = current.strftime("%H:%M:%S")
 
         print("In logOnSuccess Portal logs coll starting time: ", str(GlobalVariables.EXCEL_TC_LogColl_Starting_Time))
 
-        if Base_Actions.enter_data_logs("capturing_indivisually_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forLastRun_Capture_Logs") == "True":
+        # if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and \
+        #         configReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
+        #
+        #     testCaseID = str(item.nodeid).split('/')
+        #     finalTestCaseID = testCaseID[len(testCaseID) - 1]
+        #     # logFileName =  str(finalTestCaseID).replace("::", "_")
+        #     logFileName = str(finalTestCaseID).split('::')[1]
+        #     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+        #     #          path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
+        #     Path(path).mkdir(parents=True, exist_ok=True)
+        #     print("Fetching Logs zeroth time")
+        #
+        #     TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+        #
+        #     if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+        #         apiLogs = LogProcessor.fetchAPILogs()
+        #         rerun_file = Path(path + "/api.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+        #
+        #     if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required(
+        #             "bool_capt_log_portal") == "True":
+        #         portalLogs = LogProcessor.fetchPortalLogs()
+        #         rerun_file = Path(path + "/portal.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+        #
+        #     if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required(
+        #             "bool_capt_log_middleware") == "True":
+        #         mwareLogs = LogProcessor.fetchMiddlewareLogs()
+        #         rerun_file = Path(path + "/middleware.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+        #
+        #     if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required(
+        #             "bool_capt_log_cnpware") == "True":
+        #         cnpWareLogs = LogProcessor.fetchCnpwareLogs()
+        #         rerun_file = Path(path + "/cnpware.log")
+        #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+        if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_last_run") == "True":
 
             testCaseID = str(item.nodeid).split('/')
             finalTestCaseID = testCaseID[len(testCaseID) - 1]
@@ -760,30 +660,30 @@ def log_on_success(request):
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
             TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
-            if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                apiLogs = server_logs.fetchAPILogs()
+            if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                apiLogs = LogProcessor.fetchAPILogs()
                 rerun_file = Path(path + "/api.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                portalLogs = server_logs.fetchPortalLogs()
+            if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                portalLogs = LogProcessor.fetchPortalLogs()
                 rerun_file = Path(path + "/portal.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-            if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                mwareLogs = server_logs.fetchMiddlewareLogs()
+            if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                mwareLogs = LogProcessor.fetchMiddlewareLogs()
                 rerun_file = Path(path + "/middleware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-            if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                cnpWareLogs = server_logs.fetchCnpwareLogs()
+            if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                 rerun_file = Path(path + "/cnpware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        if Base_Actions.enter_data_logs("capturing_indivisually_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True" and configReader.read_config("Validations",
-                                                                                  "rerun_at_the_end").lower() == "true":
-            i = int(configReader.read_config("Validations", "rerun_count"))
+        if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
+                                                                                  "bool_rerun_at_the_end").lower() == "true":
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 2nd time")
 
@@ -795,44 +695,44 @@ def log_on_success(request):
             logFileName = str(finalTestCaseID).split('::')[1]
             #logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "rerun_count")):
-                if Rerun.getRerunCountForAtTheEnd() == i:
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
+                if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
                     # Added on 26 Apr
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                     #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
 
                     Path(path).mkdir(parents=True, exist_ok=True)
 
-                    if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                        apiLogs = server_logs.fetchAPILogs()
+                    if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        apiLogs = LogProcessor.fetchAPILogs()
                         rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                    if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                        portalLogs = server_logs.fetchPortalLogs()
+                    if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        portalLogs = LogProcessor.fetchPortalLogs()
                         rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-                    if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs(
-                            "fetch_middleware_Logs") == "True":
-                        mwareLogs = server_logs.fetchMiddlewareLogs()
+                    if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_middleware") == "True":
+                        mwareLogs = LogProcessor.fetchMiddlewareLogs()
                         rerun_file = Path(
                             path + "/middleware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                    if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                        cnpWareLogs = server_logs.fetchCnpwareLogs()
+                    if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                         rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
                 i -= 1
                 j += 1
 
-        if Base_Actions.enter_data_logs("capturing_indivisually_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True" and configReader.read_config("Validations",
-                                                                                  "rerun_immediately").lower() == "true":
+        if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
+                                                                                  "bool_rerun_immediately").lower() == "true":
 
-            i = int(configReader.read_config("Validations", "rerun_count"))
+            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             j = 0
             print("Fetching Logs 3rd time")
 
@@ -844,40 +744,40 @@ def log_on_success(request):
             logFileName = str(finalTestCaseID).split('::')[1]
            # logFileName = str(finalTestCaseID).replace("::", "_")
 
-            while i >= 0 and j <= int(configReader.read_config("Validations", "rerun_count")):
+            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
 
                     #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/" + logFileName
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                     Path(path).mkdir(parents=True, exist_ok=True)
 
-                    if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                        apiLogs = server_logs.fetchAPILogs()
+                    if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        apiLogs = LogProcessor.fetchAPILogs()
                         rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                    if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                        portalLogs = server_logs.fetchPortalLogs()
+                    if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        portalLogs = LogProcessor.fetchPortalLogs()
                         rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-                    if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs(
-                            "fetch_middleware_Logs") == "True":
-                        mwareLogs = server_logs.fetchMiddlewareLogs()
+                    if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_middleware") == "True":
+                        mwareLogs = LogProcessor.fetchMiddlewareLogs()
                         rerun_file = Path(
                             path + "/middleware_" + str(datetime.now().time()) + "_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                    if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                        cnpWareLogs = server_logs.fetchCnpwareLogs()
+                    if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                         rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
-                        server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
                 i -= 1
                 j += 1
 
-        if Base_Actions.enter_data_logs("capturing_allInOneFile_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forLastRun_Capture_Logs") == "True":
+        if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_last_run") == "True":
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
             #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/"
             print("Inside capturing logs all in one file")
@@ -885,28 +785,28 @@ def log_on_success(request):
 
             Path(path).mkdir(parents=True, exist_ok=True)
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-            if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                apiLogs = server_logs.fetchAPILogs()
+            if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                apiLogs = LogProcessor.fetchAPILogs()
                 rerun_file = Path(path + "/api.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                portalLogs = server_logs.fetchPortalLogs()
+            if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                portalLogs = LogProcessor.fetchPortalLogs()
                 rerun_file = Path(path + "/portal.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-            if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                mwareLogs = server_logs.fetchMiddlewareLogs()
+            if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                mwareLogs = LogProcessor.fetchMiddlewareLogs()
                 rerun_file = Path(path + "/middleware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-            if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                cnpWareLogs = server_logs.fetchCnpwareLogs()
+            if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                 rerun_file = Path(path + "/cnpware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        if Base_Actions.enter_data_logs("capturing_allInOneFile_Logs") == "True" and Base_Actions.enter_data_logs(
-                "forEachRun_Capture_Logs") == "True":
+        if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_each_run") == "True":
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
             #path = "/home/oem/PycharmProjects/EzeAuto/ServerLogs/"
             print("Inside capturing logs all in one file")
@@ -914,38 +814,38 @@ def log_on_success(request):
 
             Path(path).mkdir(parents=True, exist_ok=True)
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-            if GlobalVariables.apiLogs and Base_Actions.enter_data_logs("fetch_api_Logs") == "True":
-                apiLogs = server_logs.fetchAPILogs()
+            if GlobalVariables.apiLogs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                apiLogs = LogProcessor.fetchAPILogs()
                 print("TCIdWithTimeStamp", TCIdWithTimeStamp)
                 rerun_file = Path(path + "/api.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if GlobalVariables.portalLogs and Base_Actions.enter_data_logs("fetch_portal_Logs") == "True":
-                portalLogs = server_logs.fetchPortalLogs()
+            if GlobalVariables.portalLogs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                portalLogs = LogProcessor.fetchPortalLogs()
                 rerun_file = Path(path + "/portal.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-            if GlobalVariables.middleWareLogs and Base_Actions.enter_data_logs("fetch_middleware_Logs") == "True":
-                mwareLogs = server_logs.fetchMiddlewareLogs()
+            if GlobalVariables.middleWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                mwareLogs = LogProcessor.fetchMiddlewareLogs()
                 rerun_file = Path(path + "/middleware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-            if GlobalVariables.cnpWareLogs and Base_Actions.enter_data_logs("fetch_cnpware_Logs") == "True":
-                cnpWareLogs = server_logs.fetchCnpwareLogs()
+            if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                 rerun_file = Path(path + "/cnpware.log")
-                server_logs.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-        setUp.get_Log_Collection_Time()
+        ReportProcessor.get_Log_Collection_Time()
 
-        if GlobalVariables.successApp == 'Passed' and GlobalVariables.appDriver != '':
+        if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
-            GlobalVariables.successApp = 'Passed'
+            GlobalVariables.bool_ss_app_val = 'Passed'
 
-        if GlobalVariables.successPortal == 'Passed' and GlobalVariables.portalDriver != '':
+        if GlobalVariables.bool_ss_portal_val == 'Passed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
-            GlobalVariables.successPortal = 'Passed'
+            GlobalVariables.bool_ss_portal_val = 'Passed'
 
         if GlobalVariables.portalDriver != '':
             # GlobalVariables.portalDriver.quit()
@@ -958,13 +858,13 @@ def log_on_success(request):
             GlobalVariables.appDriver = ''
             # variables.appSS = False
 
-        GlobalVariables.successPortal = "N/A"
-        GlobalVariables.successApp = "N/A"
+        GlobalVariables.bool_ss_portal_val = "N/A"
+        GlobalVariables.bool_ss_app_val = "N/A"
 
 
 def pytest_sessionstart(session):
     print("Session setup level")
-    server_logs.ssh_connection(router_ip, router_port, router_username, key_filename)
+    TestSuiteSetup.ssh_connection(router_ip, router_port, router_username, key_filename)
 
 
 
@@ -981,57 +881,6 @@ def pytest_sessionfinish(session, exitstatus):
     # appium_service.stop()
     
 # Added on Apr 11
-def updateExcel_With_RerunAttempts():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    if configReader.read_config("Validations", "rerun_immediately").lower() == "true" and configReader.read_config(
-            "Validations", "rerun_at_the_end").lower() == "false":
-        colNum_rerunAttempts = ExcelProcessor.getColumnNumberFromName("", sheet, 'Rerun Attempts')
-        for i in range(2, sheet.max_row + 1):
-            colNum_testcase = ExcelProcessor.getColumnNumberFromName("", sheet, 'Test Case ID')
-            testcase = (sheet.cell(row=i, column=colNum_testcase)).value
-
-            rerunCount = Rerun.getRerunCount(testcase)
-            if rerunCount >= 0:
-                cellValue_rerunAttempts = int(configReader.read_config("Validations", "rerun_count")) - rerunCount
-                sheet.cell(row=i, column=colNum_rerunAttempts).value = cellValue_rerunAttempts
-            else:
-                cellValue_rerunAttempts = configReader.read_config("Validations", "rerun_count")
-                sheet.cell(row=i, column=colNum_rerunAttempts).value = int(cellValue_rerunAttempts)
-
-    # If both rerun_at_the_end and rerun_immediately are disabled, setting value as N/A for Rerun Attempts
-    if configReader.read_config("Validations", "rerun_at_the_end").lower() == "false" and configReader.read_config(
-            "Validations", "rerun_immediately").lower() == "false":
-        colNum_RerunAttempts = ExcelProcessor.getColumnNumberFromName("", sheet, 'Rerun Attempts')
-        for i in range(2, sheet.max_row + 1):
-            sheet.cell(row=i, column=colNum_RerunAttempts).value = "N/A"
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)
 
 
 # Added on Apr 11
-def updateExcel_With_Category_And_Subcategory():
-    wb = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
-    sheet = wb['Sheet1']
-
-    for i in range(2, sheet.max_row + 1):
-        colNum_directoryName = ExcelProcessor.getColumnNumberFromName("", sheet, 'Directory Name')
-        directoryName = (sheet.cell(row=i, column=colNum_directoryName)).value
-
-        category = directoryName.split("/")[0]
-        subCategory = directoryName.split("/")[1]
-
-        colNum_category = ExcelProcessor.getColumnNumberFromName("", sheet, 'Category')
-        colNum_subCategory = ExcelProcessor.getColumnNumberFromName("", sheet, 'Sub-Category')
-
-        cellValue_category = (sheet.cell(row=i, column=colNum_category)).value
-        cellValue_subCategory = (sheet.cell(row=i, column=colNum_subCategory)).value
-
-        if cellValue_category is None:
-            sheet.cell(row=i, column=colNum_category).value = category
-
-            if cellValue_subCategory is None:
-                sheet.cell(row=i, column=colNum_subCategory).value = subCategory
-
-    wb.save(GlobalVariables.EXCEL_reportFilePath)

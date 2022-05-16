@@ -23,10 +23,12 @@ class PaymentPage(BasePage):
     txa_orderId = (By.XPATH, '//*[@text="Order Id"]/following-sibling::android.widget.TextView[2]')
     btn_closeTransactionDetails = (By.ID, 'com.ezetap.service.demo:id/btnDismiss')
     lbl_scanQRCode = (By.XPATH, '//*[contains(@text,"Scan QR code")]')
+    lbl_paymentMode = (By.ID, "com.ezetap.service.demo:id/tvPaymentType")
 
 
     def __init__(self, driver):
         super().__init__(driver)
+
 
     def click_on_Upi_paymentMode(self):
         self.perform_click(self.btn_upi)
@@ -68,6 +70,9 @@ class PaymentPage(BasePage):
 
     def fetch_payment_status(self):
         return self.fetch_text(self.lbl_paymentStatus)
+
+    def fetch_payment_mode(self):
+        return self.fetch_text(self.lbl_paymentMode)
 
     def click_on_proceed_homepage(self):
         self.perform_click(self.btn_proceedToHomepage)

@@ -1,36 +1,39 @@
+import time
+
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
-print(DirectoryCreator.getDirectoryPath("AllureReport"))
-import Rerun
-from Configuration import Configuration
-from Utilities import configReader
+from Utilities import ResourceAssigner
+from Utilities import Rerun
+from Utilities import ConfigReader
+from Configuration import TestSuiteSetup
 
-# if both r enabled then add this condition: if configReader.read_config("Validations", "rerun_immediately").lower()
-# == "true" and configReader.read_config("Validations", "rerun_at_the_end").lower() == "false":
+# ResourceAssigner.clearAssignerTables()
+# TestSuiteSetup.startEmulators(TestSuiteSetup.getThreadCount())
+# #time.sleep(15)
+# devices = TestSuiteSetup.getDevicesList()
+# appium_server_ports = TestSuiteSetup.startAppiumServers(len(devices))
+# # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
+# ResourceAssigner.updateDevicesInDB(devices)
+# ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
+# # ResourceAssigner.updateUsersInDB(users)
+TestSuiteSetup.prepareDevicesAndDB()
 
-#print(DirectoryCreator.getDirectoryPath("ExcelReport"))
+TestSuiteSetup.prepare_Consolidated_List_Of_TestcasesFile()
 
-# print(DirectoryCreator.getDirectoryPath("PDFreport"))
-# print(DirectoryCreator.getDirectoryPath("ExecutionLog"))
-# print(DirectoryCreator.getDirectoryPath("ServerLog"))
-
-
-Configuration.prepare_Consolidated_List_Of_TestcasesFile()
-
-if configReader.read_config("Validations", "rerun_immediately").lower() == "true" and configReader.read_config("Validations", "rerun_at_the_end").lower() == "false":
+if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
     Rerun.prepareImmediateRerunExcel()
 
-Rerun.suiteTriggringTime()
-
-Configuration.executeSelectedTestCases()
+TestSuiteSetup.executeSelectedTestCases()
 
 # Rerun
-rerunCount = int(configReader.read_config("Validations", "rerun_count"))
+rerunCount = int(ConfigReader.read_config("Validations", "int_rerun_count"))
 
-if configReader.read_config("Validations", "rerun_at_the_end").lower() == "true":
+if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
     Rerun.prepareAtTheEndRerunExcel()
     while rerunCount > 0:
         rerunCount = rerunCount - 1
-        Rerun.setRerunCountForAtTheEnd(rerunCount)
+        Rerun.setRerunCount("",rerunCount)
         Rerun.rerunTestAtTheEnd()
     Rerun.prepareAtTheEndRerunExcel()
+
+TestSuiteSetup.killAppiumServers()

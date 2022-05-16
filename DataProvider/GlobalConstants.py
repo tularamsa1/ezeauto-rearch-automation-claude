@@ -1,4 +1,5 @@
 # chromeDriverPath = "/home/ezetap-10182/PycharmProjects/Automation/Tools/ChromeDriver/chromedriver"
+from Utilities import DirectoryCreator
 
 apiValidation = True
 dbValidation = True
@@ -21,7 +22,4 @@ colName_ValidationTime = "Validation Time (sec)"
 colName_LogCollTime = "Log Coll Time (sec)"
 colName_TotalTime = "Total Time (sec)"
 
-testCasesPath = "/home/oem/PycharmProjects/EzeAuto/DataProvider/POC_TestCasesData.xlsx"
-
-rerunCount = 3
-
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"

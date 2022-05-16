@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from PageFactory.Portal_BasePage import BasePage
-from Utilities import configReader
+from Utilities import ConfigReader
 
 
 class PortalLoginPage(BasePage):
@@ -15,7 +15,7 @@ class PortalLoginPage(BasePage):
         super().__init__(driver)
 
     def perform_login_to_portal(self, username, password):
-        url = configReader.read_config("APIs", "baseUrl") + configReader.read_config("APIs", "portalLogin")
+        url = ConfigReader.read_config("APIs", "baseUrl") + ConfigReader.read_config("APIs", "portalLogin")
         self.driver.get(url)
         self.driver.maximize_window()
         self.wait_for_element(self.txt_userName).clear()

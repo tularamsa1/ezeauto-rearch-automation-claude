@@ -1,3 +1,0 @@
-TestCases/Functional/UI/SA/test_UI_SA_CheckStatus_BQR.py::test_UI_SA_CheckStatus_BQR_01_00:10:47.003595
-2022-05-03 18:40:19.518 [qtp897234481-37]  INFO 3372719 ezetap-E01 [220503184019317E010000037-VINEET_191036200-1076810769-NA] com.ezetap.api.service.ApiService        - EZAPI 192.168.1.1  [RKHLcc07YDhoWkA+JUImVYu8OsQZxR06BO0g2277cM0=]  API_OUT:txnListApi: latitude=0;sdk=N;api=txnListApi;version=2.0;longitude=0;server_id=E01;network_time=4;server_time=160;pg_time=0;ez_server_time=160;total_time=164;hopstops=|CL=4|EZ-Start=160|EZ-End;result=SUCCESS;code=MSG_0000000;offline=false;username=1076810769;org_code=VINEET_191036200;apiOutput={"no-output":"API_OUTPUT_LOG_DISABLED"}
-

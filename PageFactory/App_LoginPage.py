@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
-from Utilities.configReader import read_config
+from Utilities.ConfigReader import read_config
 
 
 class LoginPage(BasePage):
