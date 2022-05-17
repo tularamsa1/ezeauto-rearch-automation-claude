@@ -63,7 +63,7 @@ def createLogDirectories(currentDate, currentTime, automationSuitePath):
 def createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automationSuitePath):
     try:
         os.chdir(automationSuitePath)
-        currentPath = automationSuitePath + "/" + "RunTime"
+        currentPath = automationSuitePath + "/" + "Runtime"
         if os.path.isdir(currentPath) == False:
             os.mkdir(currentPath)
         os.chdir(currentPath)
