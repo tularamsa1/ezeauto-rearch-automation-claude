@@ -31,6 +31,9 @@ class TransHistoryPage(BasePage):
     lbl_receiptNotFound = (By.XPATH, "//android.view.View[@content-desc='Not Found']")
     txa_authCode = (By.XPATH, "//*[@text='Auth Code']/following-sibling::android.widget.TextView")
     btn_toggleStausArrow = (By.ID, 'com.ezetap.service.demo:id/iv_ToggleStatus')
+    txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
+    txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
+    txt_txnAmount = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -88,6 +91,18 @@ class TransHistoryPage(BasePage):
 
     def fetch_auth_code_text(self):
         return self.fetch_text(self.txa_authCode)
+
+    def fetch_txn_id_text(self):
+        return self.fetch_text(self.txt_txnID)
+
+    def fetch_txn_status_text(self):
+        return str(self.fetch_text(self.txa_finalStatusField))
+
+    def fetch_txn_type_text(self):
+        return str(self.fetch_text(self.txt_txnType))
+
+    def fetch_txn_amount_text(self):
+        return str(self.fetch_text(self.txt_txnAmount))
 
     def click_charge_slip(self):
         self.perform_click(self.lnk_chargeSlip)
