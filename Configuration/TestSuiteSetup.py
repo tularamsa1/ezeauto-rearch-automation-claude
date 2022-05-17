@@ -287,12 +287,12 @@ def prepare_Consolidated_List_Of_TestcasesFile():
     print("prepare_Consolidated_List_Of_TestcasesFile")
     print(df_all_rows)
     # Converting DF with all TCs to an excel
-    df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+    df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx")
 
 
 def executeSelectedTestCases():
     # Creating DF only with the testcases to be executed
-    df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+    df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx")
     df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
     os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases")
     os.system(prepareTestExecutionCommand(df_testcases))
