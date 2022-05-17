@@ -42,6 +42,7 @@ def test_sa_100_101_001():
             amount = random.randint(300, 399)
             order_number = random.randint(1, 1000)
             homePage = HomePage(driver)
+            time.sleep(2)
             homePage.enter_amount_and_order_number(amount, order_number)
             paymentPage = PaymentPage(driver)
             paymentPage.check_payment_page()
@@ -226,7 +227,7 @@ def test_sa_100_101_002():
             username = '5784758454'
             password = 'A123456'
             loginPage.perform_login(username, password)
-            amount = random.randint(100, 200)
+            amount = random.randint(101, 200)
             order_number = random.randint(1, 1000)
             homePage = HomePage(driver)
             homePage.enter_amount_and_order_number(amount, order_number)
