@@ -191,6 +191,7 @@ It takes the list of port numbers as input and kills the servers one by one from
 def killAppiumServers():
     try:
         os.system("pkill -9 -f appium")
+        os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
     except Exception as e:
         print(e)
 
@@ -256,7 +257,7 @@ def startEmulators(noOfEmulatorsToStart):
                         print(str(e))
                 else:
                     break
-            #time.sleep(50)
+            time.sleep(50)
         else:
             print("Configured Emulators are less than no of processes.")
     except Exception as e:
