@@ -1,6 +1,7 @@
 **/Reports/
 **/Logs/
 **/Database/
+**/Runtime/
 **/.pytest_cache/
 **.pyc
 **/__pycache__/
