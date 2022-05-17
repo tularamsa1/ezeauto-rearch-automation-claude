@@ -63,7 +63,7 @@ def createLogDirectories(currentDate, currentTime, automationSuitePath):
 def createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automationSuitePath):
     try:
         os.chdir(automationSuitePath)
-        currentPath = automationSuitePath + "/" + "Configuration"
+        currentPath = automationSuitePath + "/" + "Runtime"
         if os.path.isdir(currentPath) == False:
             os.mkdir(currentPath)
         os.chdir(currentPath)
@@ -119,7 +119,7 @@ Following values can only be passed as arguments.
 
 def getDirectoryPath(directoryName):
     automationSuitePath = ConfigReader.read_config_paths("System", "automation_suite_path")
-    filePath = automationSuitePath+"/Configuration/ExecutionDirectories.conf"
+    filePath = automationSuitePath+"/Runtime/ExecutionDirectories.conf"
     if os.path.isfile(filePath):
         try:
             config = configparser.ConfigParser()

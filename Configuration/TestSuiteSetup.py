@@ -191,6 +191,7 @@ It takes the list of port numbers as input and kills the servers one by one from
 def killAppiumServers():
     try:
         os.system("pkill -9 -f appium")
+        os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
     except Exception as e:
         print(e)
 
@@ -256,7 +257,7 @@ def startEmulators(noOfEmulatorsToStart):
                         print(str(e))
                 else:
                     break
-            #time.sleep(50)
+            time.sleep(50)
         else:
             print("Configured Emulators are less than no of processes.")
     except Exception as e:
@@ -287,12 +288,12 @@ def prepare_Consolidated_List_Of_TestcasesFile():
     print("prepare_Consolidated_List_Of_TestcasesFile")
     print(df_all_rows)
     # Converting DF with all TCs to an excel
-    df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+    df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx")
 
 
 def executeSelectedTestCases():
     # Creating DF only with the testcases to be executed
-    df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+    df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx")
     df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
     os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases")
     os.system(prepareTestExecutionCommand(df_testcases))

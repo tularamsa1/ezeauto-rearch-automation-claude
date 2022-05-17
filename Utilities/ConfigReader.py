@@ -10,7 +10,7 @@ def read_config(section, key):
 
 def read_config_paths(section, key):
     config = ConfigParser()
-    config.read(str(automation_suite_path)+"/Configuration/ExecutionDirectories.conf")
+    config.read(str(automation_suite_path)+"/Runtime/ExecutionDirectories.conf")
     return config.get(section, key)
 
 
