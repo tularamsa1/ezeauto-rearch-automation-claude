@@ -1,8 +1,5 @@
-import time
-
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
-from Utilities import ResourceAssigner
 from Utilities import Rerun
 from Utilities import ConfigReader
 from Configuration import TestSuiteSetup
