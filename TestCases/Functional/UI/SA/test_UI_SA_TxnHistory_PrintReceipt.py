@@ -1,13 +1,11 @@
 from datetime import datetime
 import pytest
 from Configuration import Configuration
-from DataProvider.config import TestData
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from DataProvider import GlobalVariables
-from Utilities import ConfigReader, ReportProcessor, Validator, APIProcessor
+from Utilities import ConfigReader, ReportProcessor, Validator
 from Utilities.ConfigReader import read_config
 
 
@@ -21,24 +19,6 @@ def test_UI_SA_TxnHistory_PrintReceipt_01():
         global bool_val_exe
         bool_val_exe = True
         msg = ""
-        #---------------------------Pre requisite----------------------------------------------
-        payload = {
-        "username":"9731545096",
-        "password":"A123456",
-        "entityName":"org",
-        "settings":{
-                    "paperReceiptEnabled":"true",
-                    "printMerchantCopy":"true"
-        },
-        "settingForOrgCode":"VINEET_191036200"
-        }
-        response = APIProcessor.post(payload, "orgupdate")
-        if response["success"]==True:
-            pass
-        else:
-            msg = "Pre requisite setting failure"
-            pytest.fail(msg)
-        #--------------------End of Pre requisite-----------------------------------
 
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
@@ -51,11 +31,6 @@ def test_UI_SA_TxnHistory_PrintReceipt_01():
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
             homePage.check_home_page_logo()
-            homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
-            paymentPage = PaymentPage(driver)
-            paymentPage.click_on_Cash()
-            paymentPage.click_on_confirm()
-            paymentPage.click_on_proceed_homepage()
             homePage.click_on_history()
             transactionsHistoryPage = TransHistoryPage(driver)
             transactionsHistoryPage.click_first_amount_field()
@@ -97,25 +72,5 @@ def test_UI_SA_TxnHistory_PrintReceipt_01():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        try:
-            payload = {
-                "username": "9731545096",
-                "password": "A123456",
-                "entityName": "org",
-                "settings": {
-                    "cashPaymentEnabled": "true",
-                    "paperReceiptEnabled": "false",
-                    "printMerchantCopy": "false"
-                },
-                "settingForOrgCode": "VINEET_191036200"
-            }
-            response = APIProcessor.post(payload, "orgupdate")
-            if response["success"] == True:
-                pass
-            else:
-                msg = "Pre requisite setting failure"
-                pytest.fail(msg)
-        except:
-            pass
         ReportProcessor.updateTestCaseResult(msg)
         Configuration.executeFinallyBlock("test_UI_SA_TxnHistory_PrintReceipt_01")

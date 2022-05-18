@@ -1,8 +1,5 @@
 from datetime import datetime
 import pytest
-
-from DataProvider.config import TestData
-from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -136,12 +133,6 @@ def test_UI_SA_TxnHistory_ChargeSlip_01(): #Make sure to add the test case name 
             homePage = HomePage(driver)
             homepage_text = homePage.check_home_page_logo()
             assert homepage_text == ConfigReader.read_config("testdata", 'homepage_text')
-            homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
-            paymentPage = PaymentPage(driver)
-            paymentPage.click_on_Cash()
-            paymentPage.click_on_confirm()
-            paymentPage.click_on_proceed_homepage()
-
             homePage.click_on_history()
             transactionsHistoryPage = TransHistoryPage(driver)
             transactionsHistoryPage.click_first_amount_field()
