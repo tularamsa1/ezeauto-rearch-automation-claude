@@ -5,7 +5,6 @@ from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from DataProvider.config import TestData
 from Utilities import Validator, ReportProcessor, ConfigReader
 
 
@@ -33,7 +32,7 @@ def test_UI_SA_AutoLogin_Enabled_01():
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
             homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            assert homepage_text == ConfigReader.read_config("testdata", 'homepage_text')
             driver.terminate_app("com.ezetap.basicapp")
             driver.activate_app("com.ezetap.basicapp")
             loginPage = LoginPage(driver)

@@ -4,7 +4,6 @@ from PageFactory.App_FiltersPage import FiltersPage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from DataProvider.config import TestData
 from Utilities.ConfigReader import read_config
 from Configuration import Configuration
 from DataProvider import GlobalVariables
@@ -109,7 +108,7 @@ def test_UI_SA_TxnHistory_Filters_01():
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
             homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            assert homepage_text == ConfigReader.read_config("testdata", 'homepage_text')
             homePage.click_on_history()
             transactionsHistoryPage = TransHistoryPage(driver)
             transactionsHistoryPage.click_filter()
@@ -134,7 +133,7 @@ def test_UI_SA_TxnHistory_Filters_01():
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Result": "SUCCESS"}

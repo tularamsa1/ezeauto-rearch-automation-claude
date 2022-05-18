@@ -79,7 +79,7 @@ class TransHistoryPage(BasePage):
         TouchAction(self.driver).press(x=228, y=739).move_to(x=247, y=566).release().perform()
         TouchAction(self.driver).press(x=241, y=574).move_to(x=127, y=718).release().perform()
         self.perform_click(self.btn_signatureSubmit)
-        sleep(0.7)
+        sleep(0.8)
 
     def click_filter(self):
         self.perform_click(self.btn_filters)

@@ -128,7 +128,7 @@ def test_UI_SA_TxnHistory_Signature_01(): #Make sure to add the test case name a
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Result": "SUCCESS"}
