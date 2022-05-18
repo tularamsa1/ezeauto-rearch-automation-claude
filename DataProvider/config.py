@@ -67,16 +67,3 @@ class TestData:
     #TRANSACTION_STATUS_LIST = ['AUTHORIZED', 'VOIDED', 'PENDING', 'EXPIRED', 'FAILED']
 
 
-    api_org_update = "orgupdate"
-
-    payload_update_org = {
-    "username":"9731545096",
-    "password":"A123456",
-    "entityName":"org",
-    "settings":{
-        "autoLoginByTokenEnabled":"true"
-    },
-    "settingForOrgCode":"EZEAUTO1_8174477"
-}
-
-
