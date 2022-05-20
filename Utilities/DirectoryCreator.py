@@ -141,4 +141,3 @@ def getDirectoryPath(directoryName):
         print("Execution directories file does not exists. So path cannot be returned.")
         return None
 
-

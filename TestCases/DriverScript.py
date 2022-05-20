@@ -21,8 +21,8 @@ if TestSuiteSetup.prepareDevicesAndDB():
         Rerun.prepareAtTheEndRerunExcel()
         while rerunCount > 0:
             rerunCount = rerunCount - 1
-            Rerun.setRerunCount("",rerunCount)
+            Rerun.setRerunCount("", rerunCount)
             Rerun.rerunTestAtTheEnd()
         Rerun.prepareAtTheEndRerunExcel()
 
-TestSuiteSetup.killAppiumServers()
+TestSuiteSetup.killEmulatorsAndAppiumServers()
