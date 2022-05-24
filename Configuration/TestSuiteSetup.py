@@ -191,7 +191,7 @@ It takes the list of port numbers as input and kills the servers one by one from
 def killEmulatorsAndAppiumServers():
     try:
         os.system("pkill -9 -f appium")
-        # os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
+        os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
     except Exception as e:
         print(e)
 
@@ -366,7 +366,6 @@ def prepareDevicesAndDB():
             startEmulators(additionalEmulatorsRequired)
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
-    # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
     ResourceAssigner.clearAssignerTables()
     if devices == None:
         devices = getDevicesList()
@@ -376,5 +375,10 @@ def prepareDevicesAndDB():
     else:
         ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
-    # # ResourceAssigner.updateUsersInDB(users)
+    # lst_appUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
+    #          {"Username": "7204644666", "Password": "A123456"}]
+    # portalUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
+    #             {"Username": "7204644666", "Password": "A123456"}]
+    # ResourceAssigner.updateAppUsersInDB(lst_appUsersDetails)
+    # ResourceAssigner.updatePortalUsersInDB(portalUsersDetails)
     return True
