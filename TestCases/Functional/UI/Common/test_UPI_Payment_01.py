@@ -48,6 +48,7 @@ def test_UI_Common_PM_UPI_Success_Via_Pure_UPI_Callback_HDFC():
             time.sleep(20)
             homePage.enter_amount_and_order_number(amount, order_number)
             paymentPage = PaymentPage(driver)
+            paymentPage.check_payment_page()
             paymentPage.click_on_Upi_paymentMode()
 
             query1 = (
