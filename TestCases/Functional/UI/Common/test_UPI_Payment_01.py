@@ -1,4 +1,5 @@
 # Locators
+import allure
 import pytest
 import json
 import random
@@ -9,6 +10,7 @@ from datetime import datetime
 import pandas as pd
 import pytest
 import requests
+from allure_commons.types import AttachmentType
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -69,8 +71,8 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             loginPage = LoginPage(driver)
-            username = '4455778875'
-            password = 'q121212'
+            username = '5784758454'
+            password = 'A123456'
             loginPage.perform_login(username, password)
             amount = random.randint(300, 399)
             order_number = random.randint(1, 1000)
@@ -81,12 +83,12 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
             paymentPage.click_on_Upi_paymentMode()
 
             query1 = (
-                "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = 'SANDEEPTEST_6979';")
+                "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = 'UPIHDFCBANKHDFCPG';")
             q1_result = DBProcessor.getValueFromDB(query1)
             pgMerchantId = q1_result['pgMerchantId'].values[0]
             vpa = q1_result['vpa'].values[0]
 
-            query2 = ("select * from upi_txn where org_code = 'SANDEEPTEST_6979' order by created_time desc limit 1;")
+            query2 = ("select * from upi_txn where org_code = 'UPIHDFCBANKHDFCPG' order by created_time desc limit 1;")
             q2_result = DBProcessor.getValueFromDB(query2)
             Txn_id = q2_result['txn_id'].values[0]
             rrn = random.randint(1111110, 9999999)
@@ -145,8 +147,7 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
 
             # payload = "pgMerchantId=554455445456789&meRes=6D21A614BF76D52D36E138D7ECCA747E6139F2B6FB30CA8FEC310E067D6B55F050F8150467F16A92EF3BA2DDA27600087ECBFF276ACBFAEA8579F74913876CAC158675FCB53AF43F39491B512432306B2FFA4C3247A2BDE27724860E925DC00127720ED48B30828CEA98FE1938323BA53B4D845755C8FAF449260A7CE7BEC805283F01CBFD0B27CFA345180364967380B811D2D4793A2227BAD6420DF443D1159E3D7030CA0E97FA75B152FDE36F4F59175BD721107598F9C9D6F99A7B6EF45FA948C2BDB8892C907BA16A45026A6C69287A076BBAD442DD86BB1B6927690077C9C8A8DB02471D4796F1EACE9753B0F40F2DB1122A1B5EBCC02EEAA1031C76B4D173D0388A6BD77E9C1426DEEDD56CD192614D0226E2EF8EF333909AFA64DBB7C6EB9449F08EEB9EA919461DAF83A13D8974F7DC562ECC5D57CA39843FA6EFD4"
             headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Cookie': 'jsessionid=041ee04a-65a3-4247-a343-375d1a3a1e10'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
 
             response = requests.request("POST", url, headers=headers, data=payLoad)
@@ -208,12 +209,14 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
                 Payment_Status =  payment_status.split(':')[1]
                 print(Payment_Status)
                 paymentPage.click_on_proceed_homepage()
-                actualAppValues = {"Payment Status": payment_status.split(':')[1], "Payment mode": payment_mode,
+                actualAppValues = {"Payment Status": Payment_Status, "Payment mode": payment_mode,
                                    # "Amount": app_amount.split(' ')[1]}
                                    "Amount": str(amount)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
+                allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
+                              attachment_type=AttachmentType.PNG)
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -225,7 +228,7 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI"}
-                payload = {"username": "4455778875", "password": "q121212"}
+                payload = {"username": username, "password": password}
                 response = APIProcessor.post(payload, TestData.API)
                 print(response)
                 list = response["txns"]
@@ -281,14 +284,14 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
                 expectedPortalValues = {"Payment Status": "AUTHORIZED", "Payment Type": "UPI",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": "4455778875"}
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 driver_ui = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(driver_ui)
                 username_portal = '9660867344'
                 password_portal = 'A123456'
                 loginPagePortal.perform_login_to_portal(username_portal, password_portal)
                 homePagePortal = PortalHomePage(driver_ui)
-                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
+                homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
                 time.sleep(2)
                 homePagePortal.click_switch_button()
                 homePagePortal.click_transaction_search_menu()
