@@ -27,8 +27,6 @@ class PaymentPage(BasePage):
     lbl_payWith = (By.ID, 'com.ezetap.service.demo:id/tvPayWithTop')
     lbl_checkstatusTitle = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
     lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
-    btn_navigateToPaymentScreenFrom_UPI_BQR = (By.ID, "com.ezetap.service.demo:id/ibtnBack")
-    btn_cancelPayment_UPI_BQR = (By.ID, "com.ezetap.service.demo:id/btnYesCancelPayment")
 
 
     def __init__(self, driver):
@@ -93,3 +91,11 @@ class PaymentPage(BasePage):
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
+
+    def check_payment_page(self):
+        try:
+            self.wait_for_element(self.lbl_payWith, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            self.perform_click(self.btn_proceedToHomepage)
