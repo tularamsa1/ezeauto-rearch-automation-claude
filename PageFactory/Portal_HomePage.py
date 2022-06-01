@@ -47,7 +47,7 @@ class PortalHomePage(BasePage):
         return self.fetch_text(self.lbl_sale)
 
     def fetch_status_from_transaction_id(self,txn_id):
-        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[5]')
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[4]')
         text=self.fetch_text(locator)
         if text.upper() == "SETTLED":
             text= "AUTHORIZED"
