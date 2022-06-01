@@ -93,17 +93,3 @@ class PaymentPage(BasePage):
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
-
-    def check_payment_page(self):
-        try:
-            self.wait_for_element(self.lbl_payWith, 6)
-        except:
-            self.wait_for_element(self.lbl_checkstatusTitle)
-            self.perform_click(self.lbl_checkstatus)
-            self.perform_click(self.btn_proceedToHomepage)
-
-    def click_back_btn_upi_bqr_payment_screen(self):
-        self.perform_click(self.btn_navigateToPaymentScreenFrom_UPI_BQR)
-
-    def click_cancel_btn_upi_bqr_payment_screen(self):
-        self.perform_click(self.btn_cancelPayment_UPI_BQR)
