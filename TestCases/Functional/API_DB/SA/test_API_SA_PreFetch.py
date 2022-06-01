@@ -2,9 +2,6 @@
 import random
 import pytest
 from datetime import datetime
-
-import Utilities.ReportProcessor
-import Utilities.Validator
 from DataProvider import GlobalVariables
 from Utilities.APIPost import post
 from Utilities.CalculateEMI import CalculateEMI

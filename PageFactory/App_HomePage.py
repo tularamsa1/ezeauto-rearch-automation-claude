@@ -145,7 +145,7 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.wait_for_element(self.btn_goToHistory)
+        self.wait_for_element(self.btn_goToHistory, 14)
 
     def click_side_menu_eng(self):
         self.perform_click(self.mnu_engSideMenu)

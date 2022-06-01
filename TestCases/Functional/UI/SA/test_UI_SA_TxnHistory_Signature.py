@@ -3,84 +3,17 @@ import pytest
 from PageFactory.App_FiltersPage import FiltersPage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_HomePage import HomePage
+from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from DataProvider.config import TestData
 from Utilities.ConfigReader import read_config
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader
-
-'''''''''
-@pytest.mark.usefixtures("log_on_success")
-#@pytest.mark.appVal
-def test_UI_SA_TxnHistory_Signature_01(method_setup, appium_driver):
-    GlobalVariables.apiLogs = True
-    GlobalVariables.portalLogs = True
-    GlobalVariables.cnpWareLogs = False
-    GlobalVariables.middleWareLogs = False
-
-    global success_Val_Execution
-    success_Val_Execution = True
-
-    # =============Execution Block=====================
-    try:
-        driver = GlobalVariables.appDriver
-        loginPage = LoginPage(driver)
-        username = read_config("credentials", 'username_dev11')
-        password = read_config("credentials", 'password_dev11')
-        loginPage.perform_login(username, password)
-        homePage = HomePage(driver)
-        homepage_text = homePage.check_home_page_logo()
-        assert homepage_text == TestData.HOMEPAGE_TEXT
-        homePage.click_on_history()
-        transactionsHistoryPage = TransHistoryPage(driver)
-        transactionsHistoryPage.click_filter()
-        filtersPage = FiltersPage(driver)
-        filtersPage.apply_filter_card_and_success()
-        transactionsHistoryPage.click_first_amount_field()
-        transactionsHistoryPage.click_status_arrow_button()
-
-
-        Utilities.ReportProcessor.get_TC_Exe_Time()
-    except Exception as e:
-        print(e)
-        Utilities.ReportProcessor.get_TC_Exe_Time()
-        print("Testcase did not complete due to exception in testcase execution")
-        print("")
-        GlobalVariables.EXCEL_TC_Execution = "Fail"
-        pytest.fail()
-
-    else:
-        # ======================Validation Block==========================
-        GlobalVariables.EXCEL_TC_Execution = "Pass"
-        current = datetime.now()
-        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-
-    # ====================APP validation==========================
-
-        try:
-            transactionsHistoryPage.add_signature()
-            expectedAPPValues = "SUCCESS:" + "SUCCESS"
-        except Exception as e:
-            print("Exception:", e)
-            print("APP Validation did not complete due to exception")
-            print("")
-            expectedAPPValues = "Failed"
-            GlobalVariables.EXCEL_App_Val = "Fail"
-            success_Val_Execution = False
-
-        success = Utilities.Validator.validateValues("", "", "", expectedAPPValues)
-        if success_Val_Execution == False:
-            if success == False:
-                pass
-            else:
-                pytest.fail()
-'''''
-
+from Utilities import Validator, ReportProcessor, ConfigReader, APIProcessor
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
-@pytest.mark.usefixtures("appium_driver", "ui_driver")
+@pytest.mark.usefixtures("appium_driver")
 @pytest.mark.appVal
 def test_UI_SA_TxnHistory_Signature_01(): #Make sure to add the test case name as same as the sub feature code.
     try:
@@ -93,6 +26,26 @@ def test_UI_SA_TxnHistory_Signature_01(): #Make sure to add the test case name a
         bool_val_exe = True
         msg = ""
 
+        #---------------------------Pre requisite----------------------------------------------
+        payload = {
+        "username":"9731545096",
+        "password":"A123456",
+        "entityName":"org",
+        "settings":{
+            "eSignatureForNonCardEnabled": "true",
+            "signatureForCard": "ALWAYS"
+        },
+        "settingForOrgCode":"VINEET_191036200"
+        }
+        response = APIProcessor.post(payload, "orgupdate")
+        if response["success"]==True:
+            pass
+        else:
+            msg = "Pre requisite setting failure"
+            pytest.fail(msg)
+        #--------------------End of Pre requisite-----------------------------------
+
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
@@ -103,8 +56,12 @@ def test_UI_SA_TxnHistory_Signature_01(): #Make sure to add the test case name a
             password = read_config("credentials", 'password_dev11')
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
-            homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            homePage.check_home_page_logo()
+            homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
+            paymentPage = PaymentPage(driver)
+            paymentPage.click_on_Cash()
+            paymentPage.click_on_confirm()
+            paymentPage.click_on_proceed_homepage()
             homePage.click_on_history()
             transactionsHistoryPage = TransHistoryPage(driver)
             transactionsHistoryPage.click_filter()
@@ -144,63 +101,7 @@ def test_UI_SA_TxnHistory_Signature_01(): #Make sure to add the test case name a
                 bool_val_exe = False
 
         # -----------------------------------------End of App Validation---------------------------------------
-
-        # -----------------------------------------Start of API Validation------------------------------------
-        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            try:
-                # --------------------------------------------------------------------------------------------
-                expectedAPIValues = {}
-                #
-                pass
-                #
-                actualAPIValues = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
-            except Exception as e:
-                print("API Validation failed due to exception - "+str(e))
-                msg = msg + "API Validation did not complete due to exception.\n"
-                bool_val_exe = False
-
-        # -----------------------------------------End of API Validation---------------------------------------
-
-        # -----------------------------------------Start of DB Validation--------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            try:
-                # --------------------------------------------------------------------------------------------
-                expectedDBValues = {}
-                #
-                pass
-                #
-                actualDBValues = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
-            except Exception as e:
-                print("DB Validation failed due to exception - "+str(e))
-                msg = msg + "DB Validation did not complete due to exception.\n"
-                bool_val_exe = False
-
-        # -----------------------------------------End of DB Validation---------------------------------------
-
-        # -----------------------------------------Start of Portal Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            try:
-                # --------------------------------------------------------------------------------------------
-                expectedPortalValues = {}
-                #
-                pass
-                #
-                actualPortalValues = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
-            except Exception as e:
-                print("Portal Validation failed due to exception - "+str(e))
-                msg = msg + "Portal Validation did not complete due to exception.\n"
-                bool_val_exe = False
-
-        # -----------------------------------------End of Portal Validation---------------------------------------
-
-
-    # -------------------------------------------End of Validation---------------------------------------------
+#--------------------------------------End of Validation---------------------------------------------
 
     finally:
         ReportProcessor.updateTestCaseResult(msg)
