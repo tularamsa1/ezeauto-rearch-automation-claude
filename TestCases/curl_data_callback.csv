@@ -1,5 +1,0 @@
-"curl --request POST \
---url http://localhost:16067/encrypt \
---header 'content-type: application/json' \
---header 'enckey: 57c3f7c3b0d8dc0be189ec63f68fce42' \
---data '211115084892E010054916|Txn_id|amount|2020:06:29 02:59:40|SUCCESS|Transaction success|00|NA|vpa|1036901|NA|null|null|null|null|null|Yes Bank Of India!00000003783965091!CBIN0284021!918650503915|PAY!http://www.npci.org.in/!NA!!Geetanjaliacnchi!NA!|amazonsellerservices.98397377@hdfcbank!NA!NA|NA|NA'"
