@@ -194,49 +194,49 @@ def releaseAppiumServerInDBUsingTestCaseID(testCaseID):
         print("Unable to release the appium server associated with test case " + testCaseID)
 
 
-def getUserCredentialsFromDB(testCaseID):
+def getAppUserCredentials(testCaseID):
     proceed = False
-    print("Trying to get available user credentials from DB")
+    print("Trying to get available app user credentials from DB")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    userCredentials={}
+    appUserCredentials={}
     timer = 0
     while timer<20:
         try:
-            cursor.execute("SELECT Username, Password FROM user_credentials WHERE Status = 'Available';")
-            availableUsers = cursor.fetchall()
-            if availableUsers != None and len(availableUsers) > 0 :
-                for user in availableUsers:
-                    username = str(user[0])
-                    password = user[1]
+            cursor.execute("SELECT Username, Password FROM app_users WHERE Status = 'Available';")
+            availableAppUsers = cursor.fetchall()
+            if availableAppUsers != None and len(availableAppUsers) > 0 :
+                for appUser in availableAppUsers:
+                    username = str(appUser[0])
+                    password = appUser[1]
                     try:
-                        cursor.execute("INSERT INTO user_credentials_blocked(Username, TestCaseID) VALUES('"+username+"','"+testCaseID+"');")
+                        cursor.execute("INSERT INTO app_users_blocked(Username, TestCaseID) VALUES('"+username+"','"+testCaseID+"');")
                         conn.commit()
                         try:
-                            cursor.execute("UPDATE user_credentials SET Status = 'Blocked' WHERE Username = '"+username+"';")
+                            cursor.execute("UPDATE app_users SET Status = 'Blocked' WHERE Username = '"+username+"';")
                             conn.commit()
-                            print("Username " + username + " is available")
-                            userCredentials['Username'] = username
-                            userCredentials['Password'] = password
+                            print("App username " + username + " is available")
+                            appUserCredentials['Username'] = username
+                            appUserCredentials['Password'] = password
                             proceed = True
                             break;
                         except:
-                            print("Unable to change the status of user in DB, so deleting the entry in user_credentials_blocked table.")
-                            cursor.execute("DELETE FROM user_credentials_blocked WHERE username = '"+username+"';")
+                            print("Unable to change the status of app user in DB, so deleting the entry in app_users_blocked table.")
+                            cursor.execute("DELETE FROM app_users_blocked WHERE username = '"+username+"';")
                             conn.commit()
                             proceed == False
                     except Exception as e:
                         proceed = False
                         if str(e).__contains__("UNIQUE constraint failed"):
                             print(
-                                "Two processess tried accessing the same user, hence this test case will retry to get another user.")
+                                "Two processess tried accessing the same app user, hence this test case will retry to get another app user.")
                         else:
-                            print("Unable to add entry into the user_credentials_blocked table due to error : " + str(e))
+                            print("Unable to add entry into the app_users_blocked table due to error : " + str(e))
             else:
-                print("Unable to fetch any user. Retrying...")
+                print("Unable to fetch any app user. Retrying...")
                 proceed = False
         except Exception as e:
-            print("Unable to retrieve user details from user credentials db due to error : "+str(e))
+            print("Unable to retrieve app user details from app_users db due to error : "+str(e))
             proceed = False
 
         if proceed:
@@ -247,52 +247,141 @@ def getUserCredentialsFromDB(testCaseID):
     conn.commit()
     conn.close()
 
-    if len(userCredentials)==0:
+    if len(appUserCredentials)==0:
         return None
     else:
-        return userCredentials
+        return appUserCredentials
+
+def getPortalUserCredentials(testCaseID):
+    proceed = False
+    print("Trying to get available portal user credentials from DB")
+    conn = sqlite3.connect(dbPath)
+    cursor = conn.cursor()
+    portalUserCredentials={}
+    timer = 0
+    while timer<20:
+        try:
+            cursor.execute("SELECT Username, Password FROM portal_users WHERE Status = 'Available';")
+            availablePortalUsers = cursor.fetchall()
+            if availablePortalUsers != None and len(availablePortalUsers) > 0 :
+                for portalUser in availablePortalUsers:
+                    username = str(portalUser[0])
+                    password = portalUser[1]
+                    try:
+                        cursor.execute("INSERT INTO portal_users_blocked(Username, TestCaseID) VALUES('"+username+"','"+testCaseID+"');")
+                        conn.commit()
+                        try:
+                            cursor.execute("UPDATE portal_users SET Status = 'Blocked' WHERE Username = '"+username+"';")
+                            conn.commit()
+                            print("Portal username " + username + " is available")
+                            portalUserCredentials['Username'] = username
+                            portalUserCredentials['Password'] = password
+                            proceed = True
+                            break;
+                        except:
+                            print("Unable to change the status of portal user in DB, so deleting the entry in portal_users_blocked table.")
+                            cursor.execute("DELETE FROM portal_users_blocked WHERE username = '"+username+"';")
+                            conn.commit()
+                            proceed == False
+                    except Exception as e:
+                        proceed = False
+                        if str(e).__contains__("UNIQUE constraint failed"):
+                            print(
+                                "Two processess tried accessing the same portal user, hence this test case will retry to get another portal user.")
+                        else:
+                            print("Unable to add entry into the portal_users_blocked table due to error : " + str(e))
+            else:
+                print("Unable to fetch any portal user. Retrying...")
+                proceed = False
+        except Exception as e:
+            print("Unable to retrieve portal user details from portal_users db due to error : "+str(e))
+            proceed = False
+
+        if proceed:
+            break;
+        else:
+            time.sleep(1)
+            timer += 1
+    conn.commit()
+    conn.close()
+
+    if len(portalUserCredentials)==0:
+        return None
+    else:
+        return portalUserCredentials
 
 
 
-def releaseUserInDBUsingTestCaseID(testCaseID):
+def releaseAppUser(testCaseID):
 
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
         proceed = True
-        cursor.execute("SELECT Username FROM user_credentials_blocked WHERE TestCaseID = '" + testCaseID + "';")
+        cursor.execute("SELECT Username FROM app_users_blocked WHERE TestCaseID = '" + testCaseID + "';")
         try:
             username = cursor.fetchall();
             try:
-                cursor.execute("DELETE FROM user_credentials_blocked WHERE TestCaseID = '" + testCaseID + "';")
+                cursor.execute("DELETE FROM app_users_blocked WHERE TestCaseID = '" + testCaseID + "';")
                 conn.commit()
                 for user in username:
                     try:
-                        cursor.execute("UPDATE user_credentials SET Status='Available' WHERE Username = '" + user[0] + "';")
+                        cursor.execute("UPDATE app_users SET Status='Available' WHERE Username = '" + user[0] + "';")
                         conn.commit()
-                        print(user[0] + " is released at " + str(datetime.now().time()))
+                        print("App user "+user[0] + " is released at " + str(datetime.now().time()))
                     except Exception as e:
-                        print("Unable to release the user due to " + e)
+                        print("Unable to release the app user due to " + e)
             except Exception as e:
-                print("Unable to delete the user from user_credentials_blocked DB due to "+str(e))
+                print("Unable to delete the app user from app_users_blocked DB due to "+str(e))
                 proceed = False
 
         except Exception as e:
-            print("Unable to get user from user_credentials table due to error : "+str(e))
-            print("Above error is because given test case does not have any users blocked.")
+            print("Unable to get app user from app_users table due to error : "+str(e))
+            print("Above error is because given test case does not have any app users blocked.")
         conn.commit()
         conn.close()
     except:
-        print("Unable to release the user associated with test case " + testCaseID)
+        print("Unable to release the app user associated with test case " + testCaseID)
 
+def releasePortalUser(testCaseID):
 
+    try:
+        conn = sqlite3.connect(dbPath)
+        cursor = conn.cursor()
+        proceed = True
+        cursor.execute("SELECT Username FROM portal_users_blocked WHERE TestCaseID = '" + testCaseID + "';")
+        try:
+            username = cursor.fetchall();
+            try:
+                cursor.execute("DELETE FROM portal_users_blocked WHERE TestCaseID = '" + testCaseID + "';")
+                conn.commit()
+                for user in username:
+                    try:
+                        cursor.execute("UPDATE portal_users SET Status='Available' WHERE Username = '" + user[0] + "';")
+                        conn.commit()
+                        print("Portal user "+user[0] + " is released at " + str(datetime.now().time()))
+                    except Exception as e:
+                        print("Unable to release the portal user due to " + e)
+            except Exception as e:
+                print("Unable to delete the portal user from portal_users_blocked DB due to "+str(e))
+                proceed = False
+
+        except Exception as e:
+            print("Unable to get portal user from portal_users table due to error : "+str(e))
+            print("Above error is because given test case does not have any portal users blocked.")
+        conn.commit()
+        conn.close()
+    except:
+        print("Unable to release the portal user associated with test case " + testCaseID)
 
 def clearAssignerTables():
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM user_credentials;")
-        cursor.execute("DELETE FROM user_credentials_blocked;")
+        cursor.execute("DELETE FROM app_users;")
+        cursor.execute("DELETE FROM app_users_blocked;")
+        cursor.execute("DELETE FROM portal_users;")
+        cursor.execute("DELETE FROM portal_users_blocked;")
         cursor.execute("DELETE FROM devices;")
         cursor.execute("DELETE FROM devices_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
@@ -310,25 +399,45 @@ Make sure the dictionary for each user contains the below two keys
 1. Username
 2. Password 
 """
-def updateUsersInDB(listOfDictionariesWithUserDetails : []):
+def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        if len(listOfDictionariesWithUserDetails)>0:
-            for userDetails in listOfDictionariesWithUserDetails:
+        if len(listOfDictionariesWithAppUserDetails)>0:
+            for userDetails in listOfDictionariesWithAppUserDetails:
                 username = userDetails["Username"]
                 password = userDetails["Password"]
                 try:
-                    cursor.execute("INSERT INTO user_credentials(Username, Password, Status)values('"+username+"','"+password+"', 'Available');")
-                    print("User "+username+" added successfully to the DB.")
+                    cursor.execute("INSERT INTO app_users(Username, Password, Status)values('"+username+"','"+password+"', 'Available');")
+                    print("App user "+username+" added successfully to the DB.")
                 except Exception as e:
-                    print("Unable to add the user "+username+" to the db due to the error - "+str(e))
+                    print("Unable to add the app user "+username+" to the db due to the error - "+str(e))
             conn.commit()
             conn.close()
         else:
-            print("Users list is empty")
+            print("App users list is empty")
     except Exception as e:
-        print("Unable to update the user details to DB")
+        print("Unable to update the app user details to DB")
+
+def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails : []):
+    try:
+        conn = sqlite3.connect(dbPath)
+        cursor = conn.cursor()
+        if len(listOfDictionariesWithPortalUserDetails)>0:
+            for userDetails in listOfDictionariesWithPortalUserDetails:
+                username = userDetails["Username"]
+                password = userDetails["Password"]
+                try:
+                    cursor.execute("INSERT INTO portal_users(Username, Password, Status)values('"+username+"','"+password+"', 'Available');")
+                    print("Portal user "+username+" added successfully to the DB.")
+                except Exception as e:
+                    print("Unable to add the portal user "+username+" to the db due to the error - "+str(e))
+            conn.commit()
+            conn.close()
+        else:
+            print("Portal users list is empty")
+    except Exception as e:
+        print("Unable to update the portal user details to DB")
 
 def updateAppiumServersInDB(listOfPorts: []):
     try:

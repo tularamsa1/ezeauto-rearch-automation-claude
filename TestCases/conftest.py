@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 from random import randint
 from selenium.webdriver.chrome import webdriver
@@ -310,16 +311,22 @@ def appium_driver(request):
     appiumserverDetails = ResourceAssigner.getAppiumServerFromDB(testcaseid)
     print(testcaseid+" will be using the device "+deviceDetails['DeviceId'])
     print(testcaseid + " will be running on the appium server port " + appiumserverDetails['PortNumber'])
+    mposApp = ConfigReader.read_config_paths("System","automation_suite_path")+"/App/"+ConfigReader.read_config("Applications","mpos")
+    saApp = ConfigReader.read_config_paths("System","automation_suite_path")+"/App/"+ConfigReader.read_config("Applications","SA")
+    lst_applications = [mposApp,saApp]
+    json_applications = json.dumps(lst_applications)
     desired_cap = {
         "platformName": "Android",
         "deviceName": deviceDetails['DeviceId'],
         "udid": deviceDetails['DeviceId'],
+        "otherApps": json_applications,
         "appPackage": "com.ezetap.basicapp",
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
         "noReset": "false",
         "autoGrantPermissions": "true",
-        "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2"
+        "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
+        "MobileCapabilityType.NEW_COMMAND_TIMEOUT":"300"
     }
     print("appum server url:", 'http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub')
     GlobalVariables.appDriver = app_webdriver.Remote('http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub', desired_cap)

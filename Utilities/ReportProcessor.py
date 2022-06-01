@@ -15,8 +15,12 @@ def get_TC_Exe_Time():
     current = datetime.now()
     GlobalVariables.EXCEL_TC_Exe_completed_time = current.strftime("%H:%M:%S")
     FMT = '%H:%M:%S'
-    totalExecutionTime = datetime.strptime(GlobalVariables.EXCEL_TC_Exe_completed_time, FMT) - datetime.strptime(str(
+    try:
+        totalExecutionTime = datetime.strptime(GlobalVariables.EXCEL_TC_Exe_completed_time, FMT) - datetime.strptime(str(
         GlobalVariables.EXCEL_TC_Exe_Starting_Time), FMT)
+    except Exception as e:
+        print("Unable to set the totalExecutionTime due to error : " + str(e) + ". Hence setting it to 0.")
+        totalExecutionTime = 0
 
     # Converting time duration to seconds
     GlobalVariables.EXCEL_Execution_Time = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalExecutionTime).split(":")))
@@ -30,8 +34,12 @@ def get_TC_Val_Time():
     GlobalVariables.EXCEL_TC_Val_completed_time = current.strftime("%H:%M:%S")
     print("TC Val completed time:", GlobalVariables.EXCEL_TC_Val_completed_time)
     FMT = '%H:%M:%S'
-    totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
+    try:
+        totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
         GlobalVariables.EXCEL_TC_Val_Starting_Time), FMT)
+    except Exception as e:
+        print("Unable to set the totalValidationTime due to error : " + str(e) + ". Hence setting it to 0.")
+        totalValidationTime = 0
 
     # Converting time duration to seconds
     GlobalVariables.EXCEL_Val_time = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalValidationTime).split(":")))
@@ -46,9 +54,12 @@ def get_Log_Collection_Time():
    # GlobalVariables.EXCEL_TC_Val_completed_time = current.strftime("%H:%M:%S")
     FMT = '%H:%M:%S'
     print("Log collection end time: ", GlobalVariables.EXCEL_TC_Val_completed_time)
-
-    totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
+    try:
+        totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
         GlobalVariables.EXCEL_TC_LogColl_Starting_Time), FMT)
+    except Exception as e:
+        print("Unable to set the totalValidationTime due to error : " + str(e) + ". Hence setting it to 0.")
+        totalValidationTime = 0
 
     # Converting time duration to seconds
     GlobalVariables.EXCEL_LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalValidationTime).split(":")))

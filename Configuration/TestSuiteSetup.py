@@ -188,7 +188,7 @@ It takes the list of port numbers as input and kills the servers one by one from
 """
 
 
-def killAppiumServers():
+def killEmulatorsAndAppiumServers():
     try:
         os.system("pkill -9 -f appium")
         os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
@@ -228,10 +228,10 @@ def getDevicesList():
             return flat_list
 
         except:
-            print("No devices connected.")
+            print("No physical devices connected or emulators running currently.")
 
     except subprocess.CalledProcessError as e:
-        print("No devices connected.")
+        print("No physical devices connected or emulators running currently.")
         print(e.returncode)
 
 
@@ -305,15 +305,15 @@ def calculateTestCasesCountForParallelExecution():
     testCasesCount = config.get("ParallelExecution","NumberOfTestCases")
     try:
         testCasesCount = int(testCasesCount)
-        if testCasesCount < 0:
-            testCasesCount = 0
+        if testCasesCount < 1:
+            testCasesCount = 1
         elif testCasesCount > 5:
             print("Maximum of only 5 test cases can be run in parallel.")
             testCasesCount = 5
     except Exception as e:
         print("Count of test cases is configured with a non-integer value. Hence sequential execution is initiated.")
-        testCasesCount = 0
-    if testCasesCount == 0 or testCasesCount == 1:
+        testCasesCount = 1
+    if testCasesCount == 1:
         return ""
     else:
         return "-n"+str(testCasesCount)+" "
@@ -357,6 +357,7 @@ def prepareDevicesAndDB():
             appiumServerCount = len(devices) + 1
     else:
         if devices == None:
+            print("Attempting to start emulators")
             additionalEmulatorsRequired = getThreadCount()
         else:
             additionalEmulatorsRequired = getThreadCount() - len(devices)
@@ -365,13 +366,19 @@ def prepareDevicesAndDB():
             startEmulators(additionalEmulatorsRequired)
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
-    # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
     ResourceAssigner.clearAssignerTables()
-    devices = getDevicesList()
+    if devices == None:
+        devices = getDevicesList()
     if devices == None :
+        print("Attempt to start the emulators failed.")
         print("No devices available. Hence DB update operation for adding devices is skipped.")
     else:
         ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
-    # # ResourceAssigner.updateUsersInDB(users)
+    # lst_appUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
+    #          {"Username": "7204644666", "Password": "A123456"}]
+    # portalUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
+    #             {"Username": "7204644666", "Password": "A123456"}]
+    # ResourceAssigner.updateAppUsersInDB(lst_appUsersDetails)
+    # ResourceAssigner.updatePortalUsersInDB(portalUsersDetails)
     return True

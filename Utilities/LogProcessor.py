@@ -93,9 +93,13 @@ def startLineNoOfServerLogFile():
         current = datetime.now()
         LogColl_Ending_Time = current.strftime("%H:%M:%S")
         FMT = '%H:%M:%S'
-        totalLogCollectionTime = datetime.strptime(LogColl_Ending_Time, FMT) - datetime.strptime(
-            str(LogColl_Starting_Time),
-            FMT)
+        try:
+            totalLogCollectionTime = datetime.strptime(LogColl_Ending_Time, FMT) - datetime.strptime(
+                str(LogColl_Starting_Time),
+                FMT)
+        except Exception as e:
+            print("Unable to set the totalLogCollectionTime due to error : "+str(e)+". Hence setting it to 0.")
+            totalLogCollectionTime = 0
         print("Portal logs coll time: ", str(totalLogCollectionTime))
         # Converting time duration to seconds
         LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalLogCollectionTime).split(":")))
