@@ -48,11 +48,7 @@ class HomePage(BasePage):
         super().__init__(driver)
 
     def check_home_page_logo(self):
-<<<<<<< HEAD
         return self.fetch_text(self.lbl_home)
-=======
-        return self.fetch_text(self.lbl_home, 50)
->>>>>>> second commit
 
     def check_home_page_for_invalid_Login(self):
         return self.fetch_text(self.lbl_home, 5)
@@ -148,8 +144,8 @@ class HomePage(BasePage):
     def click_on_history(self):
         self.perform_click(self.tab_history)
 
-    def wait_for_home_page_load(self, time):
-        self.wait_for_element(self.btn_goToHistory, time)
+    def wait_for_home_page_load(self):
+        self.wait_for_element(self.btn_goToHistory, 14)
 
     def click_side_menu_eng(self):
         self.perform_click(self.mnu_engSideMenu)
@@ -159,7 +155,6 @@ class HomePage(BasePage):
 
     def click_on_merchant_name(self):
         self.perform_click(self.mnu_merchantDetail)
-
 
     # def click_on_enterAmt(self):
     #     self.perform_click(self.txt_Amountfield)
@@ -198,14 +193,7 @@ class HomePage(BasePage):
 
     def click_on_back_btn_enter_amt_page(self):
         self.perform_click(self.btn_back)
-    def click_on_back_btn_enter_amt_page(self):
-        self.perform_click(self.btn_back)
-
-    def click_on_back_btn_enter_amt_page1(self):
-        self.perform_click1(self.btn_back)
 
     def click_on_skip_button(self):
         self.perform_click(self.btn_skip)
-
-
 
