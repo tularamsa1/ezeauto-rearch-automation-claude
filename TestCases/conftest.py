@@ -326,11 +326,10 @@ def appium_driver(request):
         "ignoreHiddenApiPolicyError": "true",
         "noReset": "false",
         "autoGrantPermissions": "true",
-        "newCommandTimeout": 7000,
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
         "MobileCapabilityType.NEW_COMMAND_TIMEOUT":"300"
     }
-    print("appum server url:", 'http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub')
+    print("appium server url:", 'http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub')
     GlobalVariables.appDriver = app_webdriver.Remote('http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub', desired_cap)
 #    GlobalVariables.appDriver.implicitly_wait(30)
 
