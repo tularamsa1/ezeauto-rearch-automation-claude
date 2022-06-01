@@ -36,8 +36,7 @@ class PortalTransHistoryPage(BasePage):
                 "aria-label")
             if attribute.__contains__(": activate to sort column ascending"):
                 attribute = attribute.replace(": activate to sort column ascending", "")
-            attributeValue = self.driver.find_element(By.XPATH, "//table[@id='table_txns']/tbody/tr" + "[" +
-                                                      str(transactionRow) + "]/td[" + str(
+            attributeValue = self.driver.find_element(By.XPATH, "//table[@id='table_txns']/tbody/tr" + "[" + str(transactionRow) + "]/td[" + str(
                                                           col) + "]").text
             transactionDetails[attribute] = attributeValue
         return transactionDetails
