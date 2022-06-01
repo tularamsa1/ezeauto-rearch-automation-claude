@@ -25,7 +25,7 @@ from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DB
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
+def test_UI_Common_PM_UPI_Success_Via_Pure_UPI_Callback_HDFC():
     # Make sure to add the test case name as same as the sub feature code.
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -237,4 +237,4 @@ def test_UI_Common_PM_UPI_Callback_Success_HDFC_07():
             print("Test case setup itself failed. So the test case was not executed.")
         else:
             ReportProcessor.updateTestCaseResult(msg)
-        Configuration.executeFinallyBlock("test_UI_Common_PM_UPI_Callback_Success_HDFC_07")
+        Configuration.executeFinallyBlock("test_UI_Common_PM_UPI_Success_Via_Pure_UPI_Callback_HDFC")
