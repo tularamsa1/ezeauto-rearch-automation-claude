@@ -8,7 +8,7 @@ from datetime import datetime
 from Utilities.APIPost import post
 from Utilities.ConfigReader import read_config
 from Configuration import Configuration
-from Utilities import Validator, ReportProcessor, ConfigReader
+from Utilities import Validator, ReportProcessor, ConfigReader, APIProcessor
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
@@ -25,6 +25,23 @@ def test_UI_SA_Multilanguage_English_01(): #Make sure to add the test case name 
         global bool_val_exe
         bool_val_exe = True
         msg = ""
+        #---------------------------Pre requisite----------------------------------------------
+        payload = {
+        "username":"9731545096",
+        "password":"A123456",
+        "entityName":"org",
+        "settings":{
+            "enableMultilingualForApp":"true"
+        },
+        "settingForOrgCode":"MANASAAUTOMATION"
+        }
+        response = APIProcessor.post(payload, "orgupdate")
+        if response["success"]==True:
+            pass
+        else:
+            msg = "Pre requisite setting failure"
+            pytest.fail(msg)
+
 
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
@@ -123,6 +140,25 @@ def test_UI_SA_Multilanguage_Hindi_02(): #Make sure to add the test case name as
         global bool_val_exe
         bool_val_exe = True
         msg = ""
+
+        #---------------------------Pre requisite----------------------------------------------
+        payload = {
+        "username":"9731545096",
+        "password":"A123456",
+        "entityName":"org",
+        "settings":{
+            "enableMultilingualForApp":"true"
+        },
+        "settingForOrgCode":"MANASAAUTOMATION"
+        }
+        response = APIProcessor.post(payload, "orgupdate")
+        if response["success"]==True:
+            pass
+        else:
+            msg = "Pre requisite setting failure"
+            pytest.fail(msg)
+
+
 
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
@@ -325,6 +361,24 @@ def test_UI_SA_Multilanguage_Hindi_to_English_04():  # Make sure to add the test
         global bool_val_exe
         bool_val_exe = True
         msg = ""
+        #---------------------------Pre requisite----------------------------------------------
+        payload = {
+        "username":"9731545096",
+        "password":"A123456",
+        "entityName":"org",
+        "settings":{
+            "enableMultilingualForApp":"true"
+        },
+        "settingForOrgCode":"MANASAAUTOMATION"
+        }
+        response = APIProcessor.post(payload, "orgupdate")
+        if response["success"]==True:
+            pass
+        else:
+            msg = "Pre requisite setting failure"
+            pytest.fail(msg)
+
+    #-------------------------------End of Pre requisite--------------------------------
 
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
@@ -431,6 +485,24 @@ def test_UI_SA_Multilanguage_Lang_selection_05():  # Make sure to add the test c
         global bool_val_exe
         bool_val_exe = True
         msg = ""
+        # ---------------------------Pre requisite----------------------------------------------
+        payload = {
+            "username": "9731545096",
+            "password": "A123456",
+            "entityName": "org",
+            "settings": {
+                "enableMultilingualForApp": "true"
+            },
+            "settingForOrgCode": "MANASAAUTOMATION"
+        }
+        response = APIProcessor.post(payload, "orgupdate")
+        if response["success"] == True:
+            pass
+        else:
+            msg = "Pre requisite setting failure"
+            pytest.fail(msg)
+
+        # -------------------------------End of Pre requisite--------------------------------
 
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
