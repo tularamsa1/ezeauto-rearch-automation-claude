@@ -10,7 +10,6 @@ def configureLogCaptureVariables(apiLog : bool, portalLog : bool, cnpwareLog : b
     GlobalVariables.middleWareLogs = middlewareLog
 
 def executeFinallyBlock(testcaseID):
-    ReportProcessor.createStatusTable()
     ResourceAssigner.releaseUserInDBUsingTestCaseID(testcaseID)
     ResourceAssigner.releaseDeviceInDBusingTestCaseID(testcaseID)
     ResourceAssigner.releaseAppiumServerInDBUsingTestCaseID(testcaseID)

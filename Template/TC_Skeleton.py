@@ -15,7 +15,13 @@ from Utilities import Validator, ReportProcessor, ConfigReader
 @pytest.mark.portalVal
 @pytest.mark.appVal
 def test_SubFeatureCode(): #Make sure to add the test case name as same as the sub feature code.
+
     try:
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # Write the setup code here
+
+        GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
+        #---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
 
@@ -44,7 +50,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {}
@@ -125,7 +131,15 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        ReportProcessor.updateTestCaseResult(msg)  # pass msg
+        if GlobalVariables.setupCompletedSuccessfully == False:
+            print("Test case setup itself failed. So the test case was not executed.")
+        else:
+            ReportProcessor.updateTestCaseResult(msg)  # pass msg
+        #-------------------------------Revert Preconditions done(setup)--------------------------------------------
+
+        # Write the code here to revert the settings that were done as precondition
+
+        #----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.
         #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
         Configuration.executeFinallyBlock("test_SubFeatureCode")

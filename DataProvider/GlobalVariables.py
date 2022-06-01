@@ -2,6 +2,7 @@
 from DataProvider.GlobalConstants import EXCEL_reportFilePath
 
 bool_val_exe = True
+setupCompletedSuccessfully = False
 
 #These variables are for adding to the second table (Validation) in HTML report
 
