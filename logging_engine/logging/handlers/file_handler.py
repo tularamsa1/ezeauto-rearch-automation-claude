@@ -19,8 +19,3 @@ class FileHandler(BaseHandler):
             'filepath': self._filepath,
         }
 
-    # def get_file_handler(self):
-    #     file_handler = logging.FileHandler("execution_logs.log")
-    #     file_handler.setLevel(self._file_log_level)
-    #     file_handler.setFormatter(logging.Formatter(self._log_format))
-    #     return file_handler
