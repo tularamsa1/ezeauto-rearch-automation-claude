@@ -1,0 +1,20 @@
+
+# GENERAL LOGGER SETTINGS 
+logLevel: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
+logFormat: '%(asctime)s | %(name)s | %(levelname)s (%(filename)s) %(funcName)s(%(lineno)d) - %(message)s'
+useLogLineStartTag: true   # boolean - true or false
+
+useFileHandler: true  # enabling logging to file to feature
+useConsoleHandler: true  # enabling console logging feature
+
+# customizing configurations for file logging feature
+fileHandler:
+  logLevel: DEFAULT 
+  logFormat: DEFAULT
+  useLogLineStartTag: DEFAULT
+
+# customizing confiugrations for console logging feature
+consoleHandler:
+  logLevel: DEFAULT
+  logFormat: DEFAULT
+  useLogLineStartTag: DEFAULT
