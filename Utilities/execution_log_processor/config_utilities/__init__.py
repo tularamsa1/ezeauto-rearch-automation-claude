@@ -1,8 +1,6 @@
 from . import yaml_utils as yaml
 from ..globals import CONFIG_FILEPATH
 
-# print(CONFIG_FILEPATH)
-
 
 class Config:
 
