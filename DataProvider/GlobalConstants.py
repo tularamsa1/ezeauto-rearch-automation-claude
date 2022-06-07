@@ -1,3 +1,5 @@
+import os
+
 # chromeDriverPath = "/home/ezetap-10182/PycharmProjects/Automation/Tools/ChromeDriver/chromedriver"
 from Utilities import DirectoryCreator
 
@@ -23,3 +25,8 @@ colName_LogCollTime = "Log Coll Time (sec)"
 colName_TotalTime = "Total Time (sec)"
 
 EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
+
+
+EZEAUTO_MAIN_DIR = os.path.dirname(os.path.dirname(__file__))
+DATABASE_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'Database')
+SQLITE_DB_PATH = os.path.join(DATABASE_DIR, 'ezeauto.db')

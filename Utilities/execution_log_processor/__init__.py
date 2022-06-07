@@ -1,4 +1,4 @@
 from .logging import _EzeAutoLogger as EzeAutoLogger
 
 # this also will work
-# from logging_engine.log import _EzeAutoLogger as EzeAutoLogger
+# from execution_log_processor.log import _EzeAutoLogger as EzeAutoLogger
