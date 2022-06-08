@@ -14,6 +14,9 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
+    def perform_click1(self, locator):
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable(locator)).click()
+
     def perform_click(self, locator):
         WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(locator)).click()
 
