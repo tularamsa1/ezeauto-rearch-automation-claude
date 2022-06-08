@@ -13,19 +13,20 @@ from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, API
 from Utilities.ConfigReader import read_config
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup") 
-@pytest.mark.usefixtures("appium_driver", "ui_driver") 
+@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("appium_driver", "ui_driver") #This is an optional line. Keep only whichever driver is required.
+# From below use only the markers that are applicable for the test case and remove the rest.
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_102_001():
+def test_common_100_102_001(): #Make sure to add the test case name as same as the sub feature code.
 
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-       
+        # Write the setup code here
 
-        GlobalVariables.setupCompletedSuccessfully = True
+        GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
         #---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
@@ -39,24 +40,24 @@ def test_common_100_102_001():
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            app_driver = GlobalVariables.appDriver
-            loginPage = LoginPage(app_driver)
+            driver = GlobalVariables.appDriver
+            loginPage = LoginPage(driver)
             username = read_config("credentials", 'username_HDFC')
             password = read_config("credentials", 'password')
             org_code = read_config("testdata", "org_code_hdfc")
             loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
-            homePage.check_home_page_logo()#use wait for page load method insted of this
+            homePage = HomePage(driver)
+            homePage.check_home_page_logo()
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             print("Order id", order_id)
             homePage.enter_amount_and_order_number(amount, order_id)
-            paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page()#handle 2 more scenario(Fail and pending) for check status
-            paymentPage.click_on_Bqr_paymentMode()#have scroll for ALL payment methods
-            paymentPage.validate_upi_bqr_payment_screen()#use common name across all pages for wait for load elements
-            #assert text == "Scan QR code using"
-            query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"#fetch txn id besed on order id from txn table
+            paymentPage = PaymentPage(driver)
+            paymentPage.check_payment_page()
+            paymentPage.click_on_Bqr_paymentMode()
+            text = paymentPage.validate_upi_bqr_payment_screen()
+            assert text == "Scan QR code using"
+            query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             auth_code = "AE" + txn_id.split('E')[1]
@@ -64,7 +65,6 @@ def test_common_100_102_001():
             print("TXN ID Value:", txn_id)
             print(auth_code)
             print(rrn)
-
             payload = {
             "PRIMARY_ID": txn_id,
             "SECONDARY_ID": "0",
@@ -82,10 +82,10 @@ def test_common_100_102_001():
 
             response = APIProcessor.post(payload, "callback_hdfc")
             print("API Res:", response)
-            print("API RESP STATUS", response["STATUS_DESC"])#use if condition
-            #assert response["STATUS_DESC"]=="Success"
-            paymentPage.fetch_payment_status()
-            #assert app_payment_status == "Payment Successful"
+            print("API RESP STATUS", response["STATUS_DESC"])
+            assert response["STATUS_DESC"]=="Success"
+            app_payment_status = paymentPage.fetch_payment_status()
+            assert app_payment_status == "Payment Successful"
             paymentPage.click_on_proceed_homepage()
 
             #
@@ -110,7 +110,7 @@ def test_common_100_102_001():
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "Bharat QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
 
                 homePage.click_on_history()
-                transactionsHistoryPage = TransHistoryPage(app_driver)
+                transactionsHistoryPage = TransHistoryPage(driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
                 app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
                 app_payment_mode = transactionsHistoryPage.fetch_txn_type_text()
