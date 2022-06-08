@@ -10,7 +10,6 @@ from selenium import webdriver
 from appium import webdriver as app_webdriver
 from datetime import datetime
 import chromedriver_autoinstaller
-
 import DataProvider.GlobalConstants
 from Utilities import ReportProcessor, ResourceAssigner
 from PageFactory import Base_Actions
@@ -34,6 +33,8 @@ currentTestCase = ""
 list_deselected_testcases=[]
 now = datetime.now()
 starting_time = now.strftime("%H:%M:%S")
+
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
 # router_ip = '192.168.3.73'    #dev3
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -118,7 +119,7 @@ def convert_DF_To_Excel():
 
 
 def updatingHighLevelReportAfterEachTCS():
-    workbook = openpyxl.load_workbook(GlobalVariables.EXCEL_reportFilePath)
+    workbook = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = workbook["Sheet1"]
     GlobalVariables.EXCEL_testCaseName = os.environ.get('PYTEST_CURRENT_TEST').replace(" (teardown)", '').split('::')[1]
     print("Testcase name", GlobalVariables.EXCEL_testCaseName)
@@ -197,7 +198,7 @@ def updatingHighLevelReportAfterEachTCS():
             sheet.cell(row=rowNumber, column=columnNumber).value = currentRetryCountsheet + 1
     # =====================================================================================
 
-    workbook.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    workbook.save(EXCEL_reportFilePath)
     workbook.close()
 
 

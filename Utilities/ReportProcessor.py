@@ -1,15 +1,16 @@
 from datetime import datetime
-
 import openpyxl
 import pytest
 from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
-
 import DataProvider.GlobalConstants
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
+from Utilities import DirectoryCreator
+
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
 def get_TC_Exe_Time():
     current = datetime.now()
@@ -195,7 +196,7 @@ def revert_excel_global_variables():
 
 
 def setStylesForExcel():
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     max_row = sheet.max_row
@@ -263,13 +264,11 @@ def setStylesForExcel():
         for row in range(1, sheet.max_row + 1):
             sheet.cell(row, column).border = border
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateExcel_With_Deselect_And_Broken():
-    # breakpoint()
-    print("GlobalVariables.EXCEL_reportFilePath", DataProvider.GlobalConstants.EXCEL_reportFilePath)
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     for i in range(2, sheet.max_row + 1):
@@ -323,11 +322,11 @@ def updateExcel_With_Deselect_And_Broken():
                 colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
                 sheet.cell(row=i, column=colNum_UIval).value = "N/A"
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateExcel_With_RerunAttempts():
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and ConfigReader.read_config(
@@ -352,11 +351,11 @@ def updateExcel_With_RerunAttempts():
         for i in range(2, sheet.max_row + 1):
             sheet.cell(row=i, column=colNum_RerunAttempts).value = "N/A"
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateExcel_With_Category_And_Subcategory():
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     for i in range(2, sheet.max_row + 1):
@@ -378,7 +377,7 @@ def updateExcel_With_Category_And_Subcategory():
             if cellValue_subCategory is None:
                 sheet.cell(row=i, column=colNum_subCategory).value = subCategory
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateTestCaseResult(msg):

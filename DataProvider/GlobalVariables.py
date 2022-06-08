@@ -1,5 +1,4 @@
 # These values are for updating number of each type of validations (API|DB, Portal, DB and App) in html report
-from DataProvider.GlobalConstants import EXCEL_reportFilePath
 
 bool_val_exe = True
 setupCompletedSuccessfully = False
@@ -63,7 +62,6 @@ count = 1
 
 
 df_testCasesDetail = ""
-#EXCEL_reportFilePath = "/home/oem/PycharmProjects/EzeAuto/TestCase/Report.xlsx"
 
 portal_username = ''
 portal_password = ''

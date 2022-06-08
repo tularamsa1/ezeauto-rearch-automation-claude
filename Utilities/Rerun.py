@@ -1,9 +1,7 @@
 import os
-
 import openpyxl
 import pandas as pd
-
-import DataProvider.GlobalConstants
+from DataProvider import GlobalConstants
 from PageFactory import Base_Actions
 from TestCases import conftest
 from DataProvider import GlobalVariables
@@ -11,11 +9,12 @@ from Utilities import ConfigReader, DirectoryCreator, ExcelProcessor
 
 immediateRerun = True
 
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
 def rerunTestAtTheEnd():
     # print("Rerun count is: ", rerunCount)
     df_rerunTestCases = pd.DataFrame(
-        pd.read_excel(DataProvider.GlobalConstants.EXCEL_reportFilePath))
+        pd.read_excel(EXCEL_reportFilePath))
 
     df_rerunTestCases.set_index("Test Case ID", inplace=True)
 
@@ -89,7 +88,7 @@ def rerunTestAtTheEnd():
 def isRerunRequiredImmediately(testCaseID):
     isRerunRequired = False
     df_rerunTestCases = pd.DataFrame(
-        pd.read_excel(DataProvider.GlobalConstants.EXCEL_reportFilePath))
+        pd.read_excel(EXCEL_reportFilePath))
 
     df_rerunTestCases.set_index("Test Case ID", inplace=True)
 
@@ -120,7 +119,7 @@ def isRerunRequiredImmediately(testCaseID):
 # To change the value of rerun testcases overall_status to empty in Report excel, so that it will set as Broken in
 # case of any connectivity issues
 def changeOverallStatusToEmpty(ls_TestCasesForRerun):
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     for rerun_tesecase in ls_TestCasesForRerun:
@@ -131,7 +130,7 @@ def changeOverallStatusToEmpty(ls_TestCasesForRerun):
             if testcase == rerun_tesecase:
                 colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
                 sheet.cell(row=i, column=colNum_overallStatus).value = ""
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):

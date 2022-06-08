@@ -1,11 +1,10 @@
 import configparser
-from Utilities import ConfigReader
 import datetime
 import os
-from os.path import dirname, abspath
+from DataProvider import GlobalConstants
+from Utilities import ConfigReader
 
-
-#automationSuitePath = ConfigReader.read_config("System","automation_suite_path")
+automation_suite_path = GlobalConstants.EZEAUTO_MAIN_DIR
 
 def createReportDirectories(currentDate, currentTime, automationSuitePath):
     try:
@@ -84,8 +83,6 @@ def createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automa
 
 def createExecutionDirectories():
     try:
-        automation_suite_path = dirname(dirname(abspath("./config.ini")))
-        print("automation_suite_path", automation_suite_path)
         currentDateTime = datetime.datetime.now()
         currentDate = currentDateTime.strftime("%Y-%m-%d")
         currentTime = currentDateTime.strftime("%H:%M:%S")

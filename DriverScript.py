@@ -1,14 +1,12 @@
 from Utilities import DirectoryCreator
+DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
 from Utilities import ConfigReader
 from Configuration import TestSuiteSetup
 from Utilities.execution_log_processor import EzeAutoLogger
-from Utilities.DBProcessor import get_api_details
 
 
-DirectoryCreator.createExecutionDirectories()
 logger = EzeAutoLogger(__name__)
-
 
 
 try:
