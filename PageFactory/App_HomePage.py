@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
 
 
+
 class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
@@ -155,6 +156,7 @@ class HomePage(BasePage):
 
     def click_on_merchant_name(self):
         self.perform_click(self.mnu_merchantDetail)
+
 
     # def click_on_enterAmt(self):
     #     self.perform_click(self.txt_Amountfield)
