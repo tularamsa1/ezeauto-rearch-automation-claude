@@ -385,7 +385,7 @@ def updateTestCaseResult(msg):
     createStatusTable()
 
     ls_validation_msg = []
-    if GlobalVariables.bool_val_exe:
+    if not GlobalVariables.bool_val_exe:
         if GlobalVariables.str_api_val_result == "Fail":
             ls_validation_msg.append("API validation Failed!!")
         if GlobalVariables.str_db_val_result == "Fail":
@@ -401,8 +401,8 @@ def updateTestCaseResult(msg):
             for validation_msg in ls_validation_msg:
                 message = message + "\n" + validation_msg
             pytest.fail(message)
-    else:
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-            pass
-        else:
-            pytest.fail(msg)
+    # else:
+    #     if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
+    #         pass
+    #     else:
+    #         pytest.fail(msg)
