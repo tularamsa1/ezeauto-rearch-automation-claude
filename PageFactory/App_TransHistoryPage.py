@@ -47,8 +47,11 @@ class TransHistoryPage(BasePage):
 
     def click_first_amount_field(self):
         el = self.wait_for_all_elements(self.txa_amountField)
-        print(el[1].text())
-        return el[1].text()
+        el[0].click()
+
+    def click_on_transaction_by_order_id(self, order_id):
+        locator = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..' )
+        self.perform_click(locator)
 
     def check_for_elements_in_txn_history(self):
         return self.wait_for_all_elements(self.txa_amountField)
@@ -127,6 +130,18 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
+
+    def fetch_txn_id_text(self):
+        return self.fetch_text(self.txt_txnID)
+
+    def fetch_txn_status_text(self):
+        return str(self.fetch_text(self.txa_finalStatusField))
+
+    def fetch_txn_type_text(self):
+        return str(self.fetch_text(self.txt_txnType))
+
+    def fetch_txn_amount_text(self):
+        return str(self.fetch_text(self.txt_txnAmount))
 
     def click_on_transaction_by_order_id(self, order_id):
         locator = (

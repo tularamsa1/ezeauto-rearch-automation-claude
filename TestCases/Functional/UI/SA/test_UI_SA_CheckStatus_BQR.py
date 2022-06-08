@@ -46,6 +46,7 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
             order_num = TestData.ORDER_NUMBER
             homePage.enter_amount_and_order_number(amount, order_num)
             paymentPage = PaymentPage(driver)
+            paymentPage.check_payment_page()
             paymentPage.click_on_Bqr_paymentMode()
             text = paymentPage.validate_upi_bqr_payment_screen()
             assert text == "Scan QR code using"
@@ -98,7 +99,7 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues = {"Payment Status":status,"Amount": amount, "Payment Mode": "BHARATQR"}
+                expectedAPIValues = {"Payment Status":"AUTHORIZED","Amount": amount, "Payment Mode": "BHARATQR"}
                 response = APIProcessor.post(TestData.payload, TestData.API)
                 print(response)
                 list = response["txns"]
