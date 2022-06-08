@@ -1,13 +1,14 @@
-import configparser
 import os
+import threading
+import pandas as pd
+import configparser
 import subprocess
 import time
-
-import pandas as pd
 import paramiko
-from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-import Configuration
+from appium.webdriver.appium_service import AppiumService
+from DataProvider import GlobalVariables
+from Utilities import ConfigReader, DirectoryCreator, ResourceAssigner
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -16,16 +17,7 @@ router_port = Base_Actions.get_environment("int_exe_env_port")
 key_filename = Base_Actions.get_environment("str_ssh_key_filename")
 
 
-# Login to the server
-import os
-import threading
-
-import pandas as pd
-import paramiko
-from appium.webdriver.appium_service import AppiumService
-
-from DataProvider import GlobalVariables
-from Utilities import ConfigReader, DirectoryCreator, ResourceAssigner
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
 
 def prepareTestCaseDetailsDataFrame(path):
@@ -257,7 +249,7 @@ def startEmulators(noOfEmulatorsToStart):
                         print(str(e))
                 else:
                     break
-            time.sleep(50)
+            time.sleep(10)
         else:
             print("Configured Emulators are less than no of processes.")
     except Exception as e:
@@ -294,7 +286,7 @@ def prepare_Consolidated_List_Of_TestcasesFile():
 def executeSelectedTestCases():
     # Creating DF only with the testcases to be executed
     df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx")
-    df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
+    df_testcases.to_excel(EXCEL_reportFilePath)
     os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases")
     os.system(prepareTestExecutionCommand(df_testcases))
 

@@ -1,7 +1,8 @@
-from os.path import dirname, abspath
 from configparser import ConfigParser
+from DataProvider import GlobalConstants
 
-automation_suite_path = dirname(dirname(abspath("./config.ini")))
+automation_suite_path = GlobalConstants.EZEAUTO_MAIN_DIR
+
 def read_config(section, key):
     config = ConfigParser()
     config.read(str(automation_suite_path)+"/Configuration/config.ini")

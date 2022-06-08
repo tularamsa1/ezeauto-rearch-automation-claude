@@ -2,7 +2,6 @@
 import sqlite3
 import time
 from datetime import datetime
-
 from Utilities import ConfigReader
 
 dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
