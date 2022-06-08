@@ -326,6 +326,7 @@ def appium_driver(request):
         "ignoreHiddenApiPolicyError": "true",
         "noReset": "false",
         "autoGrantPermissions": "true",
+        "newCommandTimeout": 7000,
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
         "MobileCapabilityType.NEW_COMMAND_TIMEOUT":"300"
     }
