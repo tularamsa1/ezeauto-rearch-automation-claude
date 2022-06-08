@@ -170,7 +170,7 @@ def prepareImmediateRerunExcel():
     # df_overallTClist = pd.read_excel("/home/oem/PycharmProjects/EzeAuto/DataProvider/TestCasesDetail.xlsx")
 
     # Added on Apr 11
-    df_overallTClist = pd.read_excel(str(ConfigReader.read_config("System","automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx"))
+    df_overallTClist = pd.read_excel(str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/Runtime/AllTestcaseSuite.xlsx")
 
     df_overallTClist.set_index('Test Case ID', inplace=True)
     # df_overallTClist.drop(columns=['File Name', 'Execute'], inplace=True)

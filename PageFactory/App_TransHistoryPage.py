@@ -125,3 +125,8 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
+
+    def click_on_transaction_by_order_id(self, order_id):
+        locator = (
+        By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="' + order_id + '"]/../..')
+        self.perform_click(locator)
