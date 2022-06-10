@@ -96,8 +96,8 @@ class HomePage(BasePage):
     def click_navigation_drawer(self):
         self.perform_click(self.mnu_navigationDrawer)
 
-    # def click_transaction_history(self):
-    #     self.perform_click(self.mnu_transactionHistory)
+    def click_on_transaction_history(self):
+        self.perform_click(self.mnu_transactionHistory)
 
     def click_cash_at_pos(self):
         self.perform_click(self.btn_cashAtPos)
