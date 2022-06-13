@@ -277,8 +277,8 @@ def prepare_Consolidated_List_Of_TestcasesFile():
             df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
             df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
 
-    print("prepare_Consolidated_List_Of_TestcasesFile")
-    print(df_all_rows)
+    # print("prepare_Consolidated_List_Of_TestcasesFile")
+    # print(df_all_rows)
     # Converting DF with all TCs to an excel
     df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/Runtime/AllTestcaseSuite.xlsx")
 
