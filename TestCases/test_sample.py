@@ -4,7 +4,7 @@ from datetime import datetime
 from random import randint
 import pytest
 from DataProvider import GlobalVariables
-from Utilities import ReportProcessor, Validator
+from Utilities import ReportProcessor, Validator, DBProcessor, APIProcessor
 
 # API|DB VAL WILL FAIL
 from Utilities import ConfigReader
@@ -27,8 +27,41 @@ def test_success():
         msg = ""
 
         try:
+            username = '5784758454'
+            password = 'A123456'
             print("EXECUTING FIRST TEST CASE : SUCCESS")
             time.sleep(1)
+            # DBProcessor.get_api_details('Login')
+            # db_result = DBProcessor.get_api_details('Login', request_body = {'username': '84838abd'}, response_validation= {'password': '84838abd'})
+            # print(db_result['ResponseValidation'])
+            # print(type(db_result['ResponseValidation']))
+            payload = {
+                "PRIMARY_ID": "txn_id",
+                "dict": {
+                    "dict1": "dict1",
+                    "dict2": "dict2",
+                    "dict3": {"dicta": "dicta"}
+                },
+                "SECONDARY_ID": "0",
+                "MERCHANT_PAN": "5676560099999",
+                "TXN_ID": "E020045812tyd",
+                "TXN_DATE_TIME": "20180206102037",
+                "TXN_AMOUNT": '%.2f' % int("amount"),
+                "AUTH_CODE": "auth_code",
+                "RRN": "rrn",
+                "TIP_AMOUNT": 0,
+                "CONSUMER_PAN": "7C845A9BF346F0E6C5A2F9D91186F2F26EA71165160FC53AE5A8E8E43B1C57BA",
+                "STATUS_CODE": "00",
+            }
+
+            r = payload['dict']['dict3']['dicta']
+            print(r)
+            api_details = DBProcessor.get_api_details('txnlist',
+                                                      request_body={"username": username, "password": password})
+            response = APIProcessor.send_request(api_details)
+            print("response", response)
+            list = response["txns"]
+            print(list)
             # i = 1/00
             ReportProcessor.get_TC_Exe_Time()  # Get execution time
         except Exception as e:
