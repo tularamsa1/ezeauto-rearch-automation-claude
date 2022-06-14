@@ -1,6 +1,5 @@
 **/Reports/
 **/Logs/
-**/Database/
 **/Runtime/
 **/.pytest_cache/
 **.pyc
