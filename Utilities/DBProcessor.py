@@ -4,10 +4,12 @@ import sshtunnel
 import os
 import sqlite3
 import json
-from urllib.parse import parse_qs, urlencode
+from jinja2 import Template
+
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
+
 
 logger = EzeAutoLogger(__name__)
 
@@ -18,6 +20,7 @@ def _get_raw_api_details(api_name) -> dict:
     params: api_name: str
     return: dict
     """
+    
 
     try:
         if not os.path.isfile(SQLITE_DB_PATH):
@@ -33,7 +36,7 @@ def _get_raw_api_details(api_name) -> dict:
             columns = (col[0] for col in cursor.description)
             if result is None:
                 logger.warning(f"No result found for the given api name ({api_name})")
-
+ 
     except Exception as e:
         logger.exception(e, exc_info=True)
         print(e)
@@ -41,10 +44,10 @@ def _get_raw_api_details(api_name) -> dict:
 
     finally:
         if result:
-            output = {col: val for col, val in zip(columns, result)}
+            output = {col: val for col, val in zip(columns, result)} 
             logger.debug(f"Query fetched the raw details: {output}")
         else:
-
+            
             output = None
 
     return output
@@ -56,20 +59,23 @@ def _get_obj_api_details(api_name):
     res = _get_raw_api_details(api_name=api_name)
 
     if res:
-        list_of_cols_to_be_converted_to_objects = ["Header", "RequestBody", "ResponseValidation"]
+        list_of_cols_to_be_converted_to_objects = ["Header", "RequestBody", "ExpectedResult"]
 
-        # checking if details have RequestBody and ResponseValidation as keys
-        if not (("RequestBody" in res) and ("ResponseValidation" in res)):
-            logger.error(
-                f"RequestBody and ResponseValidation are not present in the DB for the given api name ({api_name})")
+        # checking if details have RequestBody and ExpectedResult as keys
+        if not (("RequestBody" in res) and ("ExpectedResult" in res)):
+            logger.error(f"RequestBody and ExpectedResult are not present in the DB for the given api name ({api_name})")
 
         for key in list_of_cols_to_be_converted_to_objects:
             if key in res:
                 try:
-                    res[key] = json.loads(res[key])
+                    if res[key] is not None:  # dealing an issue of NULL in db
+                        res[key] = json.loads(res[key])
                 except Exception as e:
-                    logger.exception(e, exc_info=True)
+                    logger.exception(f"The passed dictionary is not json format string. Error: '{e}'", exc_info=True)
+                    res = None
+                    logger.critical("Output dictionary will be set to None")
                     print(e)
+                    break
             else:
                 logger.warning(f"{key} is not present in the DB for the given api name ({api_name})")
     else:
@@ -77,7 +83,16 @@ def _get_obj_api_details(api_name):
     return res
 
 
-def get_api_details(api_name: str, request_body: dict = None, response_validation: dict = None):
+def render_curl_data(curl_data_template, curl_data_to_insert):
+    '''This function renders the curl data template with the curl data to insert'''
+    logger.info("Curl Data Template is going to be populated with the curl data to insert")
+    template = Template(curl_data_template)
+    rendered_curl_data = template.render(curl_data_to_insert)
+    # logger.info("Curl Data Template is going to be populated with the curl data to insert")
+    return rendered_curl_data
+
+
+def get_api_details(api_name:str, request_body:dict=None, response_validation:dict=None, curl_data:dict=None) -> dict:
     """
     This function gets api details from the sqlite3 database based on the api name
         params: 
@@ -88,17 +103,16 @@ def get_api_details(api_name: str, request_body: dict = None, response_validatio
 
     """
     details = _get_obj_api_details(api_name=api_name)
-
+    
     if details:
-
+        
         if request_body:
             if isinstance(request_body, dict):
                 for key in request_body:
                     if key in details['RequestBody']:
                         details['RequestBody'][key] = request_body[key]
                     else:
-                        logger.warning(
-                            f"ReqestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
+                        logger.warning(f"ReqestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
                         details['RequestBody'][key] = request_body[key]
             else:
                 logger.error(f"RequestBody is not a dict")
@@ -106,21 +120,31 @@ def get_api_details(api_name: str, request_body: dict = None, response_validatio
         if response_validation:
             if isinstance(response_validation, dict):
                 for key in response_validation:
-                    if key in details['ResponseValidation']:
-                        details['ResponseValidation'][key] = response_validation[key]
+                    if key in details['ExpectedResult']:
+                        details['ExpectedResult'][key] = response_validation[key]
                     else:
-                        logger.warning(
-                            f"ResponseValidation of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
-                        details['ResponseValidation'][key] = response_validation[key]
+                        logger.warning(f"ExpectedResult of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
+                        details['ExpectedResult'][key] = response_validation[key]
             else:
-                logger.error(f"ResponseValidation is not a dict")
+                logger.error(f"ExpectedResult is not a dict")
+
+        if curl_data:
+            if isinstance(curl_data, dict):
+                if isinstance(details['CurlData'], str):
+                    details['CurlData'] = render_curl_data(details['CurlData'], curl_data)
+                else:
+                    logger.error(f"The curl_data_template received from DB is not a string but is of type - {type(details['CurlData'])}")
+            else:
+                logger.error(f"curl_data is not a dictionary")
+
 
         logger.debug(f"Query fetched the result: {details}")
-
+    
     return details
 
 
 def getValueFromDB(query):
+
     envi = ConfigReader.read_config("APIs", "env")
 
     tunnel = sshtunnel.SSHTunnelForwarder(ssh_address_or_host=envi.lower(), remote_bind_address=('localhost', 3306))
@@ -134,11 +158,3 @@ def getValueFromDB(query):
     return data
 
 
-def convertDictToStr(data):
-    # out = parse_qs(data)
-    # key_value_details = {key: value[0] for key, value in out.items() if type(value) == list and len(value) == 1}
-
-    # changing whatever is value to be changed
-
-    updated_data = urlencode(data)
-    return updated_data
