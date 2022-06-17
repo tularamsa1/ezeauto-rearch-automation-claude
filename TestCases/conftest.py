@@ -656,7 +656,7 @@ def log_on_failure(request):
 
             ReportProcessor.get_Log_Collection_Time()
 
-        if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
+        if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_app_val = 'Passed'
@@ -928,7 +928,7 @@ def log_on_success(request):
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_app_val = 'Passed'
 
-        if GlobalVariables.bool_ss_portal_val == 'Passed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
+        if GlobalVariables.bool_ss_portal_val == 'Passed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
@@ -964,8 +964,3 @@ def pytest_sessionfinish(session, exitstatus):
 
     ssh.close()
     # appium_service.stop()
-    
-# Added on Apr 11
-
-
-# Added on Apr 11

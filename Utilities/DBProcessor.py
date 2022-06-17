@@ -4,11 +4,10 @@ import sshtunnel
 import os
 import sqlite3
 import json
-
+from urllib.parse import parse_qs, urlencode
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
-
 
 logger = EzeAutoLogger(__name__)
 
@@ -19,7 +18,6 @@ def _get_raw_api_details(api_name) -> dict:
     params: api_name: str
     return: dict
     """
-    
 
     try:
         if not os.path.isfile(SQLITE_DB_PATH):
@@ -35,7 +33,7 @@ def _get_raw_api_details(api_name) -> dict:
             columns = (col[0] for col in cursor.description)
             if result is None:
                 logger.warning(f"No result found for the given api name ({api_name})")
- 
+
     except Exception as e:
         logger.exception(e, exc_info=True)
         print(e)
@@ -43,10 +41,10 @@ def _get_raw_api_details(api_name) -> dict:
 
     finally:
         if result:
-            output = {col: val for col, val in zip(columns, result)} 
+            output = {col: val for col, val in zip(columns, result)}
             logger.debug(f"Query fetched the raw details: {output}")
         else:
-            
+
             output = None
 
     return output
@@ -62,7 +60,8 @@ def _get_obj_api_details(api_name):
 
         # checking if details have RequestBody and ResponseValidation as keys
         if not (("RequestBody" in res) and ("ResponseValidation" in res)):
-            logger.error(f"RequestBody and ResponseValidation are not present in the DB for the given api name ({api_name})")
+            logger.error(
+                f"RequestBody and ResponseValidation are not present in the DB for the given api name ({api_name})")
 
         for key in list_of_cols_to_be_converted_to_objects:
             if key in res:
@@ -78,7 +77,7 @@ def _get_obj_api_details(api_name):
     return res
 
 
-def get_api_details(api_name:str, request_body:dict=None, response_validation:dict=None):
+def get_api_details(api_name: str, request_body: dict = None, response_validation: dict = None):
     """
     This function gets api details from the sqlite3 database based on the api name
         params: 
@@ -89,16 +88,17 @@ def get_api_details(api_name:str, request_body:dict=None, response_validation:di
 
     """
     details = _get_obj_api_details(api_name=api_name)
-    
+
     if details:
-        
+
         if request_body:
             if isinstance(request_body, dict):
                 for key in request_body:
                     if key in details['RequestBody']:
                         details['RequestBody'][key] = request_body[key]
                     else:
-                        logger.warning(f"ReqestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
+                        logger.warning(
+                            f"ReqestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
                         details['RequestBody'][key] = request_body[key]
             else:
                 logger.error(f"RequestBody is not a dict")
@@ -109,18 +109,18 @@ def get_api_details(api_name:str, request_body:dict=None, response_validation:di
                     if key in details['ResponseValidation']:
                         details['ResponseValidation'][key] = response_validation[key]
                     else:
-                        logger.warning(f"ResponseValidation of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
+                        logger.warning(
+                            f"ResponseValidation of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
                         details['ResponseValidation'][key] = response_validation[key]
             else:
                 logger.error(f"ResponseValidation is not a dict")
 
         logger.debug(f"Query fetched the result: {details}")
-    
+
     return details
 
 
 def getValueFromDB(query):
-
     envi = ConfigReader.read_config("APIs", "env")
 
     tunnel = sshtunnel.SSHTunnelForwarder(ssh_address_or_host=envi.lower(), remote_bind_address=('localhost', 3306))
@@ -134,3 +134,11 @@ def getValueFromDB(query):
     return data
 
 
+def convertDictToStr(data):
+    # out = parse_qs(data)
+    # key_value_details = {key: value[0] for key, value in out.items() if type(value) == list and len(value) == 1}
+
+    # changing whatever is value to be changed
+
+    updated_data = urlencode(data)
+    return updated_data

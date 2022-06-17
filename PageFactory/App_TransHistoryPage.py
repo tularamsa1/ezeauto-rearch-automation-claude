@@ -46,7 +46,8 @@ class TransHistoryPage(BasePage):
 
     def click_first_amount_field(self):
         el = self.wait_for_all_elements(self.txa_amountField)
-        el[0].click()
+        print(el[1].text())
+        return el[1].text()
 
     def check_for_elements_in_txn_history(self):
         return self.wait_for_all_elements(self.txa_amountField)

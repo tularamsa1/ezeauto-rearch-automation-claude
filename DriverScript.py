@@ -1,4 +1,4 @@
-from Utilities import DirectoryCreator, DBProcessor
+from Utilities import DirectoryCreator
 
 DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun

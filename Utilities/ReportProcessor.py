@@ -1,6 +1,9 @@
 from datetime import datetime
+
+import allure
 import openpyxl
 import pytest
+from allure_commons.types import AttachmentType
 from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
 import DataProvider.GlobalConstants
@@ -405,3 +408,25 @@ def updateTestCaseResult(msg):
     #         pass
     #     else:
     #         pytest.fail(msg)
+
+
+def captureSSWhenExeFailed():
+    if GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_pass") == "True":
+        allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
+                      attachment_type=AttachmentType.PNG)
+
+    if GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
+                      attachment_type=AttachmentType.PNG)
+
+    if GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_pass") == "True":
+        allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
+                      attachment_type=AttachmentType.PNG)
+
+    if GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
+                      attachment_type=AttachmentType.PNG)
