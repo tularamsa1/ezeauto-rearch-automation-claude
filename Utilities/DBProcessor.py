@@ -92,13 +92,13 @@ def render_curl_data(curl_data_template, curl_data_to_insert):
     return rendered_curl_data
 
 
-def get_api_details(api_name:str, request_body:dict=None, response_validation:dict=None, curl_data:dict=None) -> dict:
+def get_api_details(api_name:str, request_body:dict=None, expected_result:dict=None, curl_data:dict=None) -> dict:
     """
     This function gets api details from the sqlite3 database based on the api name
         params: 
             api_name: str
             request_body: dict (optional)
-            response_validation: dict (optional)
+            expected_result: dict (optional)
         return: dict (or NoneType if not raws are fetched)
 
     """
@@ -117,14 +117,14 @@ def get_api_details(api_name:str, request_body:dict=None, response_validation:di
             else:
                 logger.error(f"RequestBody is not a dict")
 
-        if response_validation:
-            if isinstance(response_validation, dict):
-                for key in response_validation:
+        if expected_result:
+            if isinstance(expected_result, dict):
+                for key in expected_result:
                     if key in details['ExpectedResult']:
-                        details['ExpectedResult'][key] = response_validation[key]
+                        details['ExpectedResult'][key] = expected_result[key]
                     else:
                         logger.warning(f"ExpectedResult of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
-                        details['ExpectedResult'][key] = response_validation[key]
+                        details['ExpectedResult'][key] = expected_result[key]
             else:
                 logger.error(f"ExpectedResult is not a dict")
 
@@ -143,11 +143,26 @@ def get_api_details(api_name:str, request_body:dict=None, response_validation:di
     return details
 
 
+def get_value_from_db(query):
+    return getValueFromDB(query)
+
+
 def getValueFromDB(query):
 
     envi = ConfigReader.read_config("APIs", "env")
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        logger.warning(e)
+        ssh_private_key_password = None
 
-    tunnel = sshtunnel.SSHTunnelForwarder(ssh_address_or_host=envi.lower(), remote_bind_address=('localhost', 3306))
+
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        ssh_address_or_host=envi.lower(), 
+        remote_bind_address=('localhost', 3306),
+        ssh_private_key_password=ssh_private_key_password
+    )
+    
     tunnel.start()
     conn = pymysql.connect(host='localhost', user='ezedemo', passwd='abc123', database='ezetap_demo',
                            port=tunnel.local_bind_port)

@@ -76,12 +76,20 @@ def prepareTestCaseDetailsDataFrame(path):
     return GlobalVariables.df_testCasesDetail
 
 
-def ssh_connection(ip_address, routerPort, username, key_filename, key_filepassword=None):
+def ssh_connection(ip_address, routerPort, username, key_filename):
     GlobalVariables.ssh.load_system_host_keys()
     GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # getting ssh private key file password if it is encrypted
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        print(e)  # later change this is to log the warning
+        ssh_private_key_password = None
+    
     try:
         GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
-                    pkey=paramiko.RSAKey.from_private_key_file(key_filename, password=key_filepassword))  
+                    pkey=paramiko.RSAKey.from_private_key_file(key_filename, password=ssh_private_key_password))  
         return True
     except Exception as error_message:
         print("Unable to connect")
@@ -148,7 +156,6 @@ def startAppiumServers(numberOfAppiumServers: int):
                         thread = threading.Thread(target = startAppiumServer, args=[portNumber])
                         thread.start()
                         blockedPorts.append(portNumber)
-                        # thread.join()
                         portNumber = portNumber + 1
                         foundPort = True
                     except Exception as e:
