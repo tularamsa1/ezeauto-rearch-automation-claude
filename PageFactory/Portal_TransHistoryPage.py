@@ -1,4 +1,8 @@
+import time
+
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from PageFactory.Portal_BasePage import BasePage
 
@@ -37,3 +41,21 @@ class PortalTransHistoryPage(BasePage):
                                                           col) + "]").text
             transactionDetails[attribute] = attributeValue
         return transactionDetails
+
+    def perform_refund(self, txn_id, amount):
+        self.perform_click((By.XPATH, "//a[@id='" + str(txn_id) + "']"))
+        self.perform_click((By.XPATH, "//*[@id='" + str(
+            txn_id) + "_div']//button[@class='btn btn-mini btn-primary']"))
+        WebDriverWait(self.driver, 40).until(EC.presence_of_element_located((By.XPATH, "//input[@id='userrefund_refund']")))
+        time.sleep(20)
+        self.driver.find_element(By.XPATH, "//input[@id='userrefund_refund']").clear()
+        self.perform_sendkeys((By.XPATH, "//input[@id='userrefund_refund']"), amount)
+        time.sleep(20)
+        self.perform_click((By.XPATH, "//button[@type='button' and @onclick='confirmRefund()']"))
+        time.sleep(20)
+        # WebDriverWait(self.driver, 40).until(EC.presence_of_element_located(self.driver.switch_to.alert))
+        alert = self.driver.switch_to.alert
+        alert_text = alert.text
+        print(alert_text)
+        # WebDriverWait(self.driver, 40).until(EC.presence_of_element_located(alert.accept()))
+        alert.accept()

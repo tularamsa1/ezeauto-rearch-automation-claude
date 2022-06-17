@@ -1,7 +1,5 @@
 from datetime import datetime
-
 import pytest
-
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from Utilities import Validator, ReportProcessor, ConfigReader
@@ -39,6 +37,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
+            ReportProcessor.captureSSWhenExeFailed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -61,6 +60,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
+                ReportProcessor.captureSSWhenExeFailed()
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -120,6 +120,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
+                ReportProcessor.captureSSWhenExeFailed()
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -131,6 +132,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
+        Configuration.executeFinallyBlock("test_SubFeatureCode")
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
         else:
@@ -142,4 +144,3 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
         #----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.
         #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
-        Configuration.executeFinallyBlock("test_SubFeatureCode")
