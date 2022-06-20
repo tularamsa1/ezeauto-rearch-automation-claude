@@ -56,9 +56,11 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
             paymentPage.check_payment_page(amount, order_id)
+            # time.sleep(5)
             paymentPage.click_on_Upi_paymentMode()
 
             logger.info("Selected payment mode is UPI")
+            # time.sleep(5)
             paymentPage.click_on_back_btn()
             paymentPage.click_on_transaction_cancel_yes()
             Txn_id, status = paymentPage.get_transaction_details()
@@ -71,7 +73,7 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -113,7 +115,7 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -232,7 +234,7 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -304,7 +306,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -351,7 +353,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -473,7 +475,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -580,7 +582,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.bool_ss_app_val = 'Failed'
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
@@ -603,7 +605,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             logger.info("Started APP validation for the test case : test_sa_100_101_003")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment mode": "UPI", "Status": "FAILED", "Amount": str(amount),
+                expectedAppValues = {"Payment mode": "UPI", "Status": "EXPIRED", "Amount": str(amount),
                                      "Txn_id": Txn_id}
                 # driver.reset()
                 # loginPage.perform_login(username, password)
@@ -628,7 +630,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -678,7 +680,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             logger.info("Started DB validation for the test case : test_sa_100_101_003")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "EXPIRED", "Payment State": "FAILED", "Payment mode": "UPI",
+                expectedDBValues = {"Payment Status": "EXPIRED", "Payment State": "EXPIRED", "Payment mode": "UPI",
                                     "Payment amount": amount,
                                     "UPI_Txn_Status": "EXPIRED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -748,7 +750,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
