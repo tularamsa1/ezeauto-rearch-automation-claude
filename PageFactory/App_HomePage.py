@@ -94,6 +94,9 @@ class HomePage(BasePage):
     def perform_check_status(self):
         self.perform_click(self.btn_checkStatus)
 
+    def click_on_skip_button(self):
+        self.perform_click(self.btn_skip)
+
     def click_navigation_drawer(self):
         self.perform_click(self.mnu_navigationDrawer)
 
@@ -122,8 +125,6 @@ class HomePage(BasePage):
     def click_account_menu(self):
         self.perform_click(self.mnu_account)
 
-#--------------------Mansa Methods
-
     def check_lang_selection_option(self):
         return self.wait_for_element(self.rdo_langSelection).is_displayed()
 
@@ -146,7 +147,7 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.wait_for_element(self.btn_goToHistory, 14)
+        self.wait_for_element(self.btn_goToHistory)
 
     def click_side_menu_eng(self):
         self.perform_click(self.mnu_engSideMenu)
@@ -156,36 +157,6 @@ class HomePage(BasePage):
 
     def click_on_merchant_name(self):
         self.perform_click(self.mnu_merchantDetail)
-
-
-    # def click_on_enterAmt(self):
-    #     self.perform_click(self.txt_Amountfield)
-
-    # def press_number(self,number):
-    #     if number == 0:
-    #         self.perform_click(self.btn_numZero)
-    #     elif number == 1:
-    #         self.perform_click(self.btn_numOne)
-    #     elif number == 2:
-    #         self.perform_click(self.btn_numTwo)
-    #     elif number == 3:
-    #         self.perform_click(self.btn_numThree)
-    #     elif number == 4:
-    #         self.perform_click(self.btn_numFour)
-    #     elif number == 5:
-    #         self.perform_click(self.btn_numFive)
-    #     elif number == 6:
-    #         self.perform_click(self.btn_numSix)
-    #     elif number == 7:
-    #         self.perform_click(self.btn_numSeven)
-    #     elif number == 8:
-    #         self.perform_click(self.btn_numEight)
-    #     elif number == 9:
-    #         self.perform_click(self.btn_numNine)
-
-
-    # def click_on_Pay(self):
-    #     self.perform_click(self.btn_pay)
 
     def check_mob_num_field(self):
         return self.wait_for_element(self.txt_mobileField).is_displayed()

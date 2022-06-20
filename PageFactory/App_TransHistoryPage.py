@@ -10,6 +10,7 @@ class TransHistoryPage(BasePage):
 
     lbl_summary = (By.ID, 'com.ezetap.service.demo:id/tvLblSummary')
     btn_backHome = (By.ID, 'com.ezetap.service.demo:id/iVBackArrow')
+    btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
     btn_filters = (By.ID, 'com.ezetap.service.demo:id/csFilter')
     lbl_transactions = (By.ID, '//android.widget.TextView[@text = "Transactions"]')
     lbl_noTransactionsAvailable = (By.ID, "com.ezetap.service.demo:id/tv_ErrorMsg")
@@ -45,12 +46,19 @@ class TransHistoryPage(BasePage):
     def click_back_Btn(self):
         self.perform_click(self.btn_backHome)
 
+    def click_back_Btn_transaction_details(self):
+        self.perform_click(self.btn_backTransactionDetails)
+
     def click_first_amount_field(self):
         el = self.wait_for_all_elements(self.txa_amountField)
         el[0].click()
 
     def click_on_transaction_by_order_id(self, order_id):
         locator = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..' )
+        self.perform_click(locator)
+
+    def click_on_second_transaction_by_order_id(self, order_id):
+        locator = (By.XPATH, '(//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..)[2]' )
         self.perform_click(locator)
 
     def check_for_elements_in_txn_history(self):
