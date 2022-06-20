@@ -9,7 +9,7 @@ class BasePage:
         self.driver = driver
 
     def perform_click(self, locator):
-        WebDriverWait(self.driver, 12).until(EC.presence_of_element_located(locator)).click()
+        WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(locator)).click()
 
     def fetch_text(self, locator, time = 12):
         return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).text

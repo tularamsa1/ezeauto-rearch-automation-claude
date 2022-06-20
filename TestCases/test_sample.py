@@ -2,16 +2,23 @@ import datetime
 import time
 from datetime import datetime
 from random import randint
+
+import chromedriver_autoinstaller
 import pytest
+from selenium import webdriver
+
 from DataProvider import GlobalVariables
-from Utilities import ReportProcessor, Validator
+from PageFactory.App_LoginPage import LoginPage
+from PageFactory.Portal_HomePage import PortalHomePage
+from PageFactory.Portal_LoginPage import PortalLoginPage
+from Utilities import ReportProcessor, Validator, DBProcessor, APIProcessor
 
 # API|DB VAL WILL FAIL
 from Utilities import ConfigReader
 from Utilities.ReportProcessor import updateTestCaseResult
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.usefixtures("log_on_success", "method_setup", "appium_driver")
 # @pytest.mark.usefixtures("method_ReportProcessor", "session_ReportProcessor")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -27,8 +34,26 @@ def test_success():
         msg = ""
 
         try:
+            username = '5784758454'
+            password = 'A123456'
             print("EXECUTING FIRST TEST CASE : SUCCESS")
             time.sleep(1)
+            loginPage = LoginPage(GlobalVariables.appDriver)
+            username = '5784758454'
+            password = 'A123456'
+            # logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
+            loginPage.perform_login(username, password)
+            # DBProcessor.get_api_details('Login')
+            # db_result = DBProcessor.get_api_details('Login', request_body = {'username': '84838abd'}, response_validation= {'password': '84838abd'})
+            # print(db_result['ResponseValidation'])
+            # print(type(db_result['ResponseValidation']))
+
+            api_details = DBProcessor.get_api_details('txnlist',
+                                                      request_body={"username": username, "password": password})
+            response = APIProcessor.send_request(api_details)
+            print("response", response)
+            list = response["txns"]
+            print(list)
             # i = 1/00
             ReportProcessor.get_TC_Exe_Time()  # Get execution time
         except Exception as e:
@@ -420,6 +445,37 @@ def test_api_val_exe_failure(method_setup):
                 pass
             else:
                 pytest.fail()
+
+
+def test_curl():
+    query = "select  receipt_url_shortcode from txn where id = '220614154635329E010062304'; "
+    result = DBProcessor.getValueFromDB(query)
+    print(result['receipt_url_shortcode'].iloc[0])
+
+    url = "https://dev11.ezetap.com/r/o/"+str(result['receipt_url_shortcode'].iloc[0])+"/"
+    portalDriver = chromedriver_autoinstaller.install()
+    # Chrome options
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    # # Run chrome
+    portalDriver = webdriver.Chrome(options=chrome_options)
+    portalDriver.maximize_window()
+    # loginPagePortal = PortalLoginPage(GlobalVariables.portalDriver)
+    # username_portal = '9660867344'
+    # password_portal = 'A123456'
+    # # logger.debug(
+    # #     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
+    # loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+    # homePagePortal = PortalHomePage(GlobalVariables.portalDriver)
+    portalDriver.get(url)
+    time.sleep(30)
+
+    # api_details = DBProcessor.get_api_details('txnlist',
+    #                                           request_body='hfuiehfne')
+    # response = APIProcessor.send_request(api_details)
+    # print(api_details)
 
 # @pytest.mark.usefixtures("log_on_failure","log_on_success")
 # def test_DB_Val_Exe_Failure(method_ReportProcessor, session_ReportProcessor):

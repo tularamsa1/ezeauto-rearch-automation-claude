@@ -1,6 +1,9 @@
 from datetime import datetime
+
+import allure
 import openpyxl
 import pytest
+from allure_commons.types import AttachmentType
 from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
 import DataProvider.GlobalConstants
@@ -9,6 +12,9 @@ from PageFactory import Base_Actions
 from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
 from Utilities import DirectoryCreator
+from Utilities.execution_log_processor import EzeAutoLogger
+logger = EzeAutoLogger(__name__)
+
 
 EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
@@ -384,7 +390,7 @@ def updateTestCaseResult(msg):
     createStatusTable()
 
     ls_validation_msg = []
-    if GlobalVariables.bool_val_exe:
+    if not GlobalVariables.bool_val_exe:
         if GlobalVariables.str_api_val_result == "Fail":
             ls_validation_msg.append("API validation Failed!!")
         if GlobalVariables.str_db_val_result == "Fail":
@@ -400,8 +406,21 @@ def updateTestCaseResult(msg):
             for validation_msg in ls_validation_msg:
                 message = message + "\n" + validation_msg
             pytest.fail(message)
-    else:
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-            pass
-        else:
-            pytest.fail(msg)
+
+
+def capture_ss_when_exe_failed():
+    if GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
+
+    if GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
