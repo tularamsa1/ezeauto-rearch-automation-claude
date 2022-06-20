@@ -81,14 +81,14 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
-            df_curl = pd.read_excel('/home/ezetap/EzeAuto/TestCases/curl_data.xlsx', sheet_name='Sheet')
+            df_curl = pd.read_excel(ConfigReader.read_config_paths("System","automation_suite_path")+'/TestCases/curl_data.xlsx', sheet_name='Sheet')
             df_curl.set_index('type', inplace=True)
             curl_data = df_curl['curl_data']['success']
             # api_details = DBProcessor.get_api_details('upi_success_curl')
             # print(api_details['CurlData'])
             # curl_data = api_details['CurlData']
             # logger.debug(f"fetching curl_data from the curl_data.xlsx for the success upi callback, curl_data : {
-            # curl_data}") print(type(curl_data))
+            # curl_data}
             curl_data = str(curl_data)
             logger.debug(
                 f"fetching curl_data from the curl_data.xlsx for the success upi callback, curl_data : {curl_data}")
@@ -108,7 +108,7 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            payLoad = {"pgMerchantId": str(pgMerchantId), "&meRes": str(data_buffer)}
+            payLoad = "pgMerchantId="+str(pgMerchantId)+"&meRes="+str(data_buffer)
             logger.debug(
                 f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
 
@@ -122,11 +122,11 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
             logger.debug(f"URL : {url}, payLoad : {payLoad}, headers : {headers}, response : {response}")
             # print("Callback response: ",response.text)
             logger.debug(f"converting response into text just for reference : response.text : {response.text}")
-
+            paymentPage.click_on_proceed_homepage()
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -152,7 +152,6 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Amount": str(amount)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 # time.sleep(5)
-                paymentPage.click_on_proceed_homepage()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -173,7 +172,7 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -212,7 +211,7 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("API Validation failed due to exception - " + str(e))
                 logger.exception(f"API Validation failed due to exception : {e} ")
                 msg = msg + "API Validation did not complete due to exception.\n"
@@ -295,7 +294,7 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -357,7 +356,7 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -403,7 +402,7 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -526,7 +525,7 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -600,7 +599,7 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
-            df_curl = pd.read_excel('/home/ezetap/EzeAuto/TestCases/curl_data.xlsx', sheet_name='Sheet')
+            df_curl = pd.read_excel(ConfigReader.read_config_paths("System","automation_suite_path")+'/TestCases/curl_data.xlsx', sheet_name='Sheet')
             df_curl.set_index('type', inplace=True)
             curl_data = df_curl['curl_data']['fail']
 
@@ -639,7 +638,7 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -688,7 +687,7 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -803,7 +802,7 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -864,7 +863,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -911,7 +910,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -1033,7 +1032,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -1062,7 +1061,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
 @pytest.mark.portalVal
 @pytest.mark.appVal
 # Initiate qr by app and perform checkStatus by api for success using magic number
-def test_com_100_101_008():  # Make sure to add the test case name as same as the sub feature code.
+def test_com_100_101_008():   # Make sure to add the test case name as same as the sub feature code.
     logger.info("Starting execution for the test case : test_com_100_101_008")
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -1080,23 +1079,21 @@ def test_com_100_101_008():  # Make sure to add the test case name as same as th
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
-            driver = GlobalVariables.appDriver
-            loginPage = LoginPage(driver)
+            app_driver = GlobalVariables.appDriver
+            loginPage = LoginPage(app_driver)
             username = '5784758454'
             password = 'A123456'
             logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
             loginPage.perform_login(username, password)
-            homePage = HomePage(driver)
-            homePage.wait_for_home_page_load()
-
-            amount = random.randint(200, 300)
+            amount = random.randint(100, 200)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            print("Order id", order_id)
+
+            homePage = HomePage(app_driver)
+            homePage.wait_for_home_page_load()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
-            paymentPage = PaymentPage(driver)
+            paymentPage = PaymentPage(app_driver)
             paymentPage.check_payment_page(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
@@ -1116,18 +1113,18 @@ def test_com_100_101_008():  # Make sure to add the test case name as same as th
             logger.info(f"API RESP settlementStatus : {response['settlementStatus']}")
 
             logger.info("terminating the com.ezetap.basicapp and activating again the com.ezetap.basicapp")
-            driver.reset()
-            loginPage = LoginPage(driver)
+            app_driver.reset()
+            loginPage = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
             loginPage.perform_login(username, password)
-            homePage = HomePage(driver)
+            homePage = HomePage(app_driver)
             homePage.wait_for_home_page_load()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
 
             homePage.perform_check_status()
-            paymentPage = PaymentPage(driver)
+            paymentPage = PaymentPage(app_driver)
             app_payment_status = paymentPage.fetch_payment_status()
             logger.info("clicking on the proceed to home page button")
             paymentPage.click_on_proceed_homepage()
@@ -1138,7 +1135,7 @@ def test_com_100_101_008():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -1165,7 +1162,7 @@ def test_com_100_101_008():  # Make sure to add the test case name as same as th
                                      "Payment Amt": str(amount)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 homePage.click_on_history()
-                txnHistoryPage = TransHistoryPage(driver)
+                txnHistoryPage = TransHistoryPage(app_driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
                 payment_status = txnHistoryPage.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
@@ -1182,7 +1179,7 @@ def test_com_100_101_008():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -1302,7 +1299,7 @@ def test_com_100_101_008():  # Make sure to add the test case name as same as th
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -1365,7 +1362,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(driver)
             paymentPage.check_payment_page(amount,order_id)
-            time.sleep(5)
+            # time.sleep(5)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("selected payment mode is UPI")
 
@@ -1384,7 +1381,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
-            df_curl = pd.read_excel('/home/ezetap/EzeAuto/TestCases/curl_data.xlsx', sheet_name='Sheet')
+            df_curl = pd.read_excel(ConfigReader.read_config_paths("System","automation_suite_path")+'/TestCases/curl_data.xlsx', sheet_name='Sheet')
             df_curl.set_index('type', inplace=True)
             curl_data = df_curl['curl_data']['expire']
             print(type(curl_data))
@@ -1425,7 +1422,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -1476,7 +1473,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -1592,7 +1589,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -1673,7 +1670,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -1724,7 +1721,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -1840,7 +1837,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -1911,7 +1908,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
             loginPagePortal.perform_login_to_portal(username_portal, password_portal)
             homePagePortal = PortalHomePage(driver_ui)
             homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
-            time.sleep(2)
+            # time.sleep(2)
             homePagePortal.click_switch_button()
             homePagePortal.click_transaction_search_menu()
 
@@ -1921,7 +1918,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -1973,7 +1970,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -2089,7 +2086,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"

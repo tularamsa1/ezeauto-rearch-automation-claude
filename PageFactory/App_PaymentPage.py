@@ -38,11 +38,12 @@ class PaymentPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
-
     def click_on_Upi_paymentMode(self):
+        self.scroll_to_text("UPI")
         self.perform_click(self.btn_upi)
 
     def click_on_Bqr_paymentMode(self):
+        self.scroll_to_text("Bharat QR")
         self.perform_click(self.btn_bqr)
 
     # def get_user_action_text(self):

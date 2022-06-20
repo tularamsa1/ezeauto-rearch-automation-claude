@@ -37,7 +37,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
-            ReportProcessor.captureSSWhenExeFailed()
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -60,7 +60,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -120,7 +120,7 @@ def test_SubFeatureCode(): #Make sure to add the test case name as same as the s
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.captureSSWhenExeFailed()
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
