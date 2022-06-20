@@ -79,9 +79,17 @@ def prepareTestCaseDetailsDataFrame(path):
 def ssh_connection(ip_address, routerPort, username, key_filename):
     GlobalVariables.ssh.load_system_host_keys()
     GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # getting ssh private key file password if it is encrypted
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        print(e)  # later change this is to log the warning
+        ssh_private_key_password = None
+    
     try:
         GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
-                    pkey=paramiko.RSAKey.from_private_key_file(key_filename))
+                    pkey=paramiko.RSAKey.from_private_key_file(key_filename, password=ssh_private_key_password))  
         return True
     except Exception as error_message:
         print("Unable to connect")
@@ -164,6 +172,7 @@ This takes an integer as input for the port number on which the server needs to 
 def startAppiumServer(portNumber:int):
     appium_server = AppiumService()
     appium_server.start(args=['-p ' + str(portNumber)])
+
 
 """
 This method is used to check the availability of the port.
