@@ -15,7 +15,7 @@ class PaymentPage(BasePage):
     btn_upi = (By.XPATH, "//*[@text='UPI']")
     btn_bqr = (By.XPATH, "//*[@text='Bharat QR']")
     btn_back = (By.ID, "com.ezetap.service.demo:id/ibtnBack")
-    #    USER_ACTION_MESSAGE = (By.ID, 'com.ezetap.service.demo:id/txn_user_action_msg')
+    btn_back_enter_amt_window = (By.ID, "com.ezetap.basicapp:id/imgBack")
     txa_daAlertMessage = (By.ID, 'com.ezetap.service.demo:id/tvAlert')
     txa_promoMessage = (By.ID, 'com.ezetap.service.demo:id/tvAvailableOffer')
     lbl_paymentStatus = (By.ID, 'com.ezetap.service.demo:id/tvTxnStatus')
@@ -31,15 +31,14 @@ class PaymentPage(BasePage):
     lbl_payWith = (By.ID, 'com.ezetap.service.demo:id/tvPayWithTop')
     lbl_checkstatusTitle = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
     lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
-    btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
-    btn_back_enter_amt_window = (By.ID, "com.ezetap.basicapp:id/imgBack")
+    btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
+
 
     def __init__(self, driver):
         super().__init__(driver)
 
     def click_on_Upi_paymentMode(self):
-        self.scroll_to_text("UPI")
         self.perform_click(self.btn_upi)
 
     def click_on_Bqr_paymentMode(self):
@@ -106,14 +105,6 @@ class PaymentPage(BasePage):
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
 
-    # def check_payment_page(self):
-    #     try:
-    #         self.wait_for_element(self.lbl_payWith, 6)
-    #     except:
-    #         self.wait_for_element(self.lbl_checkstatusTitle)
-    #         self.perform_click(self.lbl_checkstatus)
-    #         self.perform_click(self.btn_proceedToHomepage)
-
     def check_payment_page(self, amount, order_id):
         try:
             self.wait_for_element(self.lbl_payWith, 6)
@@ -138,3 +129,4 @@ class PaymentPage(BasePage):
 
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
+

@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
 
 
+
 class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
@@ -93,11 +94,14 @@ class HomePage(BasePage):
     def perform_check_status(self):
         self.perform_click(self.btn_checkStatus)
 
+    def click_on_skip_button(self):
+        self.perform_click(self.btn_skip)
+
     def click_navigation_drawer(self):
         self.perform_click(self.mnu_navigationDrawer)
 
-    # def click_transaction_history(self):
-    #     self.perform_click(self.mnu_transactionHistory)
+    def click_on_transaction_history(self):
+        self.perform_click(self.mnu_transactionHistory)
 
     def click_cash_at_pos(self):
         self.perform_click(self.btn_cashAtPos)
@@ -120,8 +124,6 @@ class HomePage(BasePage):
 
     def click_account_menu(self):
         self.perform_click(self.mnu_account)
-
-#--------------------Mansa Methods
 
     def check_lang_selection_option(self):
         return self.wait_for_element(self.rdo_langSelection).is_displayed()
@@ -156,35 +158,6 @@ class HomePage(BasePage):
     def click_on_merchant_name(self):
         self.perform_click(self.mnu_merchantDetail)
 
-    # def click_on_enterAmt(self):
-    #     self.perform_click(self.txt_Amountfield)
-
-    # def press_number(self,number):
-    #     if number == 0:
-    #         self.perform_click(self.btn_numZero)
-    #     elif number == 1:
-    #         self.perform_click(self.btn_numOne)
-    #     elif number == 2:
-    #         self.perform_click(self.btn_numTwo)
-    #     elif number == 3:
-    #         self.perform_click(self.btn_numThree)
-    #     elif number == 4:
-    #         self.perform_click(self.btn_numFour)
-    #     elif number == 5:
-    #         self.perform_click(self.btn_numFive)
-    #     elif number == 6:
-    #         self.perform_click(self.btn_numSix)
-    #     elif number == 7:
-    #         self.perform_click(self.btn_numSeven)
-    #     elif number == 8:
-    #         self.perform_click(self.btn_numEight)
-    #     elif number == 9:
-    #         self.perform_click(self.btn_numNine)
-
-
-    # def click_on_Pay(self):
-    #     self.perform_click(self.btn_pay)
-
     def check_mob_num_field(self):
         return self.wait_for_element(self.txt_mobileField).is_displayed()
 
@@ -194,16 +167,6 @@ class HomePage(BasePage):
     def click_on_back_btn_enter_amt_page(self):
         self.perform_click(self.btn_back)
 
-    def click_on_back_btn_enter_amt_page1(self):
-        self.perform_click1(self.btn_back)
-
     def click_on_skip_button(self):
         self.perform_click(self.btn_skip)
-
-    # def click_on_proceed(self):
-    #     self.perform_click(self.btn_paymentProceed)
-
-
-#-----------------
-#Write a method to entirng amount, pay, order id, proceed
 

@@ -10,6 +10,7 @@ class TransHistoryPage(BasePage):
 
     lbl_summary = (By.ID, 'com.ezetap.service.demo:id/tvLblSummary')
     btn_backHome = (By.ID, 'com.ezetap.service.demo:id/iVBackArrow')
+    btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
     btn_filters = (By.ID, 'com.ezetap.service.demo:id/csFilter')
     lbl_transactions = (By.ID, '//android.widget.TextView[@text = "Transactions"]')
     lbl_noTransactionsAvailable = (By.ID, "com.ezetap.service.demo:id/tv_ErrorMsg")
@@ -45,10 +46,20 @@ class TransHistoryPage(BasePage):
     def click_back_Btn(self):
         self.perform_click(self.btn_backHome)
 
+    def click_back_Btn_transaction_details(self):
+        self.perform_click(self.btn_backTransactionDetails)
+
     def click_first_amount_field(self):
         el = self.wait_for_all_elements(self.txa_amountField)
-        print(el[1].text())
-        return el[1].text()
+        el[0].click()
+
+    def click_on_transaction_by_order_id(self, order_id):
+        locator = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..' )
+        self.perform_click(locator)
+
+    def click_on_second_transaction_by_order_id(self, order_id):
+        locator = (By.XPATH, '(//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..)[2]' )
+        self.perform_click(locator)
 
     def check_for_elements_in_txn_history(self):
         return self.wait_for_all_elements(self.txa_amountField)
@@ -79,7 +90,7 @@ class TransHistoryPage(BasePage):
         TouchAction(self.driver).press(x=228, y=739).move_to(x=247, y=566).release().perform()
         TouchAction(self.driver).press(x=241, y=574).move_to(x=127, y=718).release().perform()
         self.perform_click(self.btn_signatureSubmit)
-        sleep(0.7)
+        sleep(0.8)
 
     def click_filter(self):
         self.perform_click(self.btn_filters)
@@ -127,6 +138,18 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
+
+    def fetch_txn_id_text(self):
+        return self.fetch_text(self.txt_txnID)
+
+    def fetch_txn_status_text(self):
+        return str(self.fetch_text(self.txa_finalStatusField))
+
+    def fetch_txn_type_text(self):
+        return str(self.fetch_text(self.txt_txnType))
+
+    def fetch_txn_amount_text(self):
+        return str(self.fetch_text(self.txt_txnAmount))
 
     def click_on_transaction_by_order_id(self, order_id):
         locator = (

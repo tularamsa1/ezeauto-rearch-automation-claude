@@ -54,8 +54,16 @@ class PortalHomePage(BasePage):
     def fetch_status_from_transaction_id(self,txn_id):
         locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[4]')
         text=self.fetch_text(locator)
-        if text.upper() == "SETTLED":
-            text= "AUTHORIZED"
+        return text
+
+    def fetch_amount_from_transaction_id(self,txn_id):
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[5]')
+        text=self.fetch_text(locator)
+        return text
+
+    def fetch_transaction_type_from_transaction_id(self,txn_id):
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[3]')
+        text=self.fetch_text(locator)
         return text
 
     def perform_refund_of_txn(self, amount):
@@ -65,10 +73,20 @@ class PortalHomePage(BasePage):
         self.perform_sendkeys(self.txt_refundAmtField, str(amount))
         self.perform_click(self.btn_confirmRefund)
         self.wait_for_alert_and_accept()
-
-    def click_on_transaction_details_based_on_transaction_id(self, txn_id):
-        locator = (By.XPATH, "//a[@id='" + str(txn_id) + "']")
+    def click_on_transaction_details_based_on_transaction_id(self,txn_id):
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td)[1]')
         return self.perform_click(locator)
 
     def click_on_refund_button(self):
         return self.perform_click(self.btn_refund)
+
+    def perform_refund_of_txn(self, amount):
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load)
+        self.wait_for_element(self.lbl_refund_window)
+        self.wait_for_element(self.txt_refundAmtField).clear()
+        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
+        self.perform_click(self.btn_confirmRefund)
+        self.wait_for_alert_and_accept()
+
+
+

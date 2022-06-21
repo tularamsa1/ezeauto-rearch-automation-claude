@@ -41,8 +41,7 @@ def test_UI_SA_CheckStatus_UPI_01(): #Make sure to add the test case name as sam
             password = read_config("credentials", 'password_dev11')
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
-            homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            homePage.check_home_page_logo()
             amount = TestData.AMOUNT
             order_num = TestData.ORDER_NUMBER
             homePage.enter_amount_and_order_number(amount, order_num)
