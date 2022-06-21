@@ -16,9 +16,7 @@ class BasePage:
         select = Select(WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)))
         select.select_by_value(value)
 
-
-
-    def fetch_text(self, locator, time = 15):
+    def fetch_text(self, locator, time = 12):
         return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).text
 
     def perform_sendkeys(self, locator, value, time = 15):
