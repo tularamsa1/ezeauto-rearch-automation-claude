@@ -14,7 +14,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor
+from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -147,7 +147,7 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
             logger.info("Started APP validation for the test case : test_com_100_101_004")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Amount": str(amount)}
+                expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Amount": str(amount), "Txn_id":Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 # time.sleep(5)
                 homePage.click_on_history()
@@ -164,7 +164,7 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 Payment_Status = payment_status.split(':')[1]
                 # print(Payment_Status)
                 actualAppValues = {"Payment Status": Payment_Status, "Payment mode": payment_mode,
-                                   "Amount": app_amount.split(' ')[1]}
+                                   "Amount": app_amount.split(' ')[1], "Txn_id":txn_id}
                 # "Amount": str(amount)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -184,27 +184,25 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_004")
             try:
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"SETTLED"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 response = APIProcessor.send_request(api_details)
-                # logger.debug(
-                #     f"payload : {payload} to trigger the {TestData.API} api and the API_OUTPUT is : {response}")
-
-                # print(response)
                 list = response["txns"]
                 status_api = ''
                 amount_api = ''
                 payment_mode_api = ''
+                state_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,"Payment State":state_api}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -302,11 +300,30 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
             logger.info("Completed PORTAL validation for the test case : test_com_100_101_004")
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_004")
+            try:
+                expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id)}
+                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username,"password":password}, expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
         Configuration.executeFinallyBlock("test_com_100_101_004")
-        if GlobalVariables.setupCompletedSuccessfully == False:
+        if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
@@ -418,7 +435,7 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_005")
             try:
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"SETTLED"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -429,13 +446,15 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                 status_api = ''
                 amount_api = ''
                 payment_mode_api = ''
+                state_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api, "Payment State":state_api}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)

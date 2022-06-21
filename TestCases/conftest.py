@@ -69,7 +69,6 @@ def pytest_runtest_makereport(item, call):
     return report
 
 
-
 # @pytest.fixture(scope="session")  # Executing once before the first test case
 # def session_setup(request):
 #     print("Session setup level")
@@ -657,25 +656,34 @@ def log_on_failure(request):
             ReportProcessor.get_Log_Collection_Time()
 
         if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
-            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
+            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_app_val = 'Passed'
 
         if GlobalVariables.bool_ss_portal_val == 'Failed' and GlobalVariables.portalDriver != ''and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
-            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
+            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-    if GlobalVariables.portalDriver != '':
-        # GlobalVariables.portalDriver.quit()
-        GlobalVariables.portalDriver.close()
-        GlobalVariables.portalDriver = ''
-        # variables.successApp = False
+        if GlobalVariables.bool_chargeslip_val_result == False and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
 
-    if GlobalVariables.appDriver != '':
-        GlobalVariables.appDriver.quit()
-        GlobalVariables.appDriver = ''
-        # variables.appSS = False
+        if GlobalVariables.portalDriver != '':
+            # GlobalVariables.portalDriver.quit()
+            GlobalVariables.portalDriver.close()
+            GlobalVariables.portalDriver = ''
+            # variables.successApp = False
+
+        if GlobalVariables.appDriver != '':
+            GlobalVariables.appDriver.quit()
+            GlobalVariables.appDriver = ''
+            # variables.appSS = False
+
+        if GlobalVariables.charge_slip_driver != '':
+            GlobalVariables.charge_slip_driver.quit()
+            GlobalVariables.charge_slip_driver = ''
 
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
@@ -924,25 +932,34 @@ def log_on_success(request):
             ReportProcessor.get_Log_Collection_Time()
 
         if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
-            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
+            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_app_val = 'Passed'
 
         if GlobalVariables.bool_ss_portal_val == 'Passed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
-            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="screenshot",
+            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-    if GlobalVariables.portalDriver != '':
-        # GlobalVariables.portalDriver.quit()
-        GlobalVariables.portalDriver.close()
-        GlobalVariables.portalDriver = ''
-        # variables.successApp = False
+        if GlobalVariables.bool_chargeslip_val_result == True and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
+            allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
 
-    if GlobalVariables.appDriver != '':
-        GlobalVariables.appDriver.quit()
-        GlobalVariables.appDriver = ''
-        # variables.appSS = False
+        if GlobalVariables.portalDriver != '':
+            # GlobalVariables.portalDriver.quit()
+            GlobalVariables.portalDriver.close()
+            GlobalVariables.portalDriver = ''
+            # variables.successApp = False
+
+        if GlobalVariables.appDriver != '':
+            GlobalVariables.appDriver.quit()
+            GlobalVariables.appDriver = ''
+            # variables.appSS = False
+
+        if GlobalVariables.charge_slip_driver != '':
+            GlobalVariables.charge_slip_driver.quit()
+            GlobalVariables.charge_slip_driver = ''
 
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
