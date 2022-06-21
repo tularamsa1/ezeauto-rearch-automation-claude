@@ -1,4 +1,5 @@
 from appium.webdriver.common.touch_action import TouchAction
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -10,6 +11,12 @@ class BasePage:
 
     def perform_click(self, locator, time = 15):
         WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
+
+    def select_from_drop_down(self, locator, value, time=15):
+        select = Select(WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)))
+        select.select_by_value(value)
+
+
 
     def fetch_text(self, locator, time = 15):
         return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).text

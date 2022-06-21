@@ -13,13 +13,23 @@ from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
 from Utilities.ConfigReader import read_config
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
-@pytest.mark.usefixtures("appium_driver") #This is an optional line. Keep only whichever driver is required.
+@pytest.mark.usefixtures("appium_driver") #This is an optional line. Keep only whichever app_driver is required.
 # From below use only the markers that are applicable for the test case and remove the rest.
 @pytest.mark.appVal
 def test_sa_100_102_010(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    :Description: Verification of a BQR QR Generation Success through SA via HDFC
+    :Subfeature code: UI_SA_PM_BQR_HDFC_QR_Generation_010
+    :TC naming code description: 100->Payment Method
+                                102->BQR
+                                010-> TC10
+    """
 
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -33,26 +43,29 @@ def test_sa_100_102_010(): #Make sure to add the test case name as same as the s
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         msg = ""
-
+        logger.info("Starting execution for the test case : test_common_100_102_010")
 
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            driver = GlobalVariables.appDriver
-            loginPage = LoginPage(driver)
+            app_driver = GlobalVariables.appDriver
+            loginPage = LoginPage(app_driver)
             username = read_config("credentials", 'username_HDFC')
             password = read_config("credentials", 'password')
             org_code = read_config("testdata", "org_code_hdfc")
+            logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
-            homePage = HomePage(driver)
+            homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
+            logger.info(f"App homepage loaded successfully")
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            print("Order id", order_id)
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
             homePage.enter_amount_and_order_number(amount, order_id)
-            paymentPage = PaymentPage(driver)
-            paymentPage.check_payment_page()
+            paymentPage = PaymentPage(app_driver)
+            paymentPage.check_payment_page(amount, order_id)
             paymentPage.click_on_Bqr_paymentMode()
 
             #
@@ -78,11 +91,6 @@ def test_sa_100_102_010(): #Make sure to add the test case name as same as the s
 
                 text = paymentPage.validate_upi_bqr_payment_screen()
 
-
-                # app_payment_mode = paymentPage.fetch_payment_mode()
-                # app_payment_amt = paymentPage.fetch_payment_amount().split()[1]
-                # app_txn_id, app_status = paymentPage.get_transaction_details()
-
                 actualAppValues = {"Payment Screen text": text}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -98,6 +106,7 @@ def test_sa_100_102_010(): #Make sure to add the test case name as same as the s
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
+        logger.info("Completed execution and validation for the test case : test_common_100_102_010")
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
         else:
@@ -113,10 +122,17 @@ def test_sa_100_102_010(): #Make sure to add the test case name as same as the s
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
-@pytest.mark.usefixtures("appium_driver")  # This is an optional line. Keep only whichever driver is required.
+@pytest.mark.usefixtures("appium_driver")  # This is an optional line. Keep only whichever app_driver is required.
 # From below use only the markers that are applicable for the test case and remove the rest.
 @pytest.mark.appVal
 def test_sa_100_102_011():  # Make sure to add the test case name as same as the sub feature code.
+    """
+    :Description: Verification of a BQR QR Generation Success through SA via HDFC
+    :Sub Feature code: UI_SA_PM_BQR_HDFC_QR_Generation_Failed_011
+    :TC naming code description: 100->Payment Method
+                                102->BQR
+                                011-> TC11
+    """
 
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -130,25 +146,30 @@ def test_sa_100_102_011():  # Make sure to add the test case name as same as the
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         msg = ""
+        logger.info("Starting execution for the test case : test_common_100_102_011")
 
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            driver = GlobalVariables.appDriver
-            loginPage = LoginPage(driver)
+            app_driver = GlobalVariables.appDriver
+            loginPage = LoginPage(app_driver)
             username = read_config("credentials", 'username_HDFC')
             password = read_config("credentials", 'password')
             org_code = read_config("testdata", "org_code_hdfc")
+            logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
-            homePage = HomePage(driver)
+            homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
+            logger.info(f"App homepage loaded successfully")
             amount = random.randint(101, 200)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             print("Order id", order_id)
             homePage.enter_amount_and_order_number(amount, order_id)
-            paymentPage = PaymentPage(driver)
-            paymentPage.check_payment_page()
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            paymentPage = PaymentPage(app_driver)
+            paymentPage.check_payment_page(amount, order_id)
             paymentPage.click_on_Bqr_paymentMode()
             #
             # ------------------------------------------------------------------------------------------------
@@ -172,10 +193,6 @@ def test_sa_100_102_011():  # Make sure to add the test case name as same as the
                 expectedAppValues = {"Payment Screen text": "Scan QR code using"}
 
                 text = paymentPage.validate_upi_bqr_payment_screen()
-
-                # app_payment_mode = paymentPage.fetch_payment_mode()
-                # app_payment_amt = paymentPage.fetch_payment_amount().split()[1]
-                # app_txn_id, app_status = paymentPage.get_transaction_details()
 
                 actualAppValues = {"Payment Screen text": text}
                 # ---------------------------------------------------------------------------------------------
@@ -203,5 +220,6 @@ def test_sa_100_102_011():  # Make sure to add the test case name as same as the
         # ----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.
         # Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
+        logger.info("Compelted execution and validation for the test case : test_common_100_102_011")
         Configuration.executeFinallyBlock("test_sa_100_102_011")
 

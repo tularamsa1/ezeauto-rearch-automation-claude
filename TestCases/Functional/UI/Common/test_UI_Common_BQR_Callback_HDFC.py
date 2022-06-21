@@ -26,6 +26,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 def test_common_100_102_001(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    :Description: Verification of a BQR Callback Success transaction via HDFC
+    :Sub Feature code: UI_Common_PM_BQR_Callback_Success_HDFC _01
+    :TC naming code description: 100->Payment Method
+                                102->BQR
+                                001-> TC01
+    """
     logger.info("Starting execution for the test case : test_common_100_102_001")
 
     try:
@@ -183,22 +190,34 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
             try:
                 logger.info("Starting DB Validation for the test case")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "AUTHORIZED", "Payment mode":"BHARATQR" , "Payment amount":amount}
+                expectedDBValues = {"Payment Status": "AUTHORIZED", "Payment mode":"BHARATQR" , "Payment amount":amount, "State":"SETTLED", "State Bharatqr": "SETTLED", "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Success"}
                 #
-                query = "select status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch status, amount, payment mode and external reference from DB : {query}")
-                print("Query:", query)
+                query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from DB : {result} ")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
                 logger.debug(f"Fetching Transaction status from DB : {status_db} ")
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
+                logger.debug(f"Fetching Transaction state from DB : {state_db} ")
+
+                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
+                state_bharatqr_db = result["state"].iloc[0]
+                amount_bharatqr_db = result["txn_amount"].iloc[0]
+                status_bharatqr_db = result["status_desc"].iloc[0]
+                logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
+                logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
+                logger.debug(f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
                 # Write the test case DB validation code block here. Set this to pass if not required.
                 #
-                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db}
+                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db, "State":state_db, "State Bharatqr": state_bharatqr_db, "Amount Bharatqr": amount_bharatqr_db, "Status Bharatqr": status_bharatqr_db}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -285,6 +304,13 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
 @pytest.mark.portalVal
 @pytest.mark.appVal
 def test_common_100_102_002(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    :Description: Verification of a BQR Callback Failed transaction via HDFC
+    :Sub Feature code: UI_Common_PM_BQR_Callback_Failed_HDFC _02
+    :TC naming code description: 100->Payment Method
+                                102->BQR
+                                002-> TC02
+    """
 
     try:
         logger.info("Starting execution for the test case : test_common_100_102_002")
@@ -441,23 +467,39 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
             try:
                 logger.info("Starting DB Validation for the test case")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "FAILED", "Payment mode":"BHARATQR" , "Payment amount":amount}
+                expectedDBValues = {"Payment Status": "FAILED", "Payment mode": "BHARATQR",
+                                    "Payment amount": amount, "State": "FAILED", "State Bharatqr": "FAILED",
+                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction failed"}
                 #
-                query = "select status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch status, amount, payment mode and external reference from DB : {query}")
-                print("Query:", query)
+                query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from DB : {result} ")
-                print(result)
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
                 logger.debug(f"Fetching Transaction status from DB : {status_db} ")
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
+                logger.debug(f"Fetching Transaction state from DB : {state_db} ")
+
+                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
+                state_bharatqr_db = result["state"].iloc[0]
+                amount_bharatqr_db = result["txn_amount"].iloc[0]
+                status_bharatqr_db = result["status_desc"].iloc[0]
+                logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
+                logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
+                logger.debug(
+                    f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
                 # Write the test case DB validation code block here. Set this to pass if not required.
                 #
-                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db}
+                actualDBValues = {"Payment Status": status_db, "Payment mode": payment_mode_db,
+                                  "Payment amount": amount_db, "State": state_db, "State Bharatqr": state_bharatqr_db,
+                                  "Amount Bharatqr": amount_bharatqr_db, "Status Bharatqr": status_bharatqr_db}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -542,10 +584,28 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
 @pytest.mark.portalVal
 @pytest.mark.appVal
 def test_common_100_102_003(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    :Description: Verification of a BQR Callback After QR Expiry transaction via HDFC
+    :Sub Feature code: UI_Common_PM_BQR_Callback_AfterExpiry_HDFC _03
+    :TC naming code description: 100->Payment Method
+                                102->BQR
+                                003-> TC03
+    """
     logger.info("Starting execution for the test case : test_common_100_102_003")
 
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info("Performing preconditions before starting test case execution")
+        portal_username = read_config("credentials", "username_portal")
+        portal_password = read_config("credentials", "password_portal")
+        org_code = read_config("testdata", "org_code_hdfc")
+        api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
+        api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
+        logger.debug(f"API details  : {api_details} ")
+        print("***********API DETAILS **********:", api_details)
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+        logger.info("Finished performing preconditions before starting test case execution")
 
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -705,22 +765,39 @@ def test_common_100_102_003(): #Make sure to add the test case name as same as t
             try:
                 logger.info("Starting DB Validation for the test case")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "EXPIRED", "Payment mode":"BHARATQR" , "Payment amount":amount}
+                expectedDBValues = {"Payment Status": "EXPIRED", "Payment mode": "BHARATQR",
+                                    "Payment amount": amount, "State": "EXPIRED", "State Bharatqr": "EXPIRED",
+                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
                 #
-                query = "select status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch status, amount, payment mode and external reference from DB : {query}")
-                print("Query:", query)
+                query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from DB : {result} ")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
                 logger.debug(f"Fetching Transaction status from DB : {status_db} ")
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
+                logger.debug(f"Fetching Transaction state from DB : {state_db} ")
+
+                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
+                state_bharatqr_db = result["state"].iloc[0]
+                amount_bharatqr_db = result["txn_amount"].iloc[0]
+                status_bharatqr_db = result["status_desc"].iloc[0]
+                logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
+                logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
+                logger.debug(
+                    f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
                 # Write the test case DB validation code block here. Set this to pass if not required.
                 #
-                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db}
+                actualDBValues = {"Payment Status": status_db, "Payment mode": payment_mode_db,
+                                  "Payment amount": amount_db, "State": state_db, "State Bharatqr": state_bharatqr_db,
+                                  "Amount Bharatqr": amount_bharatqr_db, "Status Bharatqr": status_bharatqr_db}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -789,6 +866,14 @@ def test_common_100_102_003(): #Make sure to add the test case name as same as t
         #-------------------------------Revert Preconditions done(setup)--------------------------------------------
 
         # Write the code here to revert the settings that were done as precondition
+        logger.info("Reverting all the settings that were done as preconditions")
+        api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
+        api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 6
+        logger.debug(f"API details  : {api_details} ")
+        print("***********API DETAILS **********:", api_details)
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+        logger.info("Reverted back all the settings that were done as preconditions")
 
         #----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.

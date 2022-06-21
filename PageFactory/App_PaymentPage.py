@@ -127,9 +127,6 @@ class PaymentPage(BasePage):
             else:
                 pass
 
-
-
-
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
 
