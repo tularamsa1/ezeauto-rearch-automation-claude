@@ -41,7 +41,7 @@ class HomePage(BasePage):
     btn_cashAtPosWithSale = (By.ID, 'com.ezetap.basicapp:id/switchSale')
     txt_cashAtPosSaleAmount = (By.ID, 'com.ezetap.basicapp:id/etSaleAmount')
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
-
+    btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
 
 
     def __init__(self, driver):
@@ -196,6 +196,9 @@ class HomePage(BasePage):
 
     def click_on_back_btn_enter_amt_page1(self):
         self.perform_click1(self.btn_back)
+
+    def click_on_skip_button(self):
+        self.perform_click(self.btn_skip)
 
     # def click_on_proceed(self):
     #     self.perform_click(self.btn_paymentProceed)

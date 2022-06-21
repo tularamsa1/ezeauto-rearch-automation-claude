@@ -27,6 +27,10 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 # Performing a successful upi txn via HDFC using SA check status
 def test_sa_100_101_001():  # Make sure to add the test case name as same as the sub feature code.
+    """
+    Sub Feature Code: UI_SA_PM_UPI_Success_Via_SA_CheckStatus_HDFC
+    Sub Feature Description: Verification of a successful upi txn via HDFC using SA check status
+    """
     logger.info("Starting execution for the test case : test_sa_100_101_001")
 
     try:  # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -262,6 +266,10 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
 @pytest.mark.appVal
 # Performing a failed UPI txn via HDFC using SA check status
 def test_sa_100_101_002():  # Make sure to add the test case name as same as the sub feature code.
+    """
+    Sub Feature Code: UI_SA_PM_UPI_Failed_Via_SA_CheckStatus_HDFC
+    Sub Feature Description: Verification of a failed UPI txn via HDFC using SA check status
+    """
     logger.info("Starting execution for the test case : test_sa_100_101_002")
     try:  # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
@@ -503,6 +511,10 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
 @pytest.mark.appVal
 # Performing a upi txn after expiry for HDFC using SA check status
 def test_sa_100_101_003():  # Make sure to add the test case name as same as the sub feature code.
+    """
+    Sub Feature Code: UI_Common_PM_UPI_CheckStatus_After Expiry_HDFC
+    Sub Feature Description: Verification of a upi txn after expiry for HDFC using SA check status
+    """
     logger.info("Starting execution for the test case : test_sa_100_101_003")
     try:  # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
@@ -542,7 +554,6 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             amount = random.randint(51, 100)
             if amount == 55:
                 amount = 56
-            # order_number = random.randint(1, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(driver)
             homePage.wait_for_home_page_load()
@@ -556,7 +567,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
 
             logger.info("reseting the com.ezetap.basicapp")
             driver.reset()
-            logger.info("waiting for the time till qr get expired")
+            logger.info("waiting for the time till qr get expired...")
             time.sleep(60)
 
             loginPage.perform_login(username, password)

@@ -16,6 +16,11 @@ class PortalHomePage(BasePage):
     lbl_date = (By.XPATH, '(//table[@id="table_txns"]/tbody/tr/td/a)[1]')
     btn_chargeSlip = (By.XPATH, '(//a[@title="Customer Receipt"])[1]')
     lbl_sale = (By.XPATH, '//table/tbody/tr/td/strong[contains(text(),"lbl_sale")]')
+    lbl_refund_window = (By.XPATH, '//*[@class="loader"]')
+    lbl_refund_window_before_load = (By.XPATH, '//*[@class="loader active"]')
+    txt_refundAmtField = (By.ID, "userrefund_refund")
+    btn_confirmRefund = (By.XPATH, '(//button[.="Confirm"])[1]')
+    btn_refund = (By.XPATH, '(//button[.="Refund"])[1]')
 
 
     def __init__(self, driver):
@@ -53,4 +58,17 @@ class PortalHomePage(BasePage):
             text= "AUTHORIZED"
         return text
 
+    def perform_refund_of_txn(self, amount):
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load)
+        self.wait_for_element(self.lbl_refund_window)
+        self.wait_for_element(self.txt_refundAmtField).clear()
+        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
+        self.perform_click(self.btn_confirmRefund)
+        self.wait_for_alert_and_accept()
 
+    def click_on_transaction_details_based_on_transaction_id(self, txn_id):
+        locator = (By.XPATH, "//a[@id='" + str(txn_id) + "']")
+        return self.perform_click(locator)
+
+    def click_on_refund_button(self):
+        return self.perform_click(self.btn_refund)

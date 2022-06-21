@@ -14,7 +14,7 @@ from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
 
 from Utilities.execution_log_processor import EzeAutoLogger
-from DataProvider import GlobalVariables as global_variables
+from DataProvider import GlobalVariables
 
 
 logger = EzeAutoLogger(__name__)
@@ -517,7 +517,7 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
             #         logger.exception(f"Screenshot-taking not done due to the following error: {e}")
 
             
-            global_variables.charge_slip_driver = driver
+            GlobalVariables.charge_slip_driver = driver
 
 
         except ReceiptValidationError as e:
@@ -576,24 +576,14 @@ def validate_n_get_working_receipt_url(receipt_url_from_api):
 
 
 def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_details:dict):
-    validation_sucessful = False
-
     json_response = get_json_response_of_txn_details(**credentials, txn_id=txn_id)
-
     try:
         receipt_url_field = "customerReceiptUrl"
         receipt_url = json_response[receipt_url_field]
         valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
         logger.debug(valid_receipt_url)
         print(valid_receipt_url)
-        validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
+        GlobalVariables.bool_chargeslip_val_result = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
     except Exception as e:
         raise TransactionAPIJsonResponseError("Unable to fetch receipt url from Error:", e)
-    
-
-    # global present_receipt_info
-    # print(100*"-")
-    # print(present_receipt_info)
-    # print(100*"+")
-    return validation_sucessful
 

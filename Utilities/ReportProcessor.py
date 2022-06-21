@@ -401,7 +401,9 @@ def updateTestCaseResult(msg):
             ls_validation_msg.append("APP validation Failed!!")
         if GlobalVariables.str_ui_val_result == "Fail":
             ls_validation_msg.append("UI validation Failed!!")
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
+        if not GlobalVariables.bool_chargeslip_val_result:
+            ls_validation_msg.append("Charge-Slip validation Failed!!")
+        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail" or GlobalVariables.bool_chargeslip_val_result == False:
             message = ""
             for validation_msg in ls_validation_msg:
                 message = message + "\n" + validation_msg
@@ -421,6 +423,14 @@ def capture_ss_when_exe_failed():
             "bool_capt_ss_fail") == "True":
         try:
             allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
+
+    if GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
         except Exception as e:
             logger.exception(f"Unable to take screenshot : {e}")
