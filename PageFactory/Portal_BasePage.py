@@ -38,10 +38,3 @@ class BasePage:
 
     def perform_touch_action_using_cordinates(self, x1,y1,x2,y2):
         TouchAction(self.driver).press(x=x1, y=y1).move_to(x=x2, y=y2).release().perform()
-
-    def wait_for_alert_and_accept(self, time=15):
-        WebDriverWait(self.driver, time).until(EC.alert_is_present())
-        self.driver.switch_to.alert.accept()
-
-    def wait_for_element_invisible(self, locator, time=15):
-        return WebDriverWait(self.driver, time).until(EC.invisibility_of_element(locator))

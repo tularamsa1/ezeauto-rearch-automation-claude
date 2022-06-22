@@ -11,7 +11,7 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -273,7 +273,24 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_102_001")
+            try:
+                expectedValues = {'PAID BY:':'BHARATQR', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN': rrn, 'BASE AMOUNT:': 'Rs.'+str(amount)+'.00'}
+                receipt_validator.perform_charge_slip_validations(txn_id, {"username":username,"password":password}, expectedValues)
 
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_102_001")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -552,7 +569,6 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-
 
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -853,7 +869,6 @@ def test_common_100_102_003(): #Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-
 
     # -------------------------------------------End of Validation---------------------------------------------
 

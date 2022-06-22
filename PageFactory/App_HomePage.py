@@ -166,7 +166,3 @@ class HomePage(BasePage):
 
     def click_on_back_btn_enter_amt_page(self):
         self.perform_click(self.btn_back)
-
-    def click_on_skip_button(self):
-        self.perform_click(self.btn_skip)
-
