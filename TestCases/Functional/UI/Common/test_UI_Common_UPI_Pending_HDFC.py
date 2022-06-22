@@ -24,7 +24,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_com_100_101_014():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code:
+    Sub Feature Code: UI_Common_PM_UPI_Pure_UPI_Pending_Via_HDFC
     Sub Feature Description: Performing a pending upi txn using magic number(51-100)
     """
     logger.info("Starting execution for the test case : test_com_100_101_014")
@@ -151,24 +151,25 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
                 logger.info("Starting API Validation for the test case")
                 # --------------------------------------------------------------------------------------------
 
-                expectedAPIValues = {"Payment Status": "PENDING", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "PENDING", "Amount": amount, "Payment Mode": "UPI", "Payment State":"PENDING"}
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
                 print(response)
                 list = response["txns"]
-                status_api = amount_api = payment_mode_api = ''
+                status_api = amount_api = payment_mode_api = state_api = ''
                 for li in list:
                     if li["txnId"] == txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api, "Payment State":state_api}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -187,23 +188,26 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
             try:
                 logger.info("Starting DB Validation for the test case")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "PENDING", "Payment mode": "UPI", "Payment amount": amount}
+                expectedDBValues = {"Payment Status": "PENDING","Payment State": "PENDING", "Payment mode": "UPI", "Payment amount": amount, "UPI_Txn_Status": "PENDING"}
                 #
-                query = "select status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch status, amount, payment mode and external reference from DB : {query}")
-                print("Query:", query)
+                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Fetching Query result from DB : {result} ")
+                logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
-                logger.debug(f"Fetching Transaction status from DB : {status_db} ")
-                logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
-                logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
+                state_db = result["state"].iloc[0]
+
+                query = "select status from upi_txn where txn_id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].iloc[0]
                 # Write the test case DB validation code block here. Set this to pass if not required.
                 #
-                actualDBValues = {"Payment Status": status_db, "Payment mode": payment_mode_db,
-                                  "Payment amount": amount_db}
+                actualDBValues = {"Payment Status": status_db, "Payment State": state_db, "Payment mode": payment_mode_db,
+                                  "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -223,8 +227,8 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
             try:
                 logger.info("Starting Portal Validation for the test case")
                 # --------------------------------------------------------------------------------------------
-                expectedPortalValues = {"Payment Status": "Pending", "Payment mode": "UPI",
-                                        "Payment amount": str(amount)}
+                expectedPortalValues = {"Payment State": "Pending", "Payment mode": "UPI",
+                                        "Payment amount": "Rs." + str(amount) + ".00", "Username": username}
                 #
                 driver_ui = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(driver_ui)
@@ -249,8 +253,8 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
                 logger.debug(f"Fetching Username from portal : {portal_username} ")
 
-                actualPortalValues = {"Payment Status": portal_status, "Payment mode": portal_txn_type,
-                                      "Payment amount": str(portal_amt.split('.')[1])}
+                actualPortalValues = {"Payment State": str(portal_status), "Payment mode": portal_txn_type,
+                                      "Payment amount": portal_amt}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
@@ -264,7 +268,6 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-
 
     # -------------------------------------------End of Validation---------------------------------------------
 
