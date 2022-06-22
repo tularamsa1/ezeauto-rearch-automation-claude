@@ -25,6 +25,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a successful upi txn via HDFC using SA check status
 def test_sa_100_101_001():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -236,6 +237,7 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
                 logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
                 homePagePortal.click_switch_button()
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
 
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)

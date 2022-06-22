@@ -36,7 +36,7 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
 
         # ---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -254,7 +254,7 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
                 logger.debug(f"Fetching Username from portal : {portal_username} ")
 
                 actualPortalValues = {"Payment State": str(portal_status), "Payment mode": portal_txn_type,
-                                      "Payment amount": portal_amt}
+                                      "Payment amount": portal_amt, "Username": str(portal_username)}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)

@@ -12,6 +12,7 @@ from Utilities import Validator, ReportProcessor, ConfigReader, receipt_validato
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_SubFeatureCode():  # Make sure to add the test case name as same as the sub feature code.
 
     try:

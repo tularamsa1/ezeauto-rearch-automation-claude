@@ -21,6 +21,7 @@ class PortalHomePage(BasePage):
     txt_refundAmtField = (By.ID, "userrefund_refund")
     btn_confirmRefund = (By.XPATH, '(//button[.="Confirm"])[1]')
     btn_refund = (By.XPATH, '(//button[.="Refund"])[1]')
+    btn_switchedMerchant = (By.XPATH, '/html/body/div/div[10]/div[1]/div[1]/button[2]')
 
 
     def __init__(self, driver):
@@ -79,3 +80,6 @@ class PortalHomePage(BasePage):
 
     def click_on_refund_button(self):
         return self.perform_click(self.btn_refund)
+
+    def perform_merchant_switched_verfication(self):
+        return self.wait_for_element(self.btn_switchedMerchant)

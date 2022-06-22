@@ -27,7 +27,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_sa_100_102_021():  # Make sure to add the test case name as same as the sub feature code.
+@pytest.mark.chargeSlipVal
+def test_common_100_102_021():  # Make sure to add the test case name as same as the sub feature code.
     """
     :Description: Verification of a BQR Partial Refund transaction through API via HDFC
     :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_API_HDFC _021
@@ -389,7 +390,8 @@ def test_sa_100_102_021():  # Make sure to add the test case name as same as the
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_sa_100_102_022():  # Make sure to add the test case name as same as the sub feature code.
+@pytest.mark.chargeSlipVal
+def test_common_100_102_022():  # Make sure to add the test case name as same as the sub feature code.
     """
     :Description: Verification of a BQR Partial Refund transaction via HDFC
     :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_HDFC _022

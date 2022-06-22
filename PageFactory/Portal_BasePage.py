@@ -35,6 +35,8 @@ class BasePage:
         WebDriverWait(self.driver, time).until(EC.alert_is_present())
         self.driver.switch_to.alert.accept()
 
+    def perform_click_cnp(self, locator, time=15):
+        WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
     def perform_touch_action_using_cordinates(self, x1,y1,x2,y2):
         TouchAction(self.driver).press(x=x1, y=y1).move_to(x=x2, y=y2).release().perform()

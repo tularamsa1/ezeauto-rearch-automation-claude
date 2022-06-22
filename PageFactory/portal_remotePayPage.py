@@ -32,10 +32,10 @@ class remotePayTxnPage(BasePage):
         # url = ConfigReader.read_config("APIs", "baseUrl") + ConfigReader.read_config("APIs", "portalLogin")
         # self.driver.get(url)
         # self.driver.maximize_window()
-        self.perform_click(self.txt_creditCardClickAndExpand)
+        self.perform_click_cnp(self.txt_creditCardClickAndExpand)
 
     def enterNameOnTheCard(self,value):
-        self.perform_click(self.txt_NameOnCard)
+        self.perform_click_cnp(self.txt_NameOnCard)
         self.perform_sendkeys(self.txt_NameOnCard, value)
 
     def enterCreditCardNumber(self, value):
@@ -51,10 +51,10 @@ class remotePayTxnPage(BasePage):
         self.perform_sendkeys(self.txt_cardCvv, value)
 
     def clickOnProceedToPay(self):
-        self.perform_click(self.btn_proceedToPay)
+        self.perform_click_cnp(self.btn_proceedToPay)
 
     def clickOnSubmitButton(self):
-        self.perform_click(self.btn_submitButton)
+        self.perform_click_cnp(self.btn_submitButton)
 
     def succcessScreenMessage(self):
         self.fetch_text(self.txt_successMessage)
@@ -66,14 +66,14 @@ class remotePayTxnPage(BasePage):
         self.fetch_text(self.txt_timeoutMessage)
 
     def clikOnRemotePayUPI(self):
-        self.perform_click(self.btn_remotePayUpi)
+        self.perform_click_cnp(self.btn_remotePayUpi)
 
     def clikOnRemotePayLaunchUPI(self):
-        self.perform_click(self.btn_remotePayLaunchUpi)
+        self.perform_click_cnp(self.btn_remotePayLaunchUpi)
 
     def clikOnRemotePayCancelUPI(self):
-        self.perform_click(self.btn_remotePayCancelUpi)
+        self.perform_click_cnp(self.btn_remotePayCancelUpi)
 
     def clikOnRemotePayProceed(self):
-        self.perform_click(self.btn_remotePayProceed)
+        self.perform_click_cnp(self.btn_remotePayProceed)
 

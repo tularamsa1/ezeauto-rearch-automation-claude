@@ -26,6 +26,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_102_004():
     """
     :Description: Verification of a BQR Check Status Success transaction via HDFC
@@ -43,7 +44,7 @@ def test_common_100_102_004():
         GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
         #---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = False, middlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -114,6 +115,7 @@ def test_common_100_102_004():
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
             logger.error(f"Test case execution failed due to the exception : {e}")
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
@@ -152,6 +154,7 @@ def test_common_100_102_004():
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
                 logger.info("App Validation Completed successfully for test case")
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"App Validation failed due to exception : {e}")
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -282,6 +285,7 @@ def test_common_100_102_004():
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
                 logger.info("Portal Validation Completed successfully for test case")
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"Test case Portal validation failed due to the exception : {e}")
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -313,6 +317,7 @@ def test_common_100_102_004():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
+        Configuration.executeFinallyBlock("test_common_100_102_004")
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
@@ -325,7 +330,6 @@ def test_common_100_102_004():
         #----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.
         #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
-        Configuration.executeFinallyBlock("test_common_100_102_004")
         logger.info("**********Test case Execution and Validation completed for testcase: test_common_100_102_004**************")
 
 

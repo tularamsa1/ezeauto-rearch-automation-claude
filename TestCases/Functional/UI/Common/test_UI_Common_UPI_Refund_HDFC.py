@@ -22,6 +22,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and full refund via portal
 def test_com_100_101_010():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -394,6 +395,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and full refund via api
 def test_com_100_101_011():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -767,6 +769,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and partial refund via api
 def test_com_100_101_012():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -1142,6 +1145,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and partial refund via portal
 def test_com_100_101_013():  # Make sure to add the test case name as same as the sub feature code.
     """

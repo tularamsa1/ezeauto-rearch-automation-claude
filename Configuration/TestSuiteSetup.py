@@ -98,9 +98,9 @@ def ssh_connection(ip_address, routerPort, username, key_filename):
 
 
 def getValidationConfig():
-    if ConfigReader.read_config("Validations", "api_validation") == True and ConfigReader.read_config("Validations", "db_validation") == True and ConfigReader.read_config("Validations", "portal_validation") == True and ConfigReader.read_config("Validations", "app_validation") == True and ConfigReader.read_config("Validations", "ui_validation") == True :
+    if ConfigReader.read_config("Validations", "api_validation") == True and ConfigReader.read_config("Validations", "db_validation") == True and ConfigReader.read_config("Validations", "portal_validation") == True and ConfigReader.read_config("Validations", "app_validation") == True and ConfigReader.read_config("Validations", "ui_validation") == True and ConfigReader.read_config("Validations", "charge_slip_validation") == True:
         commandString = ""
-    elif ConfigReader.read_config("Validations", "api_validation") == False and ConfigReader.read_config("Validations", "db_validation") == False and ConfigReader.read_config("Validations", "portal_validation") == False and ConfigReader.read_config("Validations", "app_validation") == False and ConfigReader.read_config("Validations", "ui_validation") == False :
+    elif ConfigReader.read_config("Validations", "api_validation") == False and ConfigReader.read_config("Validations", "db_validation") == False and ConfigReader.read_config("Validations", "portal_validation") == False and ConfigReader.read_config("Validations", "app_validation") == False and ConfigReader.read_config("Validations", "ui_validation") == False and ConfigReader.read_config("Validations", "charge_slip_validation") == False:
         commandString = ""
     else:
         commandString = '-m "'
@@ -130,6 +130,11 @@ def getValidationConfig():
                 commandString = commandString + "uiVal"
             else:
                 commandString = commandString + " or uiVal"
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "chargeSlipVal"
+            else:
+                commandString = commandString + " or chargeSlipVal"
         commandString= commandString+'"'
 
     return commandString

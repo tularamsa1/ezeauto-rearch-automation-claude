@@ -26,6 +26,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_103_001(): #Make sure to add the test case name as same as the sub feature code.
 
     try:
@@ -35,7 +36,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
         GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
         #---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = True, middlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = True, middlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -104,6 +105,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -142,6 +144,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
 
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -159,11 +162,6 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": username, "password": password})
                 response = APIProcessor.send_request(api_details)
                 responseInList = response["txns"]
-                # logger.info("*********")
-                # logger.info(list)
-                # logger.info("*********")
-                # print("########################")
-                print(list)
 
                 status_api = ''
                 amount_api = ''
@@ -253,6 +251,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -310,7 +309,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
         #---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = True, middlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -374,6 +373,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -412,6 +412,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
 
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -517,32 +518,13 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info("Started ChargeSlip validation for the test case : test_common_100_103_001")
-            try:
-                date = datetime.today().strftime('%Y-%m-%d')
-                expectedValues = {'CARD TYPE': 'VISA', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                  'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
-                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username,"password":password}, expectedValues)
-
-            except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
-                print("Charge Slip Validation failed due to exception - " + str(e))
-                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
-                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.bool_chargeslip_val_result = False
-
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
-
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
