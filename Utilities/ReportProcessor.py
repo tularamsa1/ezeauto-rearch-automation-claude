@@ -1,3 +1,4 @@
+from ast import Global
 from datetime import datetime
 
 import allure
@@ -80,6 +81,8 @@ def createStatusTable():
     portalVal = GlobalVariables.str_portal_val_result
     appVal = GlobalVariables.str_app_val_result
     uiVal = GlobalVariables.str_ui_val_result
+    chargeslip_val = GlobalVariables.str_chargeslip_val_result
+
 
     get_TC_Val_Time()
     print("portalVal: ", portalVal)
@@ -114,6 +117,8 @@ def createStatusTable():
         myTable.add_row(["UI Validation", "Fail"])
     else:
         myTable.add_row(["UI Validation", uiVal])
+
+    myTable.add_row["Charge Slip Validation", chargeslip_val]
 
     myTable.align = 'l'
     print(myTable)

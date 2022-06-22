@@ -589,6 +589,8 @@ def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_detai
         validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
     except Exception as e:
         raise TransactionAPIJsonResponseError("Unable to fetch receipt url from Error:", e)
+
+    global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
     
     return validation_sucessful
 
