@@ -9,7 +9,7 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -88,6 +88,7 @@ def test_sa_100_102_021():  # Make sure to add the test case name as same as the
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
+            rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
@@ -334,6 +335,29 @@ def test_sa_100_102_021():  # Make sure to add the test case name as same as the
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_102_021")
+            try:
+                expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                  'RRN': rrn,
+                                  'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": username, "password": password},
+                                                                  expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_102_021")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
 
 
     # -------------------------------------------End of Validation---------------------------------------------
@@ -426,6 +450,7 @@ def test_sa_100_102_022():  # Make sure to add the test case name as same as the
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
+            rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
@@ -676,6 +701,30 @@ def test_sa_100_102_022():  # Make sure to add the test case name as same as the
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_102_022")
+            try:
+                expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                  'RRN': rrn,
+                                  'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": username, "password": password},
+                                                                  expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_102_022")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
+
 
 
     # -------------------------------------------End of Validation---------------------------------------------

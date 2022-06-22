@@ -79,14 +79,3 @@ class PortalHomePage(BasePage):
 
     def click_on_refund_button(self):
         return self.perform_click(self.btn_refund)
-
-    def perform_refund_of_txn(self, amount):
-        self.wait_for_element_invisible(self.lbl_refund_window_before_load)
-        self.wait_for_element(self.lbl_refund_window)
-        self.wait_for_element(self.txt_refundAmtField).clear()
-        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
-        self.perform_click(self.btn_confirmRefund)
-        self.wait_for_alert_and_accept()
-
-
-
