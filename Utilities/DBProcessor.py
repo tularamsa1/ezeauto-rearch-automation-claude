@@ -5,7 +5,7 @@ import os
 import sqlite3
 import json
 from jinja2 import Template
-
+from urllib.parse import parse_qs, urlencode
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
@@ -173,3 +173,17 @@ def getValueFromDB(query):
     return data
 
 
+def convertDictToStr(payload):
+    updated_data = urlencode(payload)
+    return updated_data
+    # data = '''pgMerchantId=7842823949384&meRes
+    # =844E6E80B0963655D270BE20D2D4FCB1F90142289D55195860BB86EDB4DDC274F7383E6F7FE2A56ED1E3213ED8CAFC9D3154E071FE683ED7CEDDBA5D7292A66CFB75D15F4042654BD1CF4F35D7300E756046F975C18D886673DC5933C7054EA76A91671FF700D839439A86A7752A2D76DF0715ACB42422CEB2551A80F311EAC7751B7617BC560400DCA8D94211D5D6621316B25A34C1FCC74B038F9F6760AF40EF378EAC6AF547BF831B403349BFAEBB58A3112290902ED7AC53623FB2FE89FA259A1F14B97C07A1C332DE4600080A6708DDA96BF1704BFFED7438A67316D1C2BB7985D3CE0C6124BF2'''
+    #
+    # out = parse_qs(data)
+    # key_value_details = {key: value[0] for key, value in out.items() if type(value) == list and len(value) == 1}
+    #
+    # # changing whatever is value to be changed
+    # key_value_details['pgMerchantId'] = "7842823949399"
+    #
+    # updated_data = urlencode(key_value_details)
+    # updated_data

@@ -1,4 +1,5 @@
 import datetime
+import random
 import time
 from datetime import datetime
 from random import randint
@@ -448,29 +449,31 @@ def test_api_val_exe_failure(method_setup):
 
 
 def test_curl():
-    query = "select  receipt_url_shortcode from txn where id = '220614154635329E010062304'; "
-    result = DBProcessor.getValueFromDB(query)
-    print(result['receipt_url_shortcode'].iloc[0])
-
-    url = "https://dev11.ezetap.com/r/o/"+str(result['receipt_url_shortcode'].iloc[0])+"/"
-    portalDriver = chromedriver_autoinstaller.install()
-    # Chrome options
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument("--disable-infobars")
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    # # Run chrome
-    portalDriver = webdriver.Chrome(options=chrome_options)
-    portalDriver.maximize_window()
-    # loginPagePortal = PortalLoginPage(GlobalVariables.portalDriver)
-    # username_portal = '9660867344'
-    # password_portal = 'A123456'
-    # # logger.debug(
-    # #     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-    # loginPagePortal.perform_login_to_portal(username_portal, password_portal)
-    # homePagePortal = PortalHomePage(GlobalVariables.portalDriver)
-    portalDriver.get(url)
-    time.sleep(30)
+    rrn = random.randint(1111110, 9999999)
+    print(type(rrn))
+    # query = "select  receipt_url_shortcode from txn where id = '220614154635329E010062304'; "
+    # result = DBProcessor.getValueFromDB(query)
+    # print(result['receipt_url_shortcode'].iloc[0])
+    #
+    # url = "https://dev11.ezetap.com/r/o/"+str(result['receipt_url_shortcode'].iloc[0])+"/"
+    # portalDriver = chromedriver_autoinstaller.install()
+    # # Chrome options
+    # chrome_options = webdriver.ChromeOptions()
+    # chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument("--disable-infobars")
+    # chrome_options.add_argument('--disable-dev-shm-usage')
+    # # # Run chrome
+    # portalDriver = webdriver.Chrome(options=chrome_options)
+    # portalDriver.maximize_window()
+    # # loginPagePortal = PortalLoginPage(GlobalVariables.portalDriver)
+    # # username_portal = '9660867344'
+    # # password_portal = 'A123456'
+    # # # logger.debug(
+    # # #     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
+    # # loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+    # # homePagePortal = PortalHomePage(GlobalVariables.portalDriver)
+    # portalDriver.get(url)
+    # time.sleep(30)
 
     # api_details = DBProcessor.get_api_details('txnlist',
     #                                           request_body='hfuiehfne')
