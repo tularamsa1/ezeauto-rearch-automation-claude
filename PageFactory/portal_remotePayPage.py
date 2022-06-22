@@ -19,11 +19,18 @@ class remotePayTxnPage(BasePage):
     txt_failedMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Please')]")
     txt_successMessage = (By.XPATH, "//h3[contains(text(),'Your payment is successfully completed! You may cl')]")
     txt_timeoutMessage = (By.XPATH, "")
+
     btn_remotePayUpi = (By.XPATH,"//mat-panel-title[contains(text(),'UPI')]")
     btn_remotePayLaunchUpi = (By.XPATH,"//button[contains(text(),'Launch a UPI app ')]")
     btn_remotePayCancelUpi = (By.XPATH,"//button[@data-target='#confirmCancel']")
     btn_remotePayProceed = (By.XPATH,"//button[contains(text(),'Proceed')]")
 
+    btn_remotePayUpiCollectLaunch = (By.XPATH,"//label[contains(text(),'Pay by UPI ID')]")
+    btn_remotePayUpiCollectAppSelect = (By.XPATH, "//div[@id='googlepay']")
+    txt_remotePayUpiCollectId = (By.CSS_SELECTOR, "#inputCollect")
+    dropdown_remotePayUpiCollectSelectBank = (By.XPATH, "//select[@id='upiHandles']")
+    btn_remotePayUpiCollectVpaValidation = (By.XPATH, "//b[contains(text(),'Verify')]")
+    btn_remotePayUpiCollectProceed = (By.XPATH, "//button[@class='btn button-orange btn-block']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -65,15 +72,33 @@ class remotePayTxnPage(BasePage):
     def timeoutScreenMessage(self):
         self.fetch_text(self.txt_timeoutMessage)
 
-    def clikOnRemotePayUPI(self):
+    def clickOnRemotePayUPI(self):
         self.perform_click_cnp(self.btn_remotePayUpi)
 
-    def clikOnRemotePayLaunchUPI(self):
+    def clickOnRemotePayLaunchUPI(self):
         self.perform_click_cnp(self.btn_remotePayLaunchUpi)
 
-    def clikOnRemotePayCancelUPI(self):
+    def clickOnRemotePayCancelUPI(self):
         self.perform_click_cnp(self.btn_remotePayCancelUpi)
 
-    def clikOnRemotePayProceed(self):
+    def clickOnRemotePayProceed(self):
         self.perform_click_cnp(self.btn_remotePayProceed)
+
+    def clickOnRemotePayUpiCollect(self):
+        self.perform_click_cnp(self.btn_remotePayUpiCollectLaunch)
+
+    def clickOnRemotePayUpiCollectAppSelection(self):
+        self.perform_click_cnp(self.btn_remotePayUpiCollectAppSelect)
+
+    def clickOnRemotePayUpiCollectId(self, value):
+        self.perform_sendkeys(self.txt_remotePayUpiCollectId, value)
+
+    def clickOnRemotePayUpiCollectDropDown(self, value):
+        self.select_from_drop_down(self.dropdown_remotePayUpiCollectSelectBank, value)
+
+    def clickOnRemotePayUpiCollectVpaValidation(self):
+        self.perform_click_cnp(self.btn_remotePayUpiCollectVpaValidation)
+
+    def clickOnRemotePayUpiCollectProceed(self):
+        self.perform_click_cnp(self.btn_remotePayUpiCollectProceed)
 
