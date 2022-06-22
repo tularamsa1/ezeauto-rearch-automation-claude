@@ -147,9 +147,11 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
             logger.info("Started APP validation for the test case : test_com_100_101_004")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Amount": str(amount), "Txn_id":Txn_id}
+                expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Amount": str(amount),
+                                     "Txn_id":Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 # time.sleep(5)
+                homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -161,10 +163,12 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                app_rrn = txnHistoryPage.fetch_RRN_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_rrn}")
                 Payment_Status = payment_status.split(':')[1]
-                # print(Payment_Status)
+
                 actualAppValues = {"Payment Status": Payment_Status, "Payment mode": payment_mode,
-                                   "Amount": app_amount.split(' ')[1], "Txn_id":txn_id}
+                                   "Amount": app_amount.split(' ')[1], "Txn_id":txn_id, "rrn":str(app_rrn)}
                 # "Amount": str(amount)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -184,7 +188,8 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_004")
             try:
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"SETTLED"}
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI",
+                                     "Payment State":"SETTLED", "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -195,14 +200,17 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 amount_api = ''
                 payment_mode_api = ''
                 state_api = ''
+                rrn_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
                         state_api = li["states"][0]
+                        rrn_api = li["rrNumber"]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,"Payment State":state_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
+                                   "Payment State":state_api, "rrn":str(rrn_api)}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -305,7 +313,9 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info("Started ChargeSlip validation for the test case : test_com_100_101_004")
             try:
-                expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id)}
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN':str(rrn), 'BASE AMOUNT:':"Rs." + str(amount) + ".00",
+                                  'date':date}
                 receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username,"password":password}, expectedValues)
 
             except Exception as e:
@@ -371,6 +381,10 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                                                       request_body={"username": username, "password": password,
                                                                     "txnId": str(Txn_id)})
             response = APIProcessor.send_request(api_details)
+            query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
             print(response)
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -398,7 +412,7 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
-                                     "Txn_id": Txn_id}
+                                     "Txn_id": Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
@@ -413,10 +427,12 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                 logger.info(f"Fetching payment mode from txn history for the txn : {Txn_id}, {payment_mode}")
                 app_txn_id = txnHistoryPage.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
+                app_rrn = txnHistoryPage.fetch_RRN_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_rrn}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
                 actualAppValues = {"Payment mode": payment_mode, "Status": payment_status.split(':')[1],
-                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
+                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn":str(app_rrn)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -435,7 +451,8 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_005")
             try:
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"SETTLED"}
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI",
+                                     "Payment State":"SETTLED", "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -447,14 +464,17 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                 amount_api = ''
                 payment_mode_api = ''
                 state_api = ''
+                rrn_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
                         state_api = li["states"][0]
+                        rrn_api = li["rrNumber"]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api, "Payment State":state_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
+                                   "Payment State":state_api, "rrn":str(rrn_api)}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -555,11 +575,31 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
 
             logger.info("Completed PORTAL validation for the test case : test_com_100_101_005")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_005")
+            try:
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN':str(rrn), 'BASE AMOUNT:':"Rs." + str(amount) + ".00",
+                                  'date':date}
+                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username,"password":password}, expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_005")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
         Configuration.executeFinallyBlock("test_com_100_101_005")
-        if GlobalVariables.setupCompletedSuccessfully == False:
+        if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
@@ -685,7 +725,8 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
             logger.info("Started APP validation for the test case : test_com_100_101_006")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment Status": "FAILED", "Payment mode": "UPI", "Amount": str(amount)}
+                expectedAppValues = {"Payment Status": "FAILED", "Payment mode": "UPI", "Amount": str(amount),
+                                     "Txn_id": Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 # time.sleep(10)
                 driver.reset()
@@ -705,9 +746,11 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                app_rrn = txnHistoryPage.fetch_RRN_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_rrn}")
 
                 actualAppValues = {"Payment Status": payment_status.split(':')[1], "Payment mode": payment_mode,
-                                   "Amount": app_amount.split(' ')[1]}
+                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn":str(app_rrn)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -726,7 +769,8 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_006")
             try:
-                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "UPI",
+                                     "Payment State":"FAILED", "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -737,13 +781,18 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
                 status_api = ''
                 amount_api = ''
                 payment_mode_api = ''
+                state_api = ''
+                rrn_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
+                        rrn_api = li["rrNumber"]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
+                                   "Payment State":state_api, "rrn":str(rrn_api)}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -839,7 +888,7 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
 
     finally:
         Configuration.executeFinallyBlock("test_com_100_101_006")
-        if GlobalVariables.setupCompletedSuccessfully == False:
+        if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
@@ -888,6 +937,10 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
                                                       request_body={"username": username, "password": password,
                                                                     "txnId": str(Txn_id)})
             response = APIProcessor.send_request(api_details)
+            query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -915,7 +968,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment mode": "UPI", "Status": "FAILED", "Amount": str(amount),
-                                     "Txn_id": Txn_id}
+                                     "Txn_id": Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
 
                 loginPage = LoginPage(driver)
@@ -933,8 +986,11 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                app_rrn = txnHistoryPage.fetch_RRN_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_rrn}")
+
                 actualAppValues = {"Payment mode": payment_mode, "Status": payment_status.split(':')[1],
-                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
+                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn":str(app_rrn)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -953,7 +1009,8 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_007")
             try:
-                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"FAILED",
+                                     "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -963,13 +1020,18 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
                 status_api = ''
                 amount_api = ''
                 payment_mode_api = ''
+                state_api = ''
+                rrn_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
+                        rrn_api = li["rrNumber"]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
+                                   "Payment State":state_api, "rrn":str(rrn_api)}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -989,8 +1051,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "UPI",
-                                    "Payment amount": amount,
-                                    "UPI_Txn_Status": "FAILED"}
+                                    "Payment amount": amount, "UPI_Txn_Status": "FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
@@ -1131,7 +1192,7 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
             # text = paymentPage.validate_upi_bqr_payment_screen()
             # assert text == "Scan QR code using"
             query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            logger.debug(f"Query to fetch Txn_id, rrn from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, Txn_id : {txn_id}")
@@ -1142,6 +1203,12 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
             response = APIProcessor.send_request(api_details)
 
             logger.info(f"API RESP settlementStatus : {response['settlementStatus']}")
+
+            query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            logger.debug(f"Query result, rrn : {rrn}")
 
             logger.info("terminating the com.ezetap.basicapp and activating again the com.ezetap.basicapp")
             app_driver.reset()
@@ -1190,7 +1257,7 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Payment Txn ID": txn_id,
-                                     "Payment Amt": str(amount)}
+                                     "Payment Amt": str(amount), "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
@@ -1203,9 +1270,11 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_rrn = txnHistoryPage.fetch_RRN_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
 
                 actualAppValues = {"Payment Status": payment_status.split(':')[1], "Payment mode": payment_mode,
-                                   "Payment Txn ID": app_txn_id, "Payment Amt": str(app_amount).split(' ')[1]}
+                                   "Payment Txn ID": app_txn_id, "Payment Amt": str(app_amount).split(' ')[1], "rrn":str(app_rrn)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -1226,7 +1295,8 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
             logger.info("Started API validation for the test case : test_com_100_101_008")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"SETTLED",
+                                     "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1236,13 +1306,18 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
                 status_api = ''
                 amount_api = ''
                 payment_mode_api = ''
+                state_api = ''
+                rrn_api = ''
                 for li in list:
                     if li["txnId"] == txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
+                        rrn_api = li["rrNumber"]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
+                                   "Payment State":state_api, "rrn":str(rrn_api)}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -1338,6 +1413,27 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_008")
+            try:
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                  'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                receipt_validator.perform_charge_slip_validations(txn_id, {"username": username, "password": password},
+                                                                  expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_008")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
 
     # -------------------------------------------End of Validation---------------------------------------------
@@ -1482,7 +1578,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "EXPIRED", "Payment mode": "UPI", "Amount": str(amount),
-                                     "Txn_id": Txn_id}
+                                     "Txn_id": Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 logger.info("reseting the com.ezetap.basicapp")
                 driver.reset()
@@ -1501,9 +1597,11 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                app_rrn = txnHistoryPage.fetch_RRN_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_rrn}")
 
                 actualAppValues = {"Payment Status": payment_status.split(':')[1], "Payment mode": payment_mode,
-                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
+                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn":str(app_rrn)}
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -1523,7 +1621,8 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info("Started API validation for the test case : test_com_100_101_009")
             try:
-                expectedAPIValues = {"Payment Status": "EXPIRED", "Amount": amount, "Payment Mode": "UPI"}
+                expectedAPIValues = {"Payment Status": "EXPIRED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"EXPIRED",
+                                     "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1533,13 +1632,18 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
                 status_api = ''
                 amount_api = ''
                 payment_mode_api = ''
+                state_api = ''
+                rrn_api = ''
                 for li in list:
                     if li["txnId"] == Txn_id:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        state_api = li["states"][0]
+                        rrn_api = li["rrNumber"]
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
+                                   "Payment State":state_api, "rrn":str(rrn_api)}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -1642,7 +1746,6 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
             ReportProcessor.updateTestCaseResult(msg)
-
 
 # @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
 # @pytest.mark.usefixtures("appium_driver", "ui_driver")
