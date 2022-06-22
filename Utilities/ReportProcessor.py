@@ -1,4 +1,3 @@
-from ast import Global
 from datetime import datetime
 
 import allure
@@ -7,13 +6,13 @@ import pytest
 from allure_commons.types import AttachmentType
 from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
-import DataProvider.GlobalConstants
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
 from Utilities import DirectoryCreator
 from Utilities.execution_log_processor import EzeAutoLogger
+
 logger = EzeAutoLogger(__name__)
 
 
