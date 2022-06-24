@@ -14,7 +14,8 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator
+from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -46,9 +47,24 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
         msg = ""
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
+            app_cred = ResourceAssigner.getAppUserCredentials('test_com_100_101_004')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_com_100_101_004')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             loginPage = LoginPage(driver)
-            username = '5784758454'
-            password = 'A123456'
+            # username = '5784758454'
+            # password = 'A123456'
             logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
             loginPage.perform_login(username, password)
             amount = random.randint(300, 399)
@@ -65,14 +81,14 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
             logger.info("Selected payment mode is UPI")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
-                    "'UPIHDFCBANKHDFCPG'; "
+                    "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
             pgMerchantId = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pgMerchantId}")
 
-            query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -274,16 +290,17 @@ def test_com_100_101_004():  # Make sure to add the test case name as same as th
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
+                # portal_username = '9660867344'
+                # portal_password = 'A123456'
                 logger.debug(
-                    f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
-                logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
                 # time.sleep(2)
-                homePagePortal.click_switch_button()
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
@@ -551,7 +568,8 @@ def test_com_100_101_005():  # Make sure to add the test case name as same as th
                 homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
                 logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
                 logger.info("switching to the merchant UPIHDFCBANKHDFCPG")
-                homePagePortal.click_switch_button()
+                homePagePortal.click_switch_button('UPIHDFCBANKHDFCPG')
+                homePagePortal.perform_merchant_switched_verfication()
                 logger.info("navigating to the transaction history page")
                 homePagePortal.click_transaction_search_menu()
 
@@ -633,9 +651,24 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
         msg = ""
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
+            app_cred = ResourceAssigner.getAppUserCredentials('test_com_100_101_006')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_com_100_101_006')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             loginPage = LoginPage(driver)
-            username = '5784758454'
-            password = 'A123456'
+            # username = '5784758454'
+            # password = 'A123456'
             logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
 
             loginPage.perform_login(username, password)
@@ -651,14 +684,14 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
 
-            query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = 'UPIHDFCBANKHDFCPG';"
+            query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = '" + str(org_code) + "';"
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
             pgMerchantId = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pgMerchantId}")
 
-            query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -855,16 +888,17 @@ def test_com_100_101_006():  # Make sure to add the test case name as same as th
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
+                # portal_username = '9660867344'
+                # portal_password = 'A123456'
                 logger.debug(
-                    f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
-                logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
 
-                homePagePortal.click_switch_button()
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
@@ -1109,6 +1143,7 @@ def test_com_100_101_007():  # Make sure to add the test case name as same as th
 
                 # time.sleep(2)
                 homePagePortal.click_switch_button()
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
 
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
@@ -1395,6 +1430,7 @@ def test_com_100_101_008():   # Make sure to add the test case name as same as t
                 logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
                 # time.sleep(2)
                 homePagePortal.click_switch_button()
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(txn_id)
@@ -1718,6 +1754,7 @@ def test_com_100_101_009():  # Make sure to add the test case name as same as th
                 logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
 
                 homePagePortal.click_switch_button()
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)

@@ -11,7 +11,8 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -54,11 +55,26 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
         try:
             # ------------------------------------------------------------------------------------------------
             #
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_102_001')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_102_001')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
+            # username = read_config("credentials", 'username_HDFC')
+            # password = read_config("credentials", 'password')
+            # org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -92,7 +108,7 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
             app_payment_status = paymentPage.fetch_payment_status()
             logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
             paymentPage.click_on_proceed_homepage()
-            logger.info("Execution is completed for the test case : test_sa_100_101_001")
+            logger.info("Execution is completed for the test case : test_common_100_102_001")
 
             #
             # ------------------------------------------------------------------------------------------------
@@ -245,14 +261,15 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                username_portal = read_config("credentials", 'username_portal')
-                password_portal = read_config('credentials', 'password_portal')
-                logger.info(f"Logging in Portal using username : {username_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                # portal_username = read_config("credentials", 'username_portal')
+                # portal_password = read_config('credentials', 'password_portal')
+                logger.info(f"Logging in Portal using username : {portal_username}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)
-                homePagePortal.search_merchant_name(read_config("testdata", "org_code_hdfc"))
-                logger.info(f"Switching to merchant : {read_config('testdata', 'org_code_hdfc')}")
-                homePagePortal.click_switch_button()
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.info(f"Switching to merchant : {str(org_code)}")
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
                 portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)

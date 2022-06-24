@@ -31,8 +31,10 @@ class PortalHomePage(BasePage):
         self.perform_sendkeys(self.txt_merchantSearch, org_code)
         self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
 
-    def click_switch_button(self):
+    def click_switch_button(self, org_code):
         self.perform_click(self.btn_switch)
+        locator = (By.XPATH, '//button[contains(text(),"' + org_code + '")]')
+        self.wait_for_element(locator)
 
     def click_transaction_search_menu(self):
         self.perform_click(self.mnu_transactions)

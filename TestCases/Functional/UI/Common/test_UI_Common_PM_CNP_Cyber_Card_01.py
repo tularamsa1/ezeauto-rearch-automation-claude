@@ -14,7 +14,8 @@ from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -46,8 +47,23 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            username = "4455778875"
-            password = "q121212"
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_001')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_001')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
+            # username = "4455778875"
+            # password = "q121212"
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             url = 'https://dev11.ezetap.com/api/3.0/pay/remote/initiate'
@@ -55,8 +71,8 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
             payload = {
                 # "username": "9949134775",
                 # "appKey": "c7244973-694a-47e7-953a-2f3af792d7ad",
-                "username": "4455778875",
-                "password": "q121212",
+                "username": str(username),
+                "password": str(password),
                 "amount": amount,
                 "agentMobileNumber": "1122112221",
                 "customerName": "Sandeep Kumar",
@@ -90,7 +106,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 print("Success Message is not matching")
                 print(successMessage)
 
-            query = "select * from txn where org_code = 'SANDEEPTEST_6979' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -227,17 +243,18 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
+                # portal_username = '9660867344'
+                # portal_password = 'A123456'
                 logger.debug(
-                    f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
+                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
 
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
-                logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
                 # time.sleep(2)
-                homePagePortal.click_switch_button()
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
@@ -319,8 +336,23 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            username = "4455778875"
-            password = "q121212"
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_002')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_002')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
+            # username = "4455778875"
+            # password = "q121212"
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             url = 'https://dev11.ezetap.com/api/3.0/pay/remote/initiate'
@@ -328,8 +360,8 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             payload = {
                 # "username": "9949134775",
                 # "appKey": "c7244973-694a-47e7-953a-2f3af792d7ad",
-                "username": "4455778875",
-                "password": "q121212",
+                "username": str(username),
+                "password": str(password),
                 "amount": amount,
                 "agentMobileNumber": "1122112221",
                 "customerName": "Sandeep Kumar",
@@ -363,7 +395,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 print("Failed Message is not matching")
                 print(failedMessage)
 
-            query = "select * from txn where org_code = 'SANDEEPTEST_6979' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -494,17 +526,18 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
+                # portal_username = '9660867344'
+                # portal_password = 'A123456'
                 logger.debug(
-                    f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
+                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
 
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
-                logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
                 # time.sleep(2)
-                homePagePortal.click_switch_button()
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)

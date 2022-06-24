@@ -149,7 +149,7 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
 
             print("$$$$$$$$$$$$$$$$$$$$ Rerun Immediately #################")
             os.system(rerunCommand)
-        if rerunCount == -1 and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required("forLastRun_Capture_Logs") == "True":
+        if rerunCount == -1 and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
             # print("log on failure method calling")
             # print("testCaseID", testCaseID)
             # print("getRerunCount(testCaseID)", int(getRerunCount(testCaseID)))
