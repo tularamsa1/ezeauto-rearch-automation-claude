@@ -472,11 +472,11 @@ def updateDevicesInDB(listOfDevices: []):
             for device in listOfDevices:
                 try:
                     cursor.execute("INSERT INTO devices(DeviceId, DeviceName, Status)values('"+str(device)+"', 'Device"+str(i)+"', 'Available');")
+                    conn.commit()
                     print("Device "+device+" successfully added to the db.")
                     i +=1
                 except Exception as e:
                     print("Unable to add the device "+device+" in the db due to error -"+str(e))
-            conn.commit()
             conn.close()
 
         else:

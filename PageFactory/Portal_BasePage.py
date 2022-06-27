@@ -9,7 +9,7 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
-    def perform_click(self, locator, time = 15):
+    def perform_click(self, locator, time = 40):
         WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
 
     def select_from_drop_down(self, locator, value, time=15):

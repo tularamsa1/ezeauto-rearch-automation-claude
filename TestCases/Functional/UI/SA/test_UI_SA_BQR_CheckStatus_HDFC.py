@@ -80,6 +80,7 @@ def test_sa_100_102_007(): #Make sure to add the test case name as same as the s
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(301, 1000)
@@ -132,7 +133,8 @@ def test_sa_100_102_007(): #Make sure to add the test case name as same as the s
                 logger.info("Starting App Validation for the test case")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-
+                homePage.wait_for_navigationTo_load()
+                homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -692,6 +694,7 @@ def test_sa_100_102_009(): #Make sure to add the test case name as same as the s
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.choice([i for i in range(51, 100) if i != 55])
@@ -747,6 +750,7 @@ def test_sa_100_102_009(): #Make sure to add the test case name as same as the s
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:EXPIRED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
 
+                homePage.wait_for_navigationTo_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)

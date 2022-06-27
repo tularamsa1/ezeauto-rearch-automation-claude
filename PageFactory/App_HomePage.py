@@ -43,13 +43,14 @@ class HomePage(BasePage):
     txt_cashAtPosSaleAmount = (By.ID, 'com.ezetap.basicapp:id/etSaleAmount')
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
+    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
 
 
     def __init__(self, driver):
         super().__init__(driver)
 
     def check_home_page_logo(self):
-        return self.fetch_text(self.lbl_home)
+        return self.fetch_text(self.lbl_home, 30)
 
     def check_home_page_for_invalid_Login(self):
         return self.fetch_text(self.lbl_home, 5)
@@ -147,7 +148,7 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.wait_for_element(self.btn_goToHistory)
+        self.wait_for_element(self.btn_goToHistory, 30)
 
     def click_side_menu_eng(self):
         self.perform_click(self.mnu_engSideMenu)
@@ -166,3 +167,6 @@ class HomePage(BasePage):
 
     def click_on_back_btn_enter_amt_page(self):
         self.perform_click(self.btn_back)
+
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)

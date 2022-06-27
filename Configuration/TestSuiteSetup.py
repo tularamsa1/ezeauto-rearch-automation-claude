@@ -373,7 +373,7 @@ def prepareDevicesAndDB():
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
     ResourceAssigner.clearAssignerTables()
-    if devices == None:
+    if devices != None:
         devices = getDevicesList()
     if devices == None :
         print("Attempt to start the emulators failed.")

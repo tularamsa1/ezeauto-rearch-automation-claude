@@ -76,6 +76,7 @@ def test_common_100_102_019(): #Make sure to add the test case name as same as t
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
@@ -152,6 +153,7 @@ def test_common_100_102_019(): #Make sure to add the test case name as same as t
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:REFUNDED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id_refunded, "Payment Amt": str(amount), "Payment Status Original": "STATUS:AUTHORIZED_REFUNDED", "Payment mode Original": "BHARAT QR", "Payment Txn ID Original": txn_id, "Payment Amt Original": str(amount)}
 
+                homePage.wait_for_navigationTo_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)

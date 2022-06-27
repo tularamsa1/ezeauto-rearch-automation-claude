@@ -80,6 +80,7 @@ def test_common_100_102_004():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
@@ -113,6 +114,7 @@ def test_common_100_102_004():
             loginPage.validate_login_page()
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
             logger.debug("Homepage of MPOSX app loaded successfully")
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -150,7 +152,8 @@ def test_common_100_102_004():
                 logger.info("Starting App Validation for the test case")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-
+                homePage.wait_for_navigationTo_load()
+                homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)

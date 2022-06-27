@@ -69,8 +69,8 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
-            homePage.wait_for_home_page_load()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
@@ -123,6 +123,8 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 expectedAppValues = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
                                      "Txn_id": Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
+                homePage.wait_for_navigationTo_load()
+                homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -357,7 +359,8 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             homePage = HomePage(app_driver)
-            homePage.wait_for_home_page_load()
+            homePage.wait_for_navigationTo_load()
+            homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
@@ -409,7 +412,8 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 logger.info("reseting the com.ezetap.basicapp")
                 app_driver.reset()
                 loginPage.perform_login(username, password)
-                homepage_text = homePage.wait_for_home_page_load()
+                homePage.wait_for_navigationTo_load()
+                homePage.check_home_page_logo()
 
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
