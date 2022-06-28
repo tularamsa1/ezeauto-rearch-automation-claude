@@ -21,6 +21,7 @@ class PortalHomePage(BasePage):
     txt_refundAmtField = (By.ID, "userrefund_refund")
     btn_confirmRefund = (By.XPATH, '(//button[.="Confirm"])[1]')
     btn_refund = (By.XPATH, '(//button[.="Refund"])[1]')
+    btn_switchedMerchant = (By.XPATH, '/html/body/div/div[10]/div[1]/div[1]/button[2]')
 
 
     def __init__(self, driver):
@@ -30,8 +31,10 @@ class PortalHomePage(BasePage):
         self.perform_sendkeys(self.txt_merchantSearch, org_code)
         self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
 
-    def click_switch_button(self):
+    def click_switch_button(self, org_code):
         self.perform_click(self.btn_switch)
+        locator = (By.XPATH, '//button[contains(text(),"' + org_code + '")]')
+        self.wait_for_element(locator)
 
     def click_transaction_search_menu(self):
         self.perform_click(self.mnu_transactions)
@@ -80,13 +83,5 @@ class PortalHomePage(BasePage):
     def click_on_refund_button(self):
         return self.perform_click(self.btn_refund)
 
-    def perform_refund_of_txn(self, amount):
-        self.wait_for_element_invisible(self.lbl_refund_window_before_load)
-        self.wait_for_element(self.lbl_refund_window)
-        self.wait_for_element(self.txt_refundAmtField).clear()
-        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
-        self.perform_click(self.btn_confirmRefund)
-        self.wait_for_alert_and_accept()
-
-
-
+    def perform_merchant_switched_verfication(self):
+        return self.wait_for_element(self.btn_switchedMerchant)

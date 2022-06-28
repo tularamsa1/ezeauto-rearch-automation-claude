@@ -215,10 +215,11 @@ def getAppUserCredentials(testCaseID):
                             cursor.execute("UPDATE app_users SET Status = 'Blocked' WHERE Username = '"+username+"';")
                             conn.commit()
                             print("App username " + username + " is available")
+                            print("App username " + username + " is assigned at "+str(datetime.now().time()))
                             appUserCredentials['Username'] = username
                             appUserCredentials['Password'] = password
                             proceed = True
-                            break;
+                            break
                         except:
                             print("Unable to change the status of app user in DB, so deleting the entry in app_users_blocked table.")
                             cursor.execute("DELETE FROM app_users_blocked WHERE username = '"+username+"';")
@@ -239,7 +240,7 @@ def getAppUserCredentials(testCaseID):
             proceed = False
 
         if proceed:
-            break;
+            break
         else:
             time.sleep(1)
             timer += 1
@@ -273,10 +274,11 @@ def getPortalUserCredentials(testCaseID):
                             cursor.execute("UPDATE portal_users SET Status = 'Blocked' WHERE Username = '"+username+"';")
                             conn.commit()
                             print("Portal username " + username + " is available")
+                            print("Portal username " + username + " is assigned at "+str(datetime.now().time()))
                             portalUserCredentials['Username'] = username
                             portalUserCredentials['Password'] = password
                             proceed = True
-                            break;
+                            break
                         except:
                             print("Unable to change the status of portal user in DB, so deleting the entry in portal_users_blocked table.")
                             cursor.execute("DELETE FROM portal_users_blocked WHERE username = '"+username+"';")
@@ -377,9 +379,11 @@ def clearAssignerTables():
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM app_users;")
+        # cursor.execute("DELETE FROM app_users;")
+        cursor.execute("update app_users set Status = 'Available';")
+        cursor.execute("update portal_users set Status = 'Available';")
         cursor.execute("DELETE FROM app_users_blocked;")
-        cursor.execute("DELETE FROM portal_users;")
+        # cursor.execute("DELETE FROM portal_users;")
         cursor.execute("DELETE FROM portal_users_blocked;")
         cursor.execute("DELETE FROM devices;")
         cursor.execute("DELETE FROM devices_blocked;")
@@ -468,11 +472,11 @@ def updateDevicesInDB(listOfDevices: []):
             for device in listOfDevices:
                 try:
                     cursor.execute("INSERT INTO devices(DeviceId, DeviceName, Status)values('"+str(device)+"', 'Device"+str(i)+"', 'Available');")
+                    conn.commit()
                     print("Device "+device+" successfully added to the db.")
                     i +=1
                 except Exception as e:
                     print("Unable to add the device "+device+" in the db due to error -"+str(e))
-            conn.commit()
             conn.close()
 
         else:

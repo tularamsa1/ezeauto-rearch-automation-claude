@@ -10,7 +10,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -22,6 +22,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and full refund via portal
 def test_com_100_101_010():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -99,11 +100,12 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
             homePagePortal.click_on_refund_button()
             homePagePortal.perform_refund_of_txn(amount)
             logger.info("Performing Page refresh after refund is performed")
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
-            logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            rrn = result['rr_number'].iloc[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
 
             #
             # ------------------------------------------------------------------------------------------------
@@ -132,12 +134,14 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
                                      "Payment Txn ID": txn_id_refunded, "Payment Amt": str(amount),
                                      "Payment Status Original": "STATUS:AUTHORIZED_REFUNDED",
                                      "Payment mode Original": "UPI", "Payment Txn ID Original": txn_id,
-                                     "Payment Amt Original": str(amount)}
+                                     "Payment Amt Original": str(amount), "rrn":str(rrn)}
 
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
+                app_rrn = transactionsHistoryPage.fetch_RRN_text()
+                logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn}")
                 app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status}")
@@ -170,7 +174,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
                                    "Payment Status Original": app_payment_status_original,
                                    "Payment mode Original": app_payment_mode_original,
                                    "Payment Txn ID Original": txn_id,
-                                   "Payment Amt Original": str(app_payment_amt_original)}
+                                   "Payment Amt Original": str(app_payment_amt_original), "rrn":str(app_rrn)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
                 logger.info("App Validation Completed successfully for test case")
@@ -192,7 +196,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
 
                 expectedAPIValues = {"Payment Status": "REFUNDED", "Amount": amount, "Payment Mode": "UPI",
                                      "Payment Status Original": "AUTHORIZED_REFUNDED", "Amount Original": amount,
-                                     "Payment Mode Original": "UPI"}
+                                     "Payment Mode Original": "UPI", "rrn":str(rrn)}
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 print("API DETAILS:", api_details)
@@ -200,13 +204,14 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
                 logger.debug(f"Response received for transaction details api is : {response}")
                 print(response)
                 list = response["txns"]
-                status_api = amount_api = payment_mode_api = ''
+                status_api = amount_api = payment_mode_api = rrn_api = ''
                 status_api_orginal = amount_api_original = payment_mode_api_orginal = ''
                 for li in list:
                     if li["txnId"] == txn_id_refunded:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        rrn_api = li["rrNumber"]
                     elif li["txnId"] == txn_id:
                         status_api_orginal = li["status"]
                         amount_api_original = int(li["amount"])
@@ -224,7 +229,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
                                    "Payment Status Original": status_api_orginal,
                                    "Amount Original": amount_api_original,
-                                   "Payment Mode Original": payment_mode_api_orginal}
+                                   "Payment Mode Original": payment_mode_api_orginal, "rrn":str(rrn_api)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 logger.info("API Validation Completed successfully for test case")
@@ -342,6 +347,27 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
 
         # -----------------------------------------End of Portal Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_010")
+            try:
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                  'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded, {"username": username, "password": password},
+                                                                  expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_010")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -369,6 +395,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and full refund via api
 def test_com_100_101_011():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -436,11 +463,13 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
             print(response)
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            rrn = result['rr_number'].iloc[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
 
             #
             # ------------------------------------------------------------------------------------------------
@@ -469,12 +498,14 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
                                      "Payment Txn ID": txn_id_refunded, "Payment Amt": str(amount),
                                      "Payment Status Original": "STATUS:AUTHORIZED_REFUNDED",
                                      "Payment mode Original": "UPI", "Payment Txn ID Original": txn_id,
-                                     "Payment Amt Original": str(amount)}
+                                     "Payment Amt Original": str(amount), "rrn":str(rrn)}
 
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
+                app_rrn = transactionsHistoryPage.fetch_RRN_text()
+                logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn}")
                 app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status}")
@@ -506,7 +537,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
                                    "Payment Status Original": app_payment_status_original,
                                    "Payment mode Original": app_payment_mode_original,
                                    "Payment Txn ID Original": txn_id,
-                                   "Payment Amt Original": str(app_payment_amt_original)}
+                                   "Payment Amt Original": str(app_payment_amt_original), "rrn":str(app_rrn)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
                 logger.info("App Validation Completed successfully for test case")
@@ -528,7 +559,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
 
                 expectedAPIValues = {"Payment Status": "REFUNDED", "Amount": amount, "Payment Mode": "UPI",
                                      "Payment Status Original": "AUTHORIZED_REFUNDED", "Amount Original": amount,
-                                     "Payment Mode Original": "UPI"}
+                                     "Payment Mode Original": "UPI", "rrn":str(rrn)}
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 print("API DETAILS:", api_details)
@@ -536,13 +567,14 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
                 logger.debug(f"Response received for transaction details api is : {response}")
                 print(response)
                 list = response["txns"]
-                status_api = amount_api = payment_mode_api = ''
+                status_api = amount_api = payment_mode_api = rrn_api = ''
                 status_api_orginal = amount_api_original = payment_mode_api_orginal = ''
                 for li in list:
                     if li["txnId"] == txn_id_refunded:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        rrn_api = li["rrNumber"]
                     elif li["txnId"] == txn_id:
                         status_api_orginal = li["status"]
                         amount_api_original = int(li["amount"])
@@ -560,7 +592,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
                                    "Payment Status Original": status_api_orginal,
                                    "Amount Original": amount_api_original,
-                                   "Payment Mode Original": payment_mode_api_orginal}
+                                   "Payment Mode Original": payment_mode_api_orginal, "rrn":str(rrn_api)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 logger.info("API Validation Completed successfully for test case")
@@ -689,6 +721,27 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
 
         # -----------------------------------------End of Portal Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_011")
+            try:
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                  'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded, {"username": username, "password": password},
+                                                                  expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_011")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -716,6 +769,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and partial refund via api
 def test_com_100_101_012():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -752,6 +806,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -783,11 +838,13 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for refund api is : {response}")
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
-            logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            rrn = result['rr_number'].iloc[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
+
 
             #
             # ------------------------------------------------------------------------------------------------
@@ -816,12 +873,14 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
                                      "Payment Txn ID": txn_id_refunded, "Payment Amt": str(refund_amount),
                                      "Payment Status Original": "STATUS:AUTHORIZED",
                                      "Payment mode Original": "UPI", "Payment Txn ID Original": txn_id,
-                                     "Payment Amt Original": str(amount)}
+                                     "Payment Amt Original": str(amount), "rrn":str(rrn)}
 
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
+                app_rrn = transactionsHistoryPage.fetch_RRN_text()
+                logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn}")
                 app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status}")
@@ -853,7 +912,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
                                    "Payment Status Original": app_payment_status_original,
                                    "Payment mode Original": app_payment_mode_original,
                                    "Payment Txn ID Original": txn_id,
-                                   "Payment Amt Original": str(app_payment_amt_original)}
+                                   "Payment Amt Original": str(app_payment_amt_original), "rrn":str(app_rrn)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
                 logger.info("App Validation Completed successfully for test case")
@@ -875,7 +934,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
 
                 expectedAPIValues = {"Payment Status": "REFUNDED", "Amount": refund_amount, "Payment Mode": "UPI",
                                      "Payment Status Original": "AUTHORIZED", "Amount Original": amount,
-                                     "Payment Mode Original": "UPI"}
+                                     "Payment Mode Original": "UPI", "rrn":str(rrn)}
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 print("API DETAILS:", api_details)
@@ -884,12 +943,13 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
                 print(response)
                 list = response["txns"]
                 status_api = amount_api = payment_mode_api = ''
-                status_api_orginal = amount_api_original = payment_mode_api_orginal = ''
+                status_api_orginal = amount_api_original = payment_mode_api_orginal, rrn_api = ''
                 for li in list:
                     if li["txnId"] == txn_id_refunded:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        rrn_api = li["rrNumber"]
                     elif li["txnId"] == txn_id:
                         status_api_orginal = li["status"]
                         amount_api_original = int(li["amount"])
@@ -907,7 +967,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
                                    "Payment Status Original": status_api_orginal,
                                    "Amount Original": amount_api_original,
-                                   "Payment Mode Original": payment_mode_api_orginal}
+                                   "Payment Mode Original": payment_mode_api_orginal, "rrn":str(rrn_api)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 logger.info("API Validation Completed successfully for test case")
@@ -1037,6 +1097,27 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
 
         # -----------------------------------------End of Portal Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_012")
+            try:
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN':str(rrn), 'BASE AMOUNT:':"Rs." + str(refund_amount) + ".00",
+                                  'date':date}
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded, {"username":username,"password":password}, expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_012")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -1064,6 +1145,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 # Performing a upi txn and partial refund via portal
 def test_com_100_101_013():  # Make sure to add the test case name as same as the sub feature code.
     """
@@ -1143,11 +1225,12 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
             homePagePortal.click_on_refund_button()
             homePagePortal.perform_refund_of_txn(refund_amount)
             logger.info("Performing Page refresh after refund is performed")
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
-            logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            rrn = result['rr_number'].iloc[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
 
             #
             # ------------------------------------------------------------------------------------------------
@@ -1176,12 +1259,14 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
                                      "Payment Txn ID": txn_id_refunded, "Payment Amt": str(refund_amount),
                                      "Payment Status Original": "STATUS:AUTHORIZED",
                                      "Payment mode Original": "UPI", "Payment Txn ID Original": txn_id,
-                                     "Payment Amt Original": str(amount)}
+                                     "Payment Amt Original": str(amount), "rrn":str(rrn)}
 
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
+                app_rrn = transactionsHistoryPage.fetch_RRN_text()
+                logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn}")
                 app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status}")
@@ -1213,7 +1298,7 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
                                    "Payment Status Original": app_payment_status_original,
                                    "Payment mode Original": app_payment_mode_original,
                                    "Payment Txn ID Original": txn_id,
-                                   "Payment Amt Original": str(app_payment_amt_original)}
+                                   "Payment Amt Original": str(app_payment_amt_original), "rrn":str(app_rrn)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
                 logger.info("App Validation Completed successfully for test case")
@@ -1235,7 +1320,7 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
 
                 expectedAPIValues = {"Payment Status": "REFUNDED", "Amount": refund_amount, "Payment Mode": "UPI",
                                      "Payment Status Original": "AUTHORIZED", "Amount Original": amount,
-                                     "Payment Mode Original": "UPI"}
+                                     "Payment Mode Original": "UPI", "rrn":str(rrn)}
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 print("API DETAILS:", api_details)
@@ -1244,12 +1329,13 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
                 print(response)
                 list = response["txns"]
                 status_api = amount_api = payment_mode_api = ''
-                status_api_orginal = amount_api_original = payment_mode_api_orginal = ''
+                status_api_orginal = amount_api_original = payment_mode_api_orginal, rrn_api = ''
                 for li in list:
                     if li["txnId"] == txn_id_refunded:
                         status_api = li["status"]
                         amount_api = int(li["amount"])
                         payment_mode_api = li["paymentMode"]
+                        rrn_api = li["rrNumber"]
                     elif li["txnId"] == txn_id:
                         status_api_orginal = li["status"]
                         amount_api_original = int(li["amount"])
@@ -1267,7 +1353,7 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
                                    "Payment Status Original": status_api_orginal,
                                    "Amount Original": amount_api_original,
-                                   "Payment Mode Original": payment_mode_api_orginal}
+                                   "Payment Mode Original": payment_mode_api_orginal, "rrn":str(rrn_api)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 logger.info("API Validation Completed successfully for test case")
@@ -1386,6 +1472,27 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
 
         # -----------------------------------------End of Portal Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_101_013")
+            try:
+                date = datetime.today().strftime('%Y-%m-%d')
+                expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN':str(rrn), 'BASE AMOUNT:':"Rs." + str(refund_amount) + ".00",
+                                  'date':date}
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded, {"username":username,"password":password}, expectedValues)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_013")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 

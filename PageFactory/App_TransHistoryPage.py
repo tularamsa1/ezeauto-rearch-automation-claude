@@ -35,6 +35,7 @@ class TransHistoryPage(BasePage):
     txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
     txt_txnAmount = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
+    txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView")
     btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
 
     def __init__(self, driver):
@@ -108,6 +109,9 @@ class TransHistoryPage(BasePage):
     def fetch_txn_id_text(self):
         return self.fetch_text(self.txt_txnID)
 
+    def fetch_RRN_text(self):
+        return self.fetch_text(self.txt_rrNumber)
+
     def fetch_txn_status_text(self):
         return str(self.fetch_text(self.txa_finalStatusField))
 
@@ -138,28 +142,3 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
-
-    def fetch_txn_id_text(self):
-        return self.fetch_text(self.txt_txnID)
-
-    def fetch_txn_status_text(self):
-        return str(self.fetch_text(self.txa_finalStatusField))
-
-    def fetch_txn_type_text(self):
-        return str(self.fetch_text(self.txt_txnType))
-
-    def fetch_txn_amount_text(self):
-        return str(self.fetch_text(self.txt_txnAmount))
-
-    def click_on_transaction_by_order_id(self, order_id):
-        locator = (
-        By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="' + order_id + '"]/../..')
-        self.perform_click(locator)
-
-    def click_back_Btn_transaction_details(self):
-        self.perform_click(self.btn_backTransactionDetails)
-
-    def click_on_second_transaction_by_order_id(self, order_id):
-        locator = (
-        By.XPATH, '(//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="' + order_id + '"]/../..)[2]')
-        self.perform_click(locator)

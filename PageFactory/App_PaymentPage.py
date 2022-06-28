@@ -57,7 +57,6 @@ class PaymentPage(BasePage):
 
     def click_on_Cash(self):
         self.scroll_to_text("Cash")
-        #self.perform_touch_action_using_cordinates(323,1168, 323,618)
         self.perform_click(self.btn_cash)
 
     def click_on_DetailsBtn(self):

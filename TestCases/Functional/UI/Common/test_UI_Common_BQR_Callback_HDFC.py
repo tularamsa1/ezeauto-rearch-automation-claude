@@ -11,7 +11,8 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -25,6 +26,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_102_001(): #Make sure to add the test case name as same as the sub feature code.
     """
     :Description: Verification of a BQR Callback Success transaction via HDFC
@@ -42,7 +44,7 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
         GlobalVariables.setupCompletedSuccessfully = True
         #---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = False, middlewareLog = False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -53,14 +55,30 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
         try:
             # ------------------------------------------------------------------------------------------------
             #
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_102_001')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_102_001')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
+            # username = read_config("credentials", 'username_HDFC')
+            # password = read_config("credentials", 'password')
+            # org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigationTo_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
@@ -91,13 +109,14 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
             app_payment_status = paymentPage.fetch_payment_status()
             logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
             paymentPage.click_on_proceed_homepage()
-            logger.info("Execution is completed for the test case : test_sa_100_101_001")
+            logger.info("Execution is completed for the test case : test_common_100_102_001")
 
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -115,6 +134,7 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                homePage.wait_for_navigationTo_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -133,6 +153,7 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"Test case App validation failed due to the exception : {e}")
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -242,14 +263,15 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                username_portal = read_config("credentials", 'username_portal')
-                password_portal = read_config('credentials', 'password_portal')
-                logger.info(f"Logging in Portal using username : {username_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                # portal_username = read_config("credentials", 'username_portal')
+                # portal_password = read_config('credentials', 'password_portal')
+                logger.info(f"Logging in Portal using username : {portal_username}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)
-                homePagePortal.search_merchant_name(read_config("testdata", "org_code_hdfc"))
-                logger.info(f"Switching to merchant : {read_config('testdata', 'org_code_hdfc')}")
-                homePagePortal.click_switch_button()
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.info(f"Switching to merchant : {str(org_code)}")
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
                 portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)
@@ -266,6 +288,7 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
                 logger.info("Portal Validation Completed successfully for test case")
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"Test case Portal validation failed due to the exception : {e}")
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -273,11 +296,29 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info("Started ChargeSlip validation for the test case : test_com_100_102_001")
+            try:
+                expectedValues = {'PAID BY:':'BHARATQR', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN': rrn, 'BASE AMOUNT:': 'Rs.'+str(amount)+'.00'}
+                receipt_validator.perform_charge_slip_validations(txn_id, {"username":username,"password":password}, expectedValues)
 
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_com_100_102_001")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
+        Configuration.executeFinallyBlock("test_common_100_102_001")
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
@@ -290,7 +331,6 @@ def test_common_100_102_001(): #Make sure to add the test case name as same as t
         #----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.
         #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
-        Configuration.executeFinallyBlock("test_common_100_102_001")
         logger.info("**********Test case Execution and Validation compeleted for testcase: test_common_100_102_001**************")
 
 
@@ -379,6 +419,7 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
             logger.error(f"Test case execution failed due to the exception : {e}")
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
@@ -417,6 +458,7 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
                 logger.info("App Validation Completed successfully for test case")
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error("App Validation failed due to exception - " + str(e))
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -545,6 +587,7 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
                 logger.info("Portal Validation Completed successfully for test case")
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"Test case Portal validation failed due to the exception : {e}")
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -552,7 +595,6 @@ def test_common_100_102_002(): #Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-
 
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -853,7 +895,6 @@ def test_common_100_102_003(): #Make sure to add the test case name as same as t
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-
 
     # -------------------------------------------End of Validation---------------------------------------------
 

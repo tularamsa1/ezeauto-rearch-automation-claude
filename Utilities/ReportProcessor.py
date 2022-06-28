@@ -195,6 +195,7 @@ def revert_excel_global_variables():
     GlobalVariables.str_portal_val_result = "N/A"
     GlobalVariables.str_app_val_result = "N/A"
     GlobalVariables.str_ui_val_result = "N/A"
+    GlobalVariables.bool_chargeslip_val_result = "N/A"
     # GlobalVariables.apiLogs = False
     # GlobalVariables.portalLogs = False
     # GlobalVariables.cnpWareLogs = False
