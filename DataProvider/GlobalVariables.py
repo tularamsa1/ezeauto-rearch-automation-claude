@@ -55,6 +55,7 @@ EXCEL_testCaseFileName = ''
 
 bool_ss_app_val = "N/A"
 bool_ss_portal_val = "N/A"
+bool_ss_chargeslip_val = "N/A"
 appDriver = ''
 portalDriver = ''
 charge_slip_driver = ''

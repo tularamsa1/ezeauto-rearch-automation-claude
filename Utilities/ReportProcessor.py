@@ -117,7 +117,7 @@ def createStatusTable():
     else:
         myTable.add_row(["UI Validation", uiVal])
 
-    myTable.add_row["Charge Slip Validation", chargeslip_val]
+    myTable.add_row(["Charge Slip Validation", chargeslip_val])
 
     myTable.align = 'l'
     print(myTable)
@@ -127,7 +127,7 @@ def createStatusTable():
     myTable1 = PrettyTable()
     myTable1.title = 'Debugging Info'
     myTable1.header = True
-    myTable1.field_names = ["Type", "API", "Middleware", "Cnpware", "Portal", "App"]
+    myTable1.field_names = ["Type", "API", "Middleware", "Cnpware", "Portal", "App", "ChargeSlip"]
 
     if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True" or Base_Actions.is_log_capture_required(
             "bool_capt_log_pass") == "True":
@@ -155,19 +155,23 @@ def createStatusTable():
         portalLogs = 'No'
 
     if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
+        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A", 'N/A'])
     else:
-        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
+        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A", "N/A"])
 
     # SCREENSHOT INFO
     appSS = 'No'
     portalSS = 'No'
+    chargeslipSS = "No"
+    
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
         if GlobalVariables.bool_ss_portal_val == "Passed" or portalVal == 'Pass':
             portalSS = 'Yes'
         if GlobalVariables.bool_ss_app_val == "Passed" or appVal == 'Pass':
             appSS = 'Yes'
+        if chargeslip_val == "Pass":
+            chargeslipSS = "Yes"
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
         if GlobalVariables.bool_ss_portal_val == "Failed" or portalVal == 'Failed':
@@ -176,7 +180,11 @@ def createStatusTable():
         if GlobalVariables.bool_ss_app_val == "Failed" or appVal == 'Failed':
             appSS = 'Yes'
 
-    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", portalSS, appSS])
+        if chargeslip_val == "Fail":  
+            chargeslipSS ="Yes"
+
+
+    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", portalSS, appSS, chargeslipSS])
     myTable1.align = 'l'
 
     print(myTable1)
