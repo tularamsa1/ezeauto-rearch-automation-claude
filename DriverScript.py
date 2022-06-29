@@ -1,4 +1,4 @@
-from Utilities import DirectoryCreator, merchant_creator
+from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
 from Utilities import ConfigReader

@@ -157,8 +157,6 @@ def create_merchants_with_users():
         logger.info("Merchant creation skipped")
 
 
-create_merchants_with_users()
-
 
 
 
