@@ -95,6 +95,7 @@ def generate_merchant_creation_api_body() -> list:
                 else:
                     cursor.execute("update merchant set CreationStatus = 'Existed' where MerchantCode ='"+merchant[0]+"';")
                     cursor.execute("update user set CreationStatus = 'Existed' where MerchantCode ='"+merchant[0]+"';")
+                    conn.commit()
             cursor.close()
             conn.close()
         else:
@@ -110,12 +111,14 @@ def generate_merchant_creation_api_body() -> list:
 
 def create_merchants_with_users():
     """
-    This method is used to create the mechants along with the users.
+    This method is used to create the merchants along with the users.
     This calls the generate_merchant_creation_api_body method for getting the list of request bodies.
     Each request body represents a merchant.
     :return:
     """
     api_details = get_api_from_db()
+    conn = sqlite3.connect(dbPath)
+    cursor = conn.cursor()
     url = "https://dev11.ezetap.com/api/2.0/merchant/manage"
     # url = ConfigReader.read_config("APIs","baseurl")+api_details["EndPoint"]
     headers = {
@@ -123,19 +126,39 @@ def create_merchants_with_users():
         # 'Cookie': 'jsessionid=7b0d0888-f3aa-49bd-8486-2ac217194e88'
     }
     # headers = json.loads(api_details["Header"])
+    merchant_code = ""
     lst_merchant_creation_body = generate_merchant_creation_api_body()
     if lst_merchant_creation_body:
         for merchant_creation_api_body in lst_merchant_creation_body:
+            merchant_code = merchant_creation_api_body["merchantCode"]
             payload = json.dumps(merchant_creation_api_body)
             print(payload)
             response = requests.request("POST", url, headers=headers, data=payload)
+            response_string = response.text
             print("-----------------------------------")
-            print(response.text)
+            print(response_string)
+            {"api_response" : True}, {"api_response" : response_string["success"]}
+            if response_string["success"] == True:
+                logger.info("Merchant with users created successfully.")
+                try:
+                    cursor.execute("update merchant set CreationStatus = 'Created' where MerchantCode = '"+merchant_code+"'")
+                    cursor.execute("update user set CreationStatus = 'Created' where MerchantCode = '" +merchant_code+"'")
+                    cursor.commit()
+                    cursor.close()
+                    conn.close()
+                except:
+                    print("Unable to update the ezeauto db on the merchant creation.")
+                    logger.warning("Unable to update the ezeauto db on the merchant creation.")
+            else:
+                logger.warning("Merchant creation failed")
+
     else:
         print("Merchant creation skipped.")
         logger.info("Merchant creation skipped")
 
+
 create_merchants_with_users()
 
-# generate_merchant_creation_api_body()
+
+
 

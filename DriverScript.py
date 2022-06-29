@@ -1,14 +1,11 @@
-from Utilities import DirectoryCreator
-
+from Utilities import DirectoryCreator, merchant_creator
 DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
 from Utilities import ConfigReader
 from Configuration import TestSuiteSetup
 from Utilities.execution_log_processor import EzeAutoLogger
 
-
 logger = EzeAutoLogger(__name__)
-
 
 try:
     if TestSuiteSetup.prepareDevicesAndDB():
