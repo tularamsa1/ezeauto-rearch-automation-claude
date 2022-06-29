@@ -1,3 +1,4 @@
+import mysql
 import pandas as pd
 import pymysql
 import sshtunnel
@@ -5,7 +6,7 @@ import os
 import sqlite3
 import json
 from jinja2 import Template
-from urllib.parse import parse_qs, urlencode
+from urllib.parse import urlencode
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
@@ -170,6 +171,40 @@ def getValueFromDB(query):
     data = pd.read_sql_query(query, conn)
     conn.close()
     tunnel.close()
+    return data
+
+def setValueToDB(query):
+    envi = ConfigReader.read_config("APIs", "env")
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        logger.warning(e)
+        ssh_private_key_password = None
+
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        ssh_address_or_host=envi.lower(),
+        remote_bind_address=('localhost', 3306),
+        ssh_private_key_password=ssh_private_key_password
+    )
+
+    tunnel.start()
+    try:
+        conn = mysql.connector.connect(host='localhost', user='ezedemo', passwd='abc123', database='ezetap_demo',
+                                       port=tunnel.local_bind_port)
+        mycursor = conn.cursor()
+        try:
+            mycursor.execute(query)
+            conn.commit()
+        except:
+            print("Running Update query failed..!")
+            logger.error("Running Update query failed..!")
+
+        data = str(mycursor.rowcount) + ",record(s) affected"
+        conn.close()
+        tunnel.close()
+    except:
+        print("Not able to connect to Database for running update query")
+        logger.error("Not able to connect to Database for running update query")
     return data
 
 

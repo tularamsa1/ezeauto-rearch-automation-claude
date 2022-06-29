@@ -373,8 +373,7 @@ def prepareDevicesAndDB():
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
     ResourceAssigner.clearAssignerTables()
-    if devices != None:
-        devices = getDevicesList()
+    devices = getDevicesList()
     if devices == None :
         print("Attempt to start the emulators failed.")
         print("No devices available. Hence DB update operation for adding devices is skipped.")
