@@ -137,7 +137,6 @@ def create_merchants_with_users():
             response_string = response.text
             print("-----------------------------------")
             print(response_string)
-            {"api_response" : True}, {"api_response" : response_string["success"]}
             if response_string["success"] == True:
                 logger.info("Merchant with users created successfully.")
                 try:
@@ -156,6 +155,8 @@ def create_merchants_with_users():
         print("Merchant creation skipped.")
         logger.info("Merchant creation skipped")
 
+
+create_merchants_with_users()
 
 
 
