@@ -29,7 +29,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_001(): #Make sure to add the test case name as same as the sub feature code.
-
+    username_portal = '9775822330'
+    password_portal = 'sandy@demo1'
+    username_app = "4455778875"
+    password_app = "q121212"
+    expected_Success_Message = "Your payment is successfully completed! You may close the browser now."
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
@@ -66,27 +70,13 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
             # password = "q121212"
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            url = 'https://dev11.ezetap.com/api/3.0/pay/remote/initiate'
-            headers = {'Content-Type': 'application/json'}
-            payload = {
-                # "username": "9949134775",
-                # "appKey": "c7244973-694a-47e7-953a-2f3af792d7ad",
-                "username": str(username),
-                "password": str(password),
-                "amount": amount,
-                "agentMobileNumber": "1122112221",
-                "customerName": "Sandeep Kumar",
-                "customerMobileNumber": "0000000000",
-                "customerEmail": "sandeep.r@ezetap.com",
-                "paymentFlow": "REMOTEPAY",
-                "externalRefNumber": order_id,
-            }
-            response = requests.post(url, headers=headers, data=json.dumps(payload))
-            json_data = json.loads(response.text)
-            print(json_data)
+            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+                                                      request_body={"amount": amount, "externalRefNumber": order_id,
+                                                                    "username": username_app, "password": password_app})
+            response = APIProcessor.send_request(api_details)
             ui_driver = GlobalVariables.portalDriver
-            paymentLinkUrl = json_data['paymentLink']
-            externalRef = json_data.get('externalRefNumber')
+            paymentLinkUrl = response['paymentLink']
+            externalRef = response.get('externalRefNumber')
             ui_driver.get(paymentLinkUrl)
             remotePayTxn = remotePayTxnPage(ui_driver)
             remotePayTxn.clickOnCreditCardToExpand()
@@ -136,6 +126,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                logger.info("Started APP validation for the test case : test_com_100_103_001")
                 expectedAppValues = {"Payment mode": "PAY LINK", "Status": "AUTHORIZED", "Amount": str(amount),
                                      "Txn_id": Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
@@ -146,7 +137,6 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
-
                 txnHistoryPage = TransHistoryPage(driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
                 payment_status = txnHistoryPage.fetch_txn_status_text()
@@ -175,23 +165,23 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "CNP"}
+                logger.info("Started API validation for the test case : test_com_100_103_001")
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "CNP", "rrNumber":rrn}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": username, "password": password})
                 response = APIProcessor.send_request(api_details)
-                responseInList = response["txns"]
-
-                status_api = ''
-                amount_api = ''
-                payment_mode_api = ''
-                for elements in responseInList:
-                    if elements["txnId"] == Txn_id:
-                        status_api = elements["status"]
-                        amount_api = int(elements["amount"])
-                        payment_mode_api = elements["paymentMode"]
-                #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                status_api = response["status"]
+                amount_api = response["amount"]
+                payment_mode_api = response["paymentMode"]
+                rrNumber = response["rrNumber"]
+                org_code_db = response["orgCode"]
+                logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
+                logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
+                logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
+                logger.debug(f"Fetching Transaction rrNumber from transaction api : {rrNumber} ")
+                logger.debug(f"Fetching Transaction org_code mode from transaction api : {org_code_db} ")
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,"rrNumber":rrn}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
@@ -208,11 +198,14 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                logger.info("Started DB validation for the test case : test_com_100_103_001")
                 expectedDBValues = {"Payment Status": "AUTHORIZED", "Payment State": "SETTLED", "Payment mode": "CNP",
                                     "Payment amount": amount}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                query = "select state,status,amount,payment_mode,external_ref,acquirer_code,issuer_code,org_code,payment_card_brand,payment_card_type," \
+                        "payment_gateway,txn_type,settlement_status from txn where id='" + Txn_id + "'"
+
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -220,9 +213,46 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
+                external_ref = result["external_ref"].iloc[0]
+                acquirer_code = result["acquirer_code"].iloc[0]
+                issuer_code = result["issuer_code"].iloc[0]
+                org_code = result["org_code"].iloc[0]
+                payment_gateway = result["payment_gateway"].iloc[0]
+                txn_type = result["txn_type"].iloc[0]
+                settlement_status = result["settlement_status"].iloc[0]
 
-                actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
-                                  "Payment mode": payment_mode_db, "Payment amount": amount}
+                query1 = "select rr_number,txn_id,payment_flow,payment_option," \
+                         "payment_option_value1,payment_status,state,payment_card_brand,payment_card_type from cnp_txn where txn_id='" + Txn_id + "';"
+                logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
+                result = DBProcessor.getValueFromDB(query1)
+                rrn_cnp_txn = result['rr_number'].values[0]
+                txn_id_cnp_txn = result['txn_id'].values[0]
+                payment_flow_cnp_txn = result['payment_flow'].values[0]
+                payment_option_cnp_txn = result['payment_option'].values[0]
+                payment_option_value1_cnp_txn = result['payment_option_value1'].values[0]
+                payment_status_cnp_txn = result['payment_status'].values[0]
+                state_cnp_txn = result['state'].values[0]
+                payment_card_brand_cnp_txn = result['payment_card_brand'].values[0]
+                payment_card_type_cnp_txn = result['payment_card_type'].values[0]
+
+                logger.debug(f"Query result, Txn_id : {Txn_id}")
+                logger.debug(f"Query result from cnp_txn, Txn_id : {txn_id_cnp_txn}")
+                logger.debug(f"Query result, rrn : {rrn_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_flow : {payment_flow_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_option : {payment_option_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_option_value1 : {payment_option_value1_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_status : {payment_status_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, state : {state_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_card_brand : {payment_card_brand_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_card_type : {payment_card_type_cnp_txn}")
+
+
+                actualDBValues = {"Payment Status": status_db, "Payment State": state_db, "Payment mode": payment_mode_db,"Payment amount": amount_db, "external_ref": external_ref,
+                                  "acquirer_code": acquirer_code,"issuer_code": issuer_code, "org_code": org_code,"payment_gateway": payment_gateway, "txn_type": txn_type,
+                                  "settlement_status": settlement_status,"state": state_db, "RRNumber":rrn,"CNP Txn Id":Txn_id, "Payment Flow":payment_flow_cnp_txn,
+                                  "Payment Option": payment_option_cnp_txn, "Payment Option Value1":payment_option_value1_cnp_txn, "Payment Status":payment_status_cnp_txn ,
+                                  "State": state_cnp_txn,"Payment Card Brand":payment_card_brand_cnp_txn , "payment_card_type": payment_card_type_cnp_txn}
+
                                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -240,6 +270,7 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                logger.info("Started Portal validation for the test case : test_com_100_103_001")
                 expectedPortalValues = {"Payment State": "Settled", "Payment Type": "CNP",
                                         "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
@@ -321,7 +352,15 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
 @pytest.mark.portalVal
 @pytest.mark.appVal
 def test_common_100_103_002(): #Make sure to add the test case name as same as the sub feature code.
-
+    """
+    Verification of failed remote pay credit card txn  for cybersource pg
+    verifying the message in the failed screen via CNP link
+    """
+    username_portal = '9660867344'
+    password_portal = 'A123456'
+    username_app = "4455778875"
+    password_app = "q121212"
+    expected_Failed_Message = "Sorry! Your payment could not be processed. Please click on the payment link sent to you on SMS or Email and attempt the payment again."
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
@@ -358,27 +397,13 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             # password = "q121212"
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            url = 'https://dev11.ezetap.com/api/3.0/pay/remote/initiate'
-            headers = {'Content-Type': 'application/json'}
-            payload = {
-                # "username": "9949134775",
-                # "appKey": "c7244973-694a-47e7-953a-2f3af792d7ad",
-                "username": str(username),
-                "password": str(password),
-                "amount": amount,
-                "agentMobileNumber": "1122112221",
-                "customerName": "Sandeep Kumar",
-                "customerMobileNumber": "0000000000",
-                "customerEmail": "sandeep.r@ezetap.com",
-                "paymentFlow": "REMOTEPAY",
-                "externalRefNumber": order_id,
-            }
-            response = requests.post(url, headers=headers, data=json.dumps(payload))
-            json_data = json.loads(response.text)
-            print(json_data)
+            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+                                                      request_body={"amount": amount, "externalRefNumber": order_id,
+                                                                    "username": username_app, "password": password_app})
+            response = APIProcessor.send_request(api_details)
             ui_driver = GlobalVariables.portalDriver
-            paymentLinkUrl = json_data['paymentLink']
-            externalRef = json_data.get('externalRefNumber')
+            paymentLinkUrl = response['paymentLink']
+            externalRef = response.get('externalRefNumber')
             ui_driver.get(paymentLinkUrl)
             remotePayTxn = remotePayTxnPage(ui_driver)
             remotePayTxn.clickOnCreditCardToExpand()
@@ -390,19 +415,25 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             remotePayTxn.clickOnProceedToPay()
             # remotePayTxn.clickOnSubmitButton()
             time.sleep(3)
-
-            failedMessage = str(remotePayTxn.failedScreenMessage())
-            if failedMessage == "Sorry! Your payment could not be processed. Please click on the payment link sent to you on SMS or Email and attempt the payment again.":
-                print("Test Passed##################3"+ failedMessage)
+            remotePayTxn.wait_for_failed_message()
+            actual_Failed_Message = str(remotePayTxn.failedScreenMessage())
+            logger.info(f"After txn message is:  : {actual_Failed_Message}")
+            if actual_Failed_Message == expected_Failed_Message:
+                pass
             else:
                 print("Failed Message is not matching")
-                print(failedMessage)
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
             logger.debug(f"Query result, Txn_id : {Txn_id}")
+
+            query1 = "select rr_number,org_code from cnp_txn where txn_id='" + Txn_id + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            org_code = result['org_code'].values[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -423,8 +454,8 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment mode": "PAY LINK", "Status": "FAILED", "Amount": str(amount),
-                                     "Txn_id": Txn_id}
+                logger.info("Started App validation for the test case : test_com_100_103_002")
+                expectedAppValues = {"Payment mode": "PAY LINK", "Status": "FAILED", "Amount": str(amount),"Txn_id": Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
                 loginPage = LoginPage(driver)
@@ -433,7 +464,6 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
-
                 txnHistoryPage = TransHistoryPage(driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
                 payment_status = txnHistoryPage.fetch_txn_status_text()
@@ -462,22 +492,19 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                logger.info("Started API validation for the test case : test_com_100_103_002")
                 expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "CNP"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": username, "password": password})
                 response = APIProcessor.send_request(api_details)
-                list = response["txns"]
-                status_api = ''
-                amount_api = ''
-                payment_mode_api = ''
-                for li in list:
-                    if li["txnId"] == Txn_id:
-                        status_api = li["status"]
-                        amount_api = int(li["amount"])
-                        payment_mode_api = li["paymentMode"]
-                #
+                status_api = response["status"]
+                amount_api = response["amount"]
+                payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
+                logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
+                logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -495,6 +522,8 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                logger.info("Started DB validation for the test case : test_com_100_103_002")
+
                 expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
                                     "Payment amount": amount}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -526,6 +555,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                logger.info("Started Portal validation for the test case : test_com_100_103_002")
                 expectedPortalValues = {"Payment State": "Failed", "Payment Type": "CNP",
                                         "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
@@ -580,3 +610,441 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         #----------------------------------------------------------------------------------------------------------
         # Test case ID should be passed as argument in string format.
         #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("appium_driver","ui_driver") #This is an optional line. Keep only whichever driver is required.
+# From below use only the markers that are applicable for the test case and remove the rest.
+def test_common_100_103_009(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    Verification of remote pay txn after link expiry.
+    """
+    username_portal = '9660867344'
+    password_portal = 'A123456'
+    username_app = "4455778875"
+    password_app = "q121212"
+    expectedExpiryMessage = "Sorry!You have exceeded the time available to complete the payment. Please request for a new link."
+    try:
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # Write the setup code here
+
+        GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
+        #---------------------------------------------------------------------------------------------------------
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = True, middlewareLog = False)
+
+        # Variable which tracks if the execution is going on through all the lines of code of test case.
+        # Set to failure where ever there are chances of failure.
+        msg = ""
+
+        #-----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            # ------------------------------------------------------------------------------------------------
+            #
+            logger.info("Execution Started for the test case : test_common_100_103_009")
+            amount = random.randint(300, 399)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+                                                      request_body={"amount": amount, "externalRefNumber": order_id,
+                                                                    "username": username_app, "password": password_app})
+            response = APIProcessor.send_request(api_details)
+            paymentLinkUrl = response['paymentLink']
+            payment_Intent_ID = response.get('paymentIntentId')
+            ui_driver = GlobalVariables.portalDriver
+            query = "select setting_value from ezetap_demo.remotepay_setting where setting_name='remotePayExpTime' and org_code ='SANDEEPTEST_6979';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            expiry_Time = result['setting_value'].values[0]
+            logger.debug(f"Query to fetch expiry_Time from the DB : {query}")
+            logger.debug(f"Query result, expiry time : {expiry_Time}")
+
+            expiry_Time_From_DB = int(expiry_Time)
+            print(expiry_Time_From_DB)
+            time.sleep(expiry_Time_From_DB * 60)
+            ui_driver.get(paymentLinkUrl)
+
+            remotePayTxn = remotePayTxnPage(ui_driver)
+            remotePayTxn.waitForElement()
+            expiryMessage = str(remotePayTxn.expiryMessage())
+            logger.info(f"Your expiryMessage is:  {expiryMessage}")
+            logger.info(f"Your expiryMessage is:  {expectedExpiryMessage}")
+            if expiryMessage == (expectedExpiryMessage):
+                pass
+            else:
+                raise Exception("Expiry Messages are not matching.")
+    #
+    #         # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+        except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
+            GlobalVariables.EXCEL_TC_Execution = "Fail"
+            GlobalVariables.Incomplete_ExecutionCount += 1
+            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+            pytest.fail("Test case execution failed due to the exception -"+str(e))
+        # -----------------------------------------End of Test Execution--------------------------------------
+        current = datetime.now()
+        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
+
+    finally:
+        Configuration.executeFinallyBlock("test_common_100_103_009")
+        if GlobalVariables.setupCompletedSuccessfully == False:
+            print("Test case setup itself failed. So the test case was not executed.")
+        else:
+            ReportProcessor.updateTestCaseResult(msg)  # pass msg
+        #-------------------------------Revert Preconditions done(setup)--------------------------------------------
+
+        # Write the code here to revert the settings that were done as precondition
+
+        #----------------------------------------------------------------------------------------------------------
+        # Test case ID should be passed as argument in string format.
+        #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("appium_driver","ui_driver") #This is an optional line. Keep only whichever driver is required.
+# From below use only the markers that are applicable for the test case and remove the rest.
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
+@pytest.mark.appVal
+@pytest.mark.chargeSlipVal
+def test_common_100_103_010(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    Verification of a message when txn done after timeout  via CNP link
+    """
+    username_portal = '9660867344'
+    password_portal = 'A123456'
+    username_app = "4455778875"
+    password_app = "q121212"
+    expected_Timeout_Message = "Your payment attempt failed, Sorry for the inconvenience. Please contact support@ezetap.com for further clarifications."
+    try:
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # Write the setup code here
+
+        GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
+        #---------------------------------------------------------------------------------------------------------
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+
+        # Variable which tracks if the execution is going on through all the lines of code of test case.
+        # Set to failure where ever there are chances of failure.
+        msg = ""
+
+        #-----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            # ------------------------------------------------------------------------------------------------
+            #
+            logger.info("Execution Started for the test case : test_common_100_103_010")
+            amount = random.randint(300, 399)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+                                                      request_body={"amount": amount, "externalRefNumber": order_id,
+                                                                    "username": username_app, "password": password_app})
+            response = APIProcessor.send_request(api_details)
+            ui_driver = GlobalVariables.portalDriver
+            paymentLinkUrl = response['paymentLink']
+            externalRef = response.get('externalRefNumber')
+            ui_driver.get(paymentLinkUrl)
+            remotePayTxn = remotePayTxnPage(ui_driver)
+            remotePayTxn.clickOnCreditCardToExpand()
+            remotePayTxn.enterNameOnTheCard("Sandeep")
+            remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")
+            remotePayTxn.enterCreditCardExpiryMonth("12")
+            remotePayTxn.enterCreditCardExpiryYear("2050")
+            remotePayTxn.enterCreditCardCvv("111")
+            remotePayTxn.clickOnProceedToPay()
+            query = "select setting_value from ezetap_demo.remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code ='SANDEEPTEST_6979';"
+            logger.debug(f"Query to fetch setting_value from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            cnpTxnTimeoutDuration = result['setting_value'].values[0]
+            logger.debug(f"Query result, timeout Duration : {cnpTxnTimeoutDuration}")
+
+            timeout_Duration_From_DB = int(cnpTxnTimeoutDuration)
+            time.sleep(3+(timeout_Duration_From_DB * 60))
+            remotePayTxn = remotePayTxnPage(ui_driver)
+            remotePayTxn.clickOnSubmitButton()
+            remotePayTxn.waitForTimeoutElement()
+            timeout_Message = str(remotePayTxn.timeoutScreenMessage())
+
+            logger.info(f"Your timeout Message is:  {timeout_Message}")
+            logger.info(f"Your expected timeout Message is:  {expected_Timeout_Message}")
+            if timeout_Message == (expected_Timeout_Message):
+                pass
+            else:
+                raise Exception("Expiry Messages are not matching.")
+
+
+            query = "select * from txn where org_code = 'SANDEEPTEST_6979' AND external_ref = '" + str(order_id) + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            Txn_id = result['id'].values[0]
+            logger.debug(f"Query result, Txn_id : {Txn_id}")
+
+            query1 = "select rr_number,org_code from cnp_txn where txn_id='" + Txn_id + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, rrn : {rrn}")
+            logger.debug(f"Query result, org code is : {org_code}")
+
+    #         # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+        except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
+            GlobalVariables.EXCEL_TC_Execution = "Fail"
+            GlobalVariables.Incomplete_ExecutionCount += 1
+            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+            pytest.fail("Test case execution failed due to the exception -"+str(e))
+        # -----------------------------------------End of Test Execution--------------------------------------
+
+        # -----------------------------------------Start of Validation----------------------------------------
+        current = datetime.now()
+        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                logger.info("Started APP validation for the test case : test_common_100_103_010")
+                expectedAppValues = {"Payment mode": "PAY LINK", "Status": "FAILED", "Amount": str(amount),
+                                     "Txn_id": Txn_id}
+                logger.debug(f"expectedAppValues: {expectedAppValues}")
+                driver = GlobalVariables.appDriver
+                loginPage = LoginPage(driver)
+                loginPage.perform_login(username_app, password_app)
+                homePage = HomePage(driver)
+                homePage.wait_for_navigationTo_load()
+                homePage.click_on_history()
+                txnHistoryPage = TransHistoryPage(driver)
+                txnHistoryPage.click_on_transaction_by_order_id(order_id)
+                payment_status = txnHistoryPage.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {Txn_id}, {payment_status}")
+                payment_mode = txnHistoryPage.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {Txn_id}, {payment_mode}")
+                app_txn_id = txnHistoryPage.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
+                app_amount = txnHistoryPage.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                actualAppValues = {"Payment mode": payment_mode, "Status": payment_status.split(':')[1],
+                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
+                logger.debug(f"actualAppValues: {actualAppValues}")
+
+                Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("App Validation failed due to exception - " + str(e))
+                msg = msg + "App Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_app_val_result="Fail"
+
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                logger.info("Started API validation for the test case : test_common_100_103_010")
+                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "CNP", "Payment Card Brand": "VISA","Payment Card Type": "CREDIT"}
+                logger.debug(f"expectedAPIValues: {expectedAPIValues}")
+
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username_app,
+                                                                                      "password": password_app,
+                                                                                      "txnId": Txn_id})
+                response = APIProcessor.send_request(api_details)
+                status_api = response["status"]
+                amount_api = response["amount"]
+                payment_mode_api = response["paymentMode"]
+                payment_Card_Brand = response["paymentCardBrand"]
+                payment_Card_Type = response["paymentCardType"]
+                logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
+                logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
+                logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
+                logger.debug(f"Fetching Transaction payment Card Brand from transaction api : {payment_Card_Brand} ")
+                logger.debug(f"Fetching Transaction payment Card Type from transaction api : {payment_Card_Type} ")
+                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api, "Payment Card Brand": payment_Card_Brand,"Payment Card Type": payment_Card_Type}
+                logger.debug(f"actualAPIValues: {actualAPIValues}")
+                # ---------------------------------------------------------------------------------------------
+                Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
+            except Exception as e:
+                print("API Validation failed due to exception - "+str(e))
+                msg = msg + "API Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_api_val_result= "Fail"
+
+
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                logger.info("Started DB validation for the test case : test_common_100_103_010")
+                # expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
+                #                     "Payment amount": amount}
+                # logger.debug(f"expectedDBValues: {expectedDBValues}")
+                #
+                # query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                # logger.debug(f"Query to fetch data from txn table : {query}")
+                # result = DBProcessor.getValueFromDB(query)
+                # logger.debug(f"Query result : {result}")
+                # status_db = result["status"].iloc[0]
+                # payment_mode_db = result["payment_mode"].iloc[0]
+                # amount_db = int(result["amount"].iloc[0])
+                # state_db = result["state"].iloc[0]
+                #
+                # actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
+                #                   "Payment mode": payment_mode_db, "Payment amount": amount}
+                #                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
+
+                expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
+                                    "Payment amount": amount, "external_ref": order_id, "acquirer_code": "HDFC",
+                                    "issuer_code": "HDFC", "org_code": org_code,
+                                    "payment_gateway": "CYBERSOURCE", "txn_type": "REMOTE_PAY",
+                                    "settlement_status": "FAILED", "state": "FAILED", "RRNumber": rrn
+                    , "CNP Txn Id": Txn_id, "Payment Flow": "REMOTEPAY", "Payment Option": "CNP_CC",
+                                    "Payment Option Value1": "VISA", "CNP Payment Status": "PAYMENT_FAILED",
+                                    "State": "FAILED", "Payment Card Brand": "VISA",
+                                    "payment_card_type": "CREDIT"}
+
+                logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query = "select state,status,amount,payment_mode,external_ref,acquirer_code,issuer_code,org_code,payment_card_brand,payment_card_type," \
+                        "payment_gateway,txn_type,settlement_status from txn where id='" + Txn_id + "'"
+
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db = result["status"].iloc[0]
+                payment_mode_db = result["payment_mode"].iloc[0]
+                amount_db = int(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
+                external_ref = result["external_ref"].iloc[0]
+                acquirer_code = result["acquirer_code"].iloc[0]
+                issuer_code = result["issuer_code"].iloc[0]
+                org_code = result["org_code"].iloc[0]
+                payment_gateway = result["payment_gateway"].iloc[0]
+                txn_type = result["txn_type"].iloc[0]
+                settlement_status = result["settlement_status"].iloc[0]
+
+                query1 = "select rr_number,txn_id,payment_flow,payment_option," \
+                         "payment_option_value1,payment_status,state,payment_card_brand,payment_card_type from cnp_txn where txn_id='" + Txn_id + "';"
+                logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
+                result = DBProcessor.getValueFromDB(query1)
+                rrn_cnp_txn = result['rr_number'].values[0]
+                txn_id_cnp_txn = result['txn_id'].values[0]
+                payment_flow_cnp_txn = result['payment_flow'].values[0]
+                payment_option_cnp_txn = result['payment_option'].values[0]
+                payment_option_value1_cnp_txn = result['payment_option_value1'].values[0]
+                payment_status_cnp_txn = result['payment_status'].values[0]
+                state_cnp_txn = result['state'].values[0]
+                payment_card_brand_cnp_txn = result['payment_card_brand'].values[0]
+                payment_card_type_cnp_txn = result['payment_card_type'].values[0]
+
+                logger.debug(f"Query result, Txn_id : {Txn_id}")
+                logger.debug(f"Query result from cnp_txn, Txn_id : {txn_id_cnp_txn}")
+                logger.debug(f"Query result, rrn : {rrn_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_flow : {payment_flow_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_option : {payment_option_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_option_value1 : {payment_option_value1_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_status : {payment_status_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, state : {state_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_card_brand : {payment_card_brand_cnp_txn}")
+                logger.debug(f"Query result from cnp_txn, payment_card_type : {payment_card_type_cnp_txn}")
+
+                actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
+                                  "Payment mode": payment_mode_db, "Payment amount": amount_db,
+                                  "external_ref": external_ref,
+                                  "acquirer_code": acquirer_code, "issuer_code": issuer_code, "org_code": org_code,
+                                  "payment_gateway": payment_gateway, "txn_type": txn_type,
+                                  "settlement_status": settlement_status, "state": state_db, "RRNumber": rrn,
+                                  "CNP Txn Id": Txn_id, "Payment Flow": payment_flow_cnp_txn,
+                                  "Payment Option": payment_option_cnp_txn,
+                                  "Payment Option Value1": payment_option_value1_cnp_txn,
+                                  "CNP Payment Status": payment_status_cnp_txn,
+                                  "State": state_cnp_txn, "Payment Card Brand": payment_card_brand_cnp_txn,
+                                  "payment_card_type": payment_card_type_cnp_txn}
+
+                logger.debug(f"actualDBValues : {actualDBValues}")
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
+            except Exception as e:
+                print("DB Validation failed due to exception - "+str(e))
+                msg = msg + "DB Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_db_val_result= 'Fail'
+
+
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            try:
+                # --------------------------------------------------------------------------------------------
+                logger.info("Started Portal validation for the test case : test_common_100_103_010")
+                expectedPortalValues = {"Payment State": "Failed", "Payment Type": "CNP",
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": username_app}
+                logger.debug(f"expectedPortalValues : {expectedPortalValues}")
+
+                portal_driver = GlobalVariables.portalDriver
+                loginPagePortal = PortalLoginPage(portal_driver)
+                logger.debug(f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
+                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                homePagePortal = PortalHomePage(portal_driver)
+                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
+                logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
+                homePagePortal.click_switch_button("SANDEEPTEST_6979")
+                homePagePortal.perform_merchant_verfication()
+                homePagePortal.click_transaction_search_menu()
+                # logger.info("Clearing the text")
+                # homePagePortal.perform_clear_txt()
+                # logger.info("text cleared")
+                # homePagePortal.perform_txn_count_search(3)
+                # homePagePortal.perform_txn_search()
+                # homePagePortal.perform_txn_search()
+                portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
+                portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
+                portalType = portalValuesDict['Type']
+                portalStatus = portalValuesDict['Status']
+                portalAmount = portalValuesDict['Total Amount']
+                portalUsername = portalValuesDict['Username']
+
+                actualPortalValues = {"Payment State": str(portalStatus), "Payment Type": portalType,
+                                      "Amount": portalAmount, "Username": portalUsername}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Portal Validation failed due to exception - "+str(e))
+                msg = msg + "Portal Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_portal_val_result = 'Fail'
+
+        # -----------------------------------------End of Portal Validation---------------------------------------
+            except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.bool_chargeslip_val_result = False
+
+            logger.info("Completed ChargeSlip validation for the test case : test_common_100_103_010")
+
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+    # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock("test_common_100_103_010")
+        if GlobalVariables.setupCompletedSuccessfully == False:
+            print("Test case setup itself failed. So the test case was not executed.")
+        else:
+            ReportProcessor.updateTestCaseResult(msg)  # pass msg
+        #-------------------------------Revert Preconditions done(setup)--------------------------------------------
+
+        # Write the code here to revert the settings that were done as precondition
+
+        #----------------------------------------------------------------------------------------------------------
+        # Test case ID should be passed as argument in string format.
+        #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
+

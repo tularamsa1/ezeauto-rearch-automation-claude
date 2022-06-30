@@ -46,7 +46,6 @@ class HomePage(BasePage):
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
 
 
-
     def __init__(self, driver):
         super().__init__(driver)
 
@@ -171,6 +170,12 @@ class HomePage(BasePage):
 
     def wait_for_navigation_to_load(self):
         self.wait_for_element_to_be_clickable(self.lbl_navigation)
+
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
+
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
 
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)

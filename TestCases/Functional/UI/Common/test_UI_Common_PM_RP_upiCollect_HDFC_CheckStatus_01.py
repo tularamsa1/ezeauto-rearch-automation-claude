@@ -29,14 +29,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_004(): #Make sure to add the test case name as same as the sub feature code.
-    """
-    UI_Common_PM_RP_upi collect_Success_Via_Pure_upi collect_Checkstatus_HDFC
-    Verification of a Remote Pay successful upi collect txn via HDFC using check status
-    """
-    username_portal = '9660867344'
-    password_portal = 'A123456'
-    username_app = "4455778875"
-    password_app = "q121212"
+
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
@@ -108,7 +101,7 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
                 loginPage = LoginPage(driver)
-                loginPage.perform_login(username_app, password_app)
+                loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
@@ -206,11 +199,13 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment State": "Settled", "Payment Type": "UPI",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": username_app}
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
+                username_portal = '9660867344'
+                password_portal = 'A123456'
                 logger.debug(
                     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
 
@@ -219,7 +214,7 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
                 homePagePortal.search_merchant_name('SANDEEPTEST_6979')
                 logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
                 # time.sleep(2)
-                homePagePortal.click_switch_button("SANDEEPTEST_6979")
+                homePagePortal.click_switch_button()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
@@ -245,7 +240,7 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
             try:
                 date = datetime.today().strftime('%Y-%m-%d')
                 expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id)}
-                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username_app,"password":password_app}, expectedValues)
+                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username,"password":password}, expectedValues)
 
             except Exception as e:
                 ReportProcessor.capture_ss_when_exe_failed()
@@ -352,13 +347,12 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                logger.info("App Validation Started for the test case : test_common_100_103_005")
-                expectedAppValues = {"Payment mode": "UPI", "Status": "FAILED", "Amount": str(amount),
+                expectedAppValues = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
                                      "Txn_id": Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
                 loginPage = LoginPage(driver)
-                loginPage.perform_login(username_app, password_app)
+                loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.click_on_history()
@@ -470,6 +464,8 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
+                username_portal = '9660867344'
+                password_portal = 'A123456'
                 logger.debug(
                     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
 
@@ -492,7 +488,6 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
