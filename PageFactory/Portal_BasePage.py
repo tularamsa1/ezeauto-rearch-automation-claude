@@ -15,6 +15,9 @@ class BasePage:
     def perform_click1(self, locator, time = 15):
         WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
 
+    def perform_click1(self, locator, time = 15):
+        WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
+
     def select_from_drop_down(self, locator, value, time=15):
         select = Select(WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator)))
         select.select_by_value(value)

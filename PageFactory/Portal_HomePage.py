@@ -25,7 +25,6 @@ class PortalHomePage(BasePage):
     lbl_resultValueSearch = (By.CSS_SELECTOR,"#max")
     btn_txnSearch = (By.XPATH, "//button[contains(text(),'Search')]")
     btn_txnClick = (By.PARTIAL_LINK_TEXT, "Transactio")
-    btn_txnSearch = (By.LINK_TEXT, "Search")
     txt_homepageTitle = (By.XPATH, '//title[contains(text(),"Manage Merchants")]')
 
 
@@ -114,8 +113,12 @@ class PortalHomePage(BasePage):
     def perform_merchant_switched_verfication(self):
         return self.fetch_text(self.btn_switchedMerchant)
 
+
     def perfrom_search_Txn(self):
         self.perform_click(self.btn_txnClick)
         self.perform_click(self.btn_txnClick)
+
+
+        return self.fetch_text(self.btn_switchedMerchant)
 
 
