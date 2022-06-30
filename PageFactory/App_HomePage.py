@@ -176,3 +176,9 @@ class HomePage(BasePage):
 
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
+
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
+
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)

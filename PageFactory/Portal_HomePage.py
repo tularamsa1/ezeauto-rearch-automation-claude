@@ -32,6 +32,9 @@ class PortalHomePage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
+    # def search_merchant_name(self, org_code):
+    #     self.perform_sendkeys(self.txt_merchantSearch, org_code)
+    #     self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
     def wait_for_home_page_load(self):
         self.wait_for_element(self.txt_homepageTitle)
 
