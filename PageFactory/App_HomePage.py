@@ -8,6 +8,7 @@ from PageFactory.App_BasePage import BasePage
 
 class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
+    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
     txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
     btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
@@ -43,7 +44,6 @@ class HomePage(BasePage):
     txt_cashAtPosSaleAmount = (By.ID, 'com.ezetap.basicapp:id/etSaleAmount')
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
-    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
 
 
     def __init__(self, driver):
@@ -169,4 +169,10 @@ class HomePage(BasePage):
         self.perform_click(self.btn_back)
 
     def wait_for_navigation_to_load(self):
+        self.wait_for_element(self.lbl_navigation)
+
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
+
+    def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
