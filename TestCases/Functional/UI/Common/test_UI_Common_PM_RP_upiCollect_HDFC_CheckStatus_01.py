@@ -462,9 +462,8 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                logger.info("Portal Validation Started for the test case : test_common_100_103_005")
-                expectedPortalValues = {"Payment State": "Failed", "Payment Type": "UPI",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": username_app}
+                expectedPortalValues = {"Payment State": "Settled", "Payment Type": "UPI",
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver

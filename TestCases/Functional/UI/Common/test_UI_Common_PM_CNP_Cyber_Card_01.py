@@ -95,25 +95,25 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
             remotePayTxn.enterCreditCardCvv("111")
             remotePayTxn.clickOnProceedToPay()
             remotePayTxn.clickOnSubmitButton()
-            time.sleep(15)
 
-            successMessage = str(remotePayTxn.succcessScreenMessage())
-            if successMessage == "Your payment is successfully completed! You may close the browser now.":
-                print("Test Passed##################3"+ successMessage)
+            success_Message = str(remotePayTxn.succcessScreenMessage())
+            logger.info(f"Your success Message is:  {success_Message}")
+            if success_Message == expected_Success_Message:
+                pass
             else:
-                print("Success Message is not matching")
-                print(successMessage)
+                print(success_Message!=expected_Success_Message)
+                raise Exception("Success Messages are not mactching")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = 'SANDEEPTEST_6979' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
-            query = "select rr_number from cnp_txn where txn_id='"+Txn_id+"';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+
+            query1 = "select rr_number,org_code from cnp_txn where txn_id='"+Txn_id+"';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, Txn_id : {Txn_id}")
-            logger.debug(f"Query result, rrn : {rrn}")
+            org_code = result['org_code'].values[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -142,9 +142,12 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
+                homePage.wait_for_navigationTo_load()
+                homePage.check_home_page_logo()
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
+
                 txnHistoryPage = TransHistoryPage(driver)
                 txnHistoryPage.click_on_transaction_by_order_id(order_id)
                 payment_status = txnHistoryPage.fetch_txn_status_text()
@@ -423,7 +426,6 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             remotePayTxn.enterCreditCardExpiryYear("2050")
             remotePayTxn.enterCreditCardCvv("111")
             remotePayTxn.clickOnProceedToPay()
-            # remotePayTxn.clickOnSubmitButton()
             time.sleep(3)
             remotePayTxn.wait_for_failed_message()
             actual_Failed_Message = str(remotePayTxn.failedScreenMessage())
@@ -471,6 +473,8 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
+                homePage.wait_for_navigationTo_load()
+                homePage.check_home_page_logo()
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
