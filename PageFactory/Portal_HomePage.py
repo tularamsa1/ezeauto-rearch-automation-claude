@@ -32,9 +32,6 @@ class PortalHomePage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
-    # def search_merchant_name(self, org_code):
-    #     self.perform_sendkeys(self.txt_merchantSearch, org_code)
-    #     self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
     def wait_for_home_page_load(self):
         self.wait_for_element(self.txt_homepageTitle)
 
@@ -86,9 +83,7 @@ class PortalHomePage(BasePage):
         self.wait_for_element(self.txt_refundAmtField).clear()
         self.perform_sendkeys(self.txt_refundAmtField, str(amount))
         self.perform_click(self.btn_confirmRefund)
-        text = self.wait_for_alert_and_get_text()
         self.wait_for_alert_and_accept()
-        return text
 
     def click_on_transaction_details_based_on_transaction_id(self,txn_id):
         locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td)[1]')
@@ -118,10 +113,6 @@ class PortalHomePage(BasePage):
 
     def perform_merchant_switched_verfication(self):
         return self.fetch_text(self.btn_switchedMerchant)
-
-    def search_merchant_name(self, org_code):
-        self.perform_sendkeys(self.txt_merchantSearch, org_code)
-        self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
 
     def perfrom_search_Txn(self):
         self.perform_click(self.btn_txnClick)

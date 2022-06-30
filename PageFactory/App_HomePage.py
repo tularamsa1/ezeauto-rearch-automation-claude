@@ -46,6 +46,7 @@ class HomePage(BasePage):
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
 
 
+
     def __init__(self, driver):
         super().__init__(driver)
 
