@@ -342,20 +342,16 @@ def test_sa_100_102_007():
 
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        Configuration.executeFinallyBlock(testcase_id)
-        logger.info(
-            f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
-        if not GlobalVariables.setupCompletedSuccessfully:
-
         if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
             GlobalVariables.time_calc.execution.pause()
             print(colored("Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         GlobalVariables.time_calc.execution.resume()
         print(colored("Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-
-        Configuration.executeFinallyBlock("test_sa_100_102_007")
-        if GlobalVariables.setupCompletedSuccessfully == False:
+        Configuration.executeFinallyBlock(testcase_id)
+        logger.info(
+            f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
+        if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
