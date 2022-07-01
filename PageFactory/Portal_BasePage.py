@@ -23,10 +23,10 @@ class BasePage:
         WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator)).send_keys(value)
 
     def wait_for_element(self, locator, time = 15):
-        return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))
+        return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator))
 
     def wait_for_all_elements(self, locator, time = 15):
-        return WebDriverWait(self.driver, time).until(EC.visibility_of_all_elements_located(locator))
+        return WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))
 
     def wait_for_element_invisible(self, locator, time = 15):
         return WebDriverWait(self.driver, time).until(EC.invisibility_of_element(locator))

@@ -25,6 +25,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_102_022():
     """
     :Description: Verification of a BQR Callback Success transaction via YES_ATOS

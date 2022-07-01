@@ -23,6 +23,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_102_004():
     """
     :Description: Verification of a BQR Check Status Success transaction via HDFC

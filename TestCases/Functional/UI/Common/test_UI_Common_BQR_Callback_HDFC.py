@@ -887,6 +887,7 @@ def test_common_100_102_003():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_102_011():
     """
     :Description: Verification of a BQR Success transaction with two Callback via HDFC
