@@ -606,4 +606,9 @@ def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_detai
     global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
 
     return validation_sucessful
+        logger.error(f"Unable to fetch receipt url from Error: {e}")
+
+    global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
+
+    return validation_sucessful
 
