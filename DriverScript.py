@@ -4,6 +4,7 @@ from Utilities import Rerun
 from Utilities import ConfigReader
 from Configuration import TestSuiteSetup
 from Utilities.execution_log_processor import EzeAutoLogger
+from Utilities.time_calculator import generate_excel_report
 
 logger = EzeAutoLogger(__name__)
 
@@ -14,6 +15,7 @@ try:
             Rerun.prepareImmediateRerunExcel()
         else:
             print("Immediate rerun is disabled for this execution.")
+        
         TestSuiteSetup.executeSelectedTestCases()
         # Rerun
         if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
@@ -27,4 +29,6 @@ try:
     else:
         print("Issue in preparing the devices and automation db for execution. Hence could not start execution.")
 finally:
+    generate_excel_report()
     TestSuiteSetup.killEmulatorsAndAppiumServers()
+

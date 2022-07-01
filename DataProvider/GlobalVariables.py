@@ -27,15 +27,17 @@ middleWareLogs = False
 
 
 #These values are for creating final excel report
+time_calc = None
 
-EXCEL_TC_Exe_Starting_Time = 00
-EXCEL_TC_Exe_completed_time = 00
 
-EXCEL_TC_Val_Starting_Time = 00
-EXCEL_TC_Val_completed_time = 00
+# EXCEL_TC_Exe_Starting_Time = 00
+# EXCEL_TC_Exe_completed_time = 00
 
-EXCEL_TC_LogColl_Starting_Time = 00
-EXCEL_TC_LogColl_completed_time = 00
+# EXCEL_TC_Val_Starting_Time = 00
+# EXCEL_TC_Val_completed_time = 00
+
+# EXCEL_TC_LogColl_Starting_Time = 00
+# EXCEL_TC_LogColl_completed_time = 00
 
 EXCEL_testCaseName = "Default Testcase"
 EXCEL_TC_Execution = "Skip"

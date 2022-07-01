@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 from random import randint
+import shutil
 from selenium.webdriver.chrome import webdriver
 from allure_commons.types import AttachmentType
 import allure
@@ -18,10 +19,13 @@ from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
 from pathlib import Path
 import openpyxl
 import pytest
+from termcolor import colored
+
 from DataProvider import GlobalVariables
 from Utilities import ExcelProcessor
 from Utilities.ReportProcessor import revert_excel_global_variables, setStylesForExcel, \
     updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
+from Utilities.time_calculator import EzeAutoTimeCalculator
 
 tests_count = 0
 passed1 = 0
@@ -122,7 +126,6 @@ def updatingHighLevelReportAfterEachTCS():
     sheet = workbook["Sheet1"]
     GlobalVariables.EXCEL_testCaseName = os.environ.get('PYTEST_CURRENT_TEST').replace(" (teardown)", '').split('::')[1]
     print("Testcase name", GlobalVariables.EXCEL_testCaseName)
-    print("Exec time: ", GlobalVariables.EXCEL_Tot_Time)
     Overall_Status = 'Broken'
     if GlobalVariables.EXCEL_TC_Execution == 'Pass':
 
@@ -166,17 +169,7 @@ def updatingHighLevelReportAfterEachTCS():
     sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
     print("UI VaL: ", GlobalVariables.str_ui_val_result)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Execution Time (sec)')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Execution_Time
-
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Validation Time (sec)')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Val_time
-
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Log Coll Time (sec)')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_LogCollTime
-
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Total Time (sec)')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
+    # sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
 
     # Added on Apr 11
     # To add the rerun count after every executed testcases
@@ -328,21 +321,47 @@ def captureLogs(request):
 
 @pytest.fixture(scope="function")  # Executing once before every testcases
 def method_setup(request):
+    if GlobalVariables.time_calc is not None:
+        GlobalVariables.time_calc.setup.resume()
+        print(colored("Setup Timer resumed in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+    else:
+        GlobalVariables.time_calc = EzeAutoTimeCalculator()
+        print(colored("Intializaed EzeAutoTimeCalculator in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.setup.start()
+        print(colored("Setup Timer started in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+    GlobalVariables.time_calc.setup.pause()
+    print(colored("Setup Timer paused in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
     # breakpoint()
+    GlobalVariables.time_calc.log_collection.start()
+    print(colored("Log Collection Timer started in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
     print("Function setup level")
     GlobalVariables.LogCollTime = LogProcessor.startLineNoOfServerLogFile()
 
-    current = datetime.now()
-    GlobalVariables.EXCEL_TC_Exe_Starting_Time = current.strftime("%H:%M:%S")
+    GlobalVariables.time_calc.log_collection.pause()
+    print(colored("Log Collection Timer paused in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
     # breakpoint()
     print("***************End of setup")
 
     # Executing once AFTER every testcases
     def fin():
+        print()
+        # GlobalVariables.time_calc.log_collection.end()
+        # print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+        GlobalVariables.time_calc.teardown.start()
+        print(colored("Teardown Timer started in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
         print("Function teardown level")
         # Write data to dataframe
         # write_TC_Details_To_Dataframe()
+
+        GlobalVariables.time_calc.teardown.pause()
+        print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         if isBothRerunNotEnabled():
             captureLogs(request)
@@ -361,9 +380,8 @@ def method_setup(request):
                 "bool_capt_log_each_run") == "True":
             log_on_failure(request)
 
-        GlobalVariables.EXCEL_LogCollTime = GlobalVariables.LogCollTime + GlobalVariables.EXCEL_LogCollTime
-        GlobalVariables.EXCEL_Tot_Time = int(GlobalVariables.EXCEL_Execution_Time) + int(
-            GlobalVariables.EXCEL_Val_time) + int(GlobalVariables.EXCEL_LogCollTime)
+        GlobalVariables.time_calc.teardown.resume()
+        print(colored("Teardown Timer resume in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         updatingHighLevelReportAfterEachTCS()
 
@@ -375,13 +393,24 @@ def method_setup(request):
             rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
             if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+                GlobalVariables.time_calc.teardown.pause()
+                print(colored("Teardown Timer paused in 'fin' of method_setup fixture before logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
                 log_on_failure(request)
+                GlobalVariables.time_calc.teardown.resume()
+                print(colored("Teardown Timer resumed in 'fin' of method_setup fixture after logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
             if rerunCount >= 0:
+                # GlobalVariables.time_calc.teardown.pause()
+                # print(colored("Teardown Timer paused (since rerun) in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 rerunCount -= 1
                 # Rerun.rerunTestImmediately(GlobalVariables.EXCEL_testCaseName, GlobalVariables.EXCEL_testCaseFileName, rerunCount)
                 Rerun.rerunTestImmediately(GlobalVariables.EXCEL_testCaseName, GlobalVariables.EXCEL_testCaseFileName,
                                            rerunCount, request)
+
+                # GlobalVariables.time_calc.teardown.resume()
+                # print(colored("Teardown Timer resumed (after rerun) in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
             else:
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 print("Rerun skipped.")
@@ -399,6 +428,11 @@ def method_setup(request):
         #     GlobalVariables.appDriver.quit()
         #     GlobalVariables.appDriver = ''
         revert_excel_global_variables()
+        GlobalVariables.time_calc.teardown.end()
+        print(colored("Teardown Timer ended in 'fin' -> 'method_setup' fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+        # GlobalVariables.time_calc.save()
+        # print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
     request.addfinalizer(fin)
 
@@ -422,6 +456,15 @@ def write_TC_Details_To_Dataframe():
 
 @pytest.fixture(scope="function")
 def ui_driver(request):
+    if GlobalVariables.time_calc is not None:
+        GlobalVariables.time_calc.setup.resume()
+        print(colored("Setup Timer resumed in ui_driver function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+    else:
+        GlobalVariables.time_calc = EzeAutoTimeCalculator()
+        print(colored("Intializaed EzeAutoTimeCalculator in ui_driver".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.setup.start()
+        print(colored("Setup Timer started in ui_driver".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
     GlobalVariables.portalDriver = chromedriver_autoinstaller.install()
     # Chrome options
     chrome_options = webdriver.ChromeOptions()
@@ -431,10 +474,27 @@ def ui_driver(request):
     # Run chrome
     GlobalVariables.portalDriver = webdriver.Chrome(options=chrome_options)
     GlobalVariables.portalDriver.maximize_window()
+    # GlobalVariables.time_calc.setup.resume()
+    # print(colored("Setup Timer resumed in ui_driver function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+    GlobalVariables.time_calc.setup.pause()
+    print(colored("Setup Timer paused in ui_driver function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
 
 
 @pytest.fixture(scope="function")
 def appium_driver(request):
+    if GlobalVariables.time_calc is not None:
+        GlobalVariables.time_calc.setup.resume()
+        print(colored("Setup Timer resumed in appium_driver function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+    else:
+        GlobalVariables.time_calc = EzeAutoTimeCalculator()
+        print(colored("Intializaed EzeAutoTimeCalculator in appium_driver".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.setup.start()
+        print(colored("Setup Timer started in appium_driver".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
     testcaseid = request.node.name
     deviceDetails = ResourceAssigner.getDeviceFromDB(testcaseid)
     appiumserverDetails = ResourceAssigner.getAppiumServerFromDB(testcaseid)
@@ -458,9 +518,13 @@ def appium_driver(request):
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
         "MobileCapabilityType.NEW_COMMAND_TIMEOUT":"300"
     }
+    print(desired_cap)
     print("appium server url:", 'http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub')
     GlobalVariables.appDriver = app_webdriver.Remote('http://127.0.0.1:' + appiumserverDetails['PortNumber'] + '/wd/hub', desired_cap)
-#    GlobalVariables.appDriver.implicitly_wait(30)
+    # GlobalVariables.appDriver.implicitly_wait(30)
+
+    GlobalVariables.time_calc.setup.pause()
+    print(colored("Setup Timer paused in appium_driver function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
 
 def pytest_deselected(items):
@@ -478,11 +542,18 @@ def isBothRerunNotEnabled():
 
 
 def log_on_failure(request):
+    if GlobalVariables.time_calc.log_collection.is_started and GlobalVariables.time_calc.log_collection.is_paused:
+        GlobalVariables.time_calc.log_collection.resume()
+        print(colored("Log Collection Timer resumed in 'log_on_failure' function of conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+    else:
+        GlobalVariables.time_calc.log_collection.start()
+        print(colored("Log Collection started in 'log_on_failure' function of conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+
     item = request.node
     if item.rep_call.failed:
         if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
-            current = datetime.now()
-            GlobalVariables.EXCEL_TC_LogColl_Starting_Time = current.strftime("%H:%M:%S")
 
             # if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and \
             #         configReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
@@ -521,7 +592,6 @@ def log_on_failure(request):
             #         rerun_file = Path(path + "/cnpware.log")
             #         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-            print("In logOnFailure Portal logs coll starting time: ", str(GlobalVariables.EXCEL_TC_LogColl_Starting_Time))
 
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_last_run") == "True":
@@ -714,8 +784,6 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-            ReportProcessor.get_Log_Collection_Time()
-
         if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
                           attachment_type=AttachmentType.PNG)
@@ -726,7 +794,7 @@ def log_on_failure(request):
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-        if GlobalVariables.str_chargeslip_val_result == False and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+        if GlobalVariables.str_chargeslip_val_result == "Fail" and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
                 "bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
@@ -748,19 +816,25 @@ def log_on_failure(request):
 
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
+    GlobalVariables.time_calc.log_collection.pause()
+    print(colored("Log Collection Timer paused in 'log on failure' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
 
 @pytest.fixture(scope='function')
 def log_on_success(request):
     yield
+
+    if GlobalVariables.time_calc.log_collection.is_started and GlobalVariables.time_calc.log_collection.is_paused:
+        GlobalVariables.time_calc.log_collection.resume()
+        print(colored("Log Collection resumed in 'log_on_success' function of conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+    else:
+        GlobalVariables.time_calc.log_collection.start()
+        print(colored("Log Collection started in 'log_on_success' function of conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
     item = request.node
 
     if item.rep_call.passed:
         if Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
-            current = datetime.now()
-            GlobalVariables.EXCEL_TC_LogColl_Starting_Time = current.strftime("%H:%M:%S")
-
-            print("In logOnSuccess Portal logs coll starting time: ", str(GlobalVariables.EXCEL_TC_LogColl_Starting_Time))
 
             # if configReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and \
             #         configReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
@@ -990,8 +1064,6 @@ def log_on_success(request):
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-            ReportProcessor.get_Log_Collection_Time()
-
         if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
                           attachment_type=AttachmentType.PNG)
@@ -1002,7 +1074,7 @@ def log_on_success(request):
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-        if GlobalVariables.str_chargeslip_val_result == True and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+        if GlobalVariables.str_chargeslip_val_result == "Pass" and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
                 "bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
@@ -1024,6 +1096,18 @@ def log_on_success(request):
 
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
+
+    GlobalVariables.time_calc.log_collection.pause()
+    print(colored("Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+    GlobalVariables.time_calc.log_collection.end()
+    print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+    GlobalVariables.time_calc.save()
+    print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
 
 
 def pytest_sessionstart(session):
