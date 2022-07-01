@@ -46,7 +46,7 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
             order_num = TestData.ORDER_NUMBER
             homePage.enter_amount_and_order_number(amount, order_num)
             paymentPage = PaymentPage(driver)
-            paymentPage.check_payment_page()
+            paymentPage.is_payment_page_displayed()
             paymentPage.click_on_Bqr_paymentMode()
             text = paymentPage.validate_upi_bqr_payment_screen()
             assert text == "Scan QR code using"

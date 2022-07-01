@@ -22,10 +22,14 @@ class PortalHomePage(BasePage):
     btn_confirmRefund = (By.XPATH, '(//button[.="Confirm"])[1]')
     btn_refund = (By.XPATH, '(//button[.="Refund"])[1]')
     btn_switchedMerchant = (By.XPATH, '/html/body/div/div[10]/div[1]/div[1]/button[2]')
+    txt_homepageTitle = (By.XPATH, '//title[contains(text(),"Manage Merchants")]')
 
 
     def __init__(self, driver):
         super().__init__(driver)
+
+    def wait_for_home_page_load(self):
+        self.wait_for_element(self.txt_homepageTitle)
 
     def search_merchant_name(self, org_code):
         self.perform_sendkeys(self.txt_merchantSearch, org_code)
@@ -70,7 +74,7 @@ class PortalHomePage(BasePage):
         return text
 
     def perform_refund_of_txn(self, amount):
-        self.wait_for_element_invisible(self.lbl_refund_window_before_load)
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load, 20)
         self.wait_for_element(self.lbl_refund_window)
         self.wait_for_element(self.txt_refundAmtField).clear()
         self.perform_sendkeys(self.txt_refundAmtField, str(amount))

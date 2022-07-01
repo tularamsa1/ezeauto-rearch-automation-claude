@@ -138,7 +138,7 @@ def test_SubFeatureCode():  # Make sure to add the test case name as same as the
                 print("Charge Slip Validation failed due to exception - " + str(e))
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.bool_chargeslip_val_result = False
+                GlobalVariables.str_chargeslip_val_result = False
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 

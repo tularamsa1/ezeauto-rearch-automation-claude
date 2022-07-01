@@ -1,7 +1,6 @@
 import random
 import sys
 from datetime import datetime
-from time import sleep
 import pytest
 from Configuration import Configuration
 from DataProvider import GlobalVariables
@@ -11,6 +10,7 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
+from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -24,38 +24,41 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_102_004():
+def test_sa_100_102_028():
     """
-    :Description: Verification of a BQR Check Status Success transaction via HDFC
-    :Subfeature code: UI_Common_PM_BQR_Checkstatus_Success_HDFC _01
+    :Description: Verification of a BQR Check Status Success transaction through SA via YES_ATOS
+    :Subfeature code: UI_SA_PM_BQR_Checkstatus_Success_YES_ATOS_28
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                004-> TC04
+                                028-> TC28
     """
-
+ 
     try:
         testcase_id = sys._getframe().f_code.co_name
         logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
+
         GlobalVariables.setupCompletedSuccessfully = True
         #---------------------------------------------------------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        # Variable which tracks if the execution is going on through all the lines of code of test case.
+        # Set to failure where ever there are chances of failure.
         msg = ""
-
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            app_driver = GlobalVariables.appDriver
-            loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
+            driver = GlobalVariables.appDriver
+            loginPage = LoginPage(driver)
+            username = read_config("credentials", 'username_YES_ATOS')
             password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
+            org_code = read_config("testdata", "org_code_yes_atos")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
+            homePage = HomePage(driver)
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -63,53 +66,32 @@ def test_common_100_102_004():
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-            paymentPage = PaymentPage(app_driver)
+            paymentPage = PaymentPage(driver)
             paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is BQR")
             paymentPage.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
-            logger.info("Restarting MPOSX app to perfrom checkstatus of the transaction")
+            paymentPage.click_on_back_btn()
+            paymentPage.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            app_payment_status = paymentPage.fetch_payment_status()
+            logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
+            paymentPage.click_on_proceed_homepage()
             query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
-            api_details = DBProcessor.get_api_details('paymentStatus',
-                                                      request_body={"username": username, "password": password,
-                                                                    "txnId": txn_id})
-            response = APIProcessor.send_request(api_details)
-            print("Response received:", response)
-            logger.debug(f"Response received for checkstatus of transaction is : {response}")
-            app_driver.reset()
-            loginPage = LoginPage(app_driver)
-            logger.debug(f"Loging in again with user name : {username}")
-            loginPage.validate_login_page()
-            loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
-            homePage.check_home_page_logo()
-            homePage.wait_for_home_page_load()
-            logger.debug("Homepage of MPOSX app loaded successfully")
-            homePage.enter_amount_and_order_number(amount, order_id)
-            logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
-            homePage.perform_check_status()
-            logger.debug("Performing checkstatus of the previous transaction")
-            paymentPage = PaymentPage(app_driver)
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.debug(f"Fetching Transaction status of previous transaction : {app_payment_status}")
-            paymentPage.click_on_proceed_homepage()
-            paymentPage.click_on_back_btn()
-            homePage.click_on_back_btn_enter_amt_page()
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
             ReportProcessor.get_TC_Exe_Time()
         except Exception as e:
             ReportProcessor.capture_ss_when_exe_failed()
-            logger.error(f"Test case execution failed due to the exception : {e}")
+            logger.error("Testcase execution failed due to exception: str(")
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
             ReportProcessor.get_TC_Exe_Time()
@@ -123,14 +105,14 @@ def test_common_100_102_004():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
-                logger.info(f"Starting App Validation for the test case : {testcase_id}")
+                logger.info("Starting App Validation for the test case")
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
 
                 homePage.click_on_history()
-                transactionsHistoryPage = TransHistoryPage(app_driver)
+                transactionsHistoryPage = TransHistoryPage(driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
-                app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
+                app_payment_status = transactionsHistoryPage.fetch_txn_status_text().split(":")[1]
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status}")
                 app_payment_mode = transactionsHistoryPage.fetch_txn_type_text()
@@ -159,7 +141,7 @@ def test_common_100_102_004():
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
-                logger.info(f"Starting API Validation for the test case : {testcase_id}")
+                logger.info("Starting API Validation for the test case")
                 # --------------------------------------------------------------------------------------------
 
                 expectedAPIValues = {"Payment Status":"AUTHORIZED","Amount": amount, "Payment Mode": "BHARATQR"}
@@ -192,9 +174,9 @@ def test_common_100_102_004():
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             try:
-                logger.info(f"Starting DB Validation for the test case :{testcase_id}")
+                logger.info(f"Starting DB Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "AUTHORIZED", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "State":"SETTLED", "State Bharatqr": "SETTLED", "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Success"}
+                expectedDBValues = {"Payment Status": "AUTHORIZED", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "State":"SETTLED", "State Bharatqr": "SETTLED", "Amount Bharatqr": amount, "Status Bharatqr": "SUCCESS"}
                 #
                 query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
@@ -209,13 +191,13 @@ def test_common_100_102_004():
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
                 logger.debug(f"Fetching Transaction state from DB : {state_db} ")
 
-                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+                query = "select state,txn_amount,status_code from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_code from bahratqr_txn DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
                 state_bharatqr_db = result["state"].iloc[0]
                 amount_bharatqr_db = result["txn_amount"].iloc[0]
-                status_bharatqr_db = result["status_desc"].iloc[0]
+                status_bharatqr_db = result["status_code"].iloc[0]
                 logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
@@ -237,7 +219,7 @@ def test_common_100_102_004():
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
-                logger.info(f"Starting Portal Validation for the test case : {testcase_id}")
+                logger.info(f"Starting Portal Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment Status": "Settled", "Payment mode":"BHARATQR" , "Payment amount":str(amount)}
                 #
@@ -253,12 +235,16 @@ def test_common_100_102_004():
                 logger.info(f"Switching to merchant : {org_code}")
                 homePagePortal.click_switch_button(org_code)
                 homePagePortal.click_transaction_search_menu()
-                portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
-                portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)
-                portal_amt = homePagePortal.fetch_amount_from_transaction_id(txn_id)
+                transactionsHistoryPagePortal = PortalTransHistoryPage(ui_driver)
+                portalValuesDict = transactionsHistoryPagePortal.get_transaction_details_for_portal(txn_id)
+                portal_status = portalValuesDict['Status']
+                portal_txn_type = portalValuesDict['Type']
+                portal_amt = portalValuesDict['Total Amount']
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
+                print("Status of txn:", portal_status)
+                print("Portal txn type ", portal_txn_type)
                 #
                 actualPortalValues = {"Payment Status": portal_status, "Payment mode": portal_txn_type, "Payment amount":str(portal_amt.split('.')[1])}
 
@@ -274,13 +260,15 @@ def test_common_100_102_004():
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+                # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': rrn,
+                expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                  'RRN': rrn,
                                   'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
-                receipt_validator.perform_charge_slip_validations(txn_id, {"username": username, "password": password},
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": username, "password": password},
                                                                   expectedValues)
 
             except Exception as e:
@@ -293,13 +281,13 @@ def test_common_100_102_004():
 
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+                # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
         logger.info(
-            f"**********Test case Execution and Validation compeleted for testcase:{testcase_id}**************")
+            f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
         if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
@@ -318,90 +306,73 @@ def test_common_100_102_004():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_102_005():
-
+def test_sa_100_102_029():
     """
-    :Description: Verification of a BQR Checkstatus Failed transaction via HDFC
-    :Subfeature code: UI_Common_PM_BQR_Checkstatus_Failed_HDFC _05
+    :Description: Verification of a BQR Checkstatus Failed transaction through SA via YES_ATOS
+    :Subfeature code: UI_SA_PM_BQR_Checkstatus_Failed_YES_ATOS_29
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                005-> TC05
+                                029-> TC29
     """
-
     try:
         testcase_id = sys._getframe().f_code.co_name
-        logger.info(f"Starting execution for the test case :{testcase_id}")
+        logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
-
         GlobalVariables.setupCompletedSuccessfully = True
         #---------------------------------------------------------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        # Variable which tracks if the execution is going on through all the lines of code of test case.
+        # Set to failure where ever there are chances of failure.
         msg = ""
 
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            app_driver = GlobalVariables.appDriver
-            loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
+            driver = GlobalVariables.appDriver
+            loginPage = LoginPage(driver)
+            username = read_config("credentials", 'username_YES_ATOS')
             password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
+            org_code = read_config("testdata", "org_code_yes_atos")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
+            homePage = HomePage(driver)
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(101, 200)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             print("Order id", order_id)
-            homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-            paymentPage = PaymentPage(app_driver)
+            homePage.enter_amount_and_order_number(amount, order_id)
+            paymentPage = PaymentPage(driver)
             paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is BQR")
             paymentPage.validate_upi_bqr_payment_screen()
-            app_driver.reset()
             logger.info("Payment QR generated and displayed successfully")
+            paymentPage.click_on_back_btn()
+            paymentPage.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            app_payment_status = paymentPage.fetch_payment_status()
+            logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
+            paymentPage.click_on_proceed_homepage()
+            paymentPage.click_on_back_btn()
+            homePage.click_on_back_btn_enter_amt_page()
+
             query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch transaction id from database : {query}")
+            logger.debug(f"Query to fetch transaction id from db is : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
-            logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
-            api_details = DBProcessor.get_api_details('paymentStatus',
-                                                      request_body={"username": username, "password": password,
-                                                                    "txnId": txn_id})
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for checkstatus of transaction is : {response}")
-            print("API RESP settlementStatus", response["settlementStatus"])
-            app_driver.reset()
-            logger.info("Restarting MPOSX app to perfrom checkstatus of the transaction")
-            loginPage = LoginPage(app_driver)
-            logger.debug(f"Loging in again with user name : {username}")
-            loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
-            homePage.check_home_page_logo()
-            homePage.wait_for_home_page_load()
-            logger.info(f"App homepage loaded successfully")
-            homePage.enter_amount_and_order_number(amount, order_id)
-            logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
-            homePage.perform_check_status()
-            logger.debug("Performing checkstatus of the previous transaction")
-            paymentPage = PaymentPage(app_driver)
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.debug(f"Fetching Transaction status of previous transaction : {app_payment_status}")
-            assert app_payment_status == "Payment Failed"
-            paymentPage.click_on_proceed_homepage()
-            homePage.click_on_back_btn_enter_amt_page()
+            logger.debug(f"Fetching transaction id from database : Txn id = {txn_id}")
             #
             # ------------------------------------------------------------------------------------------------
             logger.info(f"Execution is completed for the test case : {testcase_id}")
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()
+
         except Exception as e:
             ReportProcessor.capture_ss_when_exe_failed()
             logger.error(f"Test case execution failed due to the exception : {e}")
@@ -423,7 +394,7 @@ def test_common_100_102_005():
                 expectedAppValues = {"Payment Status": "FAILED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
 
                 homePage.click_on_history()
-                transactionsHistoryPage = TransHistoryPage(app_driver)
+                transactionsHistoryPage = TransHistoryPage(driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
                 app_payment_status = transactionsHistoryPage.fetch_txn_status_text().split(":")[1]
                 logger.debug(
@@ -443,7 +414,7 @@ def test_common_100_102_005():
                 logger.info("App Validation Completed successfully for test case")
             except Exception as e:
                 ReportProcessor.capture_ss_when_exe_failed()
-                logger.error(f"App Validation failed due to exception : {e}")
+                logger.error(f"Test case APP validation failed due to the exception : {e}")
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
@@ -454,7 +425,7 @@ def test_common_100_102_005():
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
-                logger.info(f"Starting API Validation for the test case : {testcase_id}")
+                logger.info("Starting API Validation for the test case")
                 # --------------------------------------------------------------------------------------------
 
                 expectedAPIValues = {"Payment Status":"FAILED","Amount": amount, "Payment Mode": "BHARATQR"}
@@ -490,7 +461,7 @@ def test_common_100_102_005():
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "FAILED", "Payment mode": "BHARATQR",
                                     "Payment amount": "{:.2f}".format(amount), "State": "FAILED", "State Bharatqr": "FAILED",
-                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction failed"}
+                                    "Amount Bharatqr": amount, "Status Bharatqr": "FAILED"}
                 #
                 query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
@@ -504,13 +475,14 @@ def test_common_100_102_005():
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
                 logger.debug(f"Fetching Transaction state from DB : {state_db} ")
-                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+
+                query = "select state,txn_amount,status_code from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_code from bahratqr_txn DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
                 state_bharatqr_db = result["state"].iloc[0]
                 amount_bharatqr_db = result["txn_amount"].iloc[0]
-                status_bharatqr_db = result["status_desc"].iloc[0]
+                status_bharatqr_db = result["status_code"].iloc[0]
                 logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
                 logger.debug(
@@ -531,6 +503,7 @@ def test_common_100_102_005():
                 GlobalVariables.str_db_val_result= 'Fail'
 
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
@@ -550,9 +523,11 @@ def test_common_100_102_005():
                 logger.info(f"Switching to merchant : {org_code}")
                 homePagePortal.click_switch_button(org_code)
                 homePagePortal.click_transaction_search_menu()
-                portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
-                portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)
-                portal_amt = homePagePortal.fetch_amount_from_transaction_id(txn_id)
+                transactionsHistoryPagePortal = PortalTransHistoryPage(ui_driver)
+                portalValuesDict = transactionsHistoryPagePortal.get_transaction_details_for_portal(txn_id)
+                portal_status = portalValuesDict['Status']
+                portal_txn_type = portalValuesDict['Type']
+                portal_amt = portalValuesDict['Total Amount']
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
@@ -573,6 +548,7 @@ def test_common_100_102_005():
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
@@ -596,14 +572,15 @@ def test_common_100_102_005():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_102_006():
+def test_sa_100_102_030():
     """
-    :Description: Verification of a BQR Check Status After QR Expiry transaction via HDFC
-    :Subfeature code: UI_Common_PM_BQR_Checkstatus_AfterExpiry_HDFC _06
-    :TC naming code description: 100->Payment Method
-                                102->BQR
-                                006-> TC06
-    """
+     :Description: Verification of a BQR Check Status through SA After QR Expiry transaction via YES_ATOS
+     :Subfeature code: UI_SA_PM_BQR_Checkstatus_AfterExpiry_YES_ATOS_30
+     :TC naming code description: 100->Payment Method
+                                 102->BQR
+                                 030-> TC30
+     """
+
 
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -625,19 +602,19 @@ def test_common_100_102_006():
 
         #---------------------------------------------------------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
-
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         msg = ""
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
+            username = read_config("credentials", 'username_YES_ATOS')
             password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
+            org_code = read_config("testdata", "org_code_yes_atos")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -655,7 +632,6 @@ def test_common_100_102_006():
             logger.info("Selected payment mode is BQR")
             paymentPage.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
-            app_driver.reset()
             query = "select id from txn where org_code='"+org_code+"' and external_ref='"+order_id+"' order by created_time desc limit 1"#fetch txn id besed on order id from txn table
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -664,14 +640,14 @@ def test_common_100_102_006():
             rrn = "RE" + txn_id.split('E')[1]
             logger.debug(
                 f"Fetching Txn_id,Auth code and RRN from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
-            logger.info(f"Waiting for QR code to get Expired.. Please wait")
-            sleep(60)
-            api_details = DBProcessor.get_api_details('paymentStatus',
-                                                      request_body={"username": username, "password": password,
-                                                                    "txnId": txn_id})
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Fetching API Response for call back : {response}")
-
+            paymentPage.click_on_back_btn()
+            paymentPage.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            app_payment_status = paymentPage.fetch_payment_status()
+            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
+            paymentPage.click_on_proceed_homepage()
+            paymentPage.click_on_back_btn()
+            homePage.click_on_back_btn_enter_amt_page()
             logger.info(f"Execution is completed for the test case : {testcase_id}")
             #
             # ------------------------------------------------------------------------------------------------
@@ -692,16 +668,12 @@ def test_common_100_102_006():
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info(f"Starting App Validation for the test case : {testcase_id}")
+            logger.info("Starting App Validation for the test case")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:EXPIRED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-                logger.info(f"Logining in to app again with username : {username}")
-                loginPage.perform_login(username, password)
-                homePage = HomePage(app_driver)
+
                 homePage.check_home_page_logo()
-                homePage.wait_for_home_page_load()
-                logger.info(f"App homepage loaded successfully")
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -731,8 +703,9 @@ def test_common_100_102_006():
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
-                logger.info(f"Starting API Validation for the test case : {testcase_id}")
+                logger.info(f"Starting API Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
+
                 expectedAPIValues = {"Payment Status":"EXPIRED","Amount": amount, "Payment Mode": "BHARATQR"}
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password, "txnId": txn_id})
@@ -764,11 +737,11 @@ def test_common_100_102_006():
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             try:
-                logger.info(f"Starting DB Validation for the test case : {testcase_id}")
+                logger.info(f"Starting DB Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "EXPIRED", "Payment mode": "BHARATQR",
                                     "Payment amount": "{:.2f}".format(amount), "State": "EXPIRED", "State Bharatqr": "EXPIRED",
-                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
+                                    "Amount Bharatqr": amount, "Status Bharatqr": "PENDING"}
                 #
                 query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
@@ -782,13 +755,14 @@ def test_common_100_102_006():
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
                 logger.debug(f"Fetching Transaction state from DB : {state_db} ")
-                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+
+                query = "select state,txn_amount,status_code from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_code from bahratqr_txn DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
                 state_bharatqr_db = result["state"].iloc[0]
                 amount_bharatqr_db = result["txn_amount"].iloc[0]
-                status_bharatqr_db = result["status_desc"].iloc[0]
+                status_bharatqr_db = result["status_code"].iloc[0]
                 logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
                 logger.debug(
@@ -809,12 +783,13 @@ def test_common_100_102_006():
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result= 'Fail'
 
+
         # -----------------------------------------End of DB Validation---------------------------------------
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
-                logger.info(f"Starting Portal Validation for the test case : {testcase_id}")
+                logger.info(f"Starting Portal Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment Status": "Expired", "Payment mode":"BHARATQR" , "Payment amount":str(amount)}
                 #
@@ -830,9 +805,11 @@ def test_common_100_102_006():
                 logger.info(f"Switching to merchant : {org_code}")
                 homePagePortal.click_switch_button(org_code)
                 homePagePortal.click_transaction_search_menu()
-                portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
-                portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)
-                portal_amt = homePagePortal.fetch_amount_from_transaction_id(txn_id)
+                transactionsHistoryPagePortal = PortalTransHistoryPage(ui_driver)
+                portalValuesDict = transactionsHistoryPagePortal.get_transaction_details_for_portal(txn_id)
+                portal_status = portalValuesDict['Status']
+                portal_txn_type = portalValuesDict['Type']
+                portal_amt = portalValuesDict['Total Amount']
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
@@ -853,7 +830,9 @@ def test_common_100_102_006():
                 GlobalVariables.str_portal_val_result = 'Fail'
 
         # -----------------------------------------End of Portal Validation---------------------------------------
+
     # -------------------------------------------End of Validation---------------------------------------------
+
     finally:
         Configuration.executeFinallyBlock(testcase_id)
         logger.info(
@@ -862,7 +841,7 @@ def test_common_100_102_006():
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
+            ReportProcessor.updateTestCaseResult(msg)
         # -------------------------------Revert Preconditions done(setup)--------------------------------------------
 
         logger.info("Reverting all the settings that were done as preconditions")
@@ -875,3 +854,4 @@ def test_common_100_102_006():
         logger.info("Reverted back all the settings that were done as preconditions")
 
         # ----------------------------------------------------------------------------------------------------------
+
