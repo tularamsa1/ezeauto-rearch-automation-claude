@@ -110,7 +110,7 @@ def createStatusTable():
     else:
         myTable.add_row(["App Validation", appVal])
 
-    if appVal == "Failed":
+    if uiVal == "Failed":
         myTable.add_row(["UI Validation", "Fail"])
     else:
         myTable.add_row(["UI Validation", uiVal])
@@ -402,9 +402,9 @@ def updateTestCaseResult(msg):
             ls_validation_msg.append("APP validation Failed!!")
         if GlobalVariables.str_ui_val_result == "Fail":
             ls_validation_msg.append("UI validation Failed!!")
-        if not GlobalVariables.bool_chargeslip_val_result:
+        if not GlobalVariables.str_chargeslip_val_result:
             ls_validation_msg.append("Charge-Slip validation Failed!!")
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail" or GlobalVariables.bool_chargeslip_val_result == False:
+        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail" or GlobalVariables.str_chargeslip_val_result == False:
             message = ""
             for validation_msg in ls_validation_msg:
                 message = message + "\n" + validation_msg

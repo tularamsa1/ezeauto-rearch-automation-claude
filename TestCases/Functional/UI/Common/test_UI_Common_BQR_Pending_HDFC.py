@@ -1,4 +1,5 @@
 import random
+import sys
 from datetime import datetime
 import pytest
 from Configuration import Configuration
@@ -12,41 +13,36 @@ from PageFactory.Portal_LoginPage import PortalLoginPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
-
 logger = EzeAutoLogger(__name__)
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
-@pytest.mark.usefixtures("appium_driver", "ui_driver") #This is an optional line. Keep only whichever driver is required.
-# From below use only the markers that are applicable for the test case and remove the rest.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.usefixtures("appium_driver", "ui_driver")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_102_025(): #Make sure to add the test case name as same as the sub feature code.
+def test_common_100_102_018():
     """
     :Description: Verification of a BQR Pending transaction via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_Pending_HDFC _025
+    :Sub Feature code: UI_Common_PM_BQR_Pending_HDFC _018
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                0025-> TC25
+                                0018-> TC18
     """
-    logger.info("Starting execution for the test case : test_common_100_102_025")
+
 
     try:
+        testcase_id = sys._getframe().f_code.co_name
+        logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-
-
         GlobalVariables.setupCompletedSuccessfully = True
 
         #---------------------------------------------------------------------------------------------------------
-        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
-
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         msg = ""
-
 
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
@@ -61,6 +57,7 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(51, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -68,7 +65,7 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is BQR")
             paymentPage.validate_upi_bqr_payment_screen()
@@ -93,16 +90,16 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
             paymentPage.click_on_proceed_homepage()
             homePage.click_on_skip_button()
             homePage.click_on_back_btn_enter_amt_page()
-            logger.info("Execution is completed for the test case : test_sa_100_101_006")
-
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+            ReportProcessor.get_TC_Exe_Time()
         except Exception as e:
+            ReportProcessor.capture_ss_when_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
-            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+            ReportProcessor.get_TC_Exe_Time()
             logger.error(f"Test case execution failed due to the exception : {e}")
             pytest.fail("Test case execution failed due to the exception -"+str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
@@ -113,7 +110,7 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info("Starting App Validation for the test case")
+            logger.info(f"Starting App Validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:PENDING", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
@@ -135,6 +132,7 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"Test case App validation failed due to the exception : {e}")
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
@@ -146,22 +144,19 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
-                logger.info("Starting API Validation for the test case")
+                logger.info(f"Starting API Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
 
                 expectedAPIValues = {"Payment Status":"PENDING","Amount": amount, "Payment Mode": "BHARATQR"}
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": username, "password": password})
+                api_details = DBProcessor.get_api_details('txnDetails',
+                                                          request_body={"username": username, "password": password, "txnId": txn_id})
+                print("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
                 print(response)
-                list = response["txns"]
-                status_api = amount_api = payment_mode_api = ''
-                for li in list:
-                    if li["txnId"] == txn_id:
-                        status_api = li["status"]
-                        amount_api = int(li["amount"])
-                        payment_mode_api = li["paymentMode"]
+                status_api = response["status"]
+                amount_api = response["amount"]
+                payment_mode_api=response["paymentMode"]
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
@@ -184,10 +179,10 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             try:
-                logger.info("Starting DB Validation for the test case")
+                logger.info(f"Starting DB Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
 
-                expectedDBValues = {"Payment Status": "PENDING", "Payment mode":"BHARATQR" , "Payment amount":amount, "State":"PENDING", "State Bharatqr": "PENDING", "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
+                expectedDBValues = {"Payment Status": "PENDING", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "State":"PENDING", "State Bharatqr": "PENDING", "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
                 #
                 query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
@@ -195,7 +190,7 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
                 logger.debug(f"Fetching Query result from DB : {result} ")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
+                amount_db = "{:.2f}".format(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
                 logger.debug(f"Fetching Transaction status from DB : {status_db} ")
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
@@ -212,7 +207,6 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
                 logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
-                # Write the test case DB validation code block here. Set this to pass if not required.
                 #
                 actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db, "State":state_db, "State Bharatqr": state_bharatqr_db, "Amount Bharatqr": amount_bharatqr_db, "Status Bharatqr": status_bharatqr_db}
 
@@ -227,13 +221,12 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result= 'Fail'
 
-
         # -----------------------------------------End of DB Validation---------------------------------------
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
-                logger.info("Starting Portal Validation for the test case")
+                logger.info(f"Starting Portal Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment Status": "Pending", "Payment mode":"BHARATQR" , "Payment amount":str(amount)}
                 #
@@ -244,9 +237,10 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
                 logger.info(f"Logging in Portal using username : {username_portal}")
                 loginPagePortal.perform_login_to_portal(username_portal, password_portal)
                 homePagePortal = PortalHomePage(ui_driver)
-                homePagePortal.search_merchant_name(read_config("testdata", "org_code_hdfc"))
-                logger.info(f"Switching to merchant : {read_config('testdata', 'org_code_hdfc')}")
-                homePagePortal.click_switch_button()
+                homePagePortal.wait_for_home_page_load()
+                homePagePortal.search_merchant_name(org_code)
+                logger.info(f"Switching to merchant : {org_code}")
+                homePagePortal.click_switch_button(org_code)
                 homePagePortal.click_transaction_search_menu()
                 portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
                 portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)
@@ -263,6 +257,7 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
                 logger.info("Portal Validation Completed successfully for test case")
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 logger.error(f"Test case Portal validation failed due to the exception : {e}")
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -273,19 +268,17 @@ def test_common_100_102_025(): #Make sure to add the test case name as same as t
 
 
     # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
-        if GlobalVariables.setupCompletedSuccessfully == False:
+        Configuration.executeFinallyBlock(testcase_id)
+        logger.info(
+            f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
+        if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        #-------------------------------Revert Preconditions done(setup)--------------------------------------------
+            ReportProcessor.updateTestCaseResult(msg)
+        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
 
         # Write the code here to revert the settings that were done as precondition
 
-        #----------------------------------------------------------------------------------------------------------
-        # Test case ID should be passed as argument in string format.
-        #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
-        Configuration.executeFinallyBlock("test_common_100_102_025")
-        logger.info("**********Test case Execution and Validation compeleted for test case : test_common_100_102_025***********")
+        # ----------------------------------------------------------------------------------------------------------

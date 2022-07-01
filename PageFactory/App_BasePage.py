@@ -1,12 +1,8 @@
-from time import sleep
-
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-from Utilities import ConfigReader
 
 
 class BasePage:
@@ -14,22 +10,22 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
-    def perform_click(self, locator, time=30):
-        WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
+    def perform_click(self, locator, time=15):
+        WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
-    def perform_clickIndex(self, locator,Index, time=30):
-        WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))[Index].click()
+    def perform_clickIndex(self, locator,Index, time=15):
+        WebDriverWait(self.driver, 15).until(EC.presence_of_all_elements_located(locator))[Index].click()
 
-    def fetch_text(self, locator, time=30):
+    def fetch_text(self, locator, time=15):
         return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).text
 
-    def perform_sendkeys(self, locator, value, time=30):
-        WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).send_keys(value)
+    def perform_sendkeys(self, locator, value, time=15):
+        WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator)).send_keys(value)
 
-    def wait_for_element(self, locator, time=30):
-        return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator))
+    def wait_for_element(self, locator, time=15):
+        return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))
 
-    def wait_for_all_elements(self, locator, time=30):
+    def wait_for_all_elements(self, locator, time=15):
         return WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))
 
     def perform_touch_action_using_cordinates(self, x1,y1,x2,y2):

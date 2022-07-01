@@ -726,7 +726,7 @@ def log_on_failure(request):
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-        if GlobalVariables.bool_chargeslip_val_result == False and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+        if GlobalVariables.str_chargeslip_val_result == False and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
                 "bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
@@ -1002,7 +1002,7 @@ def log_on_success(request):
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-        if GlobalVariables.bool_chargeslip_val_result == True and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+        if GlobalVariables.str_chargeslip_val_result == True and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
                 "bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)

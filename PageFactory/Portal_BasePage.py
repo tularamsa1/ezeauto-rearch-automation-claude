@@ -9,24 +9,24 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
-    def perform_click(self, locator, time = 40):
-        WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
+    def perform_click(self, locator, time = 15):
+        WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
     def select_from_drop_down(self, locator, value, time=15):
-        select = Select(WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)))
+        select = Select(WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator)))
         select.select_by_value(value)
 
-    def fetch_text(self, locator, time = 12):
+    def fetch_text(self, locator, time = 15):
         return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).text
 
     def perform_sendkeys(self, locator, value, time = 15):
-        WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(locator)).send_keys(value)
+        WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator)).send_keys(value)
 
     def wait_for_element(self, locator, time = 15):
-        return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator))
+        return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))
 
     def wait_for_all_elements(self, locator, time = 15):
-        return WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))
+        return WebDriverWait(self.driver, time).until(EC.visibility_of_all_elements_located(locator))
 
     def wait_for_element_invisible(self, locator, time = 15):
         return WebDriverWait(self.driver, time).until(EC.invisibility_of_element(locator))

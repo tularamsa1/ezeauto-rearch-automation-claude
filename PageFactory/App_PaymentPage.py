@@ -104,7 +104,7 @@ class PaymentPage(BasePage):
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
 
-    def check_payment_page(self, amount, order_id):
+    def is_payment_page_displayed(self, amount, order_id):
         try:
             self.wait_for_element(self.lbl_payWith, 6)
         except:

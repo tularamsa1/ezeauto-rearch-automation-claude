@@ -75,7 +75,7 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             # time.sleep(5)
             paymentPage.click_on_Upi_paymentMode()
 
@@ -365,7 +365,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             # time.sleep(10)
@@ -642,7 +642,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
 

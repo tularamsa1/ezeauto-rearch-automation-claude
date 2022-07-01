@@ -58,6 +58,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -66,7 +67,7 @@ def test_com_100_101_010():  # Make sure to add the test case name as same as th
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             paymentPage.validate_upi_bqr_payment_screen()
@@ -432,6 +433,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -440,7 +442,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             paymentPage.validate_upi_bqr_payment_screen()
@@ -474,7 +476,7 @@ def test_com_100_101_011():  # Make sure to add the test case name as same as th
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            logger.info("Execution is completed for the test case : test_sa_100_102_019")
+            logger.info("Execution is completed for the test case : test_common_100_102_019")
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
             ReportProcessor.capture_ss_when_exe_failed()
@@ -815,7 +817,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             paymentPage.validate_upi_bqr_payment_screen()
@@ -849,7 +851,7 @@ def test_com_100_101_012():  # Make sure to add the test case name as same as th
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            logger.info("Execution is completed for the test case : test_sa_100_102_021")
+            logger.info("Execution is completed for the test case : test_common_100_102_021")
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
             ReportProcessor.capture_ss_when_exe_failed()
@@ -1190,7 +1192,7 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             paymentPage.validate_upi_bqr_payment_screen()
@@ -1235,7 +1237,7 @@ def test_com_100_101_013():  # Make sure to add the test case name as same as th
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            logger.info("Execution is completed for the test case : test_sa_100_102_021")
+            logger.info("Execution is completed for the test case : test_common_100_102_021")
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
             ReportProcessor.capture_ss_when_exe_failed()
