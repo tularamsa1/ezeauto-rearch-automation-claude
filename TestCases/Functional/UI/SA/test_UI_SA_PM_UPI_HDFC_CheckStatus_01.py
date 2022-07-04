@@ -1,4 +1,5 @@
 import random
+import sys
 import time
 from datetime import datetime
 import pytest
@@ -32,9 +33,10 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
     Sub Feature Code: UI_SA_PM_UPI_Success_Via_SA_CheckStatus_HDFC
     Sub Feature Description: Verification of a successful upi txn via HDFC using SA check status
     """
-    logger.info("Starting execution for the test case : test_sa_100_101_001")
-
-    try:  # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        logger.info(f"Starting execution for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
 
@@ -47,11 +49,11 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
         try:
             # username = '5784758454'
             # password = 'A123456'
-            app_cred = ResourceAssigner.getAppUserCredentials('test_sa_100_101_001')
+            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
             logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
             username = app_cred['Username']
             password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials('test_sa_100_101_001')
+            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
             logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
             portal_username = portal_cred['Username']
             portal_password = portal_cred['Password']
@@ -70,13 +72,13 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
 
             homePage = HomePage(app_driver)
             homePage.wait_for_navigationTo_load()
+            homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
             paymentPage.is_payment_page_displayed(amount, order_id)
-            # time.sleep(5)
             paymentPage.click_on_Upi_paymentMode()
 
             logger.info("Selected payment mode is UPI")
@@ -105,25 +107,26 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
             logger.error(f"Test case execution failed due to the exception : {e}")
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
-        logger.info("Execution is completed for the test case : test_sa_100_101_001")
+        logger.info(f"Execution is completed for the test case : {testcase_id}")
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
 
-        logger.info("Starting validation for the test case : test_sa_100_101_001")
+        logger.info(f"Starting validation for the test case : {testcase_id}")
 
         current = datetime.now()
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info("Started APP validation for the test case : test_sa_100_101_001")
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
                                      "Txn_id": Txn_id, "rrn":str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 homePage.wait_for_navigationTo_load()
+                homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
@@ -152,33 +155,26 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
 
-            logger.info("Completed APP validation for the test case : test_sa_100_101_001")
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            logger.info("Started API validation for the test case : test_sa_100_101_001")
+            logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI",
                                      "Payment State":"SETTLED", "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": username, "password": password})
+                api_details = DBProcessor.get_api_details('txnDetails',
+                                                          request_body={"username": username, "password": password,
+                                                                        "txnId": Txn_id})
+                print("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
-
-                list = response["txns"]
-                status_api = ''
-                amount_api = ''
-                payment_mode_api = ''
-                state_api = ''
-                rrn_api = ''
-                for li in list:
-                    if li["txnId"] == Txn_id:
-                        status_api = li["status"]
-                        amount_api = int(li["amount"])
-                        payment_mode_api = li["paymentMode"]
-                        state_api = li["states"][0]
-                        rrn_api = li["rrNumber"]
+                status_api = response["status"]
+                amount_api = int(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
                 #
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
                                    "Payment State":state_api, "rrn":str(rrn_api)}
@@ -192,12 +188,12 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_api_val_result = 'Fail'
 
-            logger.info("Completed API validation for the test case : test_sa_100_101_001")
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info("Started DB validation for the test case : test_sa_100_101_001")
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "AUTHORIZED", "Payment State": "SETTLED", "Payment mode": "UPI",
@@ -231,12 +227,12 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result = 'Fail'
 
-            logger.info("Completed DB validation for the test case : test_sa_100_101_001")
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info("Started PORTAL validation for the test case : test_sa_100_101_001")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment State": "Settled", "Payment Type": "UPI",
@@ -277,12 +273,12 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_portal_val_result = 'Fail'
 
-            logger.info("Completed PORTAL validation for the test case : test_sa_100_101_001")
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info("Started ChargeSlip validation for the test case : test_sa_100_101_001")
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 date = datetime.today().strftime('%Y-%m-%d')
                 expectedValues = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
@@ -294,16 +290,16 @@ def test_sa_100_101_001():  # Make sure to add the test case name as same as the
                 logger.exception(f"Charge Slip Validation failed due to exception : {e}")
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.bool_chargeslip_val_result = False
+                GlobalVariables.str_chargeslip_val_result = "Fail"
 
-            logger.info("Completed ChargeSlip validation for the test case : test_sa_100_101_001")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        Configuration.executeFinallyBlock("test_sa_100_101_001")
+        Configuration.executeFinallyBlock(testcase_id)
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
@@ -323,8 +319,10 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
     Sub Feature Code: UI_SA_PM_UPI_Failed_Via_SA_CheckStatus_HDFC
     Sub Feature Description: Verification of a failed UPI txn via HDFC using SA check status
     """
-    logger.info("Starting execution for the test case : test_sa_100_101_002")
-    try:  # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        logger.info(f"Starting execution for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
 
@@ -335,11 +333,11 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
         msg = ""
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
-            app_cred = ResourceAssigner.getAppUserCredentials('test_sa_100_101_002')
+            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
             logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
             username = app_cred['Username']
             password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials('test_sa_100_101_002')
+            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
             logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
             portal_username = portal_cred['Username']
             portal_password = portal_cred['Password']
@@ -360,6 +358,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
 
             homePage = HomePage(app_driver)
             homePage.wait_for_navigationTo_load()
+            homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
@@ -391,19 +390,19 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
             logger.error(f"Test case execution failed due to the exception : {e}")
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
-        logger.info("Execution is completed for the test case : test_sa_100_101_002")
+        logger.info(f"Execution is completed for the test case : {testcase_id}")
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
 
-        logger.info("Starting validation for the test case : test_sa_100_101_002")
+        logger.info(f"Starting validation for the test case : {testcase_id}")
 
         current = datetime.now()
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info("Started APP validation for the test case : test_sa_100_101_002")
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment mode": "UPI", "Status": "FAILED", "Amount": str(amount),
@@ -413,6 +412,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 app_driver.reset()
                 loginPage.perform_login(username, password)
                 homePage.wait_for_navigationTo_load()
+                homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
 
                 homePage.click_on_history()
@@ -442,35 +442,28 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
 
-            logger.info("Completed APP validation for the test case : test_sa_100_101_002")
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            logger.info("Started API validation for the test case : test_sa_100_101_002")
+            logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "UPI",
                                      "Payment State":"FAILED", "rrn":str(rrn)}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": username, "password": password})
+                api_details = DBProcessor.get_api_details('txnDetails',
+                                                          request_body={"username": username, "password": password,
+                                                                        "txnId": Txn_id})
+                print("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
-                # logger.debug(f"payload : {payload} to trigger the {TestData.API} api and the API_OUTPUT is : {response}")
-                # print(response)
-                list = response["txns"]
-                status_api = ''
-                amount_api = ''
-                payment_mode_api = ''
-                state_api = ''
-                rrn_api = ''
-                for li in list:
-                    if li["txnId"] == Txn_id:
-                        status_api = li["status"]
-                        amount_api = int(li["amount"])
-                        payment_mode_api = li["paymentMode"]
-                        state_api = li["states"][0]
-                        rrn_api = li["rrNumber"]
+
+                status_api = response["status"]
+                amount_api = int(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
                 #
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
                                    "Payment State":state_api, "rrn":str(rrn_api)}
@@ -484,12 +477,12 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_api_val_result = 'Fail'
 
-            logger.info("Completed API validation for the test case : test_sa_100_101_002")
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info("Started DB validation for the test case : test_sa_100_101_002")
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "UPI",
@@ -524,12 +517,12 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result = 'Fail'
 
-            logger.info("Completed DB validation for the test case : test_sa_100_101_002")
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info("Started PORTAL validation for the test case : test_sa_100_101_002")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment State": "Failed", "Payment Type": "UPI",
@@ -571,12 +564,12 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_portal_val_result = 'Fail'
 
-            logger.info("Completed PORTAL validation for the test case : test_sa_100_101_002")
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        Configuration.executeFinallyBlock("test_sa_100_101_002")
+        Configuration.executeFinallyBlock(testcase_id)
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
@@ -596,27 +589,56 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
     Sub Feature Code: UI_Common_PM_UPI_CheckStatus_After Expiry_HDFC
     Sub Feature Description: Verification of a upi txn after expiry for HDFC using SA check status
     """
-    logger.info("Starting execution for the test case : test_sa_100_101_003")
-    try:  # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        logger.info(f"Starting execution for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info("Performing preconditions before starting test case execution")
 
-        url = "https://dev11.ezetap.com//api/2.0/setting/update/ "
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
 
-        payload = json.dumps({
-            "username": "9660867345",
-            "password": "A123456",
-            "entityName": "org",
-            "settings": {
-                "upiQRExpiryTime": 1
-            },
-            "settingForOrgCode": "UPIHDFCBANKHDFCPG"
-        })
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
 
-        print(response.text)
+        api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
+                                                                                "password": portal_password,
+                                                                                "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
+        logger.debug(f"API details  : {api_details} ")
+        print("***********API DETAILS **********:", api_details)
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+        logger.info("Finished performing preconditions before starting test case execution")
+
+        # url = "https://dev11.ezetap.com//api/2.0/setting/update/ "
+        #
+        # payload = json.dumps({
+        #     "username": "9660867345",
+        #     "password": "A123456",
+        #     "entityName": "org",
+        #     "settings": {
+        #         "upiQRExpiryTime": 1
+        #     },
+        #     "settingForOrgCode": "UPIHDFCBANKHDFCPG"
+        # })
+        # headers = {
+        #     'Content-Type': 'application/json'
+        # }
+        #
+        # response = requests.request("POST", url, headers=headers, data=payload)
+        #
+        # print(response.text)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
 
@@ -628,8 +650,8 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             loginPage = LoginPage(driver)
-            username = '5784758454'
-            password = 'A123456'
+            # username = '5784758454'
+            # password = 'A123456'
             logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
             loginPage.perform_login(username, password)
             amount = random.randint(51, 100)
@@ -637,7 +659,9 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 amount = 56
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(driver)
+            homePage.wait_for_navigationTo_load()
             homePage.wait_for_home_page_load()
+            homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
@@ -664,7 +688,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             # paymentPage.click_on_proceed_homepage()
             # paymentPage.click_on_back_btn()
 
-            query = "select * from txn where org_code = 'UPIHDFCBANKHDFCPG' AND external_ref = '" + str(order_id) + "';"
+            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -682,27 +706,27 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             logger.error(f"Test case execution failed due to the exception : {e}")
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
-        logger.info("Execution is completed for the test case : test_sa_100_101_003")
+        logger.info(f"Execution is completed for the test case : {testcase_id}")
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
 
-        logger.info("Starting validation for the test case : test_sa_100_101_003")
+        logger.info(f"Starting validation for the test case : {testcase_id}")
 
         current = datetime.now()
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info("Started APP validation for the test case : test_sa_100_101_003")
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment mode": "UPI", "Status": "EXPIRED", "Amount": str(amount),
                                      "Txn_id": Txn_id}
                 # driver.reset()
-                # loginPage.perform_login(username, password)
-                # homepage_text = homePage.check_home_page_logo()
-                # assert homepage_text == TestData.HOMEPAGE_TEXT
+                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_home_page_load()
+                homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(driver)
                 # txnHistoryPage.click_first_amount_field()
@@ -729,32 +753,27 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
 
-            logger.info("Completed APP validation for the test case : test_sa_100_101_003")
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            logger.info("Started API validation for the test case : test_sa_100_101_003")
+            logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"Payment Status": "EXPIRED", "Amount": amount, "Payment Mode": "UPI", "Payment State":"EXPIRED"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": username, "password": password})
+                api_details = DBProcessor.get_api_details('txnDetails',
+                                                          request_body={"username": username, "password": password,
+                                                                        "txnId": Txn_id})
+                print("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
-                # logger.debug(f"payload : {payload} to trigger the {TestData.API} api and the API_OUTPUT is : {response}")
-                list = response["txns"]
-                status_api = ''
-                amount_api = ''
-                payment_mode_api = ''
-                state_api = ''
-                for li in list:
-                    if li["txnId"] == Txn_id:
-                        status_api = li["status"]
-                        amount_api = int(li["amount"])
-                        payment_mode_api = li["paymentMode"]
-                        state_api = li["states"][0]
-                #
+
+                status_api = response["status"]
+                amount_api = int(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api, "Payment State":state_api}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -766,12 +785,12 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_api_val_result = 'Fail'
 
-            logger.info("Completed API validation for the test case : test_sa_100_101_003")
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info("Started DB validation for the test case : test_sa_100_101_003")
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "EXPIRED", "Payment State": "EXPIRED", "Payment mode": "UPI",
@@ -806,12 +825,12 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result = 'Fail'
 
-            logger.info("Completed DB validation for the test case : test_sa_100_101_003")
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info("Started PORTAL validation for the test case : test_sa_100_101_003")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment State": "Expired", "Payment Type": "UPI",
@@ -820,15 +839,15 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
+                # portal_username = '9660867344'
+                # portal_password = 'A123456'
                 logger.debug(
-                    f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('UPIHDFCBANKHDFCPG')
-                logger.debug(f"searching for the org_code : UPIHDFCBANKHDFCPG")
-                homePagePortal.click_switch_button()
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {org_code}")
+                homePagePortal.click_switch_button(str(org_code))
                 homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
 
@@ -852,32 +871,47 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_portal_val_result = 'Fail'
 
-            logger.info("Completed PORTAL validation for the test case : test_sa_100_101_003")
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        Configuration.executeFinallyBlock("test_sa_100_101_003")
+        Configuration.executeFinallyBlock(testcase_id)
         if GlobalVariables.setupCompletedSuccessfully == False:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
             ReportProcessor.updateTestCaseResult(msg)
-            url = "https://dev11.ezetap.com//api/2.0/setting/update/ "
 
-            payload = json.dumps({
-                "username": "9660867345",
-                "password": "A123456",
-                "entityName": "org",
-                "settings": {
-                    "upiQRExpiryTime": 6
-                },
-                "settingForOrgCode": "UPIHDFCBANKHDFCPG"
-            })
-            headers = {
-                'Content-Type': 'application/json'
-            }
+            # -------------------------------Revert Preconditions done(setup)--------------------------------------------
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
+            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
+                                                                                    "password": portal_password,
+                                                                                    "settingForOrgCode": org_code})
+            api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 6
+            logger.debug(f"API details  : {api_details} ")
+            print("***********API DETAILS **********:", api_details)
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for setting preconditions is : {response}")
+            logger.info("Reverted back all the settings that were done as preconditions")
+            # ----------------------------------------------------------------------------------------------------------
 
-            print(response.text)
+            # url = "https://dev11.ezetap.com//api/2.0/setting/update/ "
+            #
+            # payload = json.dumps({
+            #     "username": "9660867345",
+            #     "password": "A123456",
+            #     "entityName": "org",
+            #     "settings": {
+            #         "upiQRExpiryTime": 6
+            #     },
+            #     "settingForOrgCode": "UPIHDFCBANKHDFCPG"
+            # })
+            # headers = {
+            #     'Content-Type': 'application/json'
+            # }
+            #
+            # response = requests.request("POST", url, headers=headers, data=payload)
+            #
+            # print(response.text)

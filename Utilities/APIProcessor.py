@@ -1,5 +1,5 @@
 import json
-
+from urllib.parse import urlencode
 import requests
 
 from Utilities import ConfigReader, DBProcessor
@@ -31,7 +31,7 @@ def send_request(api_details):
     url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
 
     if api_details['ApiName'] == 'callBackUpiMerchantRes':
-        DBProcessor.convertDictToStr(payload)
+        payload = urlencode(payload)
         resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
         json_resp = json.loads(resp.text)
         logger.debug(
