@@ -132,6 +132,8 @@ def changeOverallStatusToEmpty(ls_TestCasesForRerun):
                 sheet.cell(row=i, column=colNum_overallStatus).value = ""
     wb.save(EXCEL_reportFilePath)
 
+from termcolor import colored
+import shutil
 
 def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
     print("Starting the immediate rerun")
@@ -141,6 +143,10 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
         print(rerunCommand)
 
         if rerunCount >= 0:
+            GlobalVariables.time_calc.teardown.pause()
+            print(colored("Teardown Timer paused (since rerun) inside rerunTestImmediately method".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+                
+
             # To send the testcaseID as a list to change the overall_Status as empty
             setOfRerunTest = set()
             setOfRerunTest.add(testCaseID)
@@ -149,12 +155,19 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
 
             print("$$$$$$$$$$$$$$$$$$$$ Rerun Immediately #################")
             os.system(rerunCommand)
+            GlobalVariables.time_calc.teardown.resume()
+            print(colored("Teardown Timer resumed (after rerun) inside rerunTestImmediately method".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         if rerunCount == -1 and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
+            GlobalVariables.time_calc.teardown.pause()
+            print(colored("Teardown Timer paused (before logon failure) in rerun immediately method".center(shutil.get_terminal_size().columns, "="), 'cyan'))
             # print("log on failure method calling")
             # print("testCaseID", testCaseID)
             # print("getRerunCount(testCaseID)", int(getRerunCount(testCaseID)))
+
             print("isRerunRequiredImmediately(testCaseID)", isRerunRequiredImmediately(testCaseID))
             conftest.log_on_failure(request)
+            GlobalVariables.time_calc.teardown.resume()
+            print(colored("Teardown Timer resumed (after logon failure)".center(shutil.get_terminal_size().columns, "="), 'cyan'))
     else:
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 

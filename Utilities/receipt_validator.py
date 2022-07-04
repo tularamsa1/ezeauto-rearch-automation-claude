@@ -14,7 +14,7 @@ from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
 
 from Utilities.execution_log_processor import EzeAutoLogger
-from DataProvider import GlobalVariables
+from DataProvider import GlobalVariables as global_variables
 
 
 logger = EzeAutoLogger(__name__)
@@ -517,7 +517,7 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
             #         logger.exception(f"Screenshot-taking not done due to the following error: {e}")
 
             
-            GlobalVariables.charge_slip_driver = driver
+            global_variables.charge_slip_driver = driver
 
 
         except ReceiptValidationError as e:
@@ -558,32 +558,52 @@ def get_json_response_of_txn_details(txn_id, username, password):
 def validate_n_get_working_receipt_url(receipt_url_from_api):
     env_base_url = get_config("APIs", "baseurl")
 
-    if env_base_url in receipt_url_from_api:
-        print("API Fetched receipt URL is valid")
-        logger.info("API Fetched receipt URL is valid")
-        valid_receipt_url = receipt_url_from_api
-    else:
-        _, the_rest_part = receipt_url_from_api.split("//")
-        split_parts = the_rest_part.split("/")  # ['d.eze.cc', 'r', 'o', 'eqq9jf3r', '']
-        split_parts[0] = env_base_url
-        valid_receipt_url = "/".join(split_parts)
-        print("API Fetched receipt URL is invalid. It has been replaced with the valid base URL")
-        logger.info("API Fetched receipt URL is invalid. It has been replaced with the valid base URL")
-        print(f"Now using the valid receipt URL:", valid_receipt_url)
-        logger.debug(f"Now using the valid receipt URL: {valid_receipt_url}")
+    try:
+
+        if env_base_url in receipt_url_from_api:
+            print("API Fetched receipt URL is valid")
+            logger.info("API Fetched receipt URL is valid")
+            valid_receipt_url = receipt_url_from_api
+        else:
+            _, the_rest_part = receipt_url_from_api.split("//")
+            split_parts = the_rest_part.split("/")  # ['d.eze.cc', 'r', 'o', 'eqq9jf3r', '']
+            split_parts[0] = env_base_url
+            valid_receipt_url = "/".join(split_parts)
+            print("API Fetched receipt URL is invalid. It has been replaced with the valid base URL")
+            logger.info("API Fetched receipt URL is invalid. It has been replaced with the valid base URL")
+            print(f"Now using the valid receipt URL:", valid_receipt_url)
+            logger.debug(f"Now using the valid receipt URL: {valid_receipt_url}")
+
+    except Exception as e:
+        logger.critical(f"Getting Valid Receipt URL Error: {e}")
+        valid_receipt_url = None
 
     return valid_receipt_url
 
 
 def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_details:dict):
+    validation_sucessful = False
+
     json_response = get_json_response_of_txn_details(**credentials, txn_id=txn_id)
+
     try:
-        receipt_url_field = "customerReceiptUrl"
-        receipt_url = json_response[receipt_url_field]
-        valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
-        logger.debug(valid_receipt_url)
-        print(valid_receipt_url)
-        GlobalVariables.str_chargeslip_val_result = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
+        receipt_url_field = "receiptUrl"
+        if receipt_url_field in json_response:
+            logger.info(f"Receipt URL key('{receipt_url_field}') found from API response")
+            receipt_url = json_response[receipt_url_field]  # check here and next lines if no url is found  -- issue from vineeth
+            if receipt_url:
+                valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
+                if valid_receipt_url:
+                    logger.debug(valid_receipt_url)
+                    print(valid_receipt_url)
+                    validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
+            else:
+                logger.warning("Receipt URL value is empty. therefore unable to continue.")
+        
     except Exception as e:
-        raise TransactionAPIJsonResponseError("Unable to fetch receipt url from Error:", e)
+        logger.error(f"Unable to fetch receipt url from Error: {e}")
+
+    global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
+
+    return validation_sucessful
 

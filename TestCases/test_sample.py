@@ -18,6 +18,31 @@ from Utilities import ReportProcessor, Validator, DBProcessor, APIProcessor
 from Utilities import ConfigReader
 from Utilities.ReportProcessor import updateTestCaseResult
 
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup", "appium_driver")
+# @pytest.mark.usefixtures("method_ReportProcessor", "session_ReportProcessor")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
+def test_charge_slip_validation_pass():
+    logger.info("Starting Charge Slip Validation Pass Test Method")
+    # do the charge slip validation with 
+    logger.info("Completing Charge Slip Validation Pass Test Method")
+    # ReportProcessor.updateTestCaseResult(msg)
+
+    from Utilities.ReportProcessor import updateTestCaseResult
+    updateTestCaseResult("-----")
+    True
+
+def test_charge_slip_validation_failure():
+    logger.info("Starting Charge Slip Validation Failure Test Method")
+    logger.info("Completing Charge Slip Validation Failure Test Method")
+    False
+
 
 @pytest.mark.usefixtures("log_on_success", "method_setup", "appium_driver")
 # @pytest.mark.usefixtures("method_ReportProcessor", "session_ReportProcessor")

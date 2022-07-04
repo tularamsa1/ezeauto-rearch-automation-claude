@@ -27,15 +27,17 @@ middleWareLogs = False
 
 
 #These values are for creating final excel report
+time_calc = None
 
-EXCEL_TC_Exe_Starting_Time = 00
-EXCEL_TC_Exe_completed_time = 00
 
-EXCEL_TC_Val_Starting_Time = 00
-EXCEL_TC_Val_completed_time = 00
+# EXCEL_TC_Exe_Starting_Time = 00
+# EXCEL_TC_Exe_completed_time = 00
 
-EXCEL_TC_LogColl_Starting_Time = 00
-EXCEL_TC_LogColl_completed_time = 00
+# EXCEL_TC_Val_Starting_Time = 00
+# EXCEL_TC_Val_completed_time = 00
+
+# EXCEL_TC_LogColl_Starting_Time = 00
+# EXCEL_TC_LogColl_completed_time = 00
 
 EXCEL_testCaseName = "Default Testcase"
 EXCEL_TC_Execution = "Skip"
@@ -44,7 +46,7 @@ str_db_val_result = "N/A"
 str_portal_val_result = "N/A"
 str_app_val_result = "N/A"
 str_ui_val_result = "N/A"
-bool_chargeslip_val_result = "N/A"
+str_chargeslip_val_result = "N/A"
 EXCEL_Execution_Time = 00
 EXCEL_Val_time = 00
 EXCEL_LogCollTime = 00
@@ -55,6 +57,7 @@ EXCEL_testCaseFileName = ''
 
 bool_ss_app_val = "N/A"
 bool_ss_portal_val = "N/A"
+bool_ss_chargeslip_val = "N/A"
 appDriver = ''
 portalDriver = ''
 charge_slip_driver = ''
