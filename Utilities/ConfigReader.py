@@ -25,3 +25,10 @@ def read_conf_with_spec_val(section, key, value):
     if "mobileNum" in element:
         element = element.replace("mobileNum", value)
     return element
+
+
+def get_items_from_section(section):
+    config = ConfigParser()
+    config.read(str(automation_suite_path)+"/Configuration/config.ini")
+    # return [config.get(section, key) for key in list_of_keys]
+    return dict(config.items(section))

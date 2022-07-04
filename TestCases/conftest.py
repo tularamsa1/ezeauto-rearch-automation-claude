@@ -113,6 +113,7 @@ def convert_DF_To_Excel():
             GlobalVariables.df_testCasesDetail.at[ind, 'Portal Val'] = "N/A"
             GlobalVariables.df_testCasesDetail.at[ind, 'App Val'] = "N/A"
             GlobalVariables.df_testCasesDetail.at[ind, 'UI Val'] = "N/A"
+            GlobalVariables.df_testCasesDetail.at[ind, 'ChargeSlip Val'] = "N/A"
             GlobalVariables.df_testCasesDetail.at[ind, 'Execution Time (sec)'] = 0.0
             GlobalVariables.df_testCasesDetail.at[ind, 'Validation Time (sec)'] = 0.0
             GlobalVariables.df_testCasesDetail.at[ind, 'Log Coll Time (sec)'] = 0.0
@@ -130,10 +131,20 @@ def updatingHighLevelReportAfterEachTCS():
     if GlobalVariables.EXCEL_TC_Execution == 'Pass':
 
         # Pass or N/A
-        if GlobalVariables.str_api_val_result != 'Fail' and GlobalVariables.str_app_val_result != 'Fail' and GlobalVariables.str_db_val_result != 'Fail' and GlobalVariables.str_portal_val_result != 'Fail' and GlobalVariables.str_ui_val_result != 'Fail':
+        if GlobalVariables.str_api_val_result != 'Fail' \
+            and GlobalVariables.str_app_val_result != 'Fail' \
+                and GlobalVariables.str_db_val_result != 'Fail' \
+                    and GlobalVariables.str_portal_val_result != 'Fail' \
+                        and GlobalVariables.str_ui_val_result != 'Fail'\
+                            and GlobalVariables.str_chargeslip_val_result != "Fail":
             Overall_Status = 'Pass'
 
-        elif GlobalVariables.str_api_val_result == 'Fail' or GlobalVariables.str_app_val_result == 'Fail' or GlobalVariables.str_db_val_result == 'Fail' or GlobalVariables.str_portal_val_result == 'Fail' or GlobalVariables.str_ui_val_result == 'Fail':
+        elif GlobalVariables.str_api_val_result == 'Fail' \
+            or GlobalVariables.str_app_val_result == 'Fail' \
+                or GlobalVariables.str_db_val_result == 'Fail' \
+                    or GlobalVariables.str_portal_val_result == 'Fail' \
+                        or GlobalVariables.str_ui_val_result == 'Fail'\
+                            or GlobalVariables.str_chargeslip_val_result == 'Fail':
             Overall_Status = 'Fail'
     elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
         Overall_Status = 'Fail'
@@ -168,6 +179,10 @@ def updatingHighLevelReportAfterEachTCS():
     columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
     sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
     print("UI VaL: ", GlobalVariables.str_ui_val_result)
+
+    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'ChargeSlip Val')
+    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_chargeslip_val_result
+    print("ChargeSlip VaL: ", GlobalVariables.str_chargeslip_val_result)
 
     # sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
 
@@ -448,6 +463,7 @@ def write_TC_Details_To_Dataframe():
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Portal Val'] = GlobalVariables.str_portal_val_result
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'App Val'] = GlobalVariables.str_app_val_result
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'UI Val'] = GlobalVariables.str_ui_val_result
+    GlobalVariables.df_testCasesDetail.at[TestCaseName, 'ChargeSlip Val'] = GlobalVariables.str_chargeslip_val_result
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Execution Time (sec)'] = GlobalVariables.EXCEL_Execution_Time
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Validation Time (sec)'] = GlobalVariables.EXCEL_Val_time
     GlobalVariables.df_testCasesDetail.at[TestCaseName, 'Log Coll Time (sec)'] = GlobalVariables.EXCEL_LogCollTime
