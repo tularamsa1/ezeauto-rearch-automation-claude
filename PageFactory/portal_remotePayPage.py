@@ -1,6 +1,6 @@
 import time
 
-import pyautogui
+#import pyautogui
 from selenium.webdriver.common.by import By
 from PageFactory.Portal_BasePage import BasePage
 from Utilities import ConfigReader
