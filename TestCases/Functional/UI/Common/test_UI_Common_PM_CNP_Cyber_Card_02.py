@@ -27,6 +27,12 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_007(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_CNP_Debit_Card_Success_Cyber
+    Verification of a successful debit card txn via CNP link
+    UI_Common_PM_CNP_ChargeSlip_Val_debit_Card_Success_Cyber
+    Verification of a charge slip validation for debit card txn via CNP link
+    """
     username_portal = '9775822330'
     password_portal = 'sandy@demo1'
     username_app = "4455778875"
@@ -341,6 +347,10 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_008(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_CNP_Debit_Card_Failed_Cyber
+    Verification debit card failed txn for cybersource pg
+    """
     username_portal = '9660867344'
     password_portal = 'A123456'
     username_app = "4455778875"
@@ -588,7 +598,8 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
 # From below use only the markers that are applicable for the test case and remove the rest.
 def test_common_100_103_009(): #Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Desc: Verification of remote pay txn after link expiry.
+    UI_Common_PM_CNP_Credit_Card_After_Expiry_Cyber
+    Verification of remote pay txn after link expiry.
 
     """
     username_portal = '9660867344'
@@ -718,6 +729,10 @@ def test_common_100_103_009(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_011(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_CNP_Debit_Card_After_Timeout_Cyber
+    Verification of  debit card txn after timeout via CNP link
+    """
     username_portal = '9660867344'
     password_portal = 'A123456'
     username_app = "4455778875"

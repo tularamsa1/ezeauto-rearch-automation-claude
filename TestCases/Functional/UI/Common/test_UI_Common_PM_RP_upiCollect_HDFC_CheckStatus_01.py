@@ -29,6 +29,10 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_004(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_RP_upi collect_Success_Via_Pure_upi collect_Checkstatus_HDFC
+    Verification of a Remote Pay successful upi collect txn via HDFC using check status
+    """
     username_portal = '9660867344'
     password_portal = 'A123456'
     username_app = "4455778875"
@@ -280,6 +284,10 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_005(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_RP_upi_collect_failed_Via_Pure_upicollect_Checkstatus_HDFC
+    Verification of a Remote Pay failed upi collect txn via HDFC using check status
+    """
     username_portal = '9660867344'
     password_portal = 'A123456'
     username_app = "4455778875"
