@@ -72,7 +72,7 @@ def test_common_100_101_004():
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
             homePage = HomePage(driver)
-            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_navigationTo_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
@@ -158,7 +158,7 @@ def test_common_100_101_004():
                                      "Txn_id": Txn_id, "rrn": str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 # time.sleep(5)
-                homePage.wait_for_navigation_to_load()
+                homePage.wait_for_navigationTo_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -398,7 +398,7 @@ def test_common_100_101_006():  # Make sure to add the test case name as same as
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(driver)
-            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_navigationTo_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -483,7 +483,7 @@ def test_common_100_101_006():  # Make sure to add the test case name as same as
                 # time.sleep(10)
                 driver.reset()
                 loginPage.perform_login(username, password)
-                homePage.wait_for_navigation_to_load()
+                homePage.wait_for_navigationTo_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -695,7 +695,7 @@ def test_common_100_101_009():  # Make sure to add the test case name as same as
             amount = random.randint(201, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(driver)
-            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_navigationTo_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -783,7 +783,7 @@ def test_common_100_101_009():  # Make sure to add the test case name as same as
                 logger.info("reseting the com.ezetap.basicapp")
                 driver.reset()
                 loginPage.perform_login(username, password)
-                homePage.wait_for_navigation_to_load()
+                homePage.wait_for_navigationTo_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -1011,7 +1011,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                 amount = 56
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_navigationTo_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -1114,7 +1114,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                                      "rrn original": str(original_rrn)}
 
                 loginPage.perform_login(username, password)
-                homePage.wait_for_navigation_to_load()
+                homePage.wait_for_navigationTo_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -1444,7 +1444,7 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
                 amount = 56
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_navigationTo_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -1538,7 +1538,7 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
                                      "Payment Status": "EXPIRED", "rrn original": str(original_rrn)}
 
                 loginPage.perform_login(username, password)
-                homePage.wait_for_navigation_to_load()
+                homePage.wait_for_navigationTo_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
