@@ -28,8 +28,8 @@ logger = EzeAutoLogger(__name__)
 # Performing a upi txn and full refund via portal
 def test_common_100_101_010():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code:
-    Sub Feature Description:
+    Sub Feature Code: UI_Common_PM_UPI_full_Refund_via-Portal_HDFC
+    Sub Feature Description: Performing a upi txn and full refund via portal
     """
 
     try:
@@ -1212,8 +1212,8 @@ def test_common_100_101_012():  # Make sure to add the test case name as same as
 # Performing a upi txn and partial refund via portal
 def test_common_100_101_013():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code:
-    Sub Feature Description:
+    Sub Feature Code: UI_Common_PM_UPI_partial_Refund_via-Portal_HDFC
+    Sub Feature Description: Performing a upi txn and partial refund via portal
     """
 
     try:

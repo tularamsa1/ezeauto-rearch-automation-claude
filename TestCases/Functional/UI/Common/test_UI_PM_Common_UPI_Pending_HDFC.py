@@ -100,6 +100,7 @@ def test_common_100_101_014():  # Make sure to add the test case name as same as
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.wait_for_navigationTo_load()
+            homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             homePage.enter_amount_and_order_number(amount, order_id)
