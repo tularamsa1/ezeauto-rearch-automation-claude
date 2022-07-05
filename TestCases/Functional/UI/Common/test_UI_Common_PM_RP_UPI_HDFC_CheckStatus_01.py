@@ -30,7 +30,10 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_003(): #Make sure to add the test case name as same as the sub feature code.
-
+    username_portal = '9660867344'
+    password_portal = 'A123456'
+    username_app = "4455778875"
+    password_app = "q121212"
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
@@ -227,8 +230,6 @@ def test_common_100_103_003(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                # portal_username = '9660867344'
-                # portal_password = 'A123456'
                 logger.debug(
                     f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
 
@@ -304,6 +305,10 @@ def test_common_100_103_003(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_006(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_RP_UPI_Failed_Via_CheckStatus_HDFC
+    Verification of a Remote Pay failed UPI txn via HDFC using check status
+    """
     username_portal = '9660867344'
     password_portal = 'A123456'
     username_app = "4455778875"

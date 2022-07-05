@@ -29,6 +29,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_001(): #Make sure to add the test case name as same as the sub feature code.
+    """
+    UI_Common_PM_CNP_Credit_Card_Success_Cyber
+    Verification of successful credit card txn
+    UI_Common_PM_CNP_ChargeSlip_Val_Credit_Card_Success_Cyber
+    Verification of a charge slip validation for credit card txn via CNP link
+    UI_Common_PM_CNP_Credit_Card_Success_Screen_Message_Cyber
+    Verifying the message in the success screen via CNP link
+    """
     username_portal = '9775822330'
     password_portal = 'sandy@demo1'
     username_app = "4455778875"
@@ -353,8 +361,10 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 def test_common_100_103_002(): #Make sure to add the test case name as same as the sub feature code.
     """
+    UI_Common_PM_CNP_Credit_Card_Failed_Cyber
     Verification of failed remote pay credit card txn  for cybersource pg
-    verifying the message in the failed screen via CNP link
+    UI_Common_PM_CNP_Credit_Card_failed_Screen_Message_Cyber
+    Verifying the message in the failed screen via CNP link
     """
     username_portal = '9660867344'
     password_portal = 'A123456'
@@ -616,6 +626,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
 # From below use only the markers that are applicable for the test case and remove the rest.
 def test_common_100_103_009(): #Make sure to add the test case name as same as the sub feature code.
     """
+    UI_Common_PM_CNP_Credit_Card_After_Expiry_Cyber
     Verification of remote pay txn after link expiry.
     """
     username_portal = '9660867344'
@@ -710,6 +721,7 @@ def test_common_100_103_009(): #Make sure to add the test case name as same as t
 @pytest.mark.chargeSlipVal
 def test_common_100_103_010(): #Make sure to add the test case name as same as the sub feature code.
     """
+    UI_Common_PM_CNP_Credit_Card_After_Timeout_Cyber
     Verification of a message when txn done after timeout  via CNP link
     """
     username_portal = '9660867344'

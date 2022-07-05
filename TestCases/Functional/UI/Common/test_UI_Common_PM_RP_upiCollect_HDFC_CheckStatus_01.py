@@ -29,7 +29,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_004(): #Make sure to add the test case name as same as the sub feature code.
-
+    """
+    UI_Common_PM_RP_upi collect_Success_Via_Pure_upi collect_Checkstatus_HDFC
+    Verification of a Remote Pay successful upi collect txn via HDFC using check status
+    """
+    username_portal = '9660867344'
+    password_portal = 'A123456'
+    username_app = "4455778875"
+    password_app = "q121212"
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
@@ -204,8 +211,6 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
                 logger.debug(
                     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
 
@@ -464,8 +469,6 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9660867344'
-                password_portal = 'A123456'
                 logger.debug(
                     f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
 
@@ -488,6 +491,7 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
+                ReportProcessor.capture_ss_when_exe_failed()
                 print("Portal Validation failed due to exception - "+str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
