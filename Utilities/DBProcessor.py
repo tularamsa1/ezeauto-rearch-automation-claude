@@ -104,9 +104,9 @@ def get_api_details(api_name:str, request_body:dict=None, expected_result:dict=N
 
     """
     details = _get_obj_api_details(api_name=api_name)
-    
+
     if details:
-        
+
         if request_body:
             if isinstance(request_body, dict):
                 for key in request_body:
@@ -138,9 +138,8 @@ def get_api_details(api_name:str, request_body:dict=None, expected_result:dict=N
             else:
                 logger.error(f"curl_data is not a dictionary")
 
-
         logger.debug(f"Query fetched the result: {details}")
-    
+
     return details
 
 
