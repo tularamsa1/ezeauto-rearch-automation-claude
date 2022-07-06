@@ -1122,6 +1122,7 @@ def log_on_success(request):
 
 
     GlobalVariables.time_calc.save()
+    GlobalVariables.time_calc = None
     print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
 
