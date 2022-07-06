@@ -1,7 +1,12 @@
 import random
 import sys
 from datetime import datetime
+from time import sleep
+import shutil
+from termcolor import colored
+
 import pytest
+
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -14,11 +19,14 @@ from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, API
     ResourceAssigner
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
+from Utilities.time_calculator import EzeAutoTimeCalculator
+
 logger = EzeAutoLogger(__name__)
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.usefixtures("appium_driver", "ui_driver")
+@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("appium_driver", "ui_driver") #This is an optional line. Keep only whichever driver is required.
+# From below use only the markers that are applicable for the test case and remove the rest.
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
@@ -36,24 +44,42 @@ def test_sa_100_102_007():
     try:
         testcase_id = sys._getframe().f_code.co_name
         logger.info(f"Starting execution for the test case : {testcase_id}")
+
+        logger.info("Starting execution for the test case : test_common_100_102_007")
+
+        GlobalVariables.time_calc.setup.resume()
+        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
 
-        GlobalVariables.setupCompletedSuccessfully = True
+        GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
         #---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = False, middlewareLog = False)
+
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         msg = ""
+
+        GlobalVariables.time_calc.setup.end()
+        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+
         #-----------------------------------------Start of Test Execution-------------------------------------
+        
         try:
+
+            GlobalVariables.time_calc.execution.start()
+            print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
             # ------------------------------------------------------------------------------------------------
             #
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+            app_cred = ResourceAssigner.getAppUserCredentials('test_sa_100_102_007')
             logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
             username = app_cred['Username']
             password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_sa_100_102_007')
             logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
             portal_username = portal_cred['Username']
             portal_password = portal_cred['Password']
@@ -64,11 +90,16 @@ def test_sa_100_102_007():
             org_code = result['org_code'].values[0]
             logger.debug(f"Query result, org_code : {org_code}")
 
+            # Write the test case execution code block here
             driver = GlobalVariables.appDriver
             loginPage = LoginPage(driver)
+            # username = read_config("credentials", 'username_HDFC')
+            # password = read_config("credentials", 'password')
+            # org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -99,20 +130,32 @@ def test_sa_100_102_007():
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
-            ReportProcessor.get_TC_Exe_Time()
+            logger.info("Execution is completed for the test case : test_sa_100_102_007")
+            GlobalVariables.time_calc.execution.pause()
+            print(colored("Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        
         except Exception as e:
+            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
+                GlobalVariables.time_calc.execution.pause()
+                print(colored("Execution Timer paused in exept block (bcz not paused in try block) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        
+            GlobalVariables.time_calc.execution.resume()
+            print(colored("Execution Timer resumed in exept block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
             ReportProcessor.capture_ss_when_exe_failed()
             logger.error("Testcase execution failed due to exception: str(")
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
-            ReportProcessor.get_TC_Exe_Time()
+
+            GlobalVariables.time_calc.execution.pause()
+            print(colored("Execution Timer paused in exept block of testcase function before pytest fails".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            
             pytest.fail("Test case execution failed due to the exception -"+str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-        current = datetime.now()
-        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
+        GlobalVariables.time_calc.validation.start()
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
@@ -120,7 +163,8 @@ def test_sa_100_102_007():
                 logger.info(f"Starting App Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-
+                homePage.wait_for_navigation_to_load()
+                homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -237,8 +281,10 @@ def test_sa_100_102_007():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                logger.info(f"Logging in Portal using username : {portal_username}")
-                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
+                username_portal = read_config("credentials", 'username_portal')
+                password_portal = read_config('credentials', 'password_portal')
+                logger.info(f"Logging in Portal using username : {username_portal}")
+                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
                 homePagePortal = PortalHomePage(ui_driver)
                 homePagePortal.wait_for_home_page_load()
                 homePagePortal.search_merchant_name(org_code)
@@ -281,18 +327,27 @@ def test_sa_100_102_007():
 
             except Exception as e:
                 ReportProcessor.capture_ss_when_exe_failed()
+                
                 print("Charge Slip Validation failed due to exception - " + str(e))
                 logger.exception(f"Charge Slip Validation failed due to exception : {e}")
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_chargeslip_val_result = False
+                GlobalVariables.str_chargeslip_val_result = "Fail"
 
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
                 # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+        GlobalVariables.time_calc.validation.end()
+        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
+            GlobalVariables.time_calc.execution.pause()
+            print(colored("Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.execution.resume()
+        print(colored("Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
         Configuration.executeFinallyBlock(testcase_id)
         logger.info(
             f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
@@ -301,11 +356,18 @@ def test_sa_100_102_007():
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
             ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
+        #-------------------------------Revert Preconditions done(setup)--------------------------------------------
 
         # Write the code here to revert the settings that were done as precondition
 
         # ----------------------------------------------------------------------------------------------------------
+        #----------------------------------------------------------------------------------------------------------
+        GlobalVariables.time_calc.execution.end()
+        print(colored("Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        
+        # Test case ID should be passed as argument in string format.
+        #Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
+        logger.info("**********Test case Execution and Validation completed for test case : test_common_100_102_007**************")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -338,23 +400,11 @@ def test_sa_100_102_008():
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-            portal_username = portal_cred['Username']
-            portal_password = portal_cred['Password']
-
-            query = "select org_code from org_employee where username='" + str(username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
             driver = GlobalVariables.appDriver
             loginPage = LoginPage(driver)
+            username = read_config("credentials", 'username_HDFC')
+            password = read_config("credentials", 'password')
+            org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
@@ -533,8 +583,10 @@ def test_sa_100_102_008():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                logger.info(f"Logging in Portal using username : {portal_username}")
-                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
+                username_portal = read_config("credentials", 'username_portal')
+                password_portal = read_config('credentials', 'password_portal')
+                logger.info(f"Logging in Portal using username : {username_portal}")
+                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
                 homePagePortal = PortalHomePage(ui_driver)
                 homePagePortal.wait_for_home_page_load()
                 homePagePortal.search_merchant_name(org_code)
@@ -601,12 +653,11 @@ def test_sa_100_102_009():
 
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info("Performing preconditions before starting test case execution")
-        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        app_cred = ResourceAssigner.getAppUserCredentials('test_sa_100_102_009')
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         username = app_cred['Username']
         password = app_cred['Password']
-        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials('test_sa_100_102_009')
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -617,6 +668,10 @@ def test_sa_100_102_009():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        logger.info("Performing preconditions before starting test case execution")
+        # portal_username = read_config("credentials", "username_portal")
+        # portal_password = read_config("credentials", "password_portal")
+        # org_code = read_config("testdata", "org_code_hdfc")
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
         logger.debug(f"API details  : {api_details} ")
@@ -628,7 +683,9 @@ def test_sa_100_102_009():
         GlobalVariables.setupCompletedSuccessfully = True
 
         #---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = False, middlewareLog = False)
+
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         msg = ""
@@ -639,9 +696,13 @@ def test_sa_100_102_009():
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
+            # username = read_config("credentials", 'username_HDFC')
+            # password = read_config("credentials", 'password')
+            # org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -697,6 +758,7 @@ def test_sa_100_102_009():
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:EXPIRED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
 
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -819,13 +881,15 @@ def test_sa_100_102_009():
                 #
                 driver_ui = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(driver_ui)
+                # username_portal = read_config("credentials", 'username_portal')
+                # password_portal = read_config('credentials', 'password_portal')
                 logger.info(f"Logging in Portal using username : {portal_username}")
                 loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(driver_ui)
-                homePagePortal.wait_for_home_page_load()
-                homePagePortal.search_merchant_name(org_code)
-                logger.info(f"Switching to merchant : {org_code}")
-                homePagePortal.click_switch_button(org_code)
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.info(f"Switching to merchant : {str(org_code)}")
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portal_status = homePagePortal.fetch_status_from_transaction_id(txn_id)
                 portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(txn_id)
