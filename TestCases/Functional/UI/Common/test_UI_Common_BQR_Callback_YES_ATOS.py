@@ -1177,7 +1177,7 @@ def test_common_100_102_028():
 @pytest.mark.appVal
 def test_common_100_102_034():
     """
-    :Description: Verification of a BQR expired Callback when auto refund disabled via YES_ATOS
+    :Description: Verification of  a BQR expired Callback when auto refund disabled via YES_ATOS
     :Sub Feature code: UI_Common_PM_BQR_Expired_Callback_AutoRefund_disabled_YES_ATOS
     :TC naming code description: 100->Payment Method
                                 102->BQR
@@ -1270,8 +1270,6 @@ def test_common_100_102_034():
             rrn = "RE" + txn_id_expired.split('E')[1]
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id_expired}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {pid}, Secondary id : {sid}")
-            logger.info("Waiting for QR code to get expired")
-            sleep(60)
             api_details = DBProcessor.get_api_details('callbackYES',
                                                       request_body={"primary_id": pid,"secondary_id":sid,
                                                                     "txn_amount": str(amount),
@@ -1539,11 +1537,11 @@ def test_common_100_102_034():
 @pytest.mark.appVal
 def test_common_100_102_035(): # check if this is a valid scenario
     """
-    :Description: Verification of  a BQR expired Callback when auto refund enabled via YES_ATOS
-    :Sub Feature code: UI_Common_PM_BQR_Expired_Callback_AutoRefund_enabled_YES_ATOS_35
+    :Description: Verification of  a BQR expired Callback when auto refund enabled via HDFC
+    :Sub Feature code: UI_Common_PM_BQR_Expired_Callback_AutoRefund_enabled_HDFC_13
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                035-> TC35
+                                013-> TC13
     """
 
     try:
@@ -1619,22 +1617,19 @@ def test_common_100_102_035(): # check if this is a valid scenario
             paymentPage.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             app_driver.reset()
-            query = "select * from bharatqr_txn where org_code='"+org_code+"' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch transaction id from database is: {query}")
+            query = "select id from txn where org_code='"+org_code+"' and external_ref='"+order_id+"' order by created_time desc limit 1"#fetch txn id besed on order id from txn table
+            logger.debug(f"Query to fetch expired transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
-            pid = result["provider_ref_id"].iloc[0]
-            sid = result["transaction_secondary_id"].iloc[0]
             txn_id_expired = result["id"].iloc[0]
             auth_code = "AE" + txn_id_expired.split('E')[1]
             rrn = "RE" + txn_id_expired.split('E')[1]
             logger.debug(
-                f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id_expired}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {pid}, Secondary id : {sid}")
-            logger.info("Waiting for QR code to get expired")
-            sleep(60)
-            api_details = DBProcessor.get_api_details('callbackYES',
-                                                      request_body={"primary_id": pid,"secondary_id":sid,
-                                                                    "txn_amount": str(amount),
-                                                                    "auth_code": auth_code, "ref_no":rrn})
+                f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id_expired}, Auth code : {auth_code}, RRN : {rrn}")
+            logger.info(f"Waiting for QR code to get Expired.. Please wait")
+            sleep(60) # check if app txn history page shows correct results
+            api_details = DBProcessor.get_api_details('callbackHDFC',
+                                                      request_body={"PRIMARY_ID": txn_id_expired, "TXN_AMOUNT": str(amount),
+                                                                    "AUTH_CODE": auth_code, "RRN": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
             logger.info(f"Logining in to app again with username : {username}")
