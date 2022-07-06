@@ -11,7 +11,8 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
@@ -37,9 +38,20 @@ def test_common_100_102_019():
         logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info("Performing preconditions before starting test case execution")
-        portal_username = read_config("credentials", "username_portal")
-        portal_password = read_config("credentials", "password_portal")
-        org_code = read_config("testdata", "org_code_hdfc")
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
 
         api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
@@ -60,9 +72,6 @@ def test_common_100_102_019():
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -282,10 +291,8 @@ def test_common_100_102_019():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                username_portal = read_config("credentials", 'username_portal')
-                password_portal = read_config('credentials', 'password_portal')
-                logger.info(f"Logging in Portal using username : {username_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                logger.info(f"Logging in Portal using username : {portal_username}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)
                 homePagePortal.search_merchant_name(org_code)
                 logger.info(f"Switching to merchant : {org_code}")
@@ -351,8 +358,8 @@ def test_common_100_102_019():
 @pytest.mark.appVal
 def test_common_100_102_020():
     """
-    :Description: Verification of  a BQR UPG txn when Auto refund is enabled via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_UPG_AUTOREFUND_ENABLED_HDFC_20
+    :Description: Verification of  a BQR UPG txn when Auto refund is disabled via HDFC
+    :Sub Feature code: UI_Common_PM_BQR_UPG_AUTOREFUND_DISABLED_HDFC_20
     :TC naming code description: 100->Payment Method
                                 102->BQR
                                 020-> TC20
@@ -363,9 +370,20 @@ def test_common_100_102_020():
         logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info("Performing preconditions before starting test case execution")
-        portal_username = read_config("credentials", "username_portal")
-        portal_password = read_config("credentials", "password_portal")
-        org_code = read_config("testdata", "org_code_hdfc")
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
 
         api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
@@ -388,9 +406,6 @@ def test_common_100_102_020():
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -610,10 +625,8 @@ def test_common_100_102_020():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                username_portal = read_config("credentials", 'username_portal')
-                password_portal = read_config('credentials', 'password_portal')
-                logger.info(f"Logging in Portal using username : {username_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                logger.info(f"Logging in Portal using username : {portal_username}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)
                 homePagePortal.wait_for_home_page_load()
                 homePagePortal.search_merchant_name(org_code)
@@ -694,9 +707,21 @@ def test_common_100_102_021():
         logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info("Performing preconditions before starting test case execution")
-        portal_username = read_config("credentials", "username_portal")
-        portal_password = read_config("credentials", "password_portal")
-        org_code = read_config("testdata", "org_code_hdfc")
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
@@ -718,9 +743,6 @@ def test_common_100_102_021():
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -939,14 +961,13 @@ def test_common_100_102_021():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                username_portal = read_config("credentials", 'username_portal')
-                password_portal = read_config('credentials', 'password_portal')
-                logger.info(f"Logging in Portal using username : {username_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                logger.info(f"Logging in Portal using username : {portal_username}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)
-                homePagePortal.search_merchant_name(read_config("testdata", "org_code_hdfc"))
-                logger.info(f"Switching to merchant : {read_config('testdata', 'org_code_hdfc')}")
-                homePagePortal.click_switch_button(read_config("testdata", "org_code_hdfc"))
+                homePagePortal.wait_for_home_page_load()
+                homePagePortal.search_merchant_name(org_code)
+                logger.info(f"Switching to merchant : {org_code}")
+                homePagePortal.click_switch_button(org_code)
                 homePagePortal.click_transaction_search_menu()
                 portal_status = homePagePortal.fetch_status_from_transaction_id(upg_txn_id)
                 portal_txn_type = homePagePortal.fetch_transaction_type_from_transaction_id(upg_txn_id)

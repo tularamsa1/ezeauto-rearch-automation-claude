@@ -22,13 +22,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_102_018():
+def test_common_100_102_033():
     """
-    :Description: Verification of a BQR Pending transaction via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_Pending_HDFC _018
+    :Description: Verification of a BQR Pending transaction via YES_ATOS
+    :Sub Feature code: UI_Common_PM_BQR_Pending_YES_ATOS
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                0018-> TC18
+                                0033-> TC33
     """
 
 
@@ -48,21 +48,23 @@ def test_common_100_102_018():
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-            portal_username = portal_cred['Username']
-            portal_password = portal_cred['Password']
-
-            query = "select org_code from org_employee where username='" + str(username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
+            # app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+            # logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            # username = app_cred['Username']
+            # password = app_cred['Password']
+            # portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+            # logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            # portal_username = portal_cred['Username']
+            # portal_password = portal_cred['Password']
+            #
+            # query = "select org_code from org_employee where username='" + str(username) + "';"
+            # logger.debug(f"Query to fetch org_code from the DB : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+            # org_code = result['org_code'].values[0]
+            # logger.debug(f"Query result, org_code : {org_code}")
+            username = read_config("credentials", 'username_YES_ATOS')
+            password = read_config("credentials", 'password')
+            org_code = read_config("testdata", "org_code_yes_atos")
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {username}")
@@ -194,7 +196,7 @@ def test_common_100_102_018():
                 logger.info(f"Starting DB Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
 
-                expectedDBValues = {"Payment Status": "PENDING", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "State":"PENDING", "State Bharatqr": "PENDING", "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
+                expectedDBValues = {"Payment Status": "PENDING", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "State":"PENDING", "State Bharatqr": "PENDING", "Amount Bharatqr": amount, "Status Bharatqr": "PENDING"}
                 #
                 query = "select status,amount,payment_mode,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, payment mode and state from DB : {query}")
@@ -209,13 +211,13 @@ def test_common_100_102_018():
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
                 logger.debug(f"Fetching Transaction state from DB : {state_db} ")
 
-                query = "select state,txn_amount,status_desc from bharatqr_txn where id='" + txn_id + "'"
-                logger.debug(f"DB query to fetch state, txn amount and status_desc from bahratqr_txn DB : {query}")
+                query = "select state,txn_amount,status_code from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"DB query to fetch state, txn amount and status_code from bahratqr_txn DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
                 state_bharatqr_db = result["state"].iloc[0]
                 amount_bharatqr_db = result["txn_amount"].iloc[0]
-                status_bharatqr_db = result["status_desc"].iloc[0]
+                status_bharatqr_db = result["status_code"].iloc[0]
                 logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
@@ -244,6 +246,8 @@ def test_common_100_102_018():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
+                portal_username = read_config("credentials", 'portal_username')
+                portal_password = read_config('credentials', 'portal_password')
                 logger.info(f"Logging in Portal using username : {portal_username}")
                 loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)

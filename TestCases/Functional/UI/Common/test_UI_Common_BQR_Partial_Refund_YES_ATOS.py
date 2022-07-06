@@ -24,13 +24,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_102_016():
+def test_common_100_102_031():
     """
-    :Description: Verification of a BQR Partial Refund transaction through API via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_API_HDFC _016
+    :Description: Verification of a BQR Partial Refund transaction through API via YES_ATOS
+    :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_API_YES_ATOS_030
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                016-> TC16
+                                030-> TC30
     """
 
     try:
@@ -50,21 +50,23 @@ def test_common_100_102_016():
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-            portal_username = portal_cred['Username']
-            portal_password = portal_cred['Password']
-
-            query = "select org_code from org_employee where username='" + str(username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
+            # app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+            # logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            # username = app_cred['Username']
+            # password = app_cred['Password']
+            # portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+            # logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            # portal_username = portal_cred['Username']
+            # portal_password = portal_cred['Password']
+            #
+            # query = "select org_code from org_employee where username='" + str(username) + "';"
+            # logger.debug(f"Query to fetch org_code from the DB : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+            # org_code = result['org_code'].values[0]
+            # logger.debug(f"Query result, org_code : {org_code}")
+            username = read_config("credentials", 'username_YES_ATOS')
+            password = read_config("credentials", 'password')
+            org_code = read_config("testdata", "org_code_yes_atos")
             loginPage = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
@@ -300,6 +302,8 @@ def test_common_100_102_016():
                                         "Payment amount": str(refund_amount), "Payment Status Original": "Settled",
                                         "Amount Original": str(amount), "Payment Mode Original": "BHARATQR"}
                 #
+                portal_username = read_config("credentials", 'username_portal')
+                portal_password = read_config('credentials', 'password_portal')
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
                 logger.info(f"Logging in Portal using username : {portal_username}")
@@ -385,13 +389,13 @@ def test_common_100_102_016():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_102_017():
+def test_common_100_102_032():
     """
-    :Description: Verification of a BQR Partial Refund transaction via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_HDFC _017
+    :Description: Verification of a BQR Partial Refund transaction via YES_ATOS
+    :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_YES_ATOS_31
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                017-> TC17
+                                031-> TC31
     """
 
     try:
@@ -412,20 +416,23 @@ def test_common_100_102_017():
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-            portal_username = portal_cred['Username']
-            portal_password = portal_cred['Password']
-
-            query = "select org_code from org_employee where username='" + str(username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
+            # app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+            # logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            # username = app_cred['Username']
+            # password = app_cred['Password']
+            # portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+            # logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            # portal_username = portal_cred['Username']
+            # portal_password = portal_cred['Password']
+            #
+            # query = "select org_code from org_employee where username='" + str(username) + "';"
+            # logger.debug(f"Query to fetch org_code from the DB : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+            # org_code = result['org_code'].values[0]
+            # logger.debug(f"Query result, org_code : {org_code}")
+            username = read_config("credentials", 'username_YES_ATOS')
+            password = read_config("credentials", 'password')
+            org_code = read_config("testdata", "org_code_yes_atos")
 
             loginPage = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {username}")
@@ -462,6 +469,8 @@ def test_common_100_102_017():
             refund_amount = amount - 100
             ui_driver = GlobalVariables.portalDriver
             loginPagePortal = PortalLoginPage(ui_driver)
+            portal_username = read_config("credentials", 'username_portal')
+            portal_password = read_config('credentials', 'password_portal')
             logger.info(f"Logging in Portal using username : {portal_username}")
             loginPagePortal.perform_login_to_portal(portal_username, portal_password)
             homePagePortal = PortalHomePage(ui_driver)
