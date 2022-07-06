@@ -227,8 +227,9 @@ def setStylesForExcel():
     colNum_portalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
     colNum_appVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
     colNum_uiVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
+    colNum_chargeslipval = ExcelProcessor.getColumnNumberFromName("", sheet, 'ChargeSlip Val')
 
-    column_list = [colNum_overall, colNum_execution, colNum_apiVal, colNum_dbVal, colNum_portalVal, colNum_appVal, colNum_uiVal]
+    column_list = [colNum_overall, colNum_execution, colNum_apiVal, colNum_dbVal, colNum_portalVal, colNum_appVal, colNum_uiVal, colNum_chargeslipval]
 
     for column in column_list:
         for row in range(2, max_row + 1):
@@ -248,24 +249,25 @@ def setStylesForExcel():
 
 
     # Set width for all cells
-    sheet.column_dimensions['A'].width = 70 #Test Case ID
-    sheet.column_dimensions['B'].width = 15 #File Name
-    sheet.column_dimensions['C'].width = 18 #Directory Name
-    sheet.column_dimensions['D'].width = 18 #Category
-    sheet.column_dimensions['E'].width = 18 #Sub-Category
-    sheet.column_dimensions['F'].width = 18 #OverAll Results
-    sheet.column_dimensions['G'].width = 18 #TC Execution
-    sheet.column_dimensions['H'].width = 15 #API Val
-    sheet.column_dimensions['I'].width = 15 #DB Val
-    sheet.column_dimensions['J'].width = 15 #Portal Val
-    sheet.column_dimensions['K'].width = 15 #App Val
-    sheet.column_dimensions['L'].width = 15 #UI Val
-    sheet.column_dimensions['M'].width = 22 #Execution Time (sec)
-    sheet.column_dimensions['N'].width = 22 #Validation Time (sec)
-    sheet.column_dimensions['O'].width = 22 #Log Coll Time (sec)
-    sheet.column_dimensions['P'].width = 18 #Total Time (sec)
-    sheet.column_dimensions['Q'].width = 18 #Rerun Attempts
-
+    sheet.column_dimensions['A'].width = 70 # Test Case ID
+    sheet.column_dimensions['B'].width = 70 # Sub Feature Code
+    sheet.column_dimensions['C'].width = 15 # File Name
+    sheet.column_dimensions['D'].width = 18 # Directory Name
+    sheet.column_dimensions['E'].width = 18 # Category
+    sheet.column_dimensions['F'].width = 18 # Sub-Category
+    sheet.column_dimensions['G'].width = 18 # OverAll Results
+    sheet.column_dimensions['H'].width = 18 # TC Execution
+    sheet.column_dimensions['I'].width = 15 # API Val
+    sheet.column_dimensions['J'].width = 15 # DB Val
+    sheet.column_dimensions['K'].width = 15 # Portal Val
+    sheet.column_dimensions['L'].width = 15 # App Val
+    sheet.column_dimensions['M'].width = 15 # UI Val
+    sheet.column_dimensions['N'].width = 15 # ChargeSlip Val
+    sheet.column_dimensions['O'].width = 22 # Execution Time (sec)
+    sheet.column_dimensions['P'].width = 22 # Validation Time (sec)
+    sheet.column_dimensions['Q'].width = 22 # Log Coll Time (sec)
+    sheet.column_dimensions['R'].width = 18 # Total Time (sec)
+    sheet.column_dimensions['S'].width = 18 # Rerun Attempts
 
     # Set background color and font style
     fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')
@@ -316,6 +318,9 @@ def updateExcel_With_Deselect_And_Broken():
             colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
             sheet.cell(row=i, column=colNum_UIval).value = "N/A"
 
+            colNum_ChargeSlipval = ExcelProcessor.getColumnNumberFromName("", sheet, 'ChargeSlip Val')
+            sheet.cell(row=i, column=colNum_ChargeSlipval).value = "N/A"
+
         else:
             colNum_overallResult = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
             cellValue = (sheet.cell(row=i, column=colNum_overallResult)).value
@@ -340,6 +345,10 @@ def updateExcel_With_Deselect_And_Broken():
 
                 colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
                 sheet.cell(row=i, column=colNum_UIval).value = "N/A"
+
+                colNum_ChargeSlipval = ExcelProcessor.getColumnNumberFromName("", sheet, 'ChargeSlip Val')
+                sheet.cell(row=i, column=colNum_ChargeSlipval).value = "N/A"
+
 
     wb.save(EXCEL_reportFilePath)
 
@@ -414,9 +423,14 @@ def updateTestCaseResult(msg):
             ls_validation_msg.append("APP validation Failed!!")
         if GlobalVariables.str_ui_val_result == "Fail":
             ls_validation_msg.append("UI validation Failed!!")
-        if not GlobalVariables.str_chargeslip_val_result:
+        if GlobalVariables.str_chargeslip_val_result == 'Fail':
             ls_validation_msg.append("Charge-Slip validation Failed!!")
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail" or GlobalVariables.str_chargeslip_val_result == False:
+        if GlobalVariables.str_api_val_result == "Fail" \
+            or GlobalVariables.str_db_val_result == "Fail" \
+                or GlobalVariables.str_portal_val_result == "Fail" \
+                    or GlobalVariables.str_app_val_result == "Fail" \
+                        or GlobalVariables.str_ui_val_result == "Fail" \
+                            or GlobalVariables.str_chargeslip_val_result == 'Fail':
             message = ""
             for validation_msg in ls_validation_msg:
                 message = message + "\n" + validation_msg

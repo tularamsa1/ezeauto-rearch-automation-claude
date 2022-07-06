@@ -19,61 +19,86 @@ key_filename = Base_Actions.get_environment("str_ssh_key_filename")
 
 EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
-
 def prepareTestCaseDetailsDataFrame(path):
-    # Defining the columns of dataframe
-    dataForDataFrameHeader = {
-        'Test Case ID': [],
-        'File Name': [],
-        'Directory Name': [],
-        'Category': [],
-        'Sub-Category': [],
-        'OverAll Results': [],
-        'TC Execution': [],
-        'API Val': [],
-        'DB Val': [],
-        'Portal Val': [],
-        'App Val': [],
-        'UI Val': [],
-        'Execution Time (sec)': [],
-        'Validation Time (sec)': [],
-        'Log Coll Time (sec)': [],
-        'Total Time (sec)': [],
-        'Rerun Attempts': []
-    }
+    columns = [
+        'Test Case ID', 'Sub Feature Code', 'File Name', 'Directory Name', 'Category', 'Sub-Category', 'OverAll Results', 
+        'TC Execution', 'API Val', 'DB Val', 'Portal Val', 'App Val', 'UI Val', 'ChargeSlip Val',
+        'Execution Time (sec)', 'Validation Time (sec)', 'Log Coll Time (sec)', 'Total Time (sec)',
+        'Rerun Attempts']
 
-    GlobalVariables.df_testCasesDetail = pd.DataFrame(dataForDataFrameHeader)
+    df_overall_testcases_list = pd.read_excel(path, index_col=0)\
+        [['Test Case ID', 'Sub Feature Code','File Name', 'Directory Name', 'Execute']]
 
-    # Dataframe by default gets created with datatype as float. Converting the same to string
-    convert_dict = {'File Name': str,
-                    'Directory Name': str,
-                    'Category': str,
-                    'Sub-Category': str,
-                    'TC Execution': str,
-                    'API Val': str,
-                    'DB Val': str,
-                    'Portal Val': str,
-                    'App Val': str,
-                    'UI Val': str,
-                    'Rerun Attempts': str
-                    }
+    df_filtered = df_overall_testcases_list[df_overall_testcases_list.Execute==1]
 
-    GlobalVariables.df_testCasesDetail = GlobalVariables.df_testCasesDetail.astype(convert_dict)
+    # adding the extra columns that are not found in excel file. 
+    # instead you could add those columns while first time writing the excel file
+    for col in columns:
+        if col not in df_filtered.columns:
+            df_filtered[col] = "N/A"
 
-    df_overallTClist = pd.read_excel(path)
-    df_overallTClist.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+    df_testCasesDetail = df_filtered.drop(columns=['Execute']).set_index("Test Case ID")
+    return df_testCasesDetail  # GlobalVariables.df_testCasesDetail
 
-    i=0
-    for index in df_overallTClist.index:
-        if df_overallTClist['Execute'][index] == False or str(df_overallTClist['Execute'][index]).lower() == "false":
-            pass
-        else:
-            GlobalVariables.df_testCasesDetail.at[i, ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
-            GlobalVariables.df_testCasesDetail.at[i, 'File Name'] = df_overallTClist['File Name'][index]
-            GlobalVariables.df_testCasesDetail.at[i, 'Directory Name'] = df_overallTClist['Directory Name'][index]
-        i = i+1
-    GlobalVariables.df_testCasesDetail.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
-    return GlobalVariables.df_testCasesDetail
+
+
+# def prepareTestCaseDetailsDataFrame(path):
+#     # Defining the columns of dataframe
+#     dataForDataFrameHeader = {
+#         'Test Case ID': [],
+#         'Sub Feature Code': [],  # ==============
+#         'File Name': [],
+#         'Directory Name': [],
+#         'Category': [],
+#         'Sub-Category': [],
+#         'OverAll Results': [],
+#         'TC Execution': [],
+#         'API Val': [],
+#         'DB Val': [],
+#         'Portal Val': [],
+#         'App Val': [],
+#         'UI Val': [],
+#         'ChargeSlip Val' : [],
+#         'Execution Time (sec)': [],
+#         'Validation Time (sec)': [],
+#         'Log Coll Time (sec)': [],
+#         'Total Time (sec)': [],
+#         'Rerun Attempts': []
+#     }
+
+#     GlobalVariables.df_testCasesDetail = pd.DataFrame(dataForDataFrameHeader)
+
+#     # Dataframe by default gets created with datatype as float. Converting the same to string
+#     convert_dict = {'File Name': str,  # doubts
+#                     'Directory Name': str,
+#                     'Category': str,
+#                     'Sub-Category': str,
+#                     'TC Execution': str,
+#                     'API Val': str,
+#                     'DB Val': str,
+#                     'Portal Val': str,
+#                     'App Val': str,
+#                     'UI Val': str,
+#                     'ChargeSlip Val': str,
+#                     'Rerun Attempts': str,
+#                     }
+
+#     GlobalVariables.df_testCasesDetail = GlobalVariables.df_testCasesDetail.astype(convert_dict)
+
+#     df_overallTClist = pd.read_excel(path)
+#     df_overallTClist.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+
+#     i=0
+#     for index in df_overallTClist.index:
+#         if df_overallTClist['Execute'][index] == False or str(df_overallTClist['Execute'][index]).lower() == "false":
+#             pass
+#         else:
+#             GlobalVariables.df_testCasesDetail.at[i, ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
+#             GlobalVariables.df_testCasesDetail.at[i, 'File Name'] = df_overallTClist['File Name'][index]
+#             GlobalVariables.df_testCasesDetail.at[i, 'Directory Name'] = df_overallTClist['Directory Name'][index]
+#         i = i+1
+#     GlobalVariables.df_testCasesDetail.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+#     return GlobalVariables.df_testCasesDetail
 
 
 def ssh_connection(ip_address, routerPort, username, key_filename):
