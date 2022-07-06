@@ -74,7 +74,7 @@ def test_common_100_102_001():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")

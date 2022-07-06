@@ -99,7 +99,7 @@ def test_sa_100_102_007():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -163,7 +163,7 @@ def test_sa_100_102_007():
                 logger.info(f"Starting App Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(driver)
@@ -702,7 +702,7 @@ def test_sa_100_102_009():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -758,7 +758,7 @@ def test_sa_100_102_009():
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:EXPIRED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
 
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
