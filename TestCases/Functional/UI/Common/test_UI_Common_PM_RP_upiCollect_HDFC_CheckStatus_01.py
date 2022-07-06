@@ -3,7 +3,7 @@ import random
 import time
 from datetime import datetime
 
-import pyautogui
+#import pyautogui
 import pytest
 import requests
 from Configuration import Configuration
@@ -288,9 +288,9 @@ def test_common_100_103_005(): #Make sure to add the test case name as same as t
     UI_Common_PM_RP_upi_collect_failed_Via_Pure_upicollect_Checkstatus_HDFC
     Verification of a Remote Pay failed upi collect txn via HDFC using check status
     """
-    username_portal = '9660867344'
-    password_portal = 'A123456'
-    username_app = "4455778875"
+    username_portal = '9775822330'
+    password_portal = 'sandy@demo1'
+    username_app = "4455332211"
     password_app = "q121212"
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------

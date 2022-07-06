@@ -169,7 +169,7 @@ class HomePage(BasePage):
         self.perform_click(self.btn_back)
 
     def wait_for_navigation_to_load(self):
-        self.wait_for_element(self.lbl_navigation)
+        self.wait_for_element_to_be_clickable(self.lbl_navigation)
 
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
