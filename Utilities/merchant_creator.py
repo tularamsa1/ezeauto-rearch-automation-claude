@@ -10,15 +10,17 @@ logger = EzeAutoLogger(__name__)
 dbPath = ConfigReader.read_config_paths("System", "automation_suite_path")+"/Database/ezeauto.db"
 
 
-def get_api_from_db() -> dict:
+def get_api_from_db(api_name:str) -> dict:
     """
     This method is used to get the api details from the api_details table of database.
+
+    :param api_name:str
     :return: dict
     """
     dict_api_details = {}
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    cursor.execute("SELECT * from api_details where ApiName = 'createMerchant';")
+    cursor.execute(f"SELECT * from api_details where ApiName = '{api_name}';")
     details = cursor.fetchall()
     dict_api_details["ID"] = details[0][0]
     dict_api_details["ApiName"] = details[0][1]
@@ -65,39 +67,43 @@ def generate_merchant_creation_api_body() -> list:
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        cursor.execute("SELECT * from merchant;")
+        cursor.execute("SELECT * from merchants;")
         merchants = cursor.fetchall()
         if merchants:
             for merchant in merchants:
                 if not check_if_merchant_exists(merchant[0]) and merchant[0] != "Ezetap":
                     try:
-                        merchant_creation_api = json.loads(get_api_from_db()["RequestBody"])
+                        merchant_creation_api = json.loads(get_api_from_db("createMerchant")["RequestBody"])
                         merchant_creation_api["username"] = ConfigReader.read_config("SuperUserCredentials", "username")
                         merchant_creation_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
                         # for replacing the merchant details in the api
                         merchant_creation_api["merchantCode"] = merchant_creation_api["name"] = merchant_creation_api["reportingOrgCode"] = merchant[0]
-                        cursor.execute("SELECT * from user where MerchantCode = '"+merchant[0]+"'")
+                        cursor.execute("SELECT * from users where MerchantCode = '"+merchant[0]+"';")
                         users = cursor.fetchall()
                         if users:
                             count = 0
                             for user in users:
                                 if count > 0:
-                                    merchant_creation_api["users"].append(json.loads(get_api_from_db()["RequestBody"])["users"][0])
+                                    merchant_creation_api["users"].append(json.loads(get_api_from_db("createMerchant")["RequestBody"])["users"][0])
                                     merchant_creation_api["users"].append(merchant_creation_api["users"][0])
                                 merchant_creation_api["users"][count]["name"] = user[0]
-                                merchant_creation_api["users"][count]["mobileNumber"] = merchant_creation_api["users"][count]["userToken"] = user[1]
-                                if str(user[3]).lower() == "admin":
+                                merchant_creation_api["users"][count]["userToken"] = user[2]
+                                merchant_creation_api["users"][count]["userPassword"] = user[3]
+                                merchant_creation_api["users"][count]["mobileNumber"] = user[4]
+                                if str(user[5]).lower() == "admin":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.ADMIN_USER_ROLES
-                                elif str(user[3]).lower() == "agent":
-                                    merchant_creation_api["users"][count]["roles"] = GlobalConstants.AGENT_USER_ROLES
+                                elif str(user[5]).lower() == "app":
+                                    merchant_creation_api["users"][count]["roles"] = GlobalConstants.APP_USER_ROLES
                                 count += 1
                             lst_merchant_creation_api_body.append(merchant_creation_api)
+                        else:
+                            logger.warning("This merchant does not have any associated user.")
                     except Exception as e:
                         print("Unable to generate api for merchant "+merchant[0]+"due to error "+str(e))
                         logger.error(("Unable to generate api for merchant "+merchant[0]+"due to error "+str(e)))
                 else:
-                    cursor.execute("update merchant set CreationStatus = 'Existed' where MerchantCode ='"+merchant[0]+"';")
-                    cursor.execute("update user set CreationStatus = 'Existed' where MerchantCode ='"+merchant[0]+"';")
+                    cursor.execute("update merchants set CreationStatus = 'Existed', Availability = 'Available' where MerchantCode ='"+merchant[0]+"';")
+                    cursor.execute("update users set CreationStatus = 'Existed', Availability = 'Available'  where MerchantCode ='"+merchant[0]+"';")
                     conn.commit()
             cursor.close()
             conn.close()
@@ -119,7 +125,7 @@ def create_merchants_with_users():
     Each request body represents a merchant.
     :return:
     """
-    api_details = get_api_from_db()
+    api_details = get_api_from_db("createMerchant")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
     url = ConfigReader.read_config("APIs", "baseurl")+api_details["EndPoint"]
@@ -130,17 +136,15 @@ def create_merchants_with_users():
         for merchant_creation_api_body in lst_merchant_creation_body:
             merchant_org_code = merchant_creation_api_body["merchantCode"]
             payload = json.dumps(merchant_creation_api_body)
-            print(payload)
+            logger.debug(payload)
             response = requests.request("POST", url, headers=headers, data=payload)
-            print("-----------------------------------")
-            print(response.text)
+            logger.debug(response.text)
             result = json.loads(response.text)
-            result["success"] = True
             if result["success"]:
                 logger.info(f"Merchant {merchant_org_code} with users created successfully.")
                 try:
-                    cursor.execute("update merchant set CreationStatus = 'Created' where MerchantCode = '" + merchant_org_code + "'")
-                    cursor.execute("update user set CreationStatus = 'Created' where MerchantCode = '" + merchant_org_code + "'")
+                    cursor.execute("update merchants set CreationStatus = 'Created', Availability = 'Available' where MerchantCode = '" + merchant_org_code + "'")
+                    cursor.execute("update users set CreationStatus = 'Created', Availability = 'Available' where MerchantCode = '" + merchant_org_code + "'")
                     conn.commit()
                 except Exception as e:
                     print(f"Unable to update the ezeauto db on the merchant {merchant_org_code} creation due to error "+str(e))
@@ -153,3 +157,6 @@ def create_merchants_with_users():
         logger.info("Merchant creation skipped")
     cursor.close()
     conn.close()
+
+
+create_merchants_with_users()

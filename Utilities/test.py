@@ -102,6 +102,41 @@ def get_admin_user_details(testcase_id: str) -> list:
         logger.error("Unable to connect to the Database for fetching the app user details")
         return None
 
+def get_portal_user_details(testcase_id: str) -> list:
+    """
+    This method is used to get the portal user credentials along with the merchant code of the user.
+    :param testcase_id: str
+    :return: list
+    """
+    proceed = False
+    print("Trying to get available portal user credentials from DB")
+    try:
+        conn = sqlite3.connect(dbPath)
+        cursor = conn.cursor()
+        portal_user_details = {}
+        timer = 0
+        while timer < 10:
+            assigned_merchant = "EZETAP"
+            available_user = ""
+            available_user = get_user_details(cursor, assigned_merchant, "Portal")
+            if available_user:
+                if block_merchant_and_users_for_testcase(conn, cursor, testcase_id, unassigned_merchant):
+                    portal_user_details["name"] = available_user[0]
+                    portal_user_details["merchant_code"] = available_user[1]
+                    portal_user_details["username"] = available_user[2]
+                    portal_user_details["password"] = available_user[3]
+                    return portal_user_details
+                else:
+                    logger.error("Though user is available, attempt to block merchant failed.")
+                    return None
+            else:
+                logger.warning("Admin user is not available under this merchant.")
+                return None
+            timer = timer+1
+    except Exception as e:
+        logger.error("Unable to connect to the Database for fetching the app user details")
+        return None
+
 def get_merchant_assigned_to_testcase(testcase_id: str, dbcursor) -> str:
     """
     This method is used to get the merchant assigned to the test case.
@@ -143,7 +178,11 @@ def get_user_details(dbcursor, merchant_code: str, user_type : str) -> str:
     :return: bool
     """
     try:
-        dbcursor.execute(f'SELECT Name, MerchantCode, Username, Password FROM users WHERE MerchantCode = "{merchant_code}" AND Type = "{user_type}";')
+        if merchant_code == "EZETAP":
+            dbcursor.execute(
+                f'SELECT Name, MerchantCode, Username, Password FROM users WHERE MerchantCode = "{merchant_code}" AND Type = "{user_type}" AND Availability = "Available";')
+        else:
+            dbcursor.execute(f'SELECT Name, MerchantCode, Username, Password FROM users WHERE MerchantCode = "{merchant_code}" AND Type = "{user_type}";')
         user_details = dbcursor.fetchone()
         if user_details:
             return user_details
@@ -169,8 +208,13 @@ def block_merchant_and_users_for_testcase(db_connection, db_cursor, testcase_id 
         return True
     except Exception as e:
         logger.error("Unable to block the merchant due to error "+str(e))
+        db_cursor.execute(
+            f'DELETE FROM merchants_blocked WHERE MerchantCode = "{merchant_code}";')
+        db_connection.commit()
+        db_cursor.execute(f'UPDATE merchants SET Availability = "Available" where MerchantCode = "{merchant_code}";')
+        db_connection.commit()
         return False
 
-print(get_admin_user_details("TC_02"))
+
 
 
