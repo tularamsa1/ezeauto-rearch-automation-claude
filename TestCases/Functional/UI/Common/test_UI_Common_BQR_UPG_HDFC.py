@@ -97,11 +97,15 @@ def test_common_100_102_019():
             rrn = "RE" + txn_id.split('E')[1]
             upg_txn_id = "T" + txn_id[1:-1]
             upg_amount = amount-10
+            query = "select visa_merchant_id_primary from bharatqr_merchant_config where org_code='"+org_code+"' "
+            logger.debug(f"Query to fetch transaction id from database is: {query}")
+            result = DBProcessor.getValueFromDB(query)
+            merchant_pan = result["visa_merchant_id_primary"].iloc[0]
             logger.debug(
                 f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": "4403849803031405",
-                                                                    "AUTH_CODE": auth_code, "RRN": rrn})
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": merchant_pan, "AUTH_CODE": auth_code, "RRN": rrn})
+
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
             logger.info(f"Logining in to app again with username : {username}")
@@ -431,11 +435,15 @@ def test_common_100_102_020():
             rrn = "RE" + txn_id.split('E')[1]
             upg_txn_id = "T" + txn_id[1:-1]
             upg_amount = amount-10
+            query = "select visa_merchant_id_primary from bharatqr_merchant_config where org_code='"+org_code+"' "
+            logger.debug(f"Query to fetch transaction id from database is: {query}")
+            result = DBProcessor.getValueFromDB(query)
+            merchant_pan = result["visa_merchant_id_primary"].iloc[0]
             logger.debug(
                 f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": "4403849803031405",
-                                                                    "AUTH_CODE": auth_code, "RRN": rrn})
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": merchant_pan, "AUTH_CODE": auth_code, "RRN": rrn})
+
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
             logger.info(f"Logining in to app again with username : {username}")
@@ -768,10 +776,10 @@ def test_common_100_102_021():
             rrn = "RE" + txn_id.split('E')[1]
             upg_txn_id = "T" + txn_id[1:-1]
             upg_amount = amount-10
-            query = "select merchant_pan from bharatqr_merchant_config where org_code='"+org_code+"' "
+            query = "select visa_merchant_id_primary from bharatqr_merchant_config where org_code='"+org_code+"' "
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
-            merchant_pan = result["merchant_pan"].iloc[0]
+            merchant_pan = result["visa_merchant_id_primary"].iloc[0]
             logger.debug(
                 f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
