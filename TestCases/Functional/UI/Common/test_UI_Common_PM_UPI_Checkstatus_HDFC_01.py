@@ -118,7 +118,7 @@ def test_common_100_101_005():  # Make sure to add the test case name as same as
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -404,7 +404,7 @@ def test_common_100_101_007():  # Make sure to add the test case name as same as
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -628,7 +628,7 @@ def test_common_100_101_008():  # Make sure to add the test case name as same as
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -708,7 +708,7 @@ def test_common_100_101_008():  # Make sure to add the test case name as same as
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "UPI", "Payment Txn ID": txn_id,
                                      "Payment Amt": str(amount), "rrn": str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
@@ -961,7 +961,7 @@ def test_common_100_101_015():  # Make sure to add the test case name as same as
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -1028,7 +1028,7 @@ def test_common_100_101_015():  # Make sure to add the test case name as same as
                 logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
                 loginPage.perform_login(username, password)
                 homePage = HomePage(app_driver)
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()

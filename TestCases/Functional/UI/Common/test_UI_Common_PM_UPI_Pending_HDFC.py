@@ -71,7 +71,7 @@ def test_common_100_101_014():  # Make sure to add the test case name as same as
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
@@ -99,7 +99,7 @@ def test_common_100_101_014():  # Make sure to add the test case name as same as
 
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
@@ -135,7 +135,7 @@ def test_common_100_101_014():  # Make sure to add the test case name as same as
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:PENDING", "Payment mode": "UPI",
                                      "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)

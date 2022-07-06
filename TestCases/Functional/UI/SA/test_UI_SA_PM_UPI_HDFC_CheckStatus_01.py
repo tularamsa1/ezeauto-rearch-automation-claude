@@ -38,12 +38,12 @@ def test_sa_100_101_001():
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
-        logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        app_username = app_cred['Username']  # rename var with app_username
-        app_password = app_cred['Password']  # rename var with app_password
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
@@ -56,7 +56,7 @@ def test_sa_100_101_001():
         logger.debug(f"Query result, org_code : {org_code}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
-
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -64,6 +64,7 @@ def test_sa_100_101_001():
         msg = ""
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
             logger.info(
                 f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
@@ -72,7 +73,7 @@ def test_sa_100_101_001():
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             home_page = HomePage(app_driver)
-            home_page.wait_for_navigationTo_load()
+            home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             home_page.enter_amount_and_order_number(amount, order_id)
@@ -128,7 +129,7 @@ def test_sa_100_101_001():
                 expected_app_values = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
                                        "Txn_id": txn_id, "rrn": str(rrn)}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
-                home_page.wait_for_navigationTo_load()
+                home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
@@ -317,14 +318,14 @@ def test_sa_100_101_001():
         logger.info(f"Test case execution and validation completed for the test caseID: {testcase_id}")
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.usefixtures("appium_driver", "ui_driver")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
 # Performing a failed UPI txn via HDFC using SA check status
-def test_sa_100_101_002():  # Make sure to add the test case name as same as the sub feature code.
+def test_sa_100_101_002():
     """
     Sub Feature Code: UI_SA_PM_UPI_Failed_Via_SA_CheckStatus_HDFC
     Sub Feature Description: Verification of a failed UPI txn via HDFC using SA check status
@@ -370,7 +371,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -425,7 +426,7 @@ def test_sa_100_101_002():  # Make sure to add the test case name as same as the
                 logger.info("reseting the com.ezetap.basicapp")
                 app_driver.reset()
                 loginPage.perform_login(username, password)
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
 
@@ -676,7 +677,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 amount = 56
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage = HomePage(driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -741,7 +742,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
                 expectedAppValues = {"Payment mode": "UPI", "Status": "EXPIRED", "Amount": str(amount),
                                      "Txn_id": Txn_id}
                 # driver.reset()
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
