@@ -34,6 +34,9 @@ class BasePage:
     def perform_touch_action_using_cordinates(self, x1,y1,x2,y2):
         TouchAction(self.driver).press(x=x1, y=y1).move_to(x=x2, y=y2).release().perform()
 
+    def wait_for_element_to_be_clickable(self, locator, time=30):
+        return WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator))
+
     def perform_long_press(self, locator):
         element = self.wait_for_element(locator)
         actions = TouchAction(self.driver)
