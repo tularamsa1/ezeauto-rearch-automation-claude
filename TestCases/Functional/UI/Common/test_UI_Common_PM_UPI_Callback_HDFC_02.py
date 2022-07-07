@@ -29,11 +29,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-# Performing a pure upi success callback via HDFC after expiry the qr when autorefund is enabled.
+# Performing a pure upi success callback via HDFC after qr expiry when autorefund is enabled.
 def test_common_100_101_018():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_success_callback_after_qr_expiry_HDFC
-    Sub Feature Description: Performing a pure upi success callback via HDFC after expiry the qr.
+    Sub Feature Code: UI_Common_PM_UPI_success_callback_after_qr_expiry_AutoRefund_Enabled_HDFC
+    Sub Feature Description: Performing a pure upi success callback via HDFC after qr expiry when autorefund is enabled.
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -486,8 +486,8 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
 # Performing a pure upi failed callback via HDFC after expiry the qr when autorefund is enabled.
 def test_common_100_101_019():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_HDFC
-    Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr.
+    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_AutoRefund_Enabled_HDFC
+    Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr when autorefund is enabled.
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -867,11 +867,11 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-# Performing a pure upi success callback via HDFC after expiry the qr when autorefund is enabled.
+# Performing a upg txn when upg refund and upg autorefund are disabled.
 def test_common_100_101_020():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_HDFC
-    Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr.
+    Sub Feature Code: UI_Common_PM_UPI_UPG_AUTHREFUNDED_HDFC
+    Sub Feature Description: Performing a upg txn when upg refund and upg autorefund are disabled.
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -926,13 +926,19 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
             logger.debug(f"generated random amount is : {amount}")
             logger.debug(f"generated random rrn number is : {rrn}")
             logger.debug(f"generated random ref_id number is : {ref_id}")
-
+            time.sleep(15)
+            # query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
+            # print(query)
+            # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+            # result = DBProcessor.getValueFromDB(query)
+            # print(result)
+            # txn_id = result['txn_id'].iloc[0]
 
             logger.debug(
-                f"replacing the Txn_id with {txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data "
+                f"replacing the Txn_id with {request_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data "
                 f"reference id with {ref_id}")
             api_details = DBProcessor.get_api_details('upi_success_curl',
-                                                      curl_data={'ref_id': ref_id, 'Txn_id': txn_id,
+                                                      curl_data={'ref_id': ref_id, 'Txn_id': request_id,
                                                                  'amount': str(amount) + ".00",
                                                                  'vpa': vpa, 'rrn': rrn
                                                                  })
@@ -957,6 +963,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
 
             query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
             print(query)
+            print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             q_result = DBProcessor.getValueFromDB(query)
             print(q_result)
             txn_id = q_result['txn_id'].iloc[0]
@@ -1001,7 +1008,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
-
+                transactionsHistoryPage.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status_original = transactionsHistoryPage.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
@@ -1022,7 +1029,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                                    "Payment mode": app_payment_mode_original,
                                    "Payment Txn ID": app_txn_id_original,
                                    "Payment Amt": str(app_payment_amt_original),
-                                   "rrn original": str(app_rrn_original)}
+                                   "rrn": str(app_rrn_original)}
 
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -1132,8 +1139,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
             try:
                 expectedPortalValues = {"Payment Type": "UPI",
                                         "Payment State": "Upg Authorized",
-                                        "Amount": "Rs." + str(amount) + ".00",
-                                        "Username": app_username,}
+                                        "Amount": "Rs." + str(amount) + ".00"}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
@@ -1165,8 +1171,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
 
                 actualPortalValues = {"Payment Type": portal_txn_type,
                                       "Payment State": portal_state,
-                                      "Amount": portal_amt,
-                                      "Username": portal_username,}
+                                      "Amount": portal_amt}
 
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
