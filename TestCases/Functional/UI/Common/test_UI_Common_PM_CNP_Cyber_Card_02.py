@@ -13,7 +13,8 @@ from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -27,19 +28,16 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_007(): #Make sure to add the test case name as same as the sub feature code.
-<<<<<<< HEAD
     """
     UI_Common_PM_CNP_Debit_Card_Success_Cyber
     Verification of a successful debit card txn via CNP link
     UI_Common_PM_CNP_ChargeSlip_Val_debit_Card_Success_Cyber
     Verification of a charge slip validation for debit card txn via CNP link
     """
-=======
->>>>>>> Add test cases for debit card cnp txn and fix for sycn issue.
-    username_portal = '9775822330'
-    password_portal = 'sandy@demo1'
-    username_app = "4455778875"
-    password_app = "q121212"
+    # username_portal = '9775822330'
+    # password_portal = 'sandy@demo1'
+    # username_app = "4455778875"
+    # password_app = "q121212"
     expectedSuccessMessage = "Your payment is successfully completed! You may close the browser now."
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -59,11 +57,26 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
             # ------------------------------------------------------------------------------------------------
             #
             logger.info("Execution Started for the test case : test_common_100_103_007")
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_007')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_007')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
-                                                                    "username": username_app, "password": password_app})
+                                                                    "username": username, "password": password})
             response = APIProcessor.send_request(api_details)
             ui_driver = GlobalVariables.portalDriver
             paymentLinkUrl = response['paymentLink']
@@ -90,7 +103,7 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
                 print(successMessage != expectedSuccessMessage)
                 raise Exception("Success Messages are not mactching")
 
-            query = "select * from txn where org_code = 'SANDEEPTEST_6979' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -155,7 +168,7 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
                 loginPage = LoginPage(driver)
-                loginPage.perform_login(username_app, password_app)
+                loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
                 homePage.check_home_page_logo()
                 homePage.wait_for_navigationTo_load()
@@ -192,8 +205,8 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
                 expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "CNP","rrNumber":rrn}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username_app,
-                                                                                      "password": password_app,
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username,
+                                                                                      "password": password,
                                                                                       "txnId": Txn_id})
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
@@ -275,28 +288,28 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started Portal validation for the test case : test_common_100_103_007")
                 expectedPortalValues = {"Payment State": "Settled", "Payment Type": "CNP",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": username_app}
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                logger.debug(f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
-                logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
-                homePagePortal.click_switch_button("SANDEEPTEST_6979")
-                homePagePortal.perform_merchant_verfication()
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
                 portalType = portalValuesDict['Type']
                 portalStatus = portalValuesDict['Status']
                 portalAmount = portalValuesDict['Total Amount']
-                Username = portalValuesDict['Username']
+                portalUsername = portalValuesDict['Username']
 
                 actualPortalValues = {"Payment State": str(portalStatus), "Payment Type": portalType,
-                                      "Amount": portalAmount, "Username": Username}
+                                      "Amount": portalAmount, "Username": username}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
@@ -313,7 +326,7 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
                 date = datetime.today().strftime('%Y-%m-%d')
                 expectedValues = {'CARD TYPE': 'VISA', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
-                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username_app,"password":password_app}, expectedValues)
+                receipt_validator.perform_charge_slip_validations(Txn_id, {"username":username,"password":password}, expectedValues)
 
             except Exception as e:
                 ReportProcessor.capture_ss_when_exe_failed()
@@ -350,17 +363,14 @@ def test_common_100_103_007(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_008(): #Make sure to add the test case name as same as the sub feature code.
-<<<<<<< HEAD
     """
     UI_Common_PM_CNP_Debit_Card_Failed_Cyber
     Verification debit card failed txn for cybersource pg
     """
-=======
->>>>>>> Add test cases for debit card cnp txn and fix for sycn issue.
-    username_portal = '9660867344'
-    password_portal = 'A123456'
-    username_app = "4455778875"
-    password_app = "q121212"
+    # username_portal = '9660867344'
+    # password_portal = 'A123456'
+    # username_app = "4455778875"
+    # password_app = "q121212"
     ExpectedfailedMessage = "Sorry! Your payment could not be processed. Please click on the payment link sent to you on SMS or Email and attempt the payment again."
 
     try:
@@ -381,11 +391,26 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
             # ------------------------------------------------------------------------------------------------
             #
             logger.info("Execution Started for the test case : test_common_100_103_008")
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_008')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_008')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
-                                                                    "username": username_app, "password": password_app})
+                                                                    "username": username, "password": password})
             response = APIProcessor.send_request(api_details)
             ui_driver = GlobalVariables.portalDriver
             paymentLinkUrl = response['paymentLink']
@@ -411,7 +436,7 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
             else:
                 print("Failed Message is not matching")
 
-            query = "select * from txn where org_code = 'SANDEEPTEST_6979' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -447,7 +472,7 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
                 loginPage = LoginPage(driver)
-                loginPage.perform_login(username_app, password_app)
+                loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
                 # homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
@@ -484,8 +509,8 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
                 expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "CNP"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username_app,
-                                                                                      "password": password_app,
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username,
+                                                                                      "password": password,
                                                                                       "txnId": Txn_id})
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
@@ -546,24 +571,18 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started Portal validation for the test case : test_common_100_103_008")
                 expectedPortalValues = {"Payment State": "Failed", "Payment Type": "CNP",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": username_app}
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                username_portal = '9775822330'
-                password_portal = 'sandy@demo1'
-                logger.debug(f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
-                logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
-                # time.sleep(2)
-                homePagePortal.click_switch_button("SANDEEPTEST_6979")
-                # text = homePagePortal.perform_merchant_switched_verfication()
-                # logger.info(f"Switched to merchant: {text}")
-
-                homePagePortal.perform_merchant_verfication()
+                homePagePortal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
@@ -604,12 +623,8 @@ def test_common_100_103_008(): #Make sure to add the test case name as same as t
 # From below use only the markers that are applicable for the test case and remove the rest.
 def test_common_100_103_009(): #Make sure to add the test case name as same as the sub feature code.
     """
-<<<<<<< HEAD
     UI_Common_PM_CNP_Credit_Card_After_Expiry_Cyber
     Verification of remote pay txn after link expiry.
-=======
-    Sub Feature Desc: Verification of remote pay txn after link expiry.
->>>>>>> Add test cases for debit card cnp txn and fix for sycn issue.
 
     """
     username_portal = '9660867344'
@@ -739,13 +754,10 @@ def test_common_100_103_009(): #Make sure to add the test case name as same as t
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 def test_common_100_103_011(): #Make sure to add the test case name as same as the sub feature code.
-<<<<<<< HEAD
     """
     UI_Common_PM_CNP_Debit_Card_After_Timeout_Cyber
     Verification of  debit card txn after timeout via CNP link
     """
-=======
->>>>>>> Add test cases for debit card cnp txn and fix for sycn issue.
     username_portal = '9660867344'
     password_portal = 'A123456'
     username_app = "4455778875"

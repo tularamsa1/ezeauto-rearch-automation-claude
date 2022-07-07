@@ -180,7 +180,9 @@ def test_common_100_103_001(): #Make sure to add the test case name as same as t
                 expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "CNP", "rrNumber":rrn}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                api_details = DBProcessor.get_api_details('txnlist', request_body={"username": username, "password": password})
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username_app,
+                                                                                      "password": password_app,
+                                                                                      "txnId": Txn_id})
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
                 amount_api = response["amount"]
@@ -473,7 +475,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
@@ -539,10 +541,31 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 logger.info("Started DB validation for the test case : test_com_100_103_002")
 
                 expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
-                                    "Payment amount": amount}
+                                    "Payment amount": amount, "external_ref": order_id, "acquirer_code": "HDFC",
+                                    "issuer_code": "HDFC", "org_code": org_code,
+                                    "payment_gateway": "CYBERSOURCE", "txn_type": "REMOTE_PAY",
+                                    "settlement_status": "FAILED", "state": "FAILED", "RRNumber": rrn
+                    , "CNP Txn Id": Txn_id, "Payment Flow": "REMOTEPAY", "Payment Option": "CNP_CC",
+                                    "Payment Option Value1": "MasterCard", "CNP Payment Status": "PAYMENT_FAILED",
+                                    "State": "FAILED", "Payment Card Brand": "MASTER_CARD", "payment_card_type": "CREDIT"}
+
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                # query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                # logger.debug(f"Query to fetch data from txn table : {query}")
+                # result = DBProcessor.getValueFromDB(query)
+                # logger.debug(f"Query result : {result}")
+                # status_db = result["status"].iloc[0]
+                # payment_mode_db = result["payment_mode"].iloc[0]
+                # amount_db = int(result["amount"].iloc[0])
+                # state_db = result["state"].iloc[0]
+                # actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
+                #                   "Payment mode": payment_mode_db, "Payment amount": amount_db}
+                                  # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
+
+                query = "select state,status,amount,payment_mode,external_ref,acquirer_code,issuer_code,org_code,payment_card_brand,payment_card_type," \
+                        "payment_gateway,txn_type,settlement_status from txn where id='" + Txn_id + "'"
+
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -576,16 +599,11 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                # portal_username = '9660867344'
-                # portal_password = 'A123456'
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-
-                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
+                logger.debug(f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
+                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
                 homePagePortal = PortalHomePage(portal_driver)
                 homePagePortal.search_merchant_name(str(org_code))
                 logger.debug(f"searching for the org_code : {str(org_code)}")
-                # time.sleep(2)
                 homePagePortal.click_switch_button(str(org_code))
                 homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
@@ -656,6 +674,21 @@ def test_common_100_103_009(): #Make sure to add the test case name as same as t
             # ------------------------------------------------------------------------------------------------
             #
             logger.info("Execution Started for the test case : test_common_100_103_009")
+            app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_009')
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_009')
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
@@ -897,23 +930,6 @@ def test_common_100_103_010(): #Make sure to add the test case name as same as t
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started DB validation for the test case : test_common_100_103_010")
-                # expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
-                #                     "Payment amount": amount}
-                # logger.debug(f"expectedDBValues: {expectedDBValues}")
-                #
-                # query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
-                # logger.debug(f"Query to fetch data from txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # status_db = result["status"].iloc[0]
-                # payment_mode_db = result["payment_mode"].iloc[0]
-                # amount_db = int(result["amount"].iloc[0])
-                # state_db = result["state"].iloc[0]
-                #
-                # actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
-                #                   "Payment mode": payment_mode_db, "Payment amount": amount}
-                #                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
-
                 expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
                                     "Payment amount": amount, "external_ref": order_id, "acquirer_code": "HDFC",
                                     "issuer_code": "HDFC", "org_code": org_code,
@@ -1000,25 +1016,19 @@ def test_common_100_103_010(): #Make sure to add the test case name as same as t
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started Portal validation for the test case : test_common_100_103_010")
                 expectedPortalValues = {"Payment State": "Failed", "Payment Type": "CNP",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": username_app}
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": app_username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                logger.debug(f"Logging in to the portal with the username : {username_portal} and password : {password_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name('SANDEEPTEST_6979')
-                logger.debug(f"searching for the org_code : SANDEEPTEST_6979")
-                homePagePortal.click_switch_button("SANDEEPTEST_6979")
-                homePagePortal.perform_merchant_verfication()
+                homePagePortal.search_merchant_name(org_code)
+                logger.debug(f"searching for the org_code : {org_code}")
+                homePagePortal.click_switch_button(str(org_code))
+                homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
-                # logger.info("Clearing the text")
-                # homePagePortal.perform_clear_txt()
-                # logger.info("text cleared")
-                # homePagePortal.perform_txn_count_search(3)
-                # homePagePortal.perform_txn_search()
-                # homePagePortal.perform_txn_search()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
                 portalType = portalValuesDict['Type']
