@@ -388,16 +388,10 @@ def prepareTestExecutionCommand(testCasesDetailDataFrame):
     commandString = "python3.8 -m pytest -v -s "
     for ind in testCasesDetailDataFrame.index:
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
-    commandString = commandString + getValidationConfig() + " " + calculateTestCasesCountForParallelExecution() + '--alluredir=' + DirectoryCreator.getDirectoryPath(
-        "AllureReport") + ' --capture=tee-sys'
-    print(commandString)
-    return commandString
     if commandString == "python3.8 -m pytest -v -s ":
         return None
     else:
-        commandString = commandString + getValidationConfig()\
-                        + " " + calculateTestCasesCountForParallelExecution() + '--alluredir=' \
-                        + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
+        commandString = commandString + getValidationConfig() +" "+calculateTestCasesCountForParallelExecution()+'--alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
         print(commandString)
         return commandString
 
