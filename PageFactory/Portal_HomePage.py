@@ -22,6 +22,9 @@ class PortalHomePage(BasePage):
     btn_confirmRefund = (By.XPATH, '(//button[.="Confirm"])[1]')
     btn_refund = (By.XPATH, '(//button[.="Refund"])[1]')
     btn_switchedMerchant = (By.XPATH, '/html/body/div/div[10]/div[1]/div[1]/button[2]')
+    lbl_resultValueSearch = (By.CSS_SELECTOR,"#max")
+    btn_txnSearch = (By.XPATH, "//button[contains(text(),'Search')]")
+    btn_txnClick = (By.PARTIAL_LINK_TEXT, "Transactio")
     txt_homepageTitle = (By.XPATH, '//title[contains(text(),"Manage Merchants")]')
 
 
@@ -80,6 +83,7 @@ class PortalHomePage(BasePage):
         self.perform_sendkeys(self.txt_refundAmtField, str(amount))
         self.perform_click(self.btn_confirmRefund)
         self.wait_for_alert_and_accept()
+
     def click_on_transaction_details_based_on_transaction_id(self,txn_id):
         locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td)[1]')
         return self.perform_click(locator)
@@ -87,5 +91,34 @@ class PortalHomePage(BasePage):
     def click_on_refund_button(self):
         return self.perform_click(self.btn_refund)
 
+    # def perform_merchant_switched_verfication(self):
+    #     return self.wait_for_element(self.btn_switchedMerchant)
+
+    def perform_clear_txt(self):
+        self.perform_click1(self.lbl_resultValueSearch)
+        return self.perform_clear_text(self.lbl_resultValueSearch)
+
+    def perform_txn_count_search(self, value):
+        return self.perform_sendkeys(self.lbl_resultValueSearch, value)
+
+    def perform_txn_search(self):
+        return self.perform_click(self.btn_txnSearch)
+
+    # def perform_merchant_switched_verfication(self):
+    #     return self.wait_for_element(self.btn_switchedMerchant)
+
+    def perform_merchant_verfication(self):
+        return self.perform_click_cnp(self.btn_switchedMerchant)
+
     def perform_merchant_switched_verfication(self):
-        return self.wait_for_element(self.btn_switchedMerchant)
+        return self.fetch_text(self.btn_switchedMerchant)
+
+
+    def perfrom_search_Txn(self):
+        self.perform_click(self.btn_txnClick)
+        self.perform_click(self.btn_txnClick)
+
+
+        return self.fetch_text(self.btn_switchedMerchant)
+
+

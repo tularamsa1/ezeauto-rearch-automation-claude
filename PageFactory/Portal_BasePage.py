@@ -12,6 +12,12 @@ class BasePage:
     def perform_click(self, locator, time = 15):
         WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
+    def perform_click1(self, locator, time = 15):
+        WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
+
+    def perform_click1(self, locator, time = 15):
+        WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator)).click()
+
     def select_from_drop_down(self, locator, value, time=15):
         select = Select(WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator)))
         select.select_by_value(value)
@@ -25,6 +31,9 @@ class BasePage:
     def wait_for_element(self, locator, time = 15):
         return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator))
 
+    def wait_for_visibility_of_Element(self, locator, time = 15):
+        return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))
+
     def wait_for_all_elements(self, locator, time = 15):
         return WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))
 
@@ -35,8 +44,11 @@ class BasePage:
         WebDriverWait(self.driver, time).until(EC.alert_is_present())
         self.driver.switch_to.alert.accept()
 
-    def perform_click_cnp(self, locator, time=15):
+    def perform_click_cnp(self, locator, time=30):
         WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
     def perform_touch_action_using_cordinates(self, x1,y1,x2,y2):
         TouchAction(self.driver).press(x=x1, y=y1).move_to(x=x2, y=y2).release().perform()
+
+    def perform_clear_text(self, locator, time=15):
+        WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).clear()

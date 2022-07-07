@@ -12,7 +12,7 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -25,7 +25,7 @@ logger = EzeAutoLogger(__name__)
 def test_sa_100_102_010():
     """
     :Description: Verification of a BQR QR Generation Success through SA via HDFC
-    :Subfeature code: UI_SA_PM_BQR_HDFC_QR_Generation_010
+    :Subfeature code: UI_SA_PM_BQR_HDFC_QR_Generation_Success_010
     :TC naming code description: 100->Payment Method
                                 102->BQR
                                 010-> TC10
@@ -49,11 +49,23 @@ def test_sa_100_102_010():
         try:
             # ------------------------------------------------------------------------------------------------
             #
+            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+            username = app_cred['Username']
+            password = app_cred['Password']
+            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+            portal_username = portal_cred['Username']
+            portal_password = portal_cred['Password']
+
+            query = "select org_code from org_employee where username='" + str(username) + "';"
+            logger.debug(f"Query to fetch org_code from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code : {org_code}")
+
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_HDFC')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_hdfc")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
