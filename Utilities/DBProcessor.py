@@ -165,7 +165,7 @@ def getValueFromDB(query):
     )
     
     tunnel.start()
-    conn = pymysql.connect(host='localhost', user='ezedemo', passwd='abc123', database='ezetap_demo',
+    conn = pymysql.connect(host='localhost', user='ezedemo', passwd='abc123', database='config_apps',
                            port=tunnel.local_bind_port)
 
     data = pd.read_sql_query(query, conn)
