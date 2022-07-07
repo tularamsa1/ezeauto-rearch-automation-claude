@@ -831,7 +831,7 @@ def test_common_100_103_010(): #Make sure to add the test case name as same as t
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
                 loginPage = LoginPage(driver)
-                loginPage.perform_login(username_app, password_app)
+                loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
