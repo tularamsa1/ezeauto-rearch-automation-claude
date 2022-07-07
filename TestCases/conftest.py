@@ -243,6 +243,11 @@ def captureLogs(request):
             rerun_file = Path(path + "/cnpware.log")
             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+            config_logs = LogProcessor.fetch_config_logs()
+            rerun_file = Path(path + "/config.log")
+            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
 
         testCaseID = str(item.nodeid).split('/')
@@ -276,6 +281,17 @@ def captureLogs(request):
             rerun_file = Path(path + "/cnpware.log")
             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+        if GlobalVariables.cnpWareLogs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+            cnpWareLogs = LogProcessor.fetchCnpwareLogs()
+            rerun_file = Path(path + "/cnpware.log")
+            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+            config_logs = LogProcessor.fetch_config_logs()
+            rerun_file = Path(path + "/config.log")
+            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+
     if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
         path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
         print("Inside capturing logs all in one file")
@@ -303,6 +319,12 @@ def captureLogs(request):
             cnpWareLogs = LogProcessor.fetchCnpwareLogs()
             rerun_file = Path(path + "/cnpware.log")
             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+            config_logs = LogProcessor.fetch_config_logs()
+            rerun_file = Path(path + "/config.log")
+            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
 
     if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
         path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -332,13 +354,18 @@ def captureLogs(request):
             rerun_file = Path(path + "/cnpware.log")
             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+            config_logs = LogProcessor.fetch_config_logs()
+            rerun_file = Path(path + "/config.log")
+            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+
 
 @pytest.fixture(scope="function")  # Executing once before every testcases
 def method_setup(request):
     if GlobalVariables.time_calc is not None:
         GlobalVariables.time_calc.setup.resume()
         print(colored("Setup Timer resumed in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
     else:
         GlobalVariables.time_calc = EzeAutoTimeCalculator()
         print(colored("Intializaed EzeAutoTimeCalculator in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -644,6 +671,12 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                    config_logs = LogProcessor.fetch_config_logs()
+                    rerun_file = Path(path + "/config.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                       "bool_rerun_at_the_end").lower() == "true":
@@ -688,6 +721,12 @@ def log_on_failure(request):
                             cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                             rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                            config_logs = LogProcessor.fetch_config_logs()
+                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
 
                     i -= 1
                     j += 1
@@ -737,6 +776,11 @@ def log_on_failure(request):
                             rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                            config_logs = LogProcessor.fetch_config_logs()
+                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
                     i -= 1
                     j += 1
 
@@ -769,6 +813,11 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                    config_logs = LogProcessor.fetch_config_logs()
+                    rerun_file = Path(path + "/config.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True":
                 path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
@@ -798,6 +847,11 @@ def log_on_failure(request):
                     cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                    config_logs = LogProcessor.fetch_config_logs()
+                    rerun_file = Path(path + "/config.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
         if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
@@ -924,6 +978,11 @@ def log_on_success(request):
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                    config_logs = LogProcessor.fetch_config_logs()
+                    rerun_file = Path(path + "/config.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                       "bool_rerun_at_the_end").lower() == "true":
@@ -968,6 +1027,11 @@ def log_on_success(request):
                             cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                             rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                            config_logs = LogProcessor.fetch_config_logs()
+                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
                     i -= 1
                     j += 1
@@ -1017,6 +1081,11 @@ def log_on_success(request):
                             rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                            config_logs = LogProcessor.fetch_config_logs()
+                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
                     i -= 1
                     j += 1
 
@@ -1049,6 +1118,11 @@ def log_on_success(request):
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
+                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                    config_logs = LogProcessor.fetch_config_logs()
+                    rerun_file = Path(path + "/config.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True":
                 path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -1078,6 +1152,11 @@ def log_on_success(request):
                     cnpWareLogs = LogProcessor.fetchCnpwareLogs()
                     rerun_file = Path(path + "/cnpware.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                    config_logs = LogProcessor.fetch_config_logs()
+                    rerun_file = Path(path + "/config.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
         if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",

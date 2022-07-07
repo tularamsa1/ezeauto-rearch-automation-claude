@@ -357,7 +357,11 @@ def executeSelectedTestCases():
         ConfigReader.read_config_paths("System", "automation_suite_path") + "/Runtime/AllTestcaseSuite.xlsx")
     df_testcases.to_excel(EXCEL_reportFilePath)
     os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path") + "/TestCases")
-    os.system(prepareTestExecutionCommand(df_testcases))
+    execution_command = prepareTestExecutionCommand(df_testcases)
+    if execution_command is None:
+        print("No Testcases selected for exection. Hence Execution is aborted")
+    else:
+        os.system(execution_command)
 
 
 def calculateTestCasesCountForParallelExecution():
@@ -388,6 +392,14 @@ def prepareTestExecutionCommand(testCasesDetailDataFrame):
         "AllureReport") + ' --capture=tee-sys'
     print(commandString)
     return commandString
+    if commandString == "python3.8 -m pytest -v -s ":
+        return None
+    else:
+        commandString = commandString + getValidationConfig()\
+                        + " " + calculateTestCasesCountForParallelExecution() + '--alluredir=' \
+                        + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
+        print(commandString)
+        return commandString
 
 
 def getThreadCount():
@@ -412,8 +424,8 @@ def prepareDevicesAndDB():
     devices = getDevicesList()
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
         if devices == None:
-            print(
-                "No physical device is connected. So cannot start the execution since device only option is configured.")
+            print("No physical device is connected. \
+            So cannot start the execution since device only option is configured.")
             return False
         else:
             appiumServerCount = len(devices) + 1

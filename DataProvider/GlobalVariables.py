@@ -18,10 +18,13 @@ startLineNumberPortal = ''
 startLineNumberAPI = ''
 startLineNumberMiddlewware = ''
 startLineNumberCnpware = ''
+start_line_number_config = ''
+
 apiLogs = False
 portalLogs = False
 cnpWareLogs = False
 middleWareLogs = False
+config_logs = False
 
 # portalSS = False
 
