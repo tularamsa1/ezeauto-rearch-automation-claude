@@ -148,7 +148,7 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.wait_for_element_to_be_clickable(self.btn_goToHistory, 30)
+        self.wait_for_element(self.btn_goToHistory, 30)
 
     def click_side_menu_eng(self):
         self.perform_click(self.mnu_engSideMenu)
@@ -180,4 +180,5 @@ class HomePage(BasePage):
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
 
-
+    def wait_for_navigation_to_load(self):
+        self.wait_for_element_to_be_clickable(self.lbl_navigation)
