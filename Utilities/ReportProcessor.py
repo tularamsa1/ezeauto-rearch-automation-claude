@@ -438,6 +438,11 @@ def updateTestCaseResult(msg):
 
 
 def capture_ss_when_exe_failed():
+    capture_ss_when_app_val_exe_failed()
+    capture_ss_when_portal_val_exe_failed()
+
+
+def capture_ss_when_app_val_exe_failed():
     if GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
             "bool_capt_ss_fail") == "True":
         try:
@@ -446,6 +451,8 @@ def capture_ss_when_exe_failed():
         except Exception as e:
             logger.exception(f"Unable to take screenshot : {e}")
 
+
+def capture_ss_when_portal_val_exe_failed():
     if GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
             "bool_capt_ss_fail") == "True":
         try:
@@ -454,6 +461,8 @@ def capture_ss_when_exe_failed():
         except Exception as e:
             logger.exception(f"Unable to take screenshot : {e}")
 
+
+def capture_ss_when_chargeslip_val_exe_failed():
     if GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
             "bool_capt_ss_fail") == "True":
         try:

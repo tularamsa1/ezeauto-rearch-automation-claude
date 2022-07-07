@@ -58,6 +58,13 @@ class TransHistoryPage(BasePage):
         locator = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..' )
         self.perform_click(locator)
 
+    def click_on_transaction_by_txn_id(self, txn_id):
+        locator = (By.ID, 'com.ezetap.service.demo:id/searchView')
+        self.perform_click(locator)
+        self.perform_sendkeys(locator, txn_id)
+        locator = (By.ID, 'com.ezetap.service.demo:id/clTxnView')
+        self.perform_click(locator)
+
     def click_on_second_transaction_by_order_id(self, order_id):
         locator = (By.XPATH, '(//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..)[2]' )
         self.perform_click(locator)

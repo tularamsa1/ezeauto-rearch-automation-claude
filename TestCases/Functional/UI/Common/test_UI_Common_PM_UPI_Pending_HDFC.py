@@ -1,4 +1,5 @@
 import random
+import sys
 from datetime import datetime
 import pytest
 from Configuration import Configuration
@@ -22,14 +23,15 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_com_100_101_014():  # Make sure to add the test case name as same as the sub feature code.
+def test_common_100_101_014():  # Make sure to add the test case name as same as the sub feature code.
     """
     Sub Feature Code: UI_Common_PM_UPI_Pure_UPI_Pending_Via_HDFC
-    Sub Feature Description: Performing a pending upi txn using magic number(51-100)
+    Sub Feature Description: Verification of check status for upi pending txn via HDFC
     """
-    logger.info("Starting execution for the test case : test_com_100_101_014")
 
     try:
+        testcase_id = sys._getframe().f_code.co_name
+        logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -46,11 +48,11 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
         try:
             # ------------------------------------------------------------------------------------------------
             #
-            app_cred = ResourceAssigner.getAppUserCredentials('test_com_100_101_014')
+            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
             logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
             username = app_cred['Username']
             password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials('test_com_100_101_014')
+            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
             logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
             portal_username = portal_cred['Username']
             portal_password = portal_cred['Password']
@@ -69,7 +71,8 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(51, 100)
@@ -78,14 +81,14 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
             paymentPage = PaymentPage(app_driver)
-            paymentPage.check_payment_page(amount, order_id)
+            paymentPage.is_payment_page_displayed(amount, order_id)
             paymentPage.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             paymentPage.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             app_driver.reset()
 
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"  # fetch txn id besed on order id from txn table
+            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
@@ -96,7 +99,8 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
 
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.wait_for_navigationTo_load()
+            homePage.wait_for_navigation_to_load()
+            homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             homePage.enter_amount_and_order_number(amount, order_id)
@@ -106,7 +110,7 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
             paymentPage.click_on_proceed_homepage()
             homePage.click_on_skip_button()
             homePage.click_on_back_btn_enter_amt_page()
-            logger.info("Execution is completed for the test case : test_com_100_101_014")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -131,7 +135,7 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:PENDING", "Payment mode": "UPI",
                                      "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -170,19 +174,19 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
                 # --------------------------------------------------------------------------------------------
 
                 expectedAPIValues = {"Payment Status": "PENDING", "Amount": amount, "Payment Mode": "UPI", "Payment State":"PENDING"}
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": username, "password": password})
+
+                api_details = DBProcessor.get_api_details('txnDetails',
+                                                          request_body={"username": username, "password": password,
+                                                                        "txnId": txn_id})
+                print("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
                 print(response)
-                list = response["txns"]
-                status_api = amount_api = payment_mode_api = state_api = ''
-                for li in list:
-                    if li["txnId"] == txn_id:
-                        status_api = li["status"]
-                        amount_api = int(li["amount"])
-                        payment_mode_api = li["paymentMode"]
-                        state_api = li["states"][0]
+
+                status_api = response["status"]
+                amount_api = int(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
@@ -291,7 +295,7 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        Configuration.executeFinallyBlock("test_com_100_101_014")
+        Configuration.executeFinallyBlock(testcase_id)
         if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case setup itself failed. So the test case was not executed.")
@@ -305,4 +309,4 @@ def test_com_100_101_014():  # Make sure to add the test case name as same as th
         # Test case ID should be passed as argument in string format.
         # Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
         logger.info(
-            "**********Test case Execution and Validation compeleted for test case : test_com_100_101_014***********")
+            f"**********Test case Execution and Validation compeleted for test case : {testcase_id}***********")

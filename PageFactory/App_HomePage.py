@@ -168,5 +168,5 @@ class HomePage(BasePage):
     def click_on_back_btn_enter_amt_page(self):
         self.perform_click(self.btn_back)
 
-    def wait_for_navigationTo_load(self):
+    def wait_for_navigation_to_load(self):
         self.wait_for_element(self.lbl_navigation)

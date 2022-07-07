@@ -127,7 +127,7 @@ def test_common_100_103_003(): #Make sure to add the test case name as same as t
                 loginPage = LoginPage(driver)
                 loginPage.perform_login(username, password)
                 homePage = HomePage(driver)
-                homePage.wait_for_navigationTo_load()
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(driver)
