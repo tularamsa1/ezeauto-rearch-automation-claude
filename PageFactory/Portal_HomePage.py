@@ -86,7 +86,9 @@ class PortalHomePage(BasePage):
         self.wait_for_element(self.txt_refundAmtField).clear()
         self.perform_sendkeys(self.txt_refundAmtField, str(amount))
         self.perform_click(self.btn_confirmRefund)
+        text = self.wait_for_alert_and_get_text()
         self.wait_for_alert_and_accept()
+        return text
 
     def click_on_transaction_details_based_on_transaction_id(self,txn_id):
         locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td)[1]')

@@ -44,6 +44,10 @@ class BasePage:
         WebDriverWait(self.driver, time).until(EC.alert_is_present())
         self.driver.switch_to.alert.accept()
 
+    def wait_for_alert_and_get_text(self, time = 15):
+        WebDriverWait(self.driver, time).until(EC.alert_is_present())
+        return self.driver.switch_to.alert().text
+
     def perform_click_cnp(self, locator, time=30):
         WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
