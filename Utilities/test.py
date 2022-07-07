@@ -216,5 +216,5 @@ def block_merchant_and_users_for_testcase(db_connection, db_cursor, testcase_id 
         return False
 
 
-
+print(get_admin_user_details("TestABC"))
 

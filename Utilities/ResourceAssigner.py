@@ -1,4 +1,5 @@
 #ResourceAssigner
+import json
 import sqlite3
 import time
 from datetime import datetime
@@ -483,4 +484,3 @@ def updateDevicesInDB(listOfDevices: []):
             print("Devices list is empty")
     except Exception as e:
         print("Unable to update the devices to DB")
-
