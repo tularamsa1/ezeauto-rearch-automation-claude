@@ -120,7 +120,7 @@ def test_common_100_103_004(): #Make sure to add the test case name as same as t
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
+                expectedAppValues = {"Payment mode": "UPI", "Statuss": "AUTHORIZED", "Amount": str(amount),
                                      "Txn_id": Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 driver = GlobalVariables.appDriver
