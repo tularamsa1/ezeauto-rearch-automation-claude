@@ -173,7 +173,7 @@ def release_app_user(testcase_id:str) -> bool:
         :return: bool
     """
     release_status = False
-    user = get_user_assigned_to_testcase(testcase_id)
+    user = get_user_assigned_to_testcase(testcase_id, "App")
     if user:
         if unblock_user(user,testcase_id):
             merchant = get_merchant_of_user(user)
@@ -199,7 +199,7 @@ def release_admin_user(testcase_id:str) -> bool:
         :return: bool
     """
     release_status = False
-    user = get_user_assigned_to_testcase(testcase_id)
+    user = get_user_assigned_to_testcase(testcase_id, "Admin")
     if user:
         if unblock_user(user,testcase_id):
             merchant = get_merchant_of_user(user)
@@ -217,6 +217,24 @@ def release_admin_user(testcase_id:str) -> bool:
             user = ""
         logger.info(f"User {user} was not blocked. So releasing is skipped.")
     return release_status
+
+def release_portal_user(testcase_id:str) -> bool:
+    """
+    This method is used to release an portal user that is assigned to a test case.
+        :param testcase_id
+        :return: bool
+    """
+    release_status = False
+    user = get_user_assigned_to_testcase(testcase_id, "Portal")
+    if user:
+        if unblock_user(user, testcase_id):
+            release_status = True
+    else:
+        if user == None :
+            user = ""
+        logger.info(f"User {user} was not blocked. So releasing is skipped.")
+    return release_status
+
 
 def get_merchant_assigned_to_testcase(testcase_id: str) -> str:
     """
@@ -495,9 +513,10 @@ def check_if_merchant_be_released(merchant_code:str) ->bool:
     return release_status
 
 
-def get_user_assigned_to_testcase(testcase_id:str) -> str:
+def get_user_assigned_to_testcase(testcase_id:str, user_type:str) -> str:
     """
     This method is used to fetch the user assigned to a testcase.
+    This also requires the the type of user since a test case can have more than one type of user.
     :param testcase_id:str
     :return: str
     """
@@ -508,8 +527,16 @@ def get_user_assigned_to_testcase(testcase_id:str) -> str:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM users_blocked where TestcaseID = '{testcase_id}';")
-        db_value = cursor.fetchone()
-        user = db_value[0]
+        users = cursor.fetchall()
+        for current_user in users:
+            user_name = current_user[0]
+            cursor.execute(f"SELECT * from users where Name = '{user_name}';")
+            user_details = cursor.fetchone()
+            if str(user_details[5]).lower() == user_type.lower():
+                user = user_details[0]
+                break
+            else:
+                user = None
     except Exception as e:
         if str(e).__contains__("'NoneType' object is not subscriptable"):
             logger.info(f"No user is assigned to the testcase {testcase_id}")
@@ -567,7 +594,14 @@ def get_merchant_of_user(user_name:str) -> str:
     conn.close()
     return merchant
 
-print(release_app_user("def"))
 
+
+print(get_app_user_details("ABC"))
+print(get_admin_user_details("DEF"))
+print(get_portal_user_details("GHI"))
+time.sleep(5)
+print(release_app_user("ABC"))
+print(release_admin_user("DEF"))
+print(release_portal_user("GHI"))
 
 
