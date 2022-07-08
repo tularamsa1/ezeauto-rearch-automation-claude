@@ -3,7 +3,7 @@ import random
 import time
 from datetime import datetime
 
-import pyautogui
+# import pyautogui
 import pytest
 import requests
 from Configuration import Configuration
