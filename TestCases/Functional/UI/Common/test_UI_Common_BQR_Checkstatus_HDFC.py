@@ -83,6 +83,7 @@ def test_common_100_102_004():
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.wait_for_navigation_to_load()
+            homePage.wait_for_home_page_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
