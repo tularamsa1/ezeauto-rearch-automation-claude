@@ -449,14 +449,14 @@ def test_common_100_101_013():  # Make sure to add the test case name as same as
             # ------------------------------------------------------------------------------------------------
             app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
             logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
+            app_username = app_cred['Username']
+            app_password = app_cred['Password']
             portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
             logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
             portal_username = portal_cred['Username']
             portal_password = portal_cred['Password']
 
-            query = "select org_code from org_employee where username='" + str(username) + "';"
+            query = "select org_code from org_employee where username='" + str(app_username) + "';"
             logger.debug(f"Query to fetch org_code from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             org_code = result['org_code'].values[0]
@@ -466,8 +466,8 @@ def test_common_100_101_013():  # Make sure to add the test case name as same as
             # username = '5784758454'
             # password = 'A123456'
             # org_code = "UPIHDFCBANKHDFCPG"
-            logger.info(f"Logging in the MPOSX application using username : {username}")
-            loginPage.perform_login(username, password)
+            logger.info(f"Logging in the MPOSX application using username : {app_username}")
+            loginPage.perform_login(app_username, app_password)
             homePage = HomePage(app_driver)
             homePage.wait_for_navigation_to_load()
             homePage.wait_for_home_page_load()
@@ -614,7 +614,7 @@ def test_common_100_101_013():  # Make sure to add the test case name as same as
                                      "Payment Status Original": "AUTHORIZED", "Amount Original": amount,
                                      "Payment Mode Original": "UPI", "rrn":str(rrn)}
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password,
+                                                          request_body={"username": app_username, "password": app_password,
                                                                         "txnId": txn_id})
                 print("API DETAILS for original txn:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -625,7 +625,7 @@ def test_common_100_101_013():  # Make sure to add the test case name as same as
                 payment_mode_api_orginal = response["paymentMode"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password,
+                                                          request_body={"username": app_username, "password": app_password,
                                                                         "txnId": txn_id_refunded})
                 print("API DETAILS for refunded txn:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -776,7 +776,7 @@ def test_common_100_101_013():  # Make sure to add the test case name as same as
                 date = datetime.today().strftime('%Y-%m-%d')
                 expectedValues = {'PAID BY:':'UPI', 'merchant_ref_no': 'Ref # '+str(order_id), 'RRN':str(rrn), 'BASE AMOUNT:':"Rs." + str(refund_amount) + ".00",
                                   'date':date}
-                receipt_validator.perform_charge_slip_validations(txn_id_refunded, {"username":username,"password":password}, expectedValues)
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded, {"username":app_username,"password":app_password}, expectedValues)
 
             except Exception as e:
                 ReportProcessor.capture_ss_when_exe_failed()

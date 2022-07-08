@@ -127,7 +127,6 @@ def test_common_100_101_004():
             response = APIProcessor.send_request(api_details)
             print(response)
 
-            paymentPage.click_on_proceed_homepage()
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
         except Exception as e:
@@ -158,6 +157,7 @@ def test_common_100_101_004():
                                      "Txn_id": Txn_id, "rrn": str(rrn)}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 # time.sleep(5)
+                paymentPage.click_on_proceed_homepage()
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
@@ -968,15 +968,15 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        username = app_cred['Username']
-        password = app_cred['Password']
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
 
-        query = "select org_code from org_employee where username='" + str(username) + "';"
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
@@ -990,6 +990,16 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
         print("***********API DETAILS **********:", api_details)
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+
+        api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
+                                                                              "password": portal_password,
+                                                                              "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "false"
+        logger.debug(f"API details  : {api_details}")
+        print("***********API DETAILS **********:", api_details)
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+
         logger.info("Finished performing preconditions before starting test case execution")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
@@ -1004,8 +1014,8 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
             loginPage = LoginPage(app_driver)
             # username = '5784758454'
             # password = 'A123456'
-            logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
-            loginPage.perform_login(username, password)
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            loginPage.perform_login(app_username, app_password)
             amount = random.randint(51, 100)
             if amount == 55:
                 amount = 56
@@ -1026,7 +1036,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
             logger.info("reseting the com.ezetap.basicapp")
             app_driver.reset()
             logger.info("waiting for the time till qr get expired...")
-            time.sleep(60)
+            time.sleep(63)
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -1113,7 +1123,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                                      "Payment Amt Original": str(amount), "rrn": str(rrn),
                                      "rrn original": str(original_rrn)}
 
-                loginPage.perform_login(username, password)
+                loginPage.perform_login(app_username, app_password)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
@@ -1187,7 +1197,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password,
+                                                          request_body={"username": app_username, "password": app_password,
                                                                         "txnId": new_Txn_id})
                 print("API DETAILS for new_Txn_id after callback:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -1201,7 +1211,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                 rrn_api = response["rrNumber"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password,
+                                                          request_body={"username": app_username, "password": app_password,
                                                                         "txnId": original_txn_id})
                 print("API DETAILS for original_txn_id:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -1300,7 +1310,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                                         "Payment State": "Settled", "Payment Type Original": "UPI",
                                         "Amount": "Rs." + str(amount) + ".00",
                                         "Amount Original": "Rs." + str(amount) + ".00",
-                                        "Username": username, "Username Original": username}
+                                        "Username": app_username, "Username Original": app_username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
@@ -1401,15 +1411,15 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        username = app_cred['Username']
-        password = app_cred['Password']
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
 
-        query = "select org_code from org_employee where username='" + str(username) + "';"
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
@@ -1423,6 +1433,16 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
         print("***********API DETAILS **********:", api_details)
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+
+        api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
+                                                                              "password": portal_password,
+                                                                              "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "false"
+        logger.debug(f"API details  : {api_details}")
+        print("***********API DETAILS **********:", api_details)
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+
         logger.info("Finished performing preconditions before starting test case execution")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
@@ -1437,8 +1457,8 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
             loginPage = LoginPage(app_driver)
             # username = '5784758454'
             # password = 'A123456'
-            logger.info(f"Logging in the MPOSX application using username : {username} and password : {password}")
-            loginPage.perform_login(username, password)
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            loginPage.perform_login(app_username, app_password)
             amount = random.randint(51, 100)
             if amount == 55:
                 amount = 56
@@ -1459,7 +1479,7 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
             logger.info("reseting the com.ezetap.basicapp")
             app_driver.reset()
             logger.info("waiting for the time till qr get expired...")
-            time.sleep(60)
+            time.sleep(63)
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -1537,7 +1557,7 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
                 expectedAppValues = {"Payment mode": "UPI", "Payment Txn ID": original_txn_id, "Payment Amt": str(amount),
                                      "Payment Status": "EXPIRED", "rrn original": str(original_rrn)}
 
-                loginPage.perform_login(username, password)
+                loginPage.perform_login(app_username, app_password)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
@@ -1595,7 +1615,7 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password,
+                                                          request_body={"username": app_username, "password": app_password,
                                                                         "txnId": original_txn_id})
                 print("API DETAILS for original_txn_id:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -1674,9 +1694,9 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 expectedPortalValues = {"Payment Type": "UPI",
-                                        "Payment State": "EXPIRED",
+                                        "Payment State": "Expired",
                                         "Amount": "Rs." + str(amount) + ".00",
-                                        "Username": username,}
+                                        "Username": app_username,}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
