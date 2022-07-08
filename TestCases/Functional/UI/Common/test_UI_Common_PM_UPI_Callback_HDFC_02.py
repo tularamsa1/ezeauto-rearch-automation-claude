@@ -88,7 +88,8 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
             loginPage = LoginPage(app_driver)
             # username = '5784758454'
             # password = 'A123456'
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             loginPage.perform_login(app_username, app_password)
             amount = random.randint(51, 100)
             if amount == 55:
@@ -270,7 +271,8 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username, "password": app_password,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
                                                                         "txnId": new_Txn_id})
                 print("API DETAILS for new_Txn_id after callback:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -284,7 +286,8 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
                 # rrn_api = response["rrNumber"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username, "password": app_password,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
                                                                         "txnId": original_txn_id})
                 print("API DETAILS for original_txn_id:", api_details)
                 response = APIProcessor.send_request(api_details)
@@ -322,9 +325,11 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expectedDBValues = {"Payment Status Original": "EXPIRED", "Payment State Original": "EXPIRED", "Payment mode": "UPI",
+                expectedDBValues = {"Payment Status Original": "EXPIRED", "Payment State Original": "EXPIRED",
+                                    "Payment mode": "UPI",
                                     "Payment amount": amount, "UPI_Txn_Status Original": "EXPIRED",
-                                    "Payment Status": "REFUND_PENDING", "Payment State": "REFUND_PENDING", "Payment mode Original": "UPI",
+                                    "Payment Status": "REFUND_PENDING", "Payment State": "REFUND_PENDING",
+                                    "Payment mode Original": "UPI",
                                     "Payment amount Original": amount, "UPI_Txn_Status": "REFUND_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -426,7 +431,8 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt_original} ")
                 logger.debug(f"Fetching Username from portal : {portal_username_original} ")
 
-                actualPortalValues = {"Payment State Original": portal_state_original, "Payment Type": portal_txn_type_original,
+                actualPortalValues = {"Payment State Original": portal_state_original,
+                                      "Payment Type": portal_txn_type_original,
                                       "Payment State": portal_state, "Payment Type Original": portal_txn_type,
                                       "Amount": portal_amt, "Amount Original": portal_amt_original,
                                       "Username": portal_username, "Username Original": portal_username_original}
@@ -565,7 +571,7 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
             logger.info("reseting the com.ezetap.basicapp")
             app_driver.reset()
             logger.info("waiting for the time till qr get expired...")
-            time.sleep(60)
+            time.sleep(63)
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -815,7 +821,7 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
                 actualPortalValues = {"Payment Type": portal_txn_type,
                                       "Payment State": portal_state,
                                       "Amount": portal_amt,
-                                      "Username": portal_username,}
+                                      "Username": portal_username, }
 
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
@@ -867,11 +873,11 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-# Performing a upg txn when upg refund and upg autorefund are disabled.
+# Performing a upg authorized txn when upg refund and upg autorefund and autoRefund are disabled.
 def test_common_100_101_020():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_UPG_AUTHREFUNDED_HDFC
-    Sub Feature Description: Performing a upg txn when upg refund and upg autorefund are disabled.
+    Sub Feature Code: UI_Common_PM_UPI_UPG_AUTHORIZED_VIA_HDFC_when_UPGRefund_&_UPGAutoRefund_Disabled
+    Sub Feature Description: Performing a upg txn when upg refund and upg autorefund and autoRefund are disabled.
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -926,7 +932,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
             logger.debug(f"generated random amount is : {amount}")
             logger.debug(f"generated random rrn number is : {rrn}")
             logger.debug(f"generated random ref_id number is : {ref_id}")
-            time.sleep(15)
+            # time.sleep(15)
             # query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
             # print(query)
             # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")

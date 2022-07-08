@@ -95,10 +95,6 @@ class PortalHomePage(BasePage):
     # def perform_merchant_switched_verfication(self):
     #     return self.wait_for_element(self.btn_switchedMerchant)
 
-    def perform_clear_txt(self):
-        self.perform_click1(self.lbl_resultValueSearch)
-        return self.perform_clear_text(self.lbl_resultValueSearch)
-
     def perform_txn_count_search(self, value):
         return self.perform_sendkeys(self.lbl_resultValueSearch, value)
 
@@ -118,19 +114,10 @@ class PortalHomePage(BasePage):
         self.perform_sendkeys(self.txt_merchantSearch, org_code)
         self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
 
-    def perfrom_search_Txn(self):
-        self.perform_click(self.btn_txnClick)
-        self.perform_click(self.btn_txnClick)
-
-
-        return self.fetch_text(self.btn_switchedMerchant)
-
 
     def perfrom_search_Txn(self):
         self.perform_click(self.btn_txnClick)
         self.perform_click(self.btn_txnClick)
-
-
         return self.fetch_text(self.btn_switchedMerchant)
 
 

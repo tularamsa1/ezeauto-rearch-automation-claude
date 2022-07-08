@@ -60,7 +60,6 @@ def test_common_100_102_001():
             logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
             portal_username = portal_cred['Username']
             portal_password = portal_cred['Password']
-
             query = "select org_code from org_employee where username='" + str(username) + "';"
             logger.debug(f"Query to fetch org_code from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -100,9 +99,6 @@ def test_common_100_102_001():
             response = APIProcessor.send_request(api_details)
             print("Response received:", response)
             logger.debug(f"Fetching API Response for call back : {response}")
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            paymentPage.click_on_proceed_homepage()
             logger.info(f"Execution is completed for the test case : {testcase_id}")
 
             #
@@ -128,6 +124,10 @@ def test_common_100_102_001():
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+
+                app_payment_status = paymentPage.fetch_payment_status()
+                logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
+                paymentPage.click_on_proceed_homepage()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -371,6 +371,7 @@ def test_common_100_102_002():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -401,10 +402,6 @@ def test_common_100_102_002():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for callback of transaction is : {response}")
             print("API Res:", response)
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            paymentPage.click_on_proceed_homepage()
-            paymentPage.click_on_back_btn()
             #
             logger.info(f"Execution is completed for the test case : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
@@ -429,6 +426,10 @@ def test_common_100_102_002():
                 logger.info(f"Starting APP Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:FAILED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                app_payment_status = paymentPage.fetch_payment_status()
+                logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
+                paymentPage.click_on_proceed_homepage()
+                paymentPage.click_on_back_btn()
                 homePage.click_on_back_btn_enter_amt_page()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -664,6 +665,7 @@ def test_common_100_102_003():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -952,6 +954,7 @@ def test_common_100_102_011():
             loginPage = LoginPage(app_driver)
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -980,9 +983,7 @@ def test_common_100_102_011():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for 1st call back : {response}")
 
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            paymentPage.click_on_proceed_homepage()
+
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
                                                                     "AUTH_CODE": auth_code, "RRN": rrn})
@@ -1013,6 +1014,9 @@ def test_common_100_102_011():
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                app_payment_status = paymentPage.fetch_payment_status()
+                logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
+                paymentPage.click_on_proceed_homepage()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -1269,6 +1273,7 @@ def test_common_100_102_012():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1293,7 +1298,7 @@ def test_common_100_102_012():
             logger.debug(
                 f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id_expired}, Auth code : {auth_code}, RRN : {rrn}")
             logger.info(f"Waiting for QR code to get Expired.. Please wait")
-            sleep(61)
+            sleep(60)
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id_expired, "TXN_AMOUNT": str(amount),
                                                                     "AUTH_CODE": auth_code, "RRN": rrn})
@@ -1334,7 +1339,7 @@ def test_common_100_102_012():
                 logger.info(f"Starting App Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount), "Payment Status Original": "STATUS:EXPIRED", "Payment mode Original": "BHARAT QR", "Payment Txn ID Original": txn_id_expired, "Payment Amt Original": str(amount)}
-
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -1620,6 +1625,7 @@ def test_common_100_102_013(): # check if this is a valid scenario
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1684,7 +1690,7 @@ def test_common_100_102_013(): # check if this is a valid scenario
                 logger.info(f"Starting App Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:REFUND_PENDING", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount), "Payment Status Original": "STATUS:EXPIRED", "Payment mode Original": "BHARAT QR", "Payment Txn ID Original": txn_id_expired, "Payment Amt Original": str(amount)}
-
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -1902,7 +1908,6 @@ def test_common_100_102_013(): # check if this is a valid scenario
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-
         logger.info("Reverted back all the settings that were done as preconditions")
 
         # ----------------------------------------------------------------------------------------------------------

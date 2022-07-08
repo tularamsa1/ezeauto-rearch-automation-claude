@@ -12,7 +12,8 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
@@ -38,7 +39,36 @@ def test_common_100_102_024():
         testcase_id = sys._getframe().f_code.co_name
         logger.info(f"Starting execution for the test case :{testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        # Write the setup code here
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
+        result = DBProcessor.getValueFromDB(query)
+        mid = result["mid"].iloc[0]
+        logger.debug(f"Fetching mid from database for current merchant:{mid}")
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '"+ mid+"' and org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '"+ mid+"' and org_code='" + org_code + "' and bank_code='YES' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+        #
         GlobalVariables.setupCompletedSuccessfully = True
         #---------------------------------------------------------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
@@ -50,9 +80,9 @@ def test_common_100_102_024():
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_YES_ATOS')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_yes_atos")
+            # username = read_config("credentials", 'username_YES_ATOS')
+            # password = read_config("credentials", 'password')
+            # org_code = read_config("testdata", "org_code_yes_atos")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -84,9 +114,10 @@ def test_common_100_102_024():
             response = APIProcessor.send_request(api_details)
             print("Response received:", response)
             logger.debug(f"Response received for checkstatus of transaction is : {response}")
+            app_driver.reset()
+            logger.info("Restarting MPOSX app after perfroming checkstatus of the transaction")
             loginPage = LoginPage(app_driver)
             logger.debug(f"Loging in again with user name : {username}")
-            loginPage.validate_login_page()
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
             homePage.check_home_page_logo()
@@ -310,7 +341,16 @@ def test_common_100_102_024():
             ReportProcessor.updateTestCaseResult(msg)
         # -------------------------------Revert Preconditions done(setup)--------------------------------------------
 
-        # Write the code here to revert the settings that were done as precondition
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '" + mid + "' and org_code='" + org_code + "' and bank_code='YES'"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '" + mid + "' and org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         # ----------------------------------------------------------------------------------------------------------
 
@@ -626,6 +666,21 @@ def test_common_100_102_025():
         logger.debug(f"Response received for setting preconditions is : {response}")
         logger.info("Finished performing preconditions before starting test case execution")
 
+        query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
+        result = DBProcessor.getValueFromDB(query)
+        mid = result["mid"].iloc[0]
+        logger.debug(f"Fetching mid from database for current merchant:{mid}")
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '"+ mid+"' and org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = 'MID5555554321AA'and org_code='" + org_code + "' and bank_code='YES' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         #---------------------------------------------------------------------------------------------------------
@@ -889,5 +944,17 @@ def test_common_100_102_025():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
         logger.info("Reverted back all the settings that were done as preconditions")
+
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '" + mid + "' and org_code='" + org_code + "' and bank_code='YES'"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '" + mid + "' and org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
 
         # ----------------------------------------------------------------------------------------------------------

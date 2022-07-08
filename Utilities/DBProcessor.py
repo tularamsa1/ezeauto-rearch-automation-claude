@@ -207,4 +207,42 @@ def getValueFromDB(query):
 #         logger.error("Not able to connect to Database for running update query")
 #     return data
 #
+def setValueToDB(query, db_name="ezetap_demo") -> str:
+    """
+        This method is for running the DML query on the database.
+        This takes database name and query as parameters.
+        :return: string
+        """
+    envi = ConfigReader.read_config("APIs", "env")
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        logger.warning(e)
+        ssh_private_key_password = None
+
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        ssh_address_or_host=envi.lower(),
+        remote_bind_address=('localhost', 3306),
+        ssh_private_key_password=ssh_private_key_password
+    )
+
+    tunnel.start()
+    try:
+        conn = pymysql.connect(host='localhost', user='ezedemo', passwd='abc123', database=db_name,
+                               port=tunnel.local_bind_port)
+        mycursor = conn.cursor()
+        try:
+            mycursor.execute(query)
+            conn.commit()
+        except:
+            print("Running Update query failed..!")
+            logger.error("Running Update query failed..!")
+
+        data = str(mycursor.rowcount) + ",record(s) affected"
+        conn.close()
+        tunnel.close()
+    except:
+        print("Not able to connect to Database for running update query")
+        logger.error("Not able to connect to Database for running update query")
+    return data
 

@@ -75,6 +75,7 @@ def test_common_100_102_019():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -97,10 +98,14 @@ def test_common_100_102_019():
             rrn = "RE" + txn_id.split('E')[1]
             upg_txn_id = "T" + txn_id[1:-1]
             upg_amount = amount-10
+            query = "select visa_merchant_id_primary from bharatqr_merchant_config where org_code='"+org_code+"' and bank_code='HDFC' "
+            result = DBProcessor.getValueFromDB(query)
+            merchant_id = result["visa_merchant_id_primary"].iloc[0]
+            print("Merhant id for this merchant is :", merchant_id)
             logger.debug(
-                f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
+                f"Fetching Txn_id,Auth code and RRN, merchant pan from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, {merchant_id}, merchant pan")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": "4403849803031405",
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": merchant_id,
                                                                     "AUTH_CODE": auth_code, "RRN": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -111,6 +116,7 @@ def test_common_100_102_019():
             app_payment_status = paymentPage.fetch_payment_status()
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             paymentPage.click_on_proceed_homepage()
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             query = "select id from txn where org_code='"+org_code+"' order by created_time desc limit 1"#fetch txn id besed on order id from txn table
@@ -409,6 +415,7 @@ def test_common_100_102_020():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -431,10 +438,14 @@ def test_common_100_102_020():
             rrn = "RE" + txn_id.split('E')[1]
             upg_txn_id = "T" + txn_id[1:-1]
             upg_amount = amount-10
+            query = "select visa_merchant_id_primary from bharatqr_merchant_config where org_code='"+org_code+"' and bank_code='HDFC' "
+            result = DBProcessor.getValueFromDB(query)
+            merchant_id = result["visa_merchant_id_primary"].iloc[0]
+            print("Merhant id for this merchant is :", merchant_id)
             logger.debug(
-                f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
+                f"Fetching Txn_id,Auth code and RRN, merchant id from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, {merchant_id}, merchant pan")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": "4403849803031405",
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": merchant_id,
                                                                     "AUTH_CODE": auth_code, "RRN": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -445,6 +456,7 @@ def test_common_100_102_020():
             app_payment_status = paymentPage.fetch_payment_status()
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             paymentPage.click_on_proceed_homepage()
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             query = "select id from txn where org_code='"+org_code+"' order by created_time desc limit 1"#fetch txn id besed on order id from txn table
@@ -477,6 +489,7 @@ def test_common_100_102_020():
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:UPG_AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": upg_txn_id, "Payment Amt": str(upg_amount), "Payment Status Original": "STATUS:AUTHORIZED", "Payment mode Original": "BHARAT QR", "Payment Txn ID Original": txn_id, "Payment Amt Original": str(amount)}
 
+                homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
@@ -746,6 +759,7 @@ def test_common_100_102_021():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
+            homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -768,14 +782,14 @@ def test_common_100_102_021():
             rrn = "RE" + txn_id.split('E')[1]
             upg_txn_id = "T" + txn_id[1:-1]
             upg_amount = amount-10
-            query = "select merchant_pan from bharatqr_merchant_config where org_code='"+org_code+"' "
-            logger.debug(f"Query to fetch transaction id from database is: {query}")
+            query = "select visa_merchant_id_primary from bharatqr_merchant_config where org_code='"+org_code+"' and bank_code='HDFC' "
             result = DBProcessor.getValueFromDB(query)
-            merchant_pan = result["merchant_pan"].iloc[0]
+            merchant_id = result["visa_merchant_id_primary"].iloc[0]
+            print("Merhant id for this merchant is :", merchant_id)
             logger.debug(
-                f"Fetching Txn_id,Auth code and RRN from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}")
+                f"Fetching Txn_id,Auth code and RRN, merchant pan from data base : Txn_id expired : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, {merchant_id}, merchant pan")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": merchant_pan, "STATUS_CODE": "02",
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(upg_amount), "MERCHANT_PAN": merchant_id, "STATUS_CODE": "02",
                                                                     "STATUS_DESC": "failed","AUTH_CODE": auth_code, "RRN": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
