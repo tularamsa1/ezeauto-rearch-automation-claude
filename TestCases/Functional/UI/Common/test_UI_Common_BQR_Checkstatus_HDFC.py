@@ -70,6 +70,7 @@ def test_common_100_102_004():
             homePage = HomePage(app_driver)
             homePage.wait_for_navigation_to_load()
             homePage.check_home_page_logo()
+            homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')

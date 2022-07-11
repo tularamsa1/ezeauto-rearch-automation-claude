@@ -58,9 +58,11 @@ def test_common_100_102_024():
         mid = result["mid"].iloc[0]
         logger.debug(f"Fetching mid from database for current merchant:{mid}")
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '"+ mid+"' and org_code='" +org_code+ "' "
+        logger.debug(f"Query to set values as inactive to db is : {query}")
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting inactive", result)
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '"+ mid+"' and org_code='" + org_code + "' and bank_code='YES' "
+        logger.debug(f"Query to set values as active to db is : {query}")
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
@@ -655,9 +657,23 @@ def test_common_100_102_025():
         logger.info(f"Starting execution for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info("Performing preconditions before starting test case execution")
-        portal_username = read_config("credentials", "username_portal")
-        portal_password = read_config("credentials", "password_portal")
-        org_code = read_config("testdata", "org_code_yes_atos")
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        # portal_username = read_config("credentials", "username_portal")
+        # portal_password = read_config("credentials", "password_portal")
+        # org_code = read_config("testdata", "org_code_yes_atos")
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
         logger.debug(f"API details  : {api_details} ")
@@ -671,9 +687,14 @@ def test_common_100_102_025():
         mid = result["mid"].iloc[0]
         logger.debug(f"Fetching mid from database for current merchant:{mid}")
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '"+ mid+"' and org_code='" +org_code+ "' "
+        logger.debug(f"Query to set values as inactive to db is : {query}")
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting inactive", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = 'MID5555554321AA'and org_code='" + org_code + "' and bank_code='YES' "
+        logger.debug(f"Query to set values as active to db is : {query}")
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
@@ -695,9 +716,9 @@ def test_common_100_102_025():
             #
             app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
-            username = read_config("credentials", 'username_YES_ATOS')
-            password = read_config("credentials", 'password')
-            org_code = read_config("testdata", "org_code_yes_atos")
+            # username = read_config("credentials", 'username_YES_ATOS')
+            # password = read_config("credentials", 'password')
+            # org_code = read_config("testdata", "org_code_yes_atos")
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -889,10 +910,10 @@ def test_common_100_102_025():
                 #
                 ui_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(ui_driver)
-                username_portal = read_config("credentials", 'username_portal')
-                password_portal = read_config('credentials', 'password_portal')
-                logger.info(f"Logging in Portal using username : {username_portal}")
-                loginPagePortal.perform_login_to_portal(username_portal, password_portal)
+                # username_portal = read_config("credentials", 'username_portal')
+                # password_portal = read_config('credentials', 'password_portal')
+                logger.info(f"Logging in Portal using username : {portal_username}")
+                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(ui_driver)
                 homePagePortal.wait_for_home_page_load()
                 homePagePortal.search_merchant_name(org_code)
