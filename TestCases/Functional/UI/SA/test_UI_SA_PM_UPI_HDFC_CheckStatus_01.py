@@ -324,7 +324,6 @@ def test_sa_100_101_001():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-# Performing a failed UPI txn via HDFC using SA check status
 def test_sa_100_101_002():
     """
     Sub Feature Code: UI_SA_PM_UPI_Failed_Via_SA_CheckStatus_HDFC
@@ -335,33 +334,34 @@ def test_sa_100_101_002():
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
-        logger.info(f"Starting execution for the test case : {testcase_id}")
+        logger.info(f"Starting pre condition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        logger.info(f"Completed pre condition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
-        app_driver = GlobalVariables.appDriver
         msg = ""
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-            portal_username = portal_cred['Username']
-            portal_password = portal_cred['Password']
-
-            query = "select org_code from org_employee where username='" + str(username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            app_driver = GlobalVariables.appDriver
             loginPage = LoginPage(app_driver)
             # username = '5784758454'
             # password = 'A123456'
