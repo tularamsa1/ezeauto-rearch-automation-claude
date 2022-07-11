@@ -96,6 +96,7 @@ def test_sa_100_101_024():
                 text = payment_page.validate_upi_bqr_payment_screen()
 
                 actual_app_values = {"Payment Screen text": text}
+                app_driver.reset()
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
