@@ -549,7 +549,8 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
             loginPage = LoginPage(app_driver)
             # username = '5784758454'
             # password = 'A123456'
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             loginPage.perform_login(app_username, app_password)
             amount = random.randint(51, 100)
             if amount == 55:
@@ -790,7 +791,7 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
                 expectedPortalValues = {"Payment Type": "UPI",
                                         "Payment State": "Expired",
                                         "Amount": "Rs." + str(amount) + ".00",
-                                        "Username": app_username}
+                                        "Username": app_username, }
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
