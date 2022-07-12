@@ -596,13 +596,13 @@ def get_merchant_of_user(user_name:str) -> str:
 
 
 
-print(getAppUserCredentials("ABC"))
-print(get_admin_user_details("DEF"))
-print(getPortalUserCredentials("GHI"))
-time.sleep(5)
-print(releaseAppUser("ABC"))
-print(release_admin_user("DEF"))
-print(releasePortalUser("GHI"))
+# print(getAppUserCredentials("ABC"))
+# print(get_admin_user_details("DEF"))
+# print(getPortalUserCredentials("GHI"))
+# time.sleep(5)
+# print(releaseAppUser("ABC"))
+# print(release_admin_user("DEF"))
+# print(releasePortalUser("GHI"))
 
 
 
