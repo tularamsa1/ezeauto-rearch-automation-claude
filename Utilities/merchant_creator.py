@@ -273,6 +273,3 @@ def create_users_for_merchant(merchant_code):
         logger.info("User creation skipped")
     cursor.close()
     conn.close()
-
-
-create_merchants_with_users()
