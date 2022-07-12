@@ -44,7 +44,7 @@ def check_if_merchant_exists(merchant_code: str) -> bool:
     :return: bool
     """
 
-    df_query_result = DBProcessor.getValueFromDB("select * from org_employee where org_code ='" + merchant_code + "';", 'ezetap_demo')
+    df_query_result = DBProcessor.getValueFromDB("select * from org_employee where org_code ='" + merchant_code + "';")
     if df_query_result.empty:
         print("Merchant "+merchant_code+" does not exist in this environment")
         logger.info("Merchant "+merchant_code+" does not exist in this environment")
@@ -61,7 +61,7 @@ def check_if_user_exists(name: str) -> bool:
         :return: bool
     """
 
-    df_query_result = DBProcessor.getValueFromDB("select * from org_employee where name ='" + name + "';", 'ezetap_demo')
+    df_query_result = DBProcessor.getValueFromDB("select * from org_employee where name ='" + name + "';")
     if df_query_result.empty:
         print("User "+name+" does not exist in this environment")
         logger.info("User "+name+" does not exist in this environment")
