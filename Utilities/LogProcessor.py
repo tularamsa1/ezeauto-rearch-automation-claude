@@ -10,7 +10,7 @@ def fetchAPILogs():
     data_buffer = ''
     startLineNo = GlobalVariables.startLineNumberAPI
     logfileName = Base_Actions.pathToLogFile('api')
-    ednLineNo = noOfLine(logfileName)
+    ednLineNo = get_no_of_log_lines(logfileName)
     command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + ednLineNo + " { print }' " + logfileName
     print(command)
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
@@ -24,7 +24,7 @@ def fetchPortalLogs():
     data_buffer = ''
     startLineNo = GlobalVariables.startLineNumberPortal
     logfileName = Base_Actions.pathToLogFile("portal")
-    endLineNo = noOfLine(logfileName)
+    endLineNo = get_no_of_log_lines(logfileName)
     command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
@@ -37,7 +37,7 @@ def fetchMiddlewareLogs():
     data_buffer = ''
     startLineNo = GlobalVariables.startLineNumberMiddlewware
     logfileName = Base_Actions.pathToLogFile("middleware")
-    endLineNo = noOfLine(logfileName)
+    endLineNo = get_no_of_log_lines(logfileName)
     command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
@@ -50,7 +50,7 @@ def fetchCnpwareLogs():
     data_buffer = ''
     startLineNo = GlobalVariables.startLineNumberCnpware
     logfileName = Base_Actions.pathToLogFile("cnpware")
-    endLineNo = noOfLine(logfileName)
+    endLineNo = get_no_of_log_lines(logfileName)
     command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
@@ -77,9 +77,9 @@ def fetch_config_logs():
 def fetch_number_of_lines_as_super_user(log_filepath:str) -> str:
     """This function takes a log_filepath and login as super user and fetch the total number of lines in the file in string format
     """
-    print('logining as superuser using sudo su - ezetap', end='\r')
+    print('Logining as superuser using sudo su - ezetap', end='\r')
     GlobalVariables.ssh.exec_command("sudo /bin/su - ezetap", get_pty=True)
-    print('logining as superuser using sudo su - ezetap :: Sucessful')
+    print('Logining as superuser using sudo su - ezetap :: Successful')
     cmd = f"wc -l {log_filepath}"  # cmd to count the lines in the file
     _ssh_stdin, ssh_stdout, _ssh_stderr = GlobalVariables.ssh.exec_command(cmd, get_pty=True)
     data_buffer = ""
@@ -91,7 +91,7 @@ def fetch_number_of_lines_as_super_user(log_filepath:str) -> str:
 
 
 # To get no of lines from the log file
-def noOfLine(logFileName):
+def get_no_of_log_lines(logFileName):
     command = 'wc -l ' + logFileName
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     line = ssh_stdout.readline()
@@ -113,14 +113,14 @@ def startLineNoOfServerLogFile():
         current = datetime.now()
         LogColl_Starting_Time = current.strftime("%H:%M:%S")
         if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-            GlobalVariables.startLineNumberAPI = noOfLine(Base_Actions.pathToLogFile('api'))
+            GlobalVariables.startLineNumberAPI = get_no_of_log_lines(Base_Actions.pathToLogFile('api'))
         if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-            GlobalVariables.startLineNumberPortal = noOfLine(Base_Actions.pathToLogFile('portal'))
+            GlobalVariables.startLineNumberPortal = get_no_of_log_lines(Base_Actions.pathToLogFile('portal'))
         if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-            GlobalVariables.startLineNumberMiddlewware = noOfLine(
+            GlobalVariables.startLineNumberMiddlewware = get_no_of_log_lines(
                 Base_Actions.pathToLogFile('middleware'))
         if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-            GlobalVariables.startLineNumberCnpware = noOfLine(Base_Actions.pathToLogFile('cnpware'))
+            GlobalVariables.startLineNumberCnpware = get_no_of_log_lines(Base_Actions.pathToLogFile('cnpware'))
         #========================================================================================
         # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
         if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
