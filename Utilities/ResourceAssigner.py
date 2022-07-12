@@ -380,12 +380,10 @@ def clearAssignerTables():
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        # cursor.execute("DELETE FROM app_users;")
-        cursor.execute("update app_users set Status = 'Available';")
-        cursor.execute("update portal_users set Status = 'Available';")
-        cursor.execute("DELETE FROM app_users_blocked;")
-        # cursor.execute("DELETE FROM portal_users;")
-        cursor.execute("DELETE FROM portal_users_blocked;")
+        cursor.execute("update merchants set Status = 'Available';")
+        cursor.execute("update users set Status = 'Available';")
+        cursor.execute("DELETE FROM merchants_blocked;")
+        cursor.execute("DELETE FROM users_blocked;")
         cursor.execute("DELETE FROM devices;")
         cursor.execute("DELETE FROM devices_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
@@ -396,14 +394,15 @@ def clearAssignerTables():
         print("Unable to clear the user tables due to error : "+str(e))
         conn.close()
 
-"""
-This method is used to update the user details into the user_credentials database.
-Make sure the argument passed is a list of dictionaries containing details of the user i.e., username and password.
-Make sure the dictionary for each user contains the below two keys
-1. Username
-2. Password 
-"""
+
 def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
+    """
+    This method is used to update the user details into the user_credentials database.
+    Make sure the argument passed is a list of dictionaries containing details of the user i.e., username and password.
+    Make sure the dictionary for each user contains the below two keys
+    1. Username
+    2. Password
+    """
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
@@ -485,5 +484,3 @@ def updateDevicesInDB(listOfDevices: []):
     except Exception as e:
         print("Unable to update the devices to DB")
 
-
-get

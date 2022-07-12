@@ -7,7 +7,7 @@ logger = EzeAutoLogger(__name__)
 
 dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
 
-def get_app_user_details(testcase_id: str) -> list:
+def getAppUserCredentials(testcase_id: str) -> list:
     """
     This method is used to get the app user credentials along with the merchant code of the user.
     :param testcase_id: str
@@ -127,7 +127,7 @@ def get_admin_user_details(testcase_id: str) -> list:
     return admin_user_details
 
 
-def get_portal_user_details(testcase_id: str) -> list:
+def getPortalUserCredentials(testcase_id: str) -> list:
     """
     This method is used to get the portal user credentials along with the merchant code of the user.
     :param testcase_id: str
@@ -166,7 +166,7 @@ def get_portal_user_details(testcase_id: str) -> list:
     conn.close()
     return portal_user_details
 
-def release_app_user(testcase_id:str) -> bool:
+def releaseAppUser(testcase_id:str) -> bool:
     """
     This method is used to release an app user that is assigned to a test case.
         :param testcase_id
@@ -218,7 +218,7 @@ def release_admin_user(testcase_id:str) -> bool:
         logger.info(f"User {user} was not blocked. So releasing is skipped.")
     return release_status
 
-def release_portal_user(testcase_id:str) -> bool:
+def releasePortalUser(testcase_id:str) -> bool:
     """
     This method is used to release an portal user that is assigned to a test case.
         :param testcase_id
@@ -596,12 +596,13 @@ def get_merchant_of_user(user_name:str) -> str:
 
 
 
-print(get_app_user_details("ABC"))
+print(getAppUserCredentials("ABC"))
 print(get_admin_user_details("DEF"))
-print(get_portal_user_details("GHI"))
+print(getPortalUserCredentials("GHI"))
 time.sleep(5)
-print(release_app_user("ABC"))
+print(releaseAppUser("ABC"))
 print(release_admin_user("DEF"))
-print(release_portal_user("GHI"))
+print(releasePortalUser("GHI"))
+
 
 
