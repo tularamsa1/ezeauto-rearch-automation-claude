@@ -22,10 +22,10 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.usefixtures("appium_driver")
 @pytest.mark.appVal
-def test_sa_100_102_010():
+def test_sa_100_102_043():
     """
-    :Description: Verification of a BQR QR Generation Success through SA via HDFC
-    :Subfeature code: UI_SA_PM_BQR_HDFC_QR_Generation_Success_010
+    :Description: Verification of a BQR QR Generation Success through SA via YES_ATOS
+    :Subfeature code: UI_SA_PM_BQR_YES_ATOS_QR_Generation_Success_010
     :TC naming code description: 100->Payment Method
                                 102->BQR
                                 010-> TC10

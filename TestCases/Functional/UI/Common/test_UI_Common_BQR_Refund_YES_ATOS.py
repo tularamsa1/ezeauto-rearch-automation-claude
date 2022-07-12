@@ -475,7 +475,6 @@ def test_common_100_102_030():
             txn_id = result["id"].iloc[0]
             rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
-            logger.info("Opening Portal to perform refund of the transaction")
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": username, "amount": amount, "originalTransactionId":str(txn_id)})
             response = APIProcessor.send_request(api_details)

@@ -94,6 +94,7 @@ def test_sa_100_101_024():
                 expected_app_values = {"Payment Screen text": "Scan QR code using"}
 
                 text = payment_page.validate_upi_bqr_payment_screen()
+                app_driver.reset()
 
                 actual_app_values = {"Payment Screen text": text}
                 app_driver.reset()
