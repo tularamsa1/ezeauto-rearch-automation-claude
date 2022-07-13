@@ -78,6 +78,12 @@ def test_common_100_101_005():  # Make sure to add the test case name as same as
 
             Txn_id = response["txnId"]
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {Txn_id}")
+
+            api_details = DBProcessor.get_api_details('stopPayment',
+                                                      request_body={"username": username, "password": password,
+                                                                    "txnId": str(Txn_id)})
+            APIProcessor.send_request(api_details)
+
             api_details = DBProcessor.get_api_details('paymentStatus',
                                                       request_body={"username": username, "password": password,
                                                                     "txnId": str(Txn_id)})
@@ -363,6 +369,11 @@ def test_common_100_101_007():  # Make sure to add the test case name as same as
             Txn_id = response["txnId"]
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {Txn_id}")
             # print(json_resp)
+            api_details = DBProcessor.get_api_details('stopPayment',
+                                                      request_body={"username": username, "password": password,
+                                                                    "txnId": str(Txn_id)})
+            response = APIProcessor.send_request(api_details)
+
             api_details = DBProcessor.get_api_details('paymentStatus',
                                                       request_body={"username": username, "password": password,
                                                                     "txnId": str(Txn_id)})
@@ -645,6 +656,11 @@ def test_common_100_101_008():  # Make sure to add the test case name as same as
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, Txn_id : {txn_id}")
+
+            api_details = DBProcessor.get_api_details('stopPayment',
+                                                      request_body={"username": username, "password": password,
+                                                                    "txnId": str(txn_id)})
+            response = APIProcessor.send_request(api_details)
 
             api_details = DBProcessor.get_api_details('paymentStatus',
                                                       request_body={"username": username, "password": password,
@@ -978,6 +994,11 @@ def test_common_100_101_015():  # Make sure to add the test case name as same as
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, Txn_id : {txn_id}")
+
+            api_details = DBProcessor.get_api_details('stopPayment',
+                                                      request_body={"username": username, "password": password,
+                                                                    "txnId": str(txn_id)})
+            response = APIProcessor.send_request(api_details)
 
             api_details = DBProcessor.get_api_details('paymentStatus',
                                                       request_body={"username": username, "password": password,

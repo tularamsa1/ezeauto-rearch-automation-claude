@@ -1246,13 +1246,6 @@ def test_common_100_101_023():  # Make sure to add the test case name as same as
             logger.debug(f"generated random amount is : {amount}")
             logger.debug(f"generated random rrn number is : {rrn}")
             logger.debug(f"generated random ref_id number is : {ref_id}")
-            # time.sleep(15)
-            # query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-            # print(query)
-            # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-            # result = DBProcessor.getValueFromDB(query)
-            # print(result)
-            # txn_id = result['txn_id'].iloc[0]
 
             logger.debug(
                 f"replacing the Txn_id with {request_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data "
@@ -1540,7 +1533,7 @@ def test_common_100_101_023():  # Make sure to add the test case name as same as
 def test_common_100_101_025():  # Make sure to add the test case name as same as the sub feature code.
     """
     Sub Feature Code: UI_Common_PM_UPI_UPG_REFUNDED_VIA_HDFC_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled_REFUND_via_Portal
-    Sub Feature Description: Performing a upg txn using upi success callback when upg refund and upg autorefund is enabled
+    Sub Feature Description: Performing a upg txn using upi success callback when upg refund and upg autorefund is enabled and refund the same through portal
     and refund the same txn using portal
     100: Payment Method
     101: UPI
@@ -1550,7 +1543,8 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -1597,7 +1591,9 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -1658,7 +1654,7 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
             logger.debug(f"query result, rr_number : {rr_number_original} ")
 
             logger.info("Opening Portal to perform refund of the transaction")
-            ui_driver = GlobalVariables.portalDriver
+            ui_driver = TestSuiteSetup.initialize_portal_driver()
             login_page_portal = PortalLoginPage(ui_driver)
 
             logger.info(f"Logging in Portal using username : {portal_username}")
@@ -1674,7 +1670,7 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
             home_page_portal.click_on_refund_button()
             home_page_portal.perform_refund_of_txn(amount)
             logger.info("Performing Page refresh after refund is performed")
-            query = "select * from txn where org_code='" + org_code + "' and order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
@@ -1684,14 +1680,19 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            print(colored(
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
                 GlobalVariables.time_calc.execution.pause()
-                print(colored("Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                        shutil.get_terminal_size().columns, "="), 'cyan'))
             GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(colored("Execution Timer resumed in execpt block of testcase function".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
 
             ReportProcessor.capture_ss_when_portal_val_exe_failed()
             logger.error("Testcase execution failed due to exception: str(")
@@ -1707,8 +1708,9 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
-        current = datetime.now()
-        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
+        GlobalVariables.time_calc.validation.start()
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
@@ -1723,7 +1725,10 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                        "Payment Txn ID Original": txn_id_original,
                                        "Payment Amt Original": str(amount),
                                        "rrn original": str(rr_number_original),
-                                       "rrn refunded": str(rr_number_refunded)}
+                                       "rrn refunded": str(rr_number_refunded)
+                                       }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
@@ -1789,6 +1794,8 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                      "rrn original": str(app_rrn_original),
                                      "rrn refunded": str(app_rrn_refunded)}
 
+                logger.debug(f"actualAppValues: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 ReportProcessor.capture_ss_when_app_val_exe_failed()
@@ -1812,11 +1819,15 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                        "Payment mode Original": "UPI",
                                        "Payment Amt Original": str(amount),
                                        # "rrn original": str(rr_number_original),
-                                       "rrn refunded": str(rr_number_refunded)}
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_original})
+                                       "rrn refunded": str(rr_number_refunded),
+                                       "Payment State Original": "UPG_REFUNDED",
+                                       "Payment State": "UPG_REFUNDED",
+                                       }
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": app_username,
+                                                                                      "password": app_password,
+                                                                                      "txnId": txn_id_original})
                 print("API DETAILS for original txn:", api_details)
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
@@ -1824,6 +1835,7 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                 status_api_orginal = response["status"]
                 amount_api_original = int(response["amount"])
                 payment_mode_api_orginal = response["paymentMode"]
+                state_api_original = response["states"][0]
                 # rrn_api_orginal = response["rrNumber"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -1838,17 +1850,20 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                 amount_api_refunded = int(response["amount"])
                 payment_mode_api_refunded = response["paymentMode"]
                 rrn_api_refunded = response["rrNumber"]
+                state_api_refunded = response["states"][0]
 
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api_refunded}")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api_refunded}")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api_refunded}")
                 # logger.debug(f"Fetching Transaction rrn from transaction api : {rrn_api_orginal} ")
+                logger.debug(f"Fetching Transaction state from transaction api : {state_api_refunded} ")
                 logger.debug(f"Fetching Transaction status of original txn from transaction api : {status_api_orginal}")
                 logger.debug(
                     f"Fetching Transaction amount of original txn from transaction api : {amount_api_original}")
                 logger.debug(
                     f"Fetching Transaction payment of original txn mode from transaction api : {payment_mode_api_orginal}")
                 # logger.debug(f"Fetching Transaction rrn of original txn mode from transaction api : {rrn_api_orginal}")
+                logger.debug(f"Fetching Transaction rrn of original txn mode from transaction api : {state_api_original}")
                 #
                 actual_api_values = {"Payment Status": status_api_refunded,
                                      "Payment mode": payment_mode_api_refunded,
@@ -1857,7 +1872,11 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                      "Payment mode Original": payment_mode_api_orginal,
                                      "Payment Amt Original": str(amount_api_original),
                                      # "rrn original": str(rrn_api_orginal),
-                                     "rrn refunded": str(rrn_api_refunded)}
+                                     "rrn refunded": str(rrn_api_refunded),
+                                     "Payment State Original": state_api_original,
+                                     "Payment State": state_api_refunded,
+                                     }
+                logger.debug(f"actual_api_values: {actual_api_values}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
@@ -1881,8 +1900,10 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                       "Payment Status Original": "UPG_AUTH_REFUNDED",
                                       "Amount Original": amount,
                                       "Payment Mode Original": "UPI",
-                                      "Payment State Original": "UPG_REFUNDED"}
-                #
+                                      "Payment State Original": "UPG_REFUNDED"
+                                      }
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + txn_id_refunded + "';"
                 logger.debug(
                     f"DB query to fetch state, status, amount, payment mode and external reference of refunded txn from DB : {query}")
@@ -1924,7 +1945,9 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                     "Payment Status Original": status_db_original,
                                     "Amount Original": amount_db_original,
                                     "Payment Mode Original": payment_mode_db_original,
-                                    "Payment State Original": state_db_original}
+                                    "Payment State Original": state_db_original
+                                    }
+                logger.debug(f"actual_db_values: {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
@@ -1945,20 +1968,12 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                           "Payment amount": 'Rs.' + str(amount) + '.00',
                                           "Payment State Original": "Upg Auth Refunded",
                                           "Amount Original": 'Rs.' + str(amount) + '.00',
-                                          "Payment Mode Original": "UPI"}
-                #
-                driver_ui = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(driver_ui)
+                                          "Payment Mode Original": "UPI"
+                                          }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                logger.info(f"Logging in Portal using username : {portal_username}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(driver_ui)
-                home_page_portal.search_merchant_name(str(org_code))
-                logger.info(f"Switching to merchant : {org_code}")
-                home_page_portal.click_switch_button(org_code)
-                home_page_portal.click_transaction_search_menu()
-
-                portal_trans_history_page = PortalTransHistoryPage(driver_ui)
+                ui_driver.refresh()
+                portal_trans_history_page = PortalTransHistoryPage(ui_driver)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id_refunded)
                 portal_txn_type_refunded = portal_values_dict['Type']
                 portal_status_refunded = portal_values_dict['Status']
@@ -1982,7 +1997,9 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                                         "Payment amount": str(portal_amt_refunded),
                                         "Payment State Original": portal_status_original,
                                         "Amount Original": str(portal_amt_original),
-                                        "Payment Mode Original": portal_txn_type_original}
+                                        "Payment Mode Original": portal_txn_type_original
+                                        }
+                logger.debug(f"actualPortalValues : {actual_portal_values}")
 
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
@@ -1997,7 +2014,8 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
-        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
         logger.info(f"Completed Validation for the test case : {testcase_id}")
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -2009,9 +2027,7 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
                 "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
                     shutil.get_terminal_size().columns, "="), 'cyan'))
         GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
+        print(colored("Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
 
         Configuration.executeFinallyBlock(f"{testcase_id}")
         if not GlobalVariables.setupCompletedSuccessfully:
@@ -2019,8 +2035,8 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
             logger.error("Test case setup itself failed. So the test case was not executed.")
         else:
             ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-            logger.info("Reverting back all the settings that were done as preconditions")
+            # -------------------------------Revert Preconditions done(setup)------------------------------------------
+            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
             api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                         "password": portal_password,
                                                                                         "settingForOrgCode": org_code})
@@ -2029,10 +2045,11 @@ def test_common_100_101_025():  # Make sure to add the test case name as same as
             logger.debug(f"API details  : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for reverting preconditions AutoRefund is : {response}")
-
             logger.info("Reverted back all the settings that were done as preconditions")
             # ----------------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.end()
-            print(colored("Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            print(colored(
+                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
