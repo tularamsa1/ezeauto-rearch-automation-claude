@@ -202,10 +202,10 @@ def clearAssignerTables():
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        cursor.execute("update merchants set Status = 'Available';")
-        cursor.execute("update users set Status = 'Available';")
-        cursor.execute("DELETE FROM merchants_blocked;")
         cursor.execute("DELETE FROM users_blocked;")
+        cursor.execute("DELETE FROM users;")
+        cursor.execute("DELETE FROM merchants_blocked;")
+        cursor.execute("DELETE FROM merchants;")
         cursor.execute("DELETE FROM devices;")
         cursor.execute("DELETE FROM devices_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
