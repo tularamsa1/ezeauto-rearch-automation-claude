@@ -84,6 +84,8 @@ def rerunTestAtTheEnd():
         os.system(
             "pytest -v " + listToStr + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport"))
 
+    return len(listToStr.strip())
+
 
 def isRerunRequiredImmediately(testCaseID):
     isRerunRequired = False
@@ -172,7 +174,9 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 
 
-xl_RerunCountPath = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
+from DataProvider.GlobalConstants import RUNTIME_DIR
+xl_RerunCountPath = os.path.join(RUNTIME_DIR, 'RerunCount.xlsx')
+# xl_RerunCountPath = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
 
 
 xl_Timestamp = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/Timestamp.xlsx"
@@ -238,6 +242,14 @@ def getRerunCount(testCaseID):
         except:
             return -2
 
+def set_rerun_at_the_end_count_up_to_report_excel_file(count_up_rerun):
+    if count_up_rerun:
+        DYNAMIC_EXCEL_REPORT_PATH = DirectoryCreator.getDirectoryPath("ExcelReport") + "/Report.xlsx"
+        df = pd.read_excel(DYNAMIC_EXCEL_REPORT_PATH)
+        df['Rerun Attempts'] = count_up_rerun
+        df.to_excel(DYNAMIC_EXCEL_REPORT_PATH, index=False)
+    else:
+        pass
 
 def setRerunCount(testCaseID, rerunCount):
     if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
@@ -264,9 +276,9 @@ def setRerunCount(testCaseID, rerunCount):
             rowNumber = 2
             columnNumber = 1
             sheet.cell(row=rowNumber, column=columnNumber).value = rerunCount
-
             workbook.save(xl_RerunCountPath)
             workbook.close()
+            print(pd.read_excel(xl_RerunCountPath))
             return True
         except:
             return False

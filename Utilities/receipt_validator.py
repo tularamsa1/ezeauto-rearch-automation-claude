@@ -33,6 +33,7 @@ expected_details = {
     'PAID BY:': 'UPI',
     'BASE AMOUNT:': 'Rs.390.00',
     'signature_not_required_text': 'SIGNATURE NOT REQUIRED',
+    'signature_not_available_text': 'SIGN: signature not available',
     'customer_copy_text': '***** CUSTOMER COPY *****',
     'ezetap_logo': '/portal/images/ezetap_wb_logo.gif',
     'version': 'VERSION V-2.0.0',
@@ -75,6 +76,7 @@ def initialize_webdriver(maximize=False):
 mapped_identifier_keys_for_receipt_fields = dict(
     datetime = "Date/Time:",
     signature_not_required_text = "SIGNATURE NOT REQUIRED",
+    signature_not_available_text = 'SIGN: signature not available',
     customer_copy_text = "***** CUSTOMER COPY *****",
     version_found = "VERSION V-",
     merchant_ref_no_text = "Ref #",
@@ -318,6 +320,13 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
 
         if mapped_identifier_keys_for_receipt_fields['signature_not_required_text'] in paragraph.text:
             present_receipt_info['signature_not_required_text'] = paragraph.text.strip()
+            if 'signature_section' in indices:
+                print("over-writing the signature index")
+            indices['signature_section'] = post_table_elements.index(paragraph)
+        
+        # added newly to fix -- on jul 13, 2022
+        if ('signature_section' not in indices) and (mapped_identifier_keys_for_receipt_fields['signature_not_available_text'] in paragraph.text):
+            present_receipt_info['signature_not_available_text'] = paragraph.text.strip()
             if 'signature_section' in indices:
                 print("over-writing the signature index")
             indices['signature_section'] = post_table_elements.index(paragraph)

@@ -16,6 +16,7 @@ from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import DirectoryCreator
 from Utilities import ResourceAssigner, ConfigReader
+from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -44,6 +45,7 @@ def prepareTestCaseDetailsDataFrame(path):
     for col in columns:
         if col not in df_filtered.columns:
             df_filtered[col] = "N/A"
+
 
     df_testCasesDetail = df_filtered.drop(columns=['Execute']).set_index("Test Case ID")
     return df_testCasesDetail  # GlobalVariables.df_testCasesDetail
@@ -323,32 +325,54 @@ def startEmulators(noOfEmulatorsToStart):
         print(e)
 
 
-def prepare_Consolidated_List_Of_TestcasesFile():
-    df_all_rows = pd.DataFrame()
+def prepare_Consolidated_List_Of_TestcasesFile():  # later change function-name to snakecase
+    input_xl_filenames = ['TestCasesDetail.xlsx', 'TestCases_SurfaceUI.xlsx']
+    output_xl_filename = 'AllTestcaseSuite.xlsx'
 
-    if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail")):
-        workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail"), None)
-        ls_sheets_functional = workbook.keys()
+    input_xl_filepaths = [os.path.join(DATAPROVIDER_DIR, filename) for filename in input_xl_filenames]
+    output_runtime_all_tc_details_xl_url = os.path.join(RUNTIME_DIR, output_xl_filename)
 
-        # Creating a DF with all testcases
-        for sheet in ls_sheets_functional:
-            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+    def xl_sheets_2_combined_df(input_xl_path):  # function to combine sheets of input excel file one df
+        xl = pd.read_excel(input_xl_path, sheet_name=None, index_col=0) if os.path.isfile(input_xl_path) else None  # , index_col=0
+        combined_excel = pd.concat([xl[key] for key in xl.keys()]) if xl else pd.DataFrame()  # concating all sheets of input excel file to one df
+        combined_excel = combined_excel.reset_index()\
+            .drop(
+                columns=[col for col in combined_excel.columns if col.startswith("Unnamed:")])
+        return combined_excel
 
-    if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI")):
-        workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
-        ls_sheets_surfaceUI = workbook.keys()
+    df =  pd.concat([xl_sheets_2_combined_df(input_xl_path) for input_xl_path in input_xl_filepaths])  # concating 2 excel files to one df
+    df_filtered = df[df.Execute.isin([1, True, "True", 'true'])].reset_index(drop=False)  # .drop(columns=['Execute',])  # this should be done later
+    df_filtered.drop(columns=['index','level_0'], inplace=True)
+    df_filtered.to_excel(output_runtime_all_tc_details_xl_url, index=True)  # later make index=False
 
-        # Creating a DF with all testcases
-        for sheet in ls_sheets_surfaceUI:
-            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
 
-    # print("prepare_Consolidated_List_Of_TestcasesFile")
-    # print(df_all_rows)
-    # Converting DF with all TCs to an excel
-    df_all_rows.to_excel(
-        ConfigReader.read_config_paths("System", "automation_suite_path") + "/Runtime/AllTestcaseSuite.xlsx")
+
+# def prepare_Consolidated_List_Of_TestcasesFile():
+#     df_all_rows = pd.DataFrame()
+
+#     if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail")):
+#         workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail"), None)
+#         ls_sheets_functional = workbook.keys()
+
+#         # Creating a DF with all testcases
+#         for sheet in ls_sheets_functional:
+#             df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
+#             df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+
+#     if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI")):
+#         workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
+#         ls_sheets_surfaceUI = workbook.keys()
+
+#         # Creating a DF with all testcases
+#         for sheet in ls_sheets_surfaceUI:
+#             df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
+#             df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+
+#     # print("prepare_Consolidated_List_Of_TestcasesFile")
+#     # print(df_all_rows)
+#     # Converting DF with all TCs to an excel
+#     df_all_rows.to_excel(
+#         ConfigReader.read_config_paths("System", "automation_suite_path") + "/Runtime/AllTestcaseSuite.xlsx")
 
 
 def executeSelectedTestCases():
