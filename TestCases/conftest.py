@@ -197,7 +197,7 @@ def updatingHighLevelReportAfterEachTCS():
         "Validations", "bool_rerun_immediately").lower() == "true"):
         columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Attempts')
         if sheet.cell(row=rowNumber, column=columnNumber).value is None or sheet.cell(row=rowNumber, column=columnNumber).value == 'N/A':
-            sheet.cell(row=rowNumber, column=columnNumber).value = 0
+            sheet.cell(row=rowNumber, column=columnNumber).value =  0
         else:
 
             currentRetryCountsheet = sheet.cell(row=rowNumber, column=columnNumber).value
