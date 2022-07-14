@@ -1,10 +1,14 @@
+import shutil
 import sys
 from datetime import datetime
 from time import sleep
 
 import pytest
 import random
-from Configuration import Configuration
+
+from termcolor import colored
+
+from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -20,7 +24,6 @@ logger = EzeAutoLogger(__name__)
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.usefixtures("appium_driver")
 @pytest.mark.appVal
 def test_sa_100_102_010():
     """
@@ -33,38 +36,46 @@ def test_sa_100_102_010():
 
     try:
         testcase_id = sys._getframe().f_code.co_name
-
+        GlobalVariables.time_calc.setup.resume()
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        # Write the setup code here
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        username = app_cred['Username']
+        password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
 
         GlobalVariables.setupCompletedSuccessfully = True
-        #---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog = False, portalLog = False, cnpwareLog = False, middlewareLog = False)
-        # Variable which tracks if the execution is going on through all the lines of code of test case.
-        # Set to failure where ever there are chances of failure.
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
         msg = ""
-        logger.info(f"Starting execution for the test case : {testcase_id}")
+        GlobalVariables.time_calc.setup.end()
+        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        #-----------------------------------------Start of Test Execution-------------------------------------
+        # -----------------------------------------Start of Test Execution-------------------------------------
         try:
-            # ------------------------------------------------------------------------------------------------
-            #
-            app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-            logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-            username = app_cred['Username']
-            password = app_cred['Password']
-            portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-            logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-            portal_username = portal_cred['Username']
-            portal_password = portal_cred['Password']
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
-            query = "select org_code from org_employee where username='" + str(username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
-            app_driver = GlobalVariables.appDriver
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             loginPage = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
@@ -82,22 +93,44 @@ def test_sa_100_102_010():
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            ReportProcessor.get_TC_Exe_Time()
+            GlobalVariables.time_calc.execution.pause()
+            print(colored(
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
-            ReportProcessor.capture_ss_when_exe_failed()
+            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
+                GlobalVariables.time_calc.execution.pause()
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                        shutil.get_terminal_size().columns, "="), 'cyan'))
+            GlobalVariables.time_calc.execution.resume()
+            print(colored("Execution Timer resumed in execpt block of testcase function".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
+
+            ReportProcessor.capture_ss_when_app_val_exe_failed()
+
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
-            ReportProcessor.get_TC_Exe_Time()
-            pytest.fail("Test case execution failed due to the exception -"+str(e))
+
+            GlobalVariables.time_calc.execution.pause()
+            print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
+
+            logger.exception(f"Execution is completed for the test case : {testcase_id}")
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-        current = datetime.now()
-        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
+                logger.info(f"Started APP validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Screen text": "Scan QR code using"}
 
@@ -108,135 +141,48 @@ def test_sa_100_102_010():
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
+                ReportProcessor.capture_ss_when_app_val_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
+                logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_app_val_result="Fail"
+                GlobalVariables.str_app_val_result = "Fail"
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of App Validation---------------------------------------
-
+        GlobalVariables.time_calc.validation.end()
+        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
 
     # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
+        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
+        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
+            GlobalVariables.time_calc.execution.pause()
+            print(colored(
+                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
+                    shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.execution.resume()
+        print(colored(
+            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
+
         Configuration.executeFinallyBlock(testcase_id)
-        logger.info(
-            f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
         if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
+            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
         else:
-            ReportProcessor.updateTestCaseResult(msg)
+            ReportProcessor.updateTestCaseResult(msg)  # pass msg
         # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-
+        logger.info("Reverting back all the settings that were done as preconditions")
         # Write the code here to revert the settings that were done as precondition
-
+        logger.info("Reverted back all the settings that were done as preconditions")
         # ----------------------------------------------------------------------------------------------------------
+        GlobalVariables.time_calc.execution.end()
+        print(colored(
+            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
+            'cyan'))
 
-
-# @pytest.mark.usefixtures("log_on_success", "method_setup")
-# @pytest.mark.usefixtures("appium_driver")
-# @pytest.mark.appVal
-# def test_sa_100_102_011():
-#     """
-#     :Description: Verification of a BQR QR Generation Success through SA via HDFC
-#     :Sub Feature code: UI_SA_PM_BQR_HDFC_QR_Generation_Failed_011
-#     :TC naming code description: 100->Payment Method
-#                                 102->BQR
-#                                 011-> TC11
-#     """
-#
-#     try:
-#         testcase_id = sys._getframe().f_code.co_name
-#         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-#         # Write the setup code here
-#
-#         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
-#         # ---------------------------------------------------------------------------------------------------------
-#         # Set the below variables depending on the log capturing need of the test case.
-#         Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False)
-#
-#         # Variable which tracks if the execution is going on through all the lines of code of test case.
-#         # Set to failure where ever there are chances of failure.
-#         msg = ""
-#         logger.info(f"Starting execution for the test case : {testcase_id}")
-#
-#         # -----------------------------------------Start of Test Execution-------------------------------------
-#         try:
-#             # ------------------------------------------------------------------------------------------------
-#             #
-#             app_driver = GlobalVariables.appDriver
-#             loginPage = LoginPage(app_driver)
-#             username = read_config("credentials", 'username_HDFC')
-#             password = read_config("credentials", 'password')
-#             org_code = read_config("testdata", "org_code_hdfc")
-#             logger.info(f"Logging in the MPOSX application using username : {username}")
-#             loginPage.perform_login(username, password)
-#             homePage = HomePage(app_driver)
-#             homePage.check_home_page_logo()
-#             logger.info(f"App homepage loaded successfully")
-#             amount = random.randint(101, 200)
-#             order_id = datetime.now().strftime('%m%d%H%M%S')
-#             print("Order id", order_id)
-#             homePage.enter_amount_and_order_number(amount, order_id)
-#             logger.debug(f"Entered amount is : {amount}")
-#             logger.debug(f"Entered order_id is : {order_id}")
-#             paymentPage = PaymentPage(app_driver)
-#             paymentPage.is_payment_page_displayed(amount, order_id)
-#             paymentPage.click_on_Bqr_paymentMode()
-#             #
-#             # ------------------------------------------------------------------------------------------------
-#             GlobalVariables.EXCEL_TC_Execution = "Pass"
-#             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
-#         except Exception as e:
-#             ReportProcessor.capture_ss_when_exe_failed()
-#             GlobalVariables.EXCEL_TC_Execution = "Fail"
-#             GlobalVariables.Incomplete_ExecutionCount += 1
-#             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
-#             pytest.fail("Test case execution failed due to the exception -" + str(e))
-#         # -----------------------------------------End of Test Execution--------------------------------------
-#
-#         # -----------------------------------------Start of Validation----------------------------------------
-#         current = datetime.now()
-#         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-#
-#         # -----------------------------------------Start of App Validation---------------------------------
-#         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-#             try:
-#                 # --------------------------------------------------------------------------------------------
-#                 expectedAppValues = {"Payment Screen text": "Scan QR code using"}
-#
-#                 text = paymentPage.validate_upi_bqr_payment_screen()
-#
-#                 actualAppValues = {"Payment Screen text": text}
-#                 # ---------------------------------------------------------------------------------------------
-#                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
-#             except Exception as e:
-#                 ReportProcessor.capture_ss_when_exe_failed()
-#                 print("App Validation failed due to exception - " + str(e))
-#                 msg = msg + "App Validation did not complete due to exception.\n"
-#                 GlobalVariables.bool_val_exe = False
-#                 GlobalVariables.str_app_val_result = "Fail"
-#
-#         # -----------------------------------------End of App Validation---------------------------------------
-#
-#
-#     # -------------------------------------------End of Validation---------------------------------------------
-#
-#     finally:
-#         Configuration.executeFinallyBlock(testcase_id)
-#         logger.info(
-#             f"**********Test case Execution and Validation compeleted for testcase: {testcase_id}**************")
-#         if not GlobalVariables.setupCompletedSuccessfully:
-#             print("Test case setup itself failed. So the test case was not executed.")
-#             logger.error("Test case setup itself failed. So the test case was not executed.")
-#         else:
-#             ReportProcessor.updateTestCaseResult(msg)  # pass msg
-#         # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-#
-#         # Write the code here to revert the settings that were done as precondition
-#
-#         # ----------------------------------------------------------------------------------------------------------
-#
-
+        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
+        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
