@@ -39,7 +39,7 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
     Sub Feature Description: Performing a pure upi success callback via HDFC after qr expiry when autorefund is enabled.
     100: Payment Method
     101: UPI
-    001: TC018
+    018: TC018
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

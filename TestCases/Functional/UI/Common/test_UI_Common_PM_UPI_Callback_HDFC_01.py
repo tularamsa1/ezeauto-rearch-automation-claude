@@ -39,7 +39,7 @@ def test_common_100_101_004():
     Sub Feature Description: Verification of a successful pure upi txn via HDFC using callback
     100: Payment Method
     101: UPI
-    001: TC04
+    004: TC04
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -418,7 +418,7 @@ def test_common_100_101_006():  # Make sure to add the test case name as same as
     Sub Feature Description: Verification of a failed UPI txn via HDFC using Callback
     100: Payment Method
     101: UPI
-    001: TC06
+    006: TC06
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -768,7 +768,7 @@ def test_common_100_101_009():  # Make sure to add the test case name as same as
     Sub Feature Description: Initiate qr by app and perform pure upi expired callback
     100: Payment Method
     101: UPI
-    001: TC09
+    009: TC09
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1260,96 +1260,105 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
             new_txn_id = result['id'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
-            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
+            GlobalVariables.time_calc.execution.pause()
+            print(colored(
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
-            ReportProcessor.capture_ss_when_exe_failed()
-            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="screenshot",
-                          attachment_type=AttachmentType.PNG)
+            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
+                GlobalVariables.time_calc.execution.pause()
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                        shutil.get_terminal_size().columns, "="), 'cyan'))
+            GlobalVariables.time_calc.execution.resume()
+            print(colored("Execution Timer resumed in execpt block of testcase function".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
+
+            ReportProcessor.capture_ss_when_app_val_exe_failed()
+
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
-            ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
-            logger.error(f"Test case execution failed due to the exception : {e}")
-            pytest.fail("Test case execution failed due to the exception -" + str(e))
+            GlobalVariables.time_calc.execution.pause()
+            print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        logger.info(f"Execution is completed for the test case : {testcase_id}")
+            logger.exception(f"Execution is completed for the test case : {testcase_id}")
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
-        logger.info(f"Starting validation for the test case : {testcase_id}")
-
-        current = datetime.now()
-        GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
-
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment Status Original": "EXPIRED", "Payment mode": "UPI",
-                                     "Payment Txn ID": new_txn_id, "Payment Amt": str(amount),
-                                     "Payment Status": "AUTHORIZED",
-                                     "Payment mode Original": "UPI", "Payment Txn ID Original": original_txn_id,
-                                     "Payment Amt Original": str(amount), "rrn": str(rrn),
-                                     "rrn original": str(original_rrn)}
-
+                expected_app_values = {"Payment Status Original": "EXPIRED", "Payment mode": "UPI",
+                                       "Payment Txn ID": new_txn_id, "Payment Amt": str(amount),
+                                       "Payment Status": "AUTHORIZED",
+                                       "Payment mode Original": "UPI", "Payment Txn ID Original": original_txn_id,
+                                       "Payment Amt Original": str(amount), "rrn": str(rrn),
+                                       "rrn original": str(original_rrn)}
+                logger.debug(f"expected_app_values : {expected_app_values}")
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
-                transactionsHistoryPage = TransHistoryPage(app_driver)
-                transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
-                app_rrn = transactionsHistoryPage.fetch_RRN_text()
+                transactions_history_page = TransHistoryPage(app_driver)
+                transactions_history_page.click_on_transaction_by_order_id(order_id)
+                app_rrn = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn from txn history for the txn : {new_txn_id}, {app_rrn}")
-                app_payment_status = transactionsHistoryPage.fetch_txn_status_text()
+                app_payment_status = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status}")
-                app_payment_mode = transactionsHistoryPage.fetch_txn_type_text()
+                app_payment_mode = transactions_history_page.fetch_txn_type_text()
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode}")
-                app_txn_id = transactionsHistoryPage.fetch_txn_id_text()
+                app_txn_id = transactions_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id}")
-                app_payment_amt = transactionsHistoryPage.fetch_txn_amount_text().split()[1]
+                app_payment_amt = transactions_history_page.fetch_txn_amount_text().split()[1]
                 logger.debug(
                     f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt}")
-                transactionsHistoryPage.click_back_Btn_transaction_details()
-                transactionsHistoryPage.click_on_second_transaction_by_order_id(order_id)
-                app_payment_status_original = transactionsHistoryPage.fetch_txn_status_text()
+                transactions_history_page.click_back_Btn_transaction_details()
+                transactions_history_page.click_on_second_transaction_by_order_id(order_id)
+                app_payment_status_original = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
-                app_payment_mode_original = transactionsHistoryPage.fetch_txn_type_text()
+                app_payment_mode_original = transactions_history_page.fetch_txn_type_text()
                 logger.debug(
                     f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "
                     f"Mode = {app_payment_mode_original}")
-                app_txn_id_original = transactionsHistoryPage.fetch_txn_id_text()
+                app_txn_id_original = transactions_history_page.fetch_txn_id_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {app_txn_id_original}")
-                app_payment_amt_original = transactionsHistoryPage.fetch_txn_amount_text().split()[1]
+                app_payment_amt_original = transactions_history_page.fetch_txn_amount_text().split()[1]
                 logger.debug(
                     f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {app_payment_amt_original}")
-                app_rrn_original = transactionsHistoryPage.fetch_RRN_text()
+                app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn from txn history for the txn : {original_txn_id}, {app_rrn_original}")
 
-                actualAppValues = {"Payment Status": app_payment_status.split(':')[1], "Payment mode": app_payment_mode,
-                                   "Payment Txn ID": app_txn_id, "Payment Amt": str(app_payment_amt),
-                                   "Payment Status Original": app_payment_status_original.split(':')[1],
-                                   "Payment mode Original": app_payment_mode_original,
-                                   "Payment Txn ID Original": app_txn_id_original,
-                                   "Payment Amt Original": str(app_payment_amt_original), "rrn": str(app_rrn),
-                                   "rrn original": str(app_rrn_original)}
+                actual_app_values = {"Payment Status": app_payment_status.split(':')[1],
+                                     "Payment mode": app_payment_mode,
+                                     "Payment Txn ID": app_txn_id, "Payment Amt": str(app_payment_amt),
+                                     "Payment Status Original": app_payment_status_original.split(':')[1],
+                                     "Payment mode Original": app_payment_mode_original,
+                                     "Payment Txn ID Original": app_txn_id_original,
+                                     "Payment Amt Original": str(app_payment_amt_original), "rrn": str(app_rrn),
+                                     "rrn original": str(app_rrn_original)}
 
-                logger.debug(f"actualAppValues: {actualAppValues}")
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
+                logger.debug(f"actual_app_values: {actual_app_values}")
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
+                ReportProcessor.capture_ss_when_app_val_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
                 logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
-
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of App Validation---------------------------------------
@@ -1358,13 +1367,13 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"Payment Status Original": "EXPIRED", "Amount": amount, "Payment Mode": "UPI",
-                                     "Payment Status": "AUTHORIZED", "Amount Original": amount,
-                                     "Payment State Original": "EXPIRED", "Payment Mode Original": "UPI",
-                                     "Payment State": "SETTLED", "rrn": str(rrn),
-                                     "rrn original": str(original_rrn)}
+                expected_api_values = {"Payment Status Original": "EXPIRED", "Amount": amount, "Payment Mode": "UPI",
+                                       "Payment Status": "AUTHORIZED", "Amount Original": amount,
+                                       "Payment State Original": "EXPIRED", "Payment Mode Original": "UPI",
+                                       "Payment State": "SETTLED", "rrn": str(rrn),
+                                       "rrn original": str(original_rrn)}
 
-                logger.debug(f"expectedAPIValues: {expectedAPIValues}")
+                logger.debug(f"expected_api_values: {expected_api_values}")
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -1397,21 +1406,20 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                 rrn_api_original = response["rrNumber"]
 
                 #
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api,
-                                   "Payment Status Original": status_api_original,
-                                   "Amount Original": amount_api_original,
-                                   "Payment State": state_api, "Payment State Original": state_api_original,
-                                   "Payment Mode Original": payment_mode_api_original,
-                                   "rrn": str(rrn_api), "rrn original": str(rrn_api_original)}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
+                actual_api_values = {"Payment Status": status_api, "Amount": amount_api,
+                                     "Payment Mode": payment_mode_api,
+                                     "Payment Status Original": status_api_original,
+                                     "Amount Original": amount_api_original,
+                                     "Payment State": state_api, "Payment State Original": state_api_original,
+                                     "Payment Mode Original": payment_mode_api_original,
+                                     "rrn": str(rrn_api), "rrn original": str(rrn_api_original)}
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 print("API Validation failed due to exception - " + str(e))
                 logger.exception(f"API Validation failed due to exception : {e} ")
                 msg = msg + "API Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_api_val_result = 'Fail'
-
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
@@ -1534,7 +1542,7 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
+                ReportProcessor.capture_ss_when_portal_val_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
                 logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
@@ -1543,16 +1551,31 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
 
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        GlobalVariables.time_calc.validation.end()
+        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
+        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
+        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
+            GlobalVariables.time_calc.execution.pause()
+            print(colored(
+                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
+                    shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.execution.resume()
+        print(colored(
+            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
+
         Configuration.executeFinallyBlock(testcase_id)
         if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
+            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
         else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)--------------------------------------------
+            ReportProcessor.updateTestCaseResult(msg)  # pass msg
+            # -------------------------------Revert Preconditions done(setup)------------------------------------------
 
             logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
             api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
@@ -1564,6 +1587,14 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             logger.info("Reverted back all the settings that were done as preconditions")
+            GlobalVariables.time_calc.execution.end()
+            print(colored(
+                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
+
+        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
+        logger.info(
+            f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
@@ -1576,12 +1607,17 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
     """
     Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_HDFC
     Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr.
+    100: Payment Method
+    101: UPI
+    017: TC017
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
-        logger.info(f"Starting execution for the test case : {testcase_id}")
+        GlobalVariables.time_calc.setup.resume()
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info("Performing preconditions before starting test case execution")
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
@@ -1977,4 +2013,3 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
 
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
-

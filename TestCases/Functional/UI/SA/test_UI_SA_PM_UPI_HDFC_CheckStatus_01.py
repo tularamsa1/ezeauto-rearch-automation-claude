@@ -348,9 +348,9 @@ def test_sa_100_101_001():
             # Write the code here to revert the settings that were done as precondition
             logger.info("Reverted back all the settings that were done as preconditions")
             # ----------------------------------------------------------------------------------------------------------
-            GlobalVariables.time_calc.execution.end()
-            print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.execution.end()
+        print(colored(
+            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
@@ -367,7 +367,7 @@ def test_sa_100_101_002():
     Sub Feature Description: Verification of a failed UPI txn via HDFC using SA check status
     100: Payment Method
     101: UPI
-    001: TC02
+    002: TC02
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -685,7 +685,7 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
     Sub Feature Description: Verification of a upi txn after expiry for HDFC using SA check status
     100: Payment Method
     101: UPI
-    001: TC03
+    003: TC03
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -993,9 +993,9 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             logger.info("Reverted back all the settings that were done as preconditions")
-            GlobalVariables.time_calc.execution.end()
-            print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+        GlobalVariables.time_calc.execution.end()
+        print(colored(
+            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
 
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
