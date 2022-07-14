@@ -3,7 +3,7 @@ from Utilities import ReportProcessor, ResourceAssigner
 import configparser
 
 
-def configureLogCaptureVariables(apiLog : bool, portalLog : bool, cnpwareLog : bool, middlewareLog : bool, config_log: bool):
+def configureLogCaptureVariables(apiLog : bool, portalLog : bool, cnpwareLog : bool, middlewareLog : bool, config_log: bool=False):
     GlobalVariables.apiLogs = apiLog
     GlobalVariables.portalLogs = portalLog
     GlobalVariables.cnpWareLogs = cnpwareLog
