@@ -73,7 +73,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
             GlobalVariables.time_calc.execution.pause()
             print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
+            logger.exception(f"Execution is completed for the test case : {testcase_id}")
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
@@ -97,6 +97,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
             except Exception as e:
                 ReportProcessor.capture_ss_when_app_val_exe_failed()
                 print("App Validation failed due to exception - " + str(e))
+                logger.exception(f"App Validation failed due to exception - {e}")
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
@@ -118,6 +119,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 print("API Validation failed due to exception - " + str(e))
+                logger.exception(f"API Validation failed due to exception : {e} ")
                 msg = msg + "API Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_api_val_result = "Fail"
@@ -139,6 +141,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 print("DB Validation failed due to exception - " + str(e))
+                logger.exception(f"DB Validation failed due to exception :  {e}")
                 msg = msg + "DB Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result = 'Fail'
@@ -161,6 +164,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
             except Exception as e:
                 ReportProcessor.capture_ss_when_portal_val_exe_failed()
                 print("Portal Validation failed due to exception - " + str(e))
+                logger.exception(f"Portal Validation failed due to exception : {e}")
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_portal_val_result = 'Fail'
@@ -181,7 +185,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_chargeslip_val_result = False
-        logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
@@ -200,7 +204,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
         Configuration.executeFinallyBlock(testcase_id)
         if not GlobalVariables.setupCompletedSuccessfully:
             print("Test case setup itself failed. So the test case was not executed.")
-            logger.info("Test case pre condition setup itself failed. So the test case was not executed.")
+            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
         else:
             ReportProcessor.updateTestCaseResult(msg)  # pass msg
         # -------------------------------Revert Preconditions done(setup)--------------------------------------------
@@ -211,5 +215,5 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
         GlobalVariables.time_calc.execution.end()
         print(colored("Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-    logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-    logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
+        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
+        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")

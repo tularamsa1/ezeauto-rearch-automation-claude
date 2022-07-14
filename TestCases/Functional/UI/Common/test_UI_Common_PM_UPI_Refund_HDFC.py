@@ -381,7 +381,7 @@ def test_common_100_101_010():  # Make sure to add the test case name as same as
                                                                   expectedValues)
 
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
+                ReportProcessor.capture_ss_when_chargeslip_val_exe_failed()
                 print("Charge Slip Validation failed due to exception - " + str(e))
                 logger.exception(f"Charge Slip Validation failed due to exception : {e}")
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
@@ -775,7 +775,7 @@ def test_common_100_101_011():  # Make sure to add the test case name as same as
                                                                   expectedValues)
 
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
+                ReportProcessor.capture_ss_when_chargeslip_val_exe_failed()
                 print("Charge Slip Validation failed due to exception - " + str(e))
                 logger.exception(f"Charge Slip Validation failed due to exception : {e}")
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
