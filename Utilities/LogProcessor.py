@@ -1,7 +1,12 @@
-from DataProvider import GlobalVariables
-from PageFactory import Base_Actions
 import datetime
 from datetime import datetime
+
+from DataProvider import GlobalVariables
+from PageFactory import Base_Actions
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
+
 env = Base_Actions.get_environment("str_exe_env")
 
 
@@ -65,13 +70,24 @@ def fetch_config_logs():
     log_filepath_template = Base_Actions.pathToLogFile("config_apps_log_filepath_format")
     date_in_strfmt = datetime.now().date().strftime('%Y_%m_%d')  # 2022_07_07_config_apps_server.log
     log_filepath = log_filepath_template.format(date_in_strfmt = date_in_strfmt)
-
-    end_line_no = fetch_number_of_lines_as_super_user(log_filepath)
-    command = "awk " + "'NR>=" + start_line_no + " && " + "NR<=" + end_line_no + " { print }' " + log_filepath
-    _ssh_stdin, ssh_stdout, _ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
-    for line in iter(lambda: ssh_stdout.readline(), ''):
-        data_buffer += line
+    
+    try:
+        end_line_no = fetch_number_of_lines_as_super_user(log_filepath)
+        command = "awk " + "'NR>=" + start_line_no + " && " + "NR<=" + end_line_no + " { print }' " + log_filepath
+        _ssh_stdin, ssh_stdout, _ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+        for line in iter(lambda: ssh_stdout.readline(), ''):
+            data_buffer += line
+    except LogFileNotFoundError as e:
+        logger.error(f"LogFileNotFoundError: {e}")
+        data_buffer = f"No Log file [{log_filepath}] in server is found"
+    except Exception as e:
+        logger.critical(f"Some Other Error while executing command over ssh connection. The following is the Error: {e}")
+        raise Exception(f"Some Other Error while executing command over ssh connection. The following is the Error: {e}")
     return data_buffer
+
+
+class LogFileNotFoundError(Exception):
+    pass
 
 
 def fetch_number_of_lines_as_super_user(log_filepath:str) -> str:
@@ -85,6 +101,10 @@ def fetch_number_of_lines_as_super_user(log_filepath:str) -> str:
     data_buffer = ""
     for line in iter(lambda: ssh_stdout.readline(), ''):
         data_buffer += line
+    
+    if 'No such file or directory' in data_buffer:
+        raise LogFileNotFoundError(data_buffer)
+    
     print(f"Received STDOUT as the following: \n{data_buffer}\n")
     number_of_lines_in_strfmt = data_buffer.strip().split()[0]
     return number_of_lines_in_strfmt
@@ -127,8 +147,15 @@ def startLineNoOfServerLogFile():
             log_filepath_template = Base_Actions.pathToLogFile('config_apps_log_filepath_format')
             config_log_filepath = log_filepath_template.format(date_in_strfmt = datetime.now().date().strftime('%Y_%m_%d'))
 
-            start_line_number_config = fetch_number_of_lines_as_super_user(config_log_filepath)
-            start_line_number_config = str(int(start_line_number_config) + 1)
+            try:
+                start_line_number_config = fetch_number_of_lines_as_super_user(config_log_filepath)
+                logger.debug(f'The count of lines in config_log file is found: {start_line_number_config}. Therefore {int(start_line_number_config)+1} will be start line number')
+                start_line_number_config = str(int(start_line_number_config) + 1)
+            except Exception as e:
+                logger.warning(f'The count of lines in config_log file is not found due to error: {e}')
+                logger.warning('Therefore setting start line number for config log file as 1 (if in case during the execution of current session if new log file is created. setting 1 will handle the scenario)')
+                start_line_number_config = str(1)
+
             GlobalVariables.start_line_number_config = start_line_number_config
 
         current = datetime.now()
