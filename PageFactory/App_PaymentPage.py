@@ -1,4 +1,4 @@
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
 from PageFactory.App_HomePage import HomePage
@@ -90,7 +90,18 @@ class PaymentPage(BasePage):
         self.perform_click(self.btn_proceedToHomepage)
 
     def click_on_back_btn(self):
-        self.perform_click(self.btn_back)
+        staleElement = True
+        while (staleElement):
+            try:
+                self.perform_click(self.btn_back)
+                staleElement = False
+            except StaleElementReferenceException:
+                print("STALE ELEMENT EXECPTION....!!!!!!!!!")
+                staleElement = True
+
+
+
+
 
     def get_transaction_details(self):
         self.perform_click(self.btn_viewDetails)

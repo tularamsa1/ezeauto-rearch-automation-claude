@@ -78,15 +78,28 @@ class PortalHomePage(BasePage):
         return text
 
     def perform_refund_of_txn(self, amount):
-        self.wait_for_element_invisible(self.lbl_refund_window_before_load, 20)
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load, 40)
         self.wait_for_element(self.lbl_refund_window)
         self.wait_for_element(self.txt_refundAmtField).clear()
         self.perform_sendkeys(self.txt_refundAmtField, str(amount))
         self.perform_click(self.btn_confirmRefund)
         self.wait_for_alert_and_accept()
 
+    def perform_refund_of_txn_and_fetch_alert_msg(self, amount):
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load, 40)
+        self.wait_for_element(self.lbl_refund_window)
+        self.wait_for_element(self.txt_refundAmtField).clear()
+        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
+        self.perform_click(self.btn_confirmRefund)
+        return self.wait_for_alert_read_text_and_accept()
+
+
+
     def click_on_transaction_details_based_on_transaction_id(self,txn_id):
-        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td)[1]')
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/a)[1]')
+        locator2 = (By.XPATH, '//td[@style="display:none;" and contains(text(),"'+txn_id+'")]')
+        self.wait_for_element_invisible(locator2)
+        print("Element is invisible now")
         return self.perform_click(locator)
 
     def click_on_refund_button(self):
