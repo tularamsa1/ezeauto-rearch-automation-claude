@@ -115,6 +115,7 @@ def test_common_100_102_014():
             logger.info(f"Logging in Portal using username : {portal_username}")
             loginPagePortal.perform_login_to_portal(portal_username, portal_password)
             homePagePortal = PortalHomePage(ui_driver)
+            homePagePortal.wait_for_home_page_load()
             homePagePortal.search_merchant_name(org_code)
             logger.info(f"Switching to merchant : {org_code}")
             homePagePortal.click_switch_button(org_code)
@@ -354,7 +355,7 @@ def test_common_100_102_014():
                 expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
                                   'RRN': rrn,
                                   'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
-                receipt_validator.perform_charge_slip_validations(txn_id,
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": username, "password": password},
                                                                   expectedValues)
 
@@ -741,7 +742,7 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
                 expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
                                   'RRN': rrn,
                                   'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
-                receipt_validator.perform_charge_slip_validations(txn_id,
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": username, "password": password},
                                                                   expectedValues)
 

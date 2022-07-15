@@ -3,7 +3,7 @@ import shutil
 import sys
 import time
 from datetime import datetime
-import allure
+import allure                       # REMOVE UNUSED IMPORTS
 import pandas as pd
 import pytest
 import requests
@@ -32,7 +32,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-# Initiate qr by app and perform pure upi success callback
+# Initiate qr by app and perform pure upi success callback  #REMOVE THIS COMMENT
 def test_common_100_101_004():
     """
     Sub Feature Code: UI_Common_PM_UPI_Success_Via_Pure_UPI_Callback_HDFC
