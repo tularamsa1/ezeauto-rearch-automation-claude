@@ -29,12 +29,15 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_004():
     """
-    :Description: Verification of a BQR Check Status Success transaction via HDFC
-    :Subfeature code: UI_Common_PM_BQR_Checkstatus_Success_HDFC _04
-    :TC naming code description: 100->Payment Method
-                                102->BQR
-                                004-> TC04
+    Description: Verification of a BQR Check Status Success transaction via HDFC
+    Subfeature code: UI_Common_PM_BQR_Checkstatus_Success_HDFC _04
+    TC naming code description:
+    100->Payment Method
+    102->BQR
+    004-> TC04
     """
+    # description and feature code not clear to me
+    # we should discuss with team all print statements are required or not related to the time capturing logic
 
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -78,7 +81,7 @@ def test_common_100_102_004():
                         'cyan'))
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            loginPage = LoginPage(app_driver)
+            loginPage = LoginPage(app_driver)                   # follow python naming convention
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
@@ -89,7 +92,7 @@ def test_common_100_102_004():
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            print("Order id", order_id)
+            print("Order id", order_id)         # we can use logger for these kind of information
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
@@ -99,29 +102,30 @@ def test_common_100_102_004():
             logger.info("Selected payment mode is BQR")
             paymentPage.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
-            logger.info("Restarting MPOSX app to perfrom checkstatus of the transaction")
+            logger.info("Restarting MPOSX app to perfrom checkstatus of the transaction")   # spelling mistake
             app_driver.reset()
-            query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"
+            query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"     # can we fetch from txn table using order id
             logger.debug(f"Query to fetch transaction id from database : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query)   # we should pass one more parameter as database name
             txn_id = result["id"].iloc[0]
             rrn = "RE" + txn_id.split('E')[1]
-            logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
+            logger.debug(f"Fetching Transaction id from db query : {txn_id} ")    # message not correct
             api_details = DBProcessor.get_api_details('stopPayment',
                                                       request_body={"username": username, "password": password,
                                                                     "orgCode":org_code ,"txnId": txn_id})
             response = APIProcessor.send_request(api_details)
-            print("Response received:", response)
+            print("Response received:", response)           # we can use logger for these kind of information
             logger.debug(f"Response received for stopPayment api of transaction is : {response}")
             api_details = DBProcessor.get_api_details('paymentStatus',
                                                       request_body={"username": username, "password": password,
                                                                     "txnId": txn_id})
             response = APIProcessor.send_request(api_details)
-            print("Response received:", response)
+            print("Response received:", response)           # we can use logger for these kind of information
             logger.debug(f"Response received for checkstatus of transaction is : {response}")
             logger.info("Restarting MPOSX app after perfroming checkstatus of the transaction")
             app_driver.reset()
 
+            # below unnecessary blank line or dot line we can delete
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -143,7 +147,7 @@ def test_common_100_102_004():
             ReportProcessor.capture_ss_when_app_val_exe_failed()
 
             GlobalVariables.EXCEL_TC_Execution = "Fail"
-            GlobalVariables.Incomplete_ExecutionCount += 1
+            GlobalVariables.Incomplete_ExecutionCount += 1          # what is the purpose of this even i have written but we should be aware of this
 
             GlobalVariables.time_calc.execution.pause()
             print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(
@@ -161,9 +165,14 @@ def test_common_100_102_004():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
-                logger.info(f"Starting App Validation for the test case : {testcase_id}")
+                logger.info(f"Starting App Validation for the test case : {testcase_id}")   # I think these messages
+                # should be outside of try and except block please check TC Skeleton once
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                # we can validate txn id also in the app_validation
+                # do we need to pass Payment Status in this form : "STATUS:AUTHORIZED" or only "AUTHORIZED"
+                # and also these parameters are enough to validate or not...
+                # amount validation we should modify
                 loginPage = LoginPage(app_driver)
                 logger.debug(f"Loging in again with user name : {username}")
                 loginPage.validate_login_page()
@@ -206,6 +215,11 @@ def test_common_100_102_004():
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
+                # these parameters are enough to validate or not...
+                # remove unnecessary blank lines
+                # instead of print we can use logger
+                # follow tc skeleton for the info messages
+                # without converting the amount into int how it's working
                 logger.info(f"Starting API Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
 
@@ -290,7 +304,7 @@ def test_common_100_102_004():
                 # --------------------------------------------------------------------------------------------
                 expectedPortalValues = {"Payment Status": "Settled", "Payment mode":"BHARATQR" , "Payment amount":str(amount)}
                 #
-                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                ui_driver = TestSuiteSetup.initialize_portal_driver()  # we can rename the variable as portal_driver
                 loginPagePortal = PortalLoginPage(ui_driver)
                 logger.info(f"Logging in Portal using username : {portal_password}")
                 loginPagePortal.perform_login_to_portal(portal_username, portal_password)
