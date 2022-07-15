@@ -82,7 +82,7 @@ def rerunTestAtTheEnd():
         ls_TestCasesForRerun = list(setOfRerunTest)
         changeOverallStatusToEmpty(ls_TestCasesForRerun)
         os.system(
-            "pytest -v " + listToStr + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport"))
+            "python3.8 -m pytest -v " + listToStr + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport"))
 
     return len(listToStr.strip())
 
@@ -141,7 +141,7 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
     print("Starting the immediate rerun")
     if setRerunCount(testCaseID, rerunCount):
         # make status empty
-        rerunCommand = "pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport")
+        rerunCommand = "python3.8 - m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport")
         print(rerunCommand)
 
         if rerunCount >= 0:
