@@ -280,7 +280,7 @@ def generate_users_creation_api_body(merchant_code:str) -> list:
     return lst_user_creation_api_body
 
 
-def update_merchants_db(merchants_list : list):
+def update_merchants_to_db(merchants_list : list):
     conn = ""
     cursor = ""
     try:
@@ -298,7 +298,7 @@ def update_merchants_db(merchants_list : list):
     cursor.close()
     conn.close()
 
-def update_users_db(users_list : list):
+def update_users_to_db(users_list : list):
     conn = ""
     cursor = ""
     try:

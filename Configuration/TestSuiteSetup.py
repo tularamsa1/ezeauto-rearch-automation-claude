@@ -14,7 +14,7 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator
+from Utilities import DirectoryCreator, DBProcessor
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -434,8 +434,9 @@ def prepareDevicesAndDB():
     else:
         ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
-    merchant_creator.update_merchants_db(merchant_creator.get_merchants_list_from_excel(merchant_creator.excel_path))
-    merchant_creator.update_users_db(merchant_creator.get_users_list_from_excel(merchant_creator.excel_path))
+    merchant_creator.update_merchants_to_db(merchant_creator.get_merchants_list_from_excel(merchant_creator.excel_path))
+    merchant_creator.update_users_to_db(merchant_creator.get_users_list_from_excel(merchant_creator.excel_path))
+    DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
     return True
 
 

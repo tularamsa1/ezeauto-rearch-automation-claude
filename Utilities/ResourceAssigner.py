@@ -210,6 +210,8 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM devices_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM appium_servers_blocked;")
+        cursor.execute("DELETE FROM api_details;")
+        conn.commit()
     except Exception as e:
         print("Unable to clear the user tables due to error : "+str(e))
     cursor.close()
