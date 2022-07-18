@@ -178,6 +178,7 @@ def generate_merchant_creation_api_body() -> list:
             for merchant in merchants:
                 # if merchant[0] == "EZETAP":
                 #     create_users_for_merchant("EZETAP")
+                mobile_for_mid_tid = ""
                 if not check_if_merchant_exists(merchant[0]):
                     try:
                         merchant_creation_api = json.loads(get_api_from_db("createMerchant")["RequestBody"])
@@ -199,9 +200,18 @@ def generate_merchant_creation_api_body() -> list:
                                 merchant_creation_api["users"][count]["mobileNumber"] = user[4]
                                 if str(user[5]).lower() == "admin":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.ADMIN_USER_ROLES
+                                    if mobile_for_mid_tid == "":
+                                        mobile_for_mid_tid = user[4]
                                 elif str(user[5]).lower() == "app":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.APP_USER_ROLES
+                                    if mobile_for_mid_tid == "":
+                                        mobile_for_mid_tid = user[4]
                                 count += 1
+                                #For updating the mid and tid of each acquisitions terminal
+                            for i in range(0, len(merchant_creation_api["acquisitions"])):
+                                for j in range(0, len(merchant_creation_api["acquisitions"][i]["terminals"])):
+                                    merchant_creation_api["acquisitions"][i]["terminals"][j]["mid"] = "MIDIS"+str(mobile_for_mid_tid)
+                                    merchant_creation_api["acquisitions"][i]["terminals"][j]["tid"] = str(mobile_for_mid_tid)[-8:]
                             lst_merchant_creation_api_body.append(merchant_creation_api)
                         else:
                             logger.warning("This merchant does not have any associated user.")
@@ -388,3 +398,5 @@ def get_users_list_from_excel(merchant_creation_excel_path) -> list:
     else:
         logger.warning("Unable to pull users list since no data available in the merchant creation excel file.")
     return users_list
+
+

@@ -68,7 +68,6 @@ def getDeviceFromDB(testCaseID):
         return device
 
 
-
 def releaseDeviceInDBusingTestCaseID(testCaseID):
 
     try:
@@ -195,7 +194,6 @@ def releaseAppiumServerInDBUsingTestCaseID(testCaseID):
         print("Unable to release the appium server associated with test case " + testCaseID)
 
 
-
 def clearAssignerTables():
     conn = ""
     cursor = ""
@@ -245,6 +243,7 @@ def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
     except Exception as e:
         print("Unable to update the app user details to DB")
 
+
 def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails : []):
     try:
         conn = sqlite3.connect(dbPath)
@@ -264,6 +263,7 @@ def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails : []):
             print("Portal users list is empty")
     except Exception as e:
         print("Unable to update the portal user details to DB")
+
 
 def updateAppiumServersInDB(listOfPorts: []):
     try:
@@ -331,8 +331,8 @@ def getAppUserCredentials(testcase_id: str) -> dict:
                 if available_user:
                     app_user_details["name"] = available_user[0]
                     app_user_details["merchant_code"] = available_user[1]
-                    app_user_details["username"] = available_user[2]
-                    app_user_details["password"] = available_user[3]
+                    app_user_details["Username"] = available_user[2]
+                    app_user_details["Password"] = available_user[3]
                     block_user(app_user_details["name"],testcase_id)
                     break
                 else:
@@ -346,8 +346,8 @@ def getAppUserCredentials(testcase_id: str) -> dict:
                         if block_merchant(unassigned_merchant, testcase_id):
                             app_user_details["name"] = available_user[0]
                             app_user_details["merchant_code"] = available_user[1]
-                            app_user_details["username"] = available_user[2]
-                            app_user_details["password"] = available_user[3]
+                            app_user_details["Username"] = available_user[2]
+                            app_user_details["Password"] = available_user[3]
                             block_user(app_user_details["name"], testcase_id)
                             break
                         else:
@@ -392,8 +392,8 @@ def get_admin_user_details(testcase_id: str) -> dict:
                 if available_user:
                     admin_user_details["name"] = available_user[0]
                     admin_user_details["merchant_code"] = available_user[1]
-                    admin_user_details["username"] = available_user[2]
-                    admin_user_details["password"] = available_user[3]
+                    admin_user_details["Username"] = available_user[2]
+                    admin_user_details["Password"] = available_user[3]
                     block_user(admin_user_details["name"], testcase_id)
                     break
                 else:
@@ -407,8 +407,8 @@ def get_admin_user_details(testcase_id: str) -> dict:
                         if block_merchant(unassigned_merchant, testcase_id):
                             admin_user_details["name"] = available_user[0]
                             admin_user_details["merchant_code"] = available_user[1]
-                            admin_user_details["username"] = available_user[2]
-                            admin_user_details["password"] = available_user[3]
+                            admin_user_details["Username"] = available_user[2]
+                            admin_user_details["Password"] = available_user[3]
                             block_user(admin_user_details["name"], testcase_id)
                             break
                         else:
@@ -450,8 +450,8 @@ def getPortalUserCredentials(testcase_id: str) -> dict:
             if available_user:
                 portal_user_details["name"] = available_user[0]
                 portal_user_details["merchant_code"] = available_user[1]
-                portal_user_details["username"] = available_user[2]
-                portal_user_details["password"] = available_user[3]
+                portal_user_details["Username"] = available_user[2]
+                portal_user_details["Password"] = available_user[3]
                 if not block_user(portal_user_details["name"], testcase_id):
                     portal_user_details = None
                 break
@@ -466,6 +466,7 @@ def getPortalUserCredentials(testcase_id: str) -> dict:
     cursor.close()
     conn.close()
     return portal_user_details
+
 
 def releaseAppUser(testcase_id:str) -> bool:
     """
@@ -519,6 +520,7 @@ def release_admin_user(testcase_id:str) -> bool:
         logger.info(f"User {user} was not blocked. So releasing is skipped.")
     return release_status
 
+
 def releasePortalUser(testcase_id:str) -> bool:
     """
     This method is used to release an portal user that is assigned to a test case.
@@ -536,29 +538,6 @@ def releasePortalUser(testcase_id:str) -> bool:
         logger.info(f"User {user} was not blocked. So releasing is skipped.")
     return release_status
 
-
-def get_merchant_assigned_to_testcase(testcase_id: str) -> str:
-    """
-    This method is used to get the merchant assigned to the test case.
-    :param testcase_id: str, db cursor
-    :return: str
-    """
-    global merchant
-    conn = sqlite3.connect(dbPath)
-    cursor = conn.cursor()
-    try:
-        cursor.execute(f'SELECT * FROM merchants_blocked WHERE TestcaseID = "{testcase_id}"')
-        db_values = cursor.fetchone()
-        if db_values:
-            merchant = db_values[0]
-        else:
-            merchant =  None
-    except Exception as e:
-        logger.error("Unable to check if any merchant is assigned to the test case. This is due to error "+str(e))
-        merchant =  None
-    cursor.close()
-    conn.close()
-    return merchant
 
 def get_available_merchant() -> str:
     """
@@ -583,6 +562,7 @@ def get_available_merchant() -> str:
     cursor.close()
     conn.close()
     return merchant
+
 
 def get_user_details(merchant_code: str, user_type : str) -> str:
     """
@@ -613,6 +593,7 @@ def get_user_details(merchant_code: str, user_type : str) -> str:
     conn.close()
     return user
 
+
 def block_merchant_and_users_for_testcase(testcase_id : str, merchant_code : str) -> bool:
     """
     This method is used for blocking the merchant that is going to be assigned to a test case.
@@ -642,6 +623,7 @@ def block_merchant_and_users_for_testcase(testcase_id : str, merchant_code : str
     cursor.close()
     conn.close()
     return block_status
+
 
 def block_user(user_name:str, testcase_id:str) ->bool:
     """
@@ -784,6 +766,7 @@ def unblock_merchant(merchant_code:str, testcase_id:str) -> bool:
     conn.close()
     return unblocked_status
 
+
 def check_if_merchant_be_released(merchant_code:str) ->bool:
     """
     This method is used to check if a merchant can be released.
@@ -847,6 +830,7 @@ def get_user_assigned_to_testcase(testcase_id:str, user_type:str) -> str:
     conn.close()
     return user
 
+
 def get_merchant_assigned_to_testcase(testcase_id:str) -> str:
     """
     This method is used to fetch the merchant assigned to a testcase.
@@ -868,6 +852,7 @@ def get_merchant_assigned_to_testcase(testcase_id:str) -> str:
     cursor.close()
     conn.close()
     return merchant
+
 
 def get_merchant_of_user(user_name:str) -> str:
     """This method is used to fetch the merchant associated with a user.
