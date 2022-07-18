@@ -1,7 +1,7 @@
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
-from Utilities import ConfigReader
+from Utilities import ConfigReader, merchant_creator
 from Configuration import TestSuiteSetup
 from Utilities.execution_log_processor import EzeAutoLogger
 from Utilities.time_calculator import generate_excel_report
@@ -11,6 +11,7 @@ logger = EzeAutoLogger(__name__)
 
 try:
     if TestSuiteSetup.prepareDevicesAndDB():
+        merchant_creator.create_merchants_with_users()
         TestSuiteSetup.prepare_Consolidated_List_Of_TestcasesFile()
         if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
             Rerun.prepareImmediateRerunExcel()
