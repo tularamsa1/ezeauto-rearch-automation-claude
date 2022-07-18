@@ -117,7 +117,7 @@ def get_api_details(api_name:str, request_body:dict=None, expected_result:dict=N
                     if key in details['RequestBody']:
                         details['RequestBody'][key] = request_body[key]
                     else:
-                        logger.warning(f"ReqestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
+                        logger.warning(f"RequestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
                         details['RequestBody'][key] = request_body[key]
             else:
                 logger.error(f"RequestBody is not a dict")
