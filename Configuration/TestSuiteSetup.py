@@ -17,6 +17,11 @@ from PageFactory import Base_Actions
 from Utilities import DirectoryCreator
 from Utilities import ResourceAssigner, ConfigReader
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
+from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
+from Utilities.execution_log_processor import EzeAutoLogger
+
+
+logger = EzeAutoLogger(__name__)
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -296,33 +301,26 @@ def getDevicesList():
         print(e.returncode)
 
 
-def startEmulators(noOfEmulatorsToStart):
-    try:
-        b = 1
-        adb_ouput = subprocess.check_output(["emulator", "-list-avds"])
-        encoding = 'utf-8'
-        devices = str(adb_ouput, encoding)
-        lst = (devices.split("\n"))
-        emulatorsList = ' '.join(lst).split()
-        emulatorsCount = len(emulatorsList)
+def start_emulators(number_of_emulators_to_start):
+    currently_not_started_avds = get_the_list_of_currently_not_started_avds()  
 
-        if noOfEmulatorsToStart <= emulatorsCount:
-            for emulator in emulatorsList:
-                if b <= noOfEmulatorsToStart:
-                    try:
-                        os.system(os.getenv("ANDROID_HOME") + "/emulator/emulator -avd " + emulator + " &")
-                        print(emulator + " started successfully")
-                        b += 1
-
-                    except Exception as e:
-                        print(str(e))
-                else:
-                    break
-            time.sleep(10)
+    for i in range(number_of_emulators_to_start):
+        if currently_not_started_avds:
+            avd_name = currently_not_started_avds.pop(0)  # pop will remove that avd_name from the avds list also
+            logger.debug(f"Trying to start emulator with avd name '{avd_name}'")
+            return_code = start_emulator(avd_name)
+            
+            if return_code:
+                logger.error(f"Some Error [return code: {return_code}] \
+                    while running shell command to start emulator '{avd_name}'")
+            else:
+                time.sleep(10)
+                logger.info(f"'{avd_name}' started succesfully!")
         else:
-            print("Configured Emulators are less than no of processes.")
-    except Exception as e:
-        print(e)
+            number_of_threads_for_which_emulators_are_unavailable = number_of_emulators_to_start - i
+            logger.warning(f"No more emulators are available for next {number_of_threads_for_which_emulators_are_unavailable} threads. " +
+                f"Currently only {i} emulators started. Therefore breaking the loop")
+            break
 
 
 def prepare_Consolidated_List_Of_TestcasesFile():  # later change function-name to snakecase
@@ -344,35 +342,6 @@ def prepare_Consolidated_List_Of_TestcasesFile():  # later change function-name 
     df_filtered = df[df.Execute.isin([1, True, "True", 'true'])].reset_index(drop=False)  # .drop(columns=['Execute',])  # this should be done later
     df_filtered.drop(columns=['index','level_0'], inplace=True)
     df_filtered.to_excel(output_runtime_all_tc_details_xl_url, index=True)  # later make index=False
-
-
-
-# def prepare_Consolidated_List_Of_TestcasesFile():
-#     df_all_rows = pd.DataFrame()
-
-#     if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail")):
-#         workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail"), None)
-#         ls_sheets_functional = workbook.keys()
-
-#         # Creating a DF with all testcases
-#         for sheet in ls_sheets_functional:
-#             df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-#             df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
-
-#     if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI")):
-#         workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
-#         ls_sheets_surfaceUI = workbook.keys()
-
-#         # Creating a DF with all testcases
-#         for sheet in ls_sheets_surfaceUI:
-#             df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-#             df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
-
-#     # print("prepare_Consolidated_List_Of_TestcasesFile")
-#     # print(df_all_rows)
-#     # Converting DF with all TCs to an excel
-#     df_all_rows.to_excel(
-#         ConfigReader.read_config_paths("System", "automation_suite_path") + "/Runtime/AllTestcaseSuite.xlsx")
 
 
 def executeSelectedTestCases():
@@ -455,7 +424,7 @@ def prepareDevicesAndDB():
             additionalEmulatorsRequired = getThreadCount() - len(devices)
 
         if (additionalEmulatorsRequired > 0):
-            startEmulators(additionalEmulatorsRequired)
+            start_emulators(additionalEmulatorsRequired)
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
     ResourceAssigner.clearAssignerTables()

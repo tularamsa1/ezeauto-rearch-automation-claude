@@ -127,7 +127,7 @@ def createStatusTable():
     myTable1 = PrettyTable()
     myTable1.title = 'Debugging Info'
     myTable1.header = True
-    myTable1.field_names = ["Type", "API", "Middleware", "Cnpware", "Portal", "App", "ChargeSlip"]
+    myTable1.field_names = ["Type", "API", "Config", "Middleware", "Cnpware", "Portal", "App", "ChargeSlip"]
 
     if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True" or Base_Actions.is_log_capture_required(
             "bool_capt_log_pass") == "True":
@@ -135,6 +135,12 @@ def createStatusTable():
             apiLogs = 'Yes'
         else:
             apiLogs = 'No'
+        
+        if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True" and GlobalVariables.config_logs:
+            config_logs = 'Yes'
+        else:
+            config_logs = 'No'
+
         if Base_Actions.is_log_capture_required(
                 "bool_capt_log_middleware") == "True" and GlobalVariables.middleWareLogs:
             mWareLogs = 'Yes'
@@ -150,14 +156,20 @@ def createStatusTable():
             portalLogs = 'No'
     else:
         apiLogs = 'No'
+        config_logs = 'No'
         mWareLogs = 'No'
         cnpWareLogs = 'No'
         portalLogs = 'No'
 
-    if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A", 'N/A'])
+    if GlobalVariables.EXCEL_TC_Execution == "Fail" \
+        or GlobalVariables.str_api_val_result == "Fail" \
+            or GlobalVariables.str_db_val_result == "Fail" \
+                or GlobalVariables.str_portal_val_result == "Fail" \
+                    or GlobalVariables.str_app_val_result == "Fail" \
+                        or GlobalVariables.str_ui_val_result == "Fail":
+        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, "N/A", 'N/A'])
     else:
-        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A", "N/A"])
+        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, "N/A", "N/A"])
 
     # SCREENSHOT INFO
     appSS = 'No'
@@ -184,7 +196,7 @@ def createStatusTable():
             chargeslipSS ="Yes"
 
 
-    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", portalSS, appSS, chargeslipSS])
+    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", "N/A", portalSS, appSS, chargeslipSS])
     myTable1.align = 'l'
 
     print(myTable1)
