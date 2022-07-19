@@ -1,4 +1,3 @@
-#ResourceAssigner
 import sqlite3
 import time
 from datetime import datetime
@@ -68,7 +67,6 @@ def getDeviceFromDB(testCaseID):
         return None
     else:
         return device
-
 
 
 def releaseDeviceInDBusingTestCaseID(testCaseID):
