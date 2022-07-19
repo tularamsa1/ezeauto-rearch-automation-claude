@@ -1,8 +1,9 @@
-#ResourceAssigner
 import sqlite3
 import time
 from datetime import datetime
 from Utilities import ConfigReader
+from Utilities.execution_log_processor import EzeAutoLogger
+logger = EzeAutoLogger(__name__)
 
 dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
 
@@ -11,13 +12,13 @@ def getDeviceFromDB(testCaseID):
     print("Trying to get available device from DB")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    device={}
+    device = {}
     timer = 0
-    while timer<10:
+    while timer < 10:
         try:
             cursor.execute("SELECT DeviceId,DeviceName FROM devices WHERE Status = 'Available';")
             devices = cursor.fetchall()
-            if devices != None and len(devices) > 0 :
+            if devices != None and len(devices) > 0:
                 for dev in devices:
                     deviceID = str(dev[0])
                     deviceName = dev[1]
@@ -32,7 +33,7 @@ def getDeviceFromDB(testCaseID):
                             device['DeviceId'] = deviceID
                             device['DeviceName'] = deviceName
                             proceed = True
-                            break;
+                            break
                         except:
                             print("Unable to change the status of device in DB, so deleting the entry in devices_blocked table.")
                             cursor.execute("DELETE FROM devices_blocked WHERE DeviceId = '" + deviceID + "';")
@@ -53,7 +54,7 @@ def getDeviceFromDB(testCaseID):
             proceed = False
 
         if proceed:
-            break;
+            break
         else:
             time.sleep(1)
             timer += 1
@@ -66,7 +67,6 @@ def getDeviceFromDB(testCaseID):
         return device
 
 
-
 def releaseDeviceInDBusingTestCaseID(testCaseID):
 
     try:
@@ -75,7 +75,7 @@ def releaseDeviceInDBusingTestCaseID(testCaseID):
         proceed = True
         cursor.execute("SELECT DeviceId FROM devices_blocked WHERE TestCaseID = '" + testCaseID + "';")
         try:
-            DeviceIds = cursor.fetchall();
+            DeviceIds = cursor.fetchall()
             try:
                 cursor.execute("DELETE FROM devices_blocked WHERE TestCaseID = '" + testCaseID + "';")
                 conn.commit()
@@ -125,7 +125,7 @@ def getAppiumServerFromDB(testCaseID):
                             appiumServer['PortNumber'] = portNumber
                             appiumServer['ServerName'] = serverName
                             proceed = True
-                            break;
+                            break
                         except:
                             print("Unable to change the status of appium server in DB, so deleting the entry in appium_servers_blocked table.")
                             cursor.execute("DELETE FROM appium_servers_blocked WHERE PortNumber = '"+portNumber+"';")
@@ -146,7 +146,7 @@ def getAppiumServerFromDB(testCaseID):
             proceed = False
 
         if proceed:
-            break;
+            break
         else:
             time.sleep(1)
             timer += 1
@@ -168,7 +168,7 @@ def releaseAppiumServerInDBUsingTestCaseID(testCaseID):
         proceed = True
         cursor.execute("SELECT PortNumber FROM appium_servers_blocked WHERE TestCaseID = '" + testCaseID + "';")
         try:
-            PortNumber = cursor.fetchall();
+            PortNumber = cursor.fetchall()
             try:
                 cursor.execute("DELETE FROM appium_servers_blocked WHERE TestCaseID = '" + testCaseID + "';")
                 conn.commit()
@@ -376,33 +376,35 @@ def releasePortalUser(testCaseID):
         print("Unable to release the portal user associated with test case " + testCaseID)
 
 def clearAssignerTables():
+    conn = ""
+    cursor = ""
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        # cursor.execute("DELETE FROM app_users;")
-        cursor.execute("update app_users set Status = 'Available';")
-        cursor.execute("update portal_users set Status = 'Available';")
-        cursor.execute("DELETE FROM app_users_blocked;")
-        # cursor.execute("DELETE FROM portal_users;")
-        cursor.execute("DELETE FROM portal_users_blocked;")
+        cursor.execute("DELETE FROM users_blocked;")
+        cursor.execute("DELETE FROM users;")
+        cursor.execute("DELETE FROM merchants_blocked;")
+        cursor.execute("DELETE FROM merchants;")
         cursor.execute("DELETE FROM devices;")
         cursor.execute("DELETE FROM devices_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM appium_servers_blocked;")
+        cursor.execute("DELETE FROM api_details;")
         conn.commit()
-        conn.close()
     except Exception as e:
         print("Unable to clear the user tables due to error : "+str(e))
-        conn.close()
+    cursor.close()
+    conn.close()
 
-"""
-This method is used to update the user details into the user_credentials database.
-Make sure the argument passed is a list of dictionaries containing details of the user i.e., username and password.
-Make sure the dictionary for each user contains the below two keys
-1. Username
-2. Password 
-"""
+
 def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
+    """
+    This method is used to update the user details into the user_credentials database.
+    Make sure the argument passed is a list of dictionaries containing details of the user i.e., username and password.
+    Make sure the dictionary for each user contains the below two keys
+    1. Username
+    2. Password
+    """
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
@@ -421,6 +423,7 @@ def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
             print("App users list is empty")
     except Exception as e:
         print("Unable to update the app user details to DB")
+
 
 def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails : []):
     try:
@@ -441,6 +444,7 @@ def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails : []):
             print("Portal users list is empty")
     except Exception as e:
         print("Unable to update the portal user details to DB")
+
 
 def updateAppiumServersInDB(listOfPorts: []):
     try:
