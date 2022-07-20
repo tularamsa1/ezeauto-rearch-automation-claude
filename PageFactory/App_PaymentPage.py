@@ -1,5 +1,7 @@
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
+from PageFactory.App_HomePage import HomePage
 
 
 class PaymentPage(BasePage):
@@ -12,7 +14,8 @@ class PaymentPage(BasePage):
     lbl_mobileNumber = (By.XPATH, "//android.widget.TextView[contains(text(),'9845698456')]")
     btn_upi = (By.XPATH, "//*[@text='UPI']")
     btn_bqr = (By.XPATH, "//*[@text='Bharat QR']")
-    #    USER_ACTION_MESSAGE = (By.ID, 'com.ezetap.service.demo:id/txn_user_action_msg')
+    btn_back = (By.ID, "com.ezetap.service.demo:id/ibtnBack")
+    btn_back_enter_amt_window = (By.ID, "com.ezetap.basicapp:id/imgBack")
     txa_daAlertMessage = (By.ID, 'com.ezetap.service.demo:id/tvAlert')
     txa_promoMessage = (By.ID, 'com.ezetap.service.demo:id/tvAvailableOffer')
     lbl_paymentStatus = (By.ID, 'com.ezetap.service.demo:id/tvTxnStatus')
@@ -24,16 +27,22 @@ class PaymentPage(BasePage):
     btn_closeTransactionDetails = (By.ID, 'com.ezetap.service.demo:id/btnDismiss')
     lbl_scanQRCode = (By.XPATH, '//*[contains(@text,"Scan QR code")]')
     lbl_paymentMode = (By.ID, "com.ezetap.service.demo:id/tvPaymentType")
+    lbl_paymentAmt = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
+    lbl_payWith = (By.ID, 'com.ezetap.service.demo:id/tvPayWithTop')
+    lbl_checkstatusTitle = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
+    lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
+    lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
+    btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
 
 
     def __init__(self, driver):
         super().__init__(driver)
 
-
     def click_on_Upi_paymentMode(self):
         self.perform_click(self.btn_upi)
 
     def click_on_Bqr_paymentMode(self):
+        self.scroll_to_text("Bharat QR")
         self.perform_click(self.btn_bqr)
 
     # def get_user_action_text(self):
@@ -47,7 +56,7 @@ class PaymentPage(BasePage):
 
 
     def click_on_Cash(self):
-        self.perform_touch_action_using_cordinates(323,1168, 323,618)
+        self.scroll_to_text("Cash")
         self.perform_click(self.btn_cash)
 
     def click_on_DetailsBtn(self):
@@ -73,9 +82,26 @@ class PaymentPage(BasePage):
 
     def fetch_payment_mode(self):
         return self.fetch_text(self.lbl_paymentMode)
+    def fetch_payment_amount(self):
+        return self.fetch_text(self.lbl_paymentAmt)
+
 
     def click_on_proceed_homepage(self):
         self.perform_click(self.btn_proceedToHomepage)
+
+    def click_on_back_btn(self):
+        staleElement = True
+        while (staleElement):
+            try:
+                self.perform_click(self.btn_back)
+                staleElement = False
+            except StaleElementReferenceException:
+                print("STALE ELEMENT EXECPTION....!!!!!!!!!")
+                staleElement = True
+
+
+
+
 
     def get_transaction_details(self):
         self.perform_click(self.btn_viewDetails)
@@ -88,3 +114,29 @@ class PaymentPage(BasePage):
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
+
+    def is_payment_page_displayed(self, amount, order_id):
+        try:
+            self.wait_for_element(self.lbl_payWith, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.btn_back_enter_amt_window)
+                homePage = HomePage(self.driver)
+                homePage.enter_amount_and_order_number(amount, order_id)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.lbl_skip)
+                self.perform_click(self.btn_back_enter_amt_window)
+                homePage = HomePage(self.driver)
+                homePage.enter_amount_and_order_number(amount, order_id)
+            else:
+                pass
+
+    def click_on_transaction_cancel_yes(self):
+        self.perform_click(self.btn_cancelTransactionYes)
+

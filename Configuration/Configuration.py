@@ -3,15 +3,16 @@ from Utilities import ReportProcessor, ResourceAssigner
 import configparser
 
 
-def configureLogCaptureVariables(apiLog : bool, portalLog : bool, cnpwareLog : bool, middlewareLog : bool):
+def configureLogCaptureVariables(apiLog : bool, portalLog : bool, cnpwareLog : bool, middlewareLog : bool, config_log: bool=False):
     GlobalVariables.apiLogs = apiLog
     GlobalVariables.portalLogs = portalLog
     GlobalVariables.cnpWareLogs = cnpwareLog
     GlobalVariables.middleWareLogs = middlewareLog
+    GlobalVariables.config_logs = config_log
 
 def executeFinallyBlock(testcaseID):
-    ReportProcessor.createStatusTable()
-    ResourceAssigner.releaseUserInDBUsingTestCaseID(testcaseID)
+    ResourceAssigner.releaseAppUser(testcaseID)
+    ResourceAssigner.releasePortalUser(testcaseID)
     ResourceAssigner.releaseDeviceInDBusingTestCaseID(testcaseID)
     ResourceAssigner.releaseAppiumServerInDBUsingTestCaseID(testcaseID)
 

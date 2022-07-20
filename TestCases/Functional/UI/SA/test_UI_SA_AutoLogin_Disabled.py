@@ -5,8 +5,7 @@ from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from DataProvider.config import TestData
-from Utilities import Validator, ReportProcessor, ConfigReader
+from Utilities import Validator, ReportProcessor, ConfigReader, APIProcessor
 
 '''
 @pytest.mark.usefixtures("log_on_success")
@@ -91,17 +90,33 @@ def test_UI_SA_AutoLogin_Disabled_01():
         global bool_val_exe
         bool_val_exe = True
         msg = ""
-
+        #---------------------------Pre requisite----------------------------------------------
+        payload = {
+        "username":"9731545096",
+        "password":"A123456",
+        "entityName":"org",
+        "settings":{
+            "autoLoginByTokenEnabled":"true"
+        },
+        "settingForOrgCode":"VINEET_191036200"
+        }
+        response = APIProcessor.post(payload, "orgupdate")
+        if response["success"]==True:
+            pass
+        else:
+            msg = "Pre requisite setting failure"
+            pytest.fail(msg)
+        #--------------------End of Pre requisite-----------------------------------
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             driver = GlobalVariables.appDriver
             loginPage = LoginPage(driver)
-            username = ConfigReader.read_config("credentials", 'username_dev11')
+            username = ConfigReader.read_config("credential", 'username_dev11')
             password = ConfigReader.read_config("credentials", 'password_dev11')
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
             homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            assert homepage_text == ConfigReader.read_config("testdata", 'homepage_text')
             driver.terminate_app("com.ezetap.basicapp")
             driver.activate_app("com.ezetap.basicapp")
             loginPage = LoginPage(driver)
@@ -200,10 +215,9 @@ def test_UI_SA_AutoLogin_Disabled_01():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-
         ReportProcessor.updateTestCaseResult(msg)  # pass msg
         # Test case ID should be passed as argument in string format.
+        Configuration.executeFinallyBlock("test_UI_SA_AutoLogin_Disabled_01")
 
         # Test case ID will be the method name. Eg. test_SubFeatureCode in this case.
 
-        Configuration.executeFinallyBlock("test_UI_SA_AutoLogin_Disabled_01")

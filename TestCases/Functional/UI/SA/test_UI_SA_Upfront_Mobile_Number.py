@@ -130,7 +130,7 @@ def test_UI_SA_Upfront_Mobile_Number_01(): #Make sure to add the test case name 
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Success": "Success"}

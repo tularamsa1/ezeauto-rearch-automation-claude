@@ -30,7 +30,7 @@ def test_UI_SA_Promo_Displayed_01():
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
             homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            assert homepage_text == ConfigReader.read_config("testdata", 'homepage_text')
             homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
             paymentPage = PaymentPage(driver)
             promo_offer = paymentPage.fetch_promo_offer()
@@ -50,7 +50,7 @@ def test_UI_SA_Promo_Displayed_01():
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Message": read_config("testdata","promo_offer")}

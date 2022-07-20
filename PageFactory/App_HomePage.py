@@ -5,8 +5,10 @@ from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
 
 
+
 class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
+    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
     txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
     btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
@@ -40,14 +42,15 @@ class HomePage(BasePage):
     btn_payNow = (By.ID, "com.ezetap.basicapp:id/btnPayNow")
     btn_cashAtPosWithSale = (By.ID, 'com.ezetap.basicapp:id/switchSale')
     txt_cashAtPosSaleAmount = (By.ID, 'com.ezetap.basicapp:id/etSaleAmount')
-
+    btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
+    btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
 
 
     def __init__(self, driver):
         super().__init__(driver)
 
     def check_home_page_logo(self):
-        return self.fetch_text(self.lbl_home)
+        return self.fetch_text(self.lbl_home, 30)
 
     def check_home_page_for_invalid_Login(self):
         return self.fetch_text(self.lbl_home, 5)
@@ -92,11 +95,14 @@ class HomePage(BasePage):
     def perform_check_status(self):
         self.perform_click(self.btn_checkStatus)
 
+    def click_on_skip_button(self):
+        self.perform_click(self.btn_skip)
+
     def click_navigation_drawer(self):
         self.perform_click(self.mnu_navigationDrawer)
 
-    # def click_transaction_history(self):
-    #     self.perform_click(self.mnu_transactionHistory)
+    def click_on_transaction_history(self):
+        self.perform_click(self.mnu_transactionHistory)
 
     def click_cash_at_pos(self):
         self.perform_click(self.btn_cashAtPos)
@@ -120,8 +126,6 @@ class HomePage(BasePage):
     def click_account_menu(self):
         self.perform_click(self.mnu_account)
 
-#--------------------Mansa Methods
-
     def check_lang_selection_option(self):
         return self.wait_for_element(self.rdo_langSelection).is_displayed()
 
@@ -144,7 +148,7 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.wait_for_element(self.btn_goToHistory)
+        self.wait_for_element(self.btn_goToHistory, 30)
 
     def click_side_menu_eng(self):
         self.perform_click(self.mnu_engSideMenu)
@@ -155,47 +159,26 @@ class HomePage(BasePage):
     def click_on_merchant_name(self):
         self.perform_click(self.mnu_merchantDetail)
 
-    # def click_on_enterAmt(self):
-    #     self.perform_click(self.txt_Amountfield)
-
-    # def press_number(self,number):
-    #     if number == 0:
-    #         self.perform_click(self.btn_numZero)
-    #     elif number == 1:
-    #         self.perform_click(self.btn_numOne)
-    #     elif number == 2:
-    #         self.perform_click(self.btn_numTwo)
-    #     elif number == 3:
-    #         self.perform_click(self.btn_numThree)
-    #     elif number == 4:
-    #         self.perform_click(self.btn_numFour)
-    #     elif number == 5:
-    #         self.perform_click(self.btn_numFive)
-    #     elif number == 6:
-    #         self.perform_click(self.btn_numSix)
-    #     elif number == 7:
-    #         self.perform_click(self.btn_numSeven)
-    #     elif number == 8:
-    #         self.perform_click(self.btn_numEight)
-    #     elif number == 9:
-    #         self.perform_click(self.btn_numNine)
-
-
-    # def click_on_Pay(self):
-    #     self.perform_click(self.btn_pay)
-
     def check_mob_num_field(self):
         return self.wait_for_element(self.txt_mobileField).is_displayed()
 
     def check_email_field(self):
         return self.wait_for_element(self.txt_emailField).is_displayed()
 
+    def click_on_back_btn_enter_amt_page(self):
+        self.perform_click(self.btn_back)
 
+    def wait_for_navigation_to_load(self):
+        self.wait_for_element_to_be_clickable(self.lbl_navigation)
 
-    # def click_on_proceed(self):
-    #     self.perform_click(self.btn_paymentProceed)
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
 
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
 
-#-----------------
-#Write a method to entirng amount, pay, order id, proceed
+    def wait_for_navigationTo_load(self):
+        self.wait_for_element(self.lbl_navigation)
 
+    def wait_for_navigation_to_load(self):
+        self.wait_for_element_to_be_clickable(self.lbl_navigation)

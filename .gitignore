@@ -1,6 +1,8 @@
 **/Reports/
 **/Logs/
+**/Runtime/
+**/Configuration/config.ini
 **/.pytest_cache/
-*.pyc
+**.pyc
 **/__pycache__/
-.idea/
+**/.idea/

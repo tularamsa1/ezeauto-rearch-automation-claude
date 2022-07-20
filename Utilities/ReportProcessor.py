@@ -1,22 +1,33 @@
 from datetime import datetime
 
+import allure
 import openpyxl
 import pytest
+from allure_commons.types import AttachmentType
 from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
-
-import DataProvider.GlobalConstants
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
+from Utilities import DirectoryCreator
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
+
+
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
 
 def get_TC_Exe_Time():
     current = datetime.now()
     GlobalVariables.EXCEL_TC_Exe_completed_time = current.strftime("%H:%M:%S")
     FMT = '%H:%M:%S'
-    totalExecutionTime = datetime.strptime(GlobalVariables.EXCEL_TC_Exe_completed_time, FMT) - datetime.strptime(str(
+    try:
+        totalExecutionTime = datetime.strptime(GlobalVariables.EXCEL_TC_Exe_completed_time, FMT) - datetime.strptime(str(
         GlobalVariables.EXCEL_TC_Exe_Starting_Time), FMT)
+    except Exception as e:
+        print("Unable to set the totalExecutionTime due to error : " + str(e) + ". Hence setting it to 0.")
+        totalExecutionTime = 0
 
     # Converting time duration to seconds
     GlobalVariables.EXCEL_Execution_Time = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalExecutionTime).split(":")))
@@ -30,8 +41,12 @@ def get_TC_Val_Time():
     GlobalVariables.EXCEL_TC_Val_completed_time = current.strftime("%H:%M:%S")
     print("TC Val completed time:", GlobalVariables.EXCEL_TC_Val_completed_time)
     FMT = '%H:%M:%S'
-    totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
+    try:
+        totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
         GlobalVariables.EXCEL_TC_Val_Starting_Time), FMT)
+    except Exception as e:
+        print("Unable to set the totalValidationTime due to error : " + str(e) + ". Hence setting it to 0.")
+        totalValidationTime = 0
 
     # Converting time duration to seconds
     GlobalVariables.EXCEL_Val_time = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalValidationTime).split(":")))
@@ -46,9 +61,12 @@ def get_Log_Collection_Time():
    # GlobalVariables.EXCEL_TC_Val_completed_time = current.strftime("%H:%M:%S")
     FMT = '%H:%M:%S'
     print("Log collection end time: ", GlobalVariables.EXCEL_TC_Val_completed_time)
-
-    totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
+    try:
+        totalValidationTime = datetime.strptime(GlobalVariables.EXCEL_TC_Val_completed_time, FMT) - datetime.strptime(str(
         GlobalVariables.EXCEL_TC_LogColl_Starting_Time), FMT)
+    except Exception as e:
+        print("Unable to set the totalValidationTime due to error : " + str(e) + ". Hence setting it to 0.")
+        totalValidationTime = 0
 
     # Converting time duration to seconds
     GlobalVariables.EXCEL_LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalValidationTime).split(":")))
@@ -62,6 +80,8 @@ def createStatusTable():
     portalVal = GlobalVariables.str_portal_val_result
     appVal = GlobalVariables.str_app_val_result
     uiVal = GlobalVariables.str_ui_val_result
+    chargeslip_val = GlobalVariables.str_chargeslip_val_result
+
 
     get_TC_Val_Time()
     print("portalVal: ", portalVal)
@@ -92,10 +112,12 @@ def createStatusTable():
     else:
         myTable.add_row(["App Validation", appVal])
 
-    if appVal == "Failed":
+    if uiVal == "Failed":
         myTable.add_row(["UI Validation", "Fail"])
     else:
         myTable.add_row(["UI Validation", uiVal])
+
+    myTable.add_row(["Charge Slip Validation", chargeslip_val])
 
     myTable.align = 'l'
     print(myTable)
@@ -105,7 +127,7 @@ def createStatusTable():
     myTable1 = PrettyTable()
     myTable1.title = 'Debugging Info'
     myTable1.header = True
-    myTable1.field_names = ["Type", "API", "Middleware", "Cnpware", "Portal", "App"]
+    myTable1.field_names = ["Type", "API", "Config", "Middleware", "Cnpware", "Portal", "App", "ChargeSlip"]
 
     if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True" or Base_Actions.is_log_capture_required(
             "bool_capt_log_pass") == "True":
@@ -113,6 +135,12 @@ def createStatusTable():
             apiLogs = 'Yes'
         else:
             apiLogs = 'No'
+        
+        if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True" and GlobalVariables.config_logs:
+            config_logs = 'Yes'
+        else:
+            config_logs = 'No'
+
         if Base_Actions.is_log_capture_required(
                 "bool_capt_log_middleware") == "True" and GlobalVariables.middleWareLogs:
             mWareLogs = 'Yes'
@@ -128,24 +156,34 @@ def createStatusTable():
             portalLogs = 'No'
     else:
         apiLogs = 'No'
+        config_logs = 'No'
         mWareLogs = 'No'
         cnpWareLogs = 'No'
         portalLogs = 'No'
 
-    if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
+    if GlobalVariables.EXCEL_TC_Execution == "Fail" \
+        or GlobalVariables.str_api_val_result == "Fail" \
+            or GlobalVariables.str_db_val_result == "Fail" \
+                or GlobalVariables.str_portal_val_result == "Fail" \
+                    or GlobalVariables.str_app_val_result == "Fail" \
+                        or GlobalVariables.str_ui_val_result == "Fail":
+        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, "N/A", 'N/A'])
     else:
-        myTable1.add_row(["Log Captured", apiLogs, mWareLogs, cnpWareLogs, portalLogs, "N/A"])
+        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, "N/A", "N/A"])
 
     # SCREENSHOT INFO
     appSS = 'No'
     portalSS = 'No'
+    chargeslipSS = "No"
+    
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
         if GlobalVariables.bool_ss_portal_val == "Passed" or portalVal == 'Pass':
             portalSS = 'Yes'
         if GlobalVariables.bool_ss_app_val == "Passed" or appVal == 'Pass':
             appSS = 'Yes'
+        if chargeslip_val == "Pass":
+            chargeslipSS = "Yes"
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
         if GlobalVariables.bool_ss_portal_val == "Failed" or portalVal == 'Failed':
@@ -154,7 +192,11 @@ def createStatusTable():
         if GlobalVariables.bool_ss_app_val == "Failed" or appVal == 'Failed':
             appSS = 'Yes'
 
-    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", portalSS, appSS])
+        if chargeslip_val == "Fail":  
+            chargeslipSS ="Yes"
+
+
+    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", "N/A", portalSS, appSS, chargeslipSS])
     myTable1.align = 'l'
 
     print(myTable1)
@@ -177,6 +219,7 @@ def revert_excel_global_variables():
     GlobalVariables.str_portal_val_result = "N/A"
     GlobalVariables.str_app_val_result = "N/A"
     GlobalVariables.str_ui_val_result = "N/A"
+    GlobalVariables.str_chargeslip_val_result = "N/A"
     # GlobalVariables.apiLogs = False
     # GlobalVariables.portalLogs = False
     # GlobalVariables.cnpWareLogs = False
@@ -184,7 +227,7 @@ def revert_excel_global_variables():
 
 
 def setStylesForExcel():
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     max_row = sheet.max_row
@@ -196,8 +239,9 @@ def setStylesForExcel():
     colNum_portalVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'Portal Val')
     colNum_appVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'App Val')
     colNum_uiVal = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
+    colNum_chargeslipval = ExcelProcessor.getColumnNumberFromName("", sheet, 'ChargeSlip Val')
 
-    column_list = [colNum_overall, colNum_execution, colNum_apiVal, colNum_dbVal, colNum_portalVal, colNum_appVal, colNum_uiVal]
+    column_list = [colNum_overall, colNum_execution, colNum_apiVal, colNum_dbVal, colNum_portalVal, colNum_appVal, colNum_uiVal, colNum_chargeslipval]
 
     for column in column_list:
         for row in range(2, max_row + 1):
@@ -217,24 +261,25 @@ def setStylesForExcel():
 
 
     # Set width for all cells
-    sheet.column_dimensions['A'].width = 70 #Test Case ID
-    sheet.column_dimensions['B'].width = 15 #File Name
-    sheet.column_dimensions['C'].width = 18 #Directory Name
-    sheet.column_dimensions['D'].width = 18 #Category
-    sheet.column_dimensions['E'].width = 18 #Sub-Category
-    sheet.column_dimensions['F'].width = 18 #OverAll Results
-    sheet.column_dimensions['G'].width = 18 #TC Execution
-    sheet.column_dimensions['H'].width = 15 #API Val
-    sheet.column_dimensions['I'].width = 15 #DB Val
-    sheet.column_dimensions['J'].width = 15 #Portal Val
-    sheet.column_dimensions['K'].width = 15 #App Val
-    sheet.column_dimensions['L'].width = 15 #UI Val
-    sheet.column_dimensions['M'].width = 22 #Execution Time (sec)
-    sheet.column_dimensions['N'].width = 22 #Validation Time (sec)
-    sheet.column_dimensions['O'].width = 22 #Log Coll Time (sec)
-    sheet.column_dimensions['P'].width = 18 #Total Time (sec)
-    sheet.column_dimensions['Q'].width = 18 #Rerun Attempts
-
+    sheet.column_dimensions['A'].width = 70 # Test Case ID
+    sheet.column_dimensions['B'].width = 70 # Sub Feature Code
+    sheet.column_dimensions['C'].width = 15 # File Name
+    sheet.column_dimensions['D'].width = 18 # Directory Name
+    sheet.column_dimensions['E'].width = 18 # Category
+    sheet.column_dimensions['F'].width = 18 # Sub-Category
+    sheet.column_dimensions['G'].width = 18 # OverAll Results
+    sheet.column_dimensions['H'].width = 18 # TC Execution
+    sheet.column_dimensions['I'].width = 15 # API Val
+    sheet.column_dimensions['J'].width = 15 # DB Val
+    sheet.column_dimensions['K'].width = 15 # Portal Val
+    sheet.column_dimensions['L'].width = 15 # App Val
+    sheet.column_dimensions['M'].width = 15 # UI Val
+    sheet.column_dimensions['N'].width = 15 # ChargeSlip Val
+    sheet.column_dimensions['O'].width = 22 # Execution Time (sec)
+    sheet.column_dimensions['P'].width = 22 # Validation Time (sec)
+    sheet.column_dimensions['Q'].width = 22 # Log Coll Time (sec)
+    sheet.column_dimensions['R'].width = 18 # Total Time (sec)
+    sheet.column_dimensions['S'].width = 18 # Rerun Attempts
 
     # Set background color and font style
     fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')
@@ -252,13 +297,11 @@ def setStylesForExcel():
         for row in range(1, sheet.max_row + 1):
             sheet.cell(row, column).border = border
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateExcel_With_Deselect_And_Broken():
-    # breakpoint()
-    print("GlobalVariables.EXCEL_reportFilePath", DataProvider.GlobalConstants.EXCEL_reportFilePath)
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     for i in range(2, sheet.max_row + 1):
@@ -287,6 +330,9 @@ def updateExcel_With_Deselect_And_Broken():
             colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
             sheet.cell(row=i, column=colNum_UIval).value = "N/A"
 
+            colNum_ChargeSlipval = ExcelProcessor.getColumnNumberFromName("", sheet, 'ChargeSlip Val')
+            sheet.cell(row=i, column=colNum_ChargeSlipval).value = "N/A"
+
         else:
             colNum_overallResult = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
             cellValue = (sheet.cell(row=i, column=colNum_overallResult)).value
@@ -312,11 +358,15 @@ def updateExcel_With_Deselect_And_Broken():
                 colNum_UIval = ExcelProcessor.getColumnNumberFromName("", sheet, 'UI Val')
                 sheet.cell(row=i, column=colNum_UIval).value = "N/A"
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+                colNum_ChargeSlipval = ExcelProcessor.getColumnNumberFromName("", sheet, 'ChargeSlip Val')
+                sheet.cell(row=i, column=colNum_ChargeSlipval).value = "N/A"
+
+
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateExcel_With_RerunAttempts():
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and ConfigReader.read_config(
@@ -341,11 +391,11 @@ def updateExcel_With_RerunAttempts():
         for i in range(2, sheet.max_row + 1):
             sheet.cell(row=i, column=colNum_RerunAttempts).value = "N/A"
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateExcel_With_Category_And_Subcategory():
-    wb = openpyxl.load_workbook(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb = openpyxl.load_workbook(EXCEL_reportFilePath)
     sheet = wb['Sheet1']
 
     for i in range(2, sheet.max_row + 1):
@@ -367,14 +417,14 @@ def updateExcel_With_Category_And_Subcategory():
             if cellValue_subCategory is None:
                 sheet.cell(row=i, column=colNum_subCategory).value = subCategory
 
-    wb.save(DataProvider.GlobalConstants.EXCEL_reportFilePath)
+    wb.save(EXCEL_reportFilePath)
 
 
 def updateTestCaseResult(msg):
     createStatusTable()
 
     ls_validation_msg = []
-    if GlobalVariables.bool_val_exe:
+    if not GlobalVariables.bool_val_exe:
         if GlobalVariables.str_api_val_result == "Fail":
             ls_validation_msg.append("API validation Failed!!")
         if GlobalVariables.str_db_val_result == "Fail":
@@ -385,13 +435,50 @@ def updateTestCaseResult(msg):
             ls_validation_msg.append("APP validation Failed!!")
         if GlobalVariables.str_ui_val_result == "Fail":
             ls_validation_msg.append("UI validation Failed!!")
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
+        if GlobalVariables.str_chargeslip_val_result == 'Fail':
+            ls_validation_msg.append("Charge-Slip validation Failed!!")
+        if GlobalVariables.str_api_val_result == "Fail" \
+            or GlobalVariables.str_db_val_result == "Fail" \
+                or GlobalVariables.str_portal_val_result == "Fail" \
+                    or GlobalVariables.str_app_val_result == "Fail" \
+                        or GlobalVariables.str_ui_val_result == "Fail" \
+                            or GlobalVariables.str_chargeslip_val_result == 'Fail':
             message = ""
             for validation_msg in ls_validation_msg:
                 message = message + "\n" + validation_msg
             pytest.fail(message)
-    else:
-        if GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == "Fail" or GlobalVariables.str_portal_val_result == "Fail" or GlobalVariables.str_app_val_result == "Fail" or GlobalVariables.str_ui_val_result == "Fail":
-            pass
-        else:
-            pytest.fail(msg)
+
+
+def capture_ss_when_exe_failed():
+    capture_ss_when_app_val_exe_failed()
+    capture_ss_when_portal_val_exe_failed()
+
+
+def capture_ss_when_app_val_exe_failed():
+    if GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
+
+
+def capture_ss_when_portal_val_exe_failed():
+    if GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
+
+
+def capture_ss_when_chargeslip_val_exe_failed():
+    if GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")

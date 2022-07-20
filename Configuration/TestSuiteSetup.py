@@ -1,13 +1,27 @@
 import configparser
+import json
 import os
 import subprocess
+import threading
 import time
 
+import chromedriver_autoinstaller
 import pandas as pd
 import paramiko
+from appium import webdriver as app_webdriver
+from appium.webdriver.appium_service import AppiumService
+from selenium import webdriver
+
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-import Configuration
+from Utilities import DirectoryCreator
+from Utilities import ResourceAssigner, ConfigReader
+from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
+from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
+from Utilities.execution_log_processor import EzeAutoLogger
+
+
+logger = EzeAutoLogger(__name__)
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -15,81 +29,107 @@ router_username = Base_Actions.get_environment("str_ssh_username")
 router_port = Base_Actions.get_environment("int_exe_env_port")
 key_filename = Base_Actions.get_environment("str_ssh_key_filename")
 
-
-# Login to the server
-import os
-import threading
-
-import pandas as pd
-import paramiko
-from appium.webdriver.appium_service import AppiumService
-
-from DataProvider import GlobalVariables
-from Utilities import ConfigReader, DirectoryCreator, ResourceAssigner
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport") + "/Report.xlsx"
 
 
 def prepareTestCaseDetailsDataFrame(path):
-    # Defining the columns of dataframe
-    dataForDataFrameHeader = {
-        'Test Case ID': [],
-        'File Name': [],
-        'Directory Name': [],
-        'Category': [],
-        'Sub-Category': [],
-        'OverAll Results': [],
-        'TC Execution': [],
-        'API Val': [],
-        'DB Val': [],
-        'Portal Val': [],
-        'App Val': [],
-        'UI Val': [],
-        'Execution Time (sec)': [],
-        'Validation Time (sec)': [],
-        'Log Coll Time (sec)': [],
-        'Total Time (sec)': [],
-        'Rerun Attempts': []
-    }
+    columns = [
+        'Test Case ID', 'Sub Feature Code', 'File Name', 'Directory Name', 'Category', 'Sub-Category',
+        'OverAll Results',
+        'TC Execution', 'API Val', 'DB Val', 'Portal Val', 'App Val', 'UI Val', 'ChargeSlip Val',
+        'Execution Time (sec)', 'Validation Time (sec)', 'Log Coll Time (sec)', 'Total Time (sec)',
+        'Rerun Attempts']
 
-    GlobalVariables.df_testCasesDetail = pd.DataFrame(dataForDataFrameHeader)
+    df_overall_testcases_list = pd.read_excel(path, index_col=0) \
+        [['Test Case ID', 'Sub Feature Code', 'File Name', 'Directory Name', 'Execute']]
 
-    # Dataframe by default gets created with datatype as float. Converting the same to string
-    convert_dict = {'File Name': str,
-                    'Directory Name': str,
-                    'Category': str,
-                    'Sub-Category': str,
-                    'TC Execution': str,
-                    'API Val': str,
-                    'DB Val': str,
-                    'Portal Val': str,
-                    'App Val': str,
-                    'UI Val': str,
-                    'Rerun Attempts': str
-                    }
+    df_filtered = df_overall_testcases_list[df_overall_testcases_list.Execute == 1]
 
-    GlobalVariables.df_testCasesDetail = GlobalVariables.df_testCasesDetail.astype(convert_dict)
+    # adding the extra columns that are not found in excel file. 
+    # instead you could add those columns while first time writing the excel file
+    for col in columns:
+        if col not in df_filtered.columns:
+            df_filtered[col] = "N/A"
 
-    df_overallTClist = pd.read_excel(path)
-    df_overallTClist.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
 
-    i=0
-    for index in df_overallTClist.index:
-        if df_overallTClist['Execute'][index] == False or str(df_overallTClist['Execute'][index]).lower() == "false":
-            pass
-        else:
-            GlobalVariables.df_testCasesDetail.at[i, ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
-            GlobalVariables.df_testCasesDetail.at[i, 'File Name'] = df_overallTClist['File Name'][index]
-            GlobalVariables.df_testCasesDetail.at[i, 'Directory Name'] = df_overallTClist['Directory Name'][index]
-        i = i+1
-    GlobalVariables.df_testCasesDetail.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
-    return GlobalVariables.df_testCasesDetail
+    df_testCasesDetail = df_filtered.drop(columns=['Execute']).set_index("Test Case ID")
+    return df_testCasesDetail  # GlobalVariables.df_testCasesDetail
+
+
+# def prepareTestCaseDetailsDataFrame(path):
+#     # Defining the columns of dataframe
+#     dataForDataFrameHeader = {
+#         'Test Case ID': [],
+#         'Sub Feature Code': [],  # ==============
+#         'File Name': [],
+#         'Directory Name': [],
+#         'Category': [],
+#         'Sub-Category': [],
+#         'OverAll Results': [],
+#         'TC Execution': [],
+#         'API Val': [],
+#         'DB Val': [],
+#         'Portal Val': [],
+#         'App Val': [],
+#         'UI Val': [],
+#         'ChargeSlip Val' : [],
+#         'Execution Time (sec)': [],
+#         'Validation Time (sec)': [],
+#         'Log Coll Time (sec)': [],
+#         'Total Time (sec)': [],
+#         'Rerun Attempts': []
+#     }
+
+#     GlobalVariables.df_testCasesDetail = pd.DataFrame(dataForDataFrameHeader)
+
+#     # Dataframe by default gets created with datatype as float. Converting the same to string
+#     convert_dict = {'File Name': str,  # doubts
+#                     'Directory Name': str,
+#                     'Category': str,
+#                     'Sub-Category': str,
+#                     'TC Execution': str,
+#                     'API Val': str,
+#                     'DB Val': str,
+#                     'Portal Val': str,
+#                     'App Val': str,
+#                     'UI Val': str,
+#                     'ChargeSlip Val': str,
+#                     'Rerun Attempts': str,
+#                     }
+
+#     GlobalVariables.df_testCasesDetail = GlobalVariables.df_testCasesDetail.astype(convert_dict)
+
+#     df_overallTClist = pd.read_excel(path)
+#     df_overallTClist.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+
+#     i=0
+#     for index in df_overallTClist.index:
+#         if df_overallTClist['Execute'][index] == False or str(df_overallTClist['Execute'][index]).lower() == "false":
+#             pass
+#         else:
+#             GlobalVariables.df_testCasesDetail.at[i, ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID")] = index
+#             GlobalVariables.df_testCasesDetail.at[i, 'File Name'] = df_overallTClist['File Name'][index]
+#             GlobalVariables.df_testCasesDetail.at[i, 'Directory Name'] = df_overallTClist['Directory Name'][index]
+#         i = i+1
+#     GlobalVariables.df_testCasesDetail.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
+#     return GlobalVariables.df_testCasesDetail
 
 
 def ssh_connection(ip_address, routerPort, username, key_filename):
     GlobalVariables.ssh.load_system_host_keys()
     GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # getting ssh private key file password if it is encrypted
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        print(e)  # later change this is to log the warning
+        ssh_private_key_password = None
+
     try:
         GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
-                    pkey=paramiko.RSAKey.from_private_key_file(key_filename))
+                                    pkey=paramiko.RSAKey.from_private_key_file(key_filename,
+                                                                               password=ssh_private_key_password))
         return True
     except Exception as error_message:
         print("Unable to connect")
@@ -98,9 +138,19 @@ def ssh_connection(ip_address, routerPort, username, key_filename):
 
 
 def getValidationConfig():
-    if ConfigReader.read_config("Validations", "api_validation") == True and ConfigReader.read_config("Validations", "db_validation") == True and ConfigReader.read_config("Validations", "portal_validation") == True and ConfigReader.read_config("Validations", "app_validation") == True and ConfigReader.read_config("Validations", "ui_validation") == True :
+    if ConfigReader.read_config("Validations", "api_validation") == True and ConfigReader.read_config("Validations",
+                                                                                                      "db_validation") == True and ConfigReader.read_config(
+            "Validations", "portal_validation") == True and ConfigReader.read_config("Validations",
+                                                                                     "app_validation") == True and ConfigReader.read_config(
+            "Validations", "ui_validation") == True and ConfigReader.read_config("Validations",
+                                                                                 "charge_slip_validation") == True:
         commandString = ""
-    elif ConfigReader.read_config("Validations", "api_validation") == False and ConfigReader.read_config("Validations", "db_validation") == False and ConfigReader.read_config("Validations", "portal_validation") == False and ConfigReader.read_config("Validations", "app_validation") == False and ConfigReader.read_config("Validations", "ui_validation") == False :
+    elif ConfigReader.read_config("Validations", "api_validation") == False and ConfigReader.read_config("Validations",
+                                                                                                         "db_validation") == False and ConfigReader.read_config(
+            "Validations", "portal_validation") == False and ConfigReader.read_config("Validations",
+                                                                                      "app_validation") == False and ConfigReader.read_config(
+            "Validations", "ui_validation") == False and ConfigReader.read_config("Validations",
+                                                                                  "charge_slip_validation") == False:
         commandString = ""
     else:
         commandString = '-m "'
@@ -130,7 +180,12 @@ def getValidationConfig():
                 commandString = commandString + "uiVal"
             else:
                 commandString = commandString + " or uiVal"
-        commandString= commandString+'"'
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")).lower() == "true":
+            if commandString == '-m "':
+                commandString = commandString + "chargeSlipVal"
+            else:
+                commandString = commandString + " or chargeSlipVal"
+        commandString = commandString + '"'
 
     return commandString
 
@@ -142,55 +197,67 @@ Following conditions are checked before considering a port to be assigned
 i) Port number range should be between 4720 and 4740
 ii) If the port is already in use.
 """
+
+
 def startAppiumServers(numberOfAppiumServers: int):
     portNumber = 4720
     blockedPorts = []
     for i in range(0, numberOfAppiumServers):
         foundPort = False
         while foundPort == False:
-            if portNumber<=4740:
+            if portNumber <= 4740:
                 if is_port_in_use(portNumber):
-                    portNumber = portNumber+1
+                    portNumber = portNumber + 1
                 else:
                     try:
-                        thread = threading.Thread(target = startAppiumServer, args=[portNumber])
+                        thread = threading.Thread(target=startAppiumServer, args=[portNumber])
                         thread.start()
                         blockedPorts.append(portNumber)
                         portNumber = portNumber + 1
                         foundPort = True
                     except Exception as e:
                         print(e)
-                        portNumber = portNumber+1
+                        portNumber = portNumber + 1
             else:
                 return blockedPorts
     return blockedPorts
+
+
 """
 This method will simply create an object for the appium service and start the appium server using the inbuild method
 This has been kept outside the start appium servers because this needs a separate thread to operate.
 This takes an integer as input for the port number on which the server needs to be started.
 """
-def startAppiumServer(portNumber:int):
+
+
+def startAppiumServer(portNumber: int):
     appium_server = AppiumService()
     appium_server.start(args=['-p ' + str(portNumber)])
+
 
 """
 This method is used to check the availability of the port.
 It returns true if port is available and returns false in case of unavailability.
 Takes an integer as input to get the port which needs to be checked.
 """
+
+
 def is_port_in_use(port: int):
     import socket
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
+
+
 """
 This method is used to kill the appium server running on a specific port
 It takes the list of port numbers as input and kills the servers one by one from the list.
 """
 
 
-def killAppiumServers():
+def killEmulatorsAndAppiumServers():
     try:
         os.system("pkill -9 -f appium")
+        os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
     except Exception as e:
         print(e)
 
@@ -205,19 +272,19 @@ def getDevicesList():
         ListOfDevices.columns = ["devices"]
 
         try:
-            ListOfDevices[["device", "status"]] = ListOfDevices.devices.str.split(pat="\t",expand=True)
+            ListOfDevices[["device", "status"]] = ListOfDevices.devices.str.split(pat="\t", expand=True)
             DevicesList = pd.DataFrame().assign(Devices=ListOfDevices['device'], Status=ListOfDevices['status'])
             print('\n')
-            #this will remove the rows with empty cells.
-            DevicesList.dropna(inplace = True)
+            # this will remove the rows with empty cells.
+            DevicesList.dropna(inplace=True)
             # rows, columns = DevicesList.shape
-            l2=[]
+            l2 = []
             for index, row in DevicesList.iterrows():
                 if row["Status"] == "device":
                     l1 = [row["Devices"]]
                     l2.append(l1)
                 else:
-                    print("Device in not connected properly or "+row["Devices"]+" is unauthorized.\n")
+                    print("Device in not connected properly or " + row["Devices"] + " is unauthorized.\n")
             flat_list = [item for sublist in l2 for item in sublist]
             if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
                 for item in flat_list:
@@ -227,111 +294,105 @@ def getDevicesList():
             return flat_list
 
         except:
-            print("No devices connected.")
+            print("No physical devices connected or emulators running currently.")
 
     except subprocess.CalledProcessError as e:
-        print("No devices connected.")
+        print("No physical devices connected or emulators running currently.")
         print(e.returncode)
 
 
-def startEmulators(noOfEmulatorsToStart):
-    try:
-        b=1
-        adb_ouput = subprocess.check_output(["emulator", "-list-avds"])
-        encoding = 'utf-8'
-        devices = str(adb_ouput, encoding)
-        lst = (devices.split("\n"))
-        emulatorsList = ' '.join(lst).split()
-        emulatorsCount = len(emulatorsList)
+def start_emulators(number_of_emulators_to_start):
+    currently_not_started_avds = get_the_list_of_currently_not_started_avds()  
 
-        if noOfEmulatorsToStart <= emulatorsCount:
-            for emulator in emulatorsList:
-                if b <= noOfEmulatorsToStart:
-                    try:
-                        os.system(os.getenv("ANDROID_HOME")+"/emulator/emulator -avd "+emulator+" &")
-                        print(emulator+" started successfully")
-                        b += 1
-
-                    except Exception as e:
-                        print(str(e))
-                else:
-                    break
-            #time.sleep(50)
+    for i in range(number_of_emulators_to_start):
+        if currently_not_started_avds:
+            avd_name = currently_not_started_avds.pop(0)  # pop will remove that avd_name from the avds list also
+            logger.debug(f"Trying to start emulator with avd name '{avd_name}'")
+            return_code = start_emulator(avd_name)
+            
+            if return_code:
+                logger.error(f"Some Error [return code: {return_code}] \
+                    while running shell command to start emulator '{avd_name}'")
+            else:
+                time.sleep(10)
+                logger.info(f"'{avd_name}' started succesfully!")
         else:
-            print("Configured Emulators are less than no of processes.")
-    except Exception as e:
-        print(e)
+            number_of_threads_for_which_emulators_are_unavailable = number_of_emulators_to_start - i
+            logger.warning(f"No more emulators are available for next {number_of_threads_for_which_emulators_are_unavailable} threads. " +
+                f"Currently only {i} emulators started. Therefore breaking the loop")
+            break
 
 
-def prepare_Consolidated_List_Of_TestcasesFile():
-    df_all_rows = pd.DataFrame()
+def prepare_Consolidated_List_Of_TestcasesFile():  # later change function-name to snakecase
+    input_xl_filenames = ['TestCasesDetail.xlsx', 'TestCases_SurfaceUI.xlsx']
+    output_xl_filename = 'AllTestcaseSuite.xlsx'
 
-    if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail")):
-        workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_TestCasesDetail"), None)
-        ls_sheets_functional = workbook.keys()
+    input_xl_filepaths = [os.path.join(DATAPROVIDER_DIR, filename) for filename in input_xl_filenames]
+    output_runtime_all_tc_details_xl_url = os.path.join(RUNTIME_DIR, output_xl_filename)
 
-        # Creating a DF with all testcases
-        for sheet in ls_sheets_functional:
-            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
+    def xl_sheets_2_combined_df(input_xl_path):  # function to combine sheets of input excel file one df
+        xl = pd.read_excel(input_xl_path, sheet_name=None, index_col=0) if os.path.isfile(input_xl_path) else None  # , index_col=0
+        combined_excel = pd.concat([xl[key] for key in xl.keys()]) if xl else pd.DataFrame()  # concating all sheets of input excel file to one df
+        combined_excel = combined_excel.reset_index()\
+            .drop(
+                columns=[col for col in combined_excel.columns if col.startswith("Unnamed:")])
+        return combined_excel
 
-    if os.path.exists(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI")):
-        workbook = pd.read_excel(ConfigReader.read_config_paths("ExcelFiles", "FilePath_testcases_surfaceUI"), None)
-        ls_sheets_surfaceUI = workbook.keys()
-
-        # Creating a DF with all testcases
-        for sheet in ls_sheets_surfaceUI:
-            df_testCasesDetail = pd.DataFrame(workbook.get(sheet))
-            df_all_rows = pd.concat([df_all_rows, df_testCasesDetail])
-
-    print("prepare_Consolidated_List_Of_TestcasesFile")
-    print(df_all_rows)
-    # Converting DF with all TCs to an excel
-    df_all_rows.to_excel(ConfigReader.read_config_paths("System","automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
+    df =  pd.concat([xl_sheets_2_combined_df(input_xl_path) for input_xl_path in input_xl_filepaths])  # concating 2 excel files to one df
+    df_filtered = df[df.Execute.isin([1, True, "True", 'true'])].reset_index(drop=False)  # .drop(columns=['Execute',])  # this should be done later
+    df_filtered.drop(columns=['index','level_0'], inplace=True)
+    df_filtered.to_excel(output_runtime_all_tc_details_xl_url, index=True)  # later make index=False
 
 
 def executeSelectedTestCases():
     # Creating DF only with the testcases to be executed
-    df_testcases = prepareTestCaseDetailsDataFrame(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases/AllTestcaseSuite.xlsx")
-    df_testcases.to_excel(GlobalVariables.EXCEL_reportFilePath)
-    os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path")+"/TestCases")
-    os.system(prepareTestExecutionCommand(df_testcases))
+    df_testcases = prepareTestCaseDetailsDataFrame(
+        ConfigReader.read_config_paths("System", "automation_suite_path") + "/Runtime/AllTestcaseSuite.xlsx")
+    df_testcases.to_excel(EXCEL_reportFilePath)
+    os.chdir(ConfigReader.read_config_paths("System", "automation_suite_path") + "/TestCases")
+    execution_command = prepareTestExecutionCommand(df_testcases)
+    if execution_command is None:
+        print("No Testcases selected for exection. Hence Execution is aborted")
+    else:
+        os.system(execution_command)
 
 
 def calculateTestCasesCountForParallelExecution():
     config = configparser.ConfigParser()
-    config.read(ConfigReader.read_config_paths("System","automation_suite_path")+"/Configuration/config.ini")
-    testCasesCount = config.get("ParallelExecution","NumberOfTestCases")
+    config.read(ConfigReader.read_config_paths("System", "automation_suite_path") + "/Configuration/config.ini")
+    testCasesCount = config.get("ParallelExecution", "NumberOfTestCases")
     try:
         testCasesCount = int(testCasesCount)
-        if testCasesCount < 0:
-            testCasesCount = 0
+        if testCasesCount < 1:
+            testCasesCount = 1
         elif testCasesCount > 5:
             print("Maximum of only 5 test cases can be run in parallel.")
             testCasesCount = 5
     except Exception as e:
         print("Count of test cases is configured with a non-integer value. Hence sequential execution is initiated.")
-        testCasesCount = 0
-    if testCasesCount == 0 or testCasesCount == 1:
+        testCasesCount = 1
+    if testCasesCount == 1:
         return ""
     else:
-        return "-n"+str(testCasesCount)+" "
-
+        return "-n" + str(testCasesCount) + " "
 
 
 def prepareTestExecutionCommand(testCasesDetailDataFrame):
-
-    commandString = "pytest -v -s "
+    commandString = "python3.8 -m pytest -v -s "
     for ind in testCasesDetailDataFrame.index:
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
-    commandString = commandString + getValidationConfig() +" "+calculateTestCasesCountForParallelExecution()+'--alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
-    print(commandString)
-    return commandString
+    if commandString == "python3.8 -m pytest -v -s ":
+        return None
+    else:
+        commandString = commandString + getValidationConfig() +" "+calculateTestCasesCountForParallelExecution()+'--alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
+        print(commandString)
+        return commandString
+
 
 def getThreadCount():
     config = configparser.ConfigParser()
-    config.read(ConfigReader.read_config_paths("System","automation_suite_path")+"/Configuration/config.ini")
-    testCasesCount = config.get("ParallelExecution","NumberOfTestCases")
+    config.read(ConfigReader.read_config_paths("System", "automation_suite_path") + "/Configuration/config.ini")
+    testCasesCount = config.get("ParallelExecution", "NumberOfTestCases")
     try:
         testCasesCount = int(testCasesCount)
         if testCasesCount < 1:
@@ -344,21 +405,92 @@ def getThreadCount():
         testCasesCount = 1
     return testCasesCount
 
-def prepareDevicesAndDB():
 
+def prepareDevicesAndDB():
     global devices, appiumServerCount
+    devices = getDevicesList()
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
-        devices = getDevicesList()
-        appiumServerCount = len(devices) + 1
+        if devices == None:
+            print("No physical device is connected. \
+            So cannot start the execution since device only option is configured.")
+            return False
+        else:
+            appiumServerCount = len(devices) + 1
     else:
-        devices = getDevicesList()
-        additionalEmulatorsRequired = getThreadCount() - len(devices)
+        if devices == None:
+            print("Attempting to start emulators")
+            additionalEmulatorsRequired = getThreadCount()
+        else:
+            additionalEmulatorsRequired = getThreadCount() - len(devices)
+
         if (additionalEmulatorsRequired > 0):
-            startEmulators(additionalEmulatorsRequired)
+            start_emulators(additionalEmulatorsRequired)
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
-    # # users = [{"Username":"7204644777","Password":"A123456"},{"Username":"7204644333","Password":"A123456"},{"Username":"7204644666","Password":"A123456"}]
     ResourceAssigner.clearAssignerTables()
-    ResourceAssigner.updateDevicesInDB(devices)
+    devices = getDevicesList()
+    if devices == None:
+        print("Attempt to start the emulators failed.")
+        print("No devices available. Hence DB update operation for adding devices is skipped.")
+    else:
+        ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
-    # # ResourceAssigner.updateUsersInDB(users)
+    # lst_appUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
+    #          {"Username": "7204644666", "Password": "A123456"}]
+    # portalUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
+    #             {"Username": "7204644666", "Password": "A123456"}]
+    # ResourceAssigner.updateAppUsersInDB(lst_appUsersDetails)
+    # ResourceAssigner.updatePortalUsersInDB(portalUsersDetails)
+    return True
+
+
+def initialize_portal_driver():
+    """
+    This method is used for initializing the chrome driver for the portal operations
+    """
+    GlobalVariables.portalDriver = chromedriver_autoinstaller.install()
+    # Chrome options
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    # Run chrome
+    GlobalVariables.portalDriver = webdriver.Chrome(options=chrome_options)
+    GlobalVariables.portalDriver.maximize_window()
+    return GlobalVariables.portalDriver
+
+
+def initialize_app_driver(request):
+    """
+    This method is used for initializing the app driver for the app operations
+    """
+    # test_case_id = request.node.name
+    test_case_id = request
+    device_details = ResourceAssigner.getDeviceFromDB(test_case_id)
+    appium_server_details = ResourceAssigner.getAppiumServerFromDB(test_case_id)
+    print(test_case_id + " will be using the device " + device_details['DeviceId'])
+    print(test_case_id + " will be running on the appium server port " + appium_server_details['PortNumber'])
+    mpos_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
+        "Applications", "mpos")
+    sa_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
+        "Applications", "SA")
+    lst_applications = [mpos_app, sa_app]
+    json_applications = json.dumps(lst_applications)
+    desired_cap = {
+        "platformName": "Android",
+        "deviceName": device_details['DeviceId'],
+        "udid": device_details['DeviceId'],
+        "otherApps": json_applications,
+        "appPackage": "com.ezetap.basicapp",
+        "appActivity": "com.ezetap.mposX.activity.SplashActivity",
+        "ignoreHiddenApiPolicyError": "true",
+        "noReset": "false",
+        "autoGrantPermissions": "true",
+        "newCommandTimeout": 7000,
+        "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
+        "MobileCapabilityType.NEW_COMMAND_TIMEOUT": "300"
+    }
+    print("appium server url:", 'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub')
+    GlobalVariables.appDriver = app_webdriver.Remote(
+        'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub', desired_cap)
+    return GlobalVariables.appDriver

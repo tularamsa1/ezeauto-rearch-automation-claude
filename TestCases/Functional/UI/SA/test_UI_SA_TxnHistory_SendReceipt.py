@@ -1,9 +1,11 @@
 from datetime import datetime
 import pytest
+
+from DataProvider.config import TestData
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_HomePage import HomePage
+from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from DataProvider.config import TestData
 from Utilities.ConfigReader import read_config
 from Configuration import Configuration
 from DataProvider import GlobalVariables
@@ -96,7 +98,12 @@ def test_UI_SA_TxnHistory_SendReceipt_01():
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
             homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            assert homepage_text == ConfigReader.read_config("testdata", 'homepage_text')
+            homePage.enter_amount_and_order_number(TestData.AMOUNT, TestData.ORDER_NUMBER)
+            paymentPage = PaymentPage(driver)
+            paymentPage.click_on_Cash()
+            paymentPage.click_on_confirm()
+            paymentPage.click_on_proceed_homepage()
             homePage.click_on_history()
             transactionsHistoryPage = TransHistoryPage(driver)
             transactionsHistoryPage.click_first_amount_field()
@@ -117,7 +124,7 @@ def test_UI_SA_TxnHistory_SendReceipt_01():
         GlobalVariables.EXCEL_TC_Val_Starting_Time = current.strftime("%H:%M:%S")
 
         # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Result": "SUCCESS"}

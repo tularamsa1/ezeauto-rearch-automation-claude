@@ -1,11 +1,10 @@
 import configparser
-from Utilities import ConfigReader
 import datetime
 import os
-from os.path import dirname, abspath
+from DataProvider import GlobalConstants
+from Utilities import ConfigReader
 
-
-#automationSuitePath = ConfigReader.read_config("System","automation_suite_path")
+automation_suite_path = GlobalConstants.EZEAUTO_MAIN_DIR
 
 def createReportDirectories(currentDate, currentTime, automationSuitePath):
     try:
@@ -63,7 +62,7 @@ def createLogDirectories(currentDate, currentTime, automationSuitePath):
 def createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automationSuitePath):
     try:
         os.chdir(automationSuitePath)
-        currentPath = automationSuitePath + "/" + "Configuration"
+        currentPath = automationSuitePath + "/" + "Runtime"
         if os.path.isdir(currentPath) == False:
             os.mkdir(currentPath)
         os.chdir(currentPath)
@@ -84,8 +83,6 @@ def createExecutionDirectoriesConfigurationFile(currentDate, currentTime, automa
 
 def createExecutionDirectories():
     try:
-        automation_suite_path = dirname(dirname(abspath("./config.ini")))
-        print("automation_suite_path", automation_suite_path)
         currentDateTime = datetime.datetime.now()
         currentDate = currentDateTime.strftime("%Y-%m-%d")
         currentTime = currentDateTime.strftime("%H:%M:%S")
@@ -119,7 +116,7 @@ Following values can only be passed as arguments.
 
 def getDirectoryPath(directoryName):
     automationSuitePath = ConfigReader.read_config_paths("System", "automation_suite_path")
-    filePath = automationSuitePath+"/Configuration/ExecutionDirectories.conf"
+    filePath = automationSuitePath+"/Runtime/ExecutionDirectories.conf"
     if os.path.isfile(filePath):
         try:
             config = configparser.ConfigParser()
@@ -140,5 +137,4 @@ def getDirectoryPath(directoryName):
     else:
         print("Execution directories file does not exists. So path cannot be returned.")
         return None
-
 

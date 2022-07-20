@@ -41,12 +41,12 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
             password = read_config("credentials", 'password_dev11')
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
-            homepage_text = homePage.check_home_page_logo()
-            assert homepage_text == TestData.HOMEPAGE_TEXT
+            homePage.check_home_page_logo()
             amount = TestData.AMOUNT
             order_num = TestData.ORDER_NUMBER
             homePage.enter_amount_and_order_number(amount, order_num)
             paymentPage = PaymentPage(driver)
+            paymentPage.is_payment_page_displayed()
             paymentPage.click_on_Bqr_paymentMode()
             text = paymentPage.validate_upi_bqr_payment_screen()
             assert text == "Scan QR code using"
@@ -55,9 +55,13 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
             loginPage = LoginPage(driver)
             loginPage.perform_login(username, password)
             homePage = HomePage(driver)
-
             homePage.enter_amount_and_order_number(amount, order_num)
             homePage.perform_check_status()
+            paymentPage = PaymentPage(driver)
+            payment_status = paymentPage.fetch_payment_status()
+            payment_mode = paymentPage.fetch_payment_mode()
+            txn_id, status = paymentPage.get_transaction_details()
+            paymentPage.click_on_proceed_homepage()
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -79,11 +83,7 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "Payment Successful", "Payment mode": "Bharat QR"}
 
-                paymentPage = PaymentPage(driver)
-                payment_status = paymentPage.fetch_payment_status()
-                payment_mode = paymentPage.fetch_payment_mode()
-                txn_id, status = paymentPage.get_transaction_details()
-                paymentPage.click_on_proceed_homepage()
+
 
                 actualAppValues = {"Payment Status": payment_status, "Payment mode": payment_mode}
                 # ---------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ def test_UI_SA_CheckStatus_BQR_01(): #Make sure to add the test case name as sam
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues = {"Payment Status":status,"Amount": amount, "Payment Mode": "BHARATQR"}
+                expectedAPIValues = {"Payment Status":"AUTHORIZED","Amount": amount, "Payment Mode": "BHARATQR"}
                 response = APIProcessor.post(TestData.payload, TestData.API)
                 print(response)
                 list = response["txns"]

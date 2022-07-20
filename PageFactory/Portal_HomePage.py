@@ -16,17 +16,33 @@ class PortalHomePage(BasePage):
     lbl_date = (By.XPATH, '(//table[@id="table_txns"]/tbody/tr/td/a)[1]')
     btn_chargeSlip = (By.XPATH, '(//a[@title="Customer Receipt"])[1]')
     lbl_sale = (By.XPATH, '//table/tbody/tr/td/strong[contains(text(),"lbl_sale")]')
+    lbl_refund_window = (By.XPATH, '//*[@class="loader"]')
+    lbl_refund_window_before_load = (By.XPATH, '//*[@class="loader active"]')
+    txt_refundAmtField = (By.ID, "userrefund_refund")
+    btn_confirmRefund = (By.XPATH, '(//button[.="Confirm"])[1]')
+    btn_refund = (By.XPATH, '(//button[.="Refund"])[1]')
+    btn_switchedMerchant = (By.XPATH, '/html/body/div/div[10]/div[1]/div[1]/button[2]')
+    lbl_resultValueSearch = (By.CSS_SELECTOR,"#max")
+    btn_txnSearch = (By.XPATH, "//button[contains(text(),'Search')]")
+    btn_txnClick = (By.PARTIAL_LINK_TEXT, "Transactio")
+    btn_txnSearch = (By.LINK_TEXT, "Search")
+    txt_homepageTitle = (By.XPATH, '//title[contains(text(),"Manage Merchants")]')
 
 
     def __init__(self, driver):
         super().__init__(driver)
 
+    def wait_for_home_page_load(self):
+        self.wait_for_element(self.txt_homepageTitle)
+
     def search_merchant_name(self, org_code):
         self.perform_sendkeys(self.txt_merchantSearch, org_code)
         self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
 
-    def click_switch_button(self):
+    def click_switch_button(self, org_code):
         self.perform_click(self.btn_switch)
+        locator = (By.XPATH, '//button[contains(text(),"' + org_code + '")]')
+        self.wait_for_element(locator)
 
     def click_transaction_search_menu(self):
         self.perform_click(self.mnu_transactions)
@@ -47,10 +63,74 @@ class PortalHomePage(BasePage):
         return self.fetch_text(self.lbl_sale)
 
     def fetch_status_from_transaction_id(self,txn_id):
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[4]')
+        text=self.fetch_text(locator)
+        return text
+
+    def fetch_amount_from_transaction_id(self,txn_id):
         locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[5]')
         text=self.fetch_text(locator)
-        if text.upper() == "SETTLED":
-            text= "AUTHORIZED"
         return text
+
+    def fetch_transaction_type_from_transaction_id(self,txn_id):
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/following-sibling::td)[3]')
+        text=self.fetch_text(locator)
+        return text
+
+    def perform_refund_of_txn(self, amount):
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load, 40)
+        self.wait_for_element(self.lbl_refund_window)
+        self.wait_for_element(self.txt_refundAmtField).clear()
+        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
+        self.perform_click(self.btn_confirmRefund)
+        self.wait_for_alert_and_accept()
+
+    def perform_refund_of_txn_and_fetch_alert_msg(self, amount):
+        self.wait_for_element_invisible(self.lbl_refund_window_before_load, 40)
+        self.wait_for_element(self.lbl_refund_window)
+        self.wait_for_element(self.txt_refundAmtField).clear()
+        self.perform_sendkeys(self.txt_refundAmtField, str(amount))
+        self.perform_click(self.btn_confirmRefund)
+        return self.wait_for_alert_read_text_and_accept()
+
+
+
+    def click_on_transaction_details_based_on_transaction_id(self,txn_id):
+        locator = (By.XPATH,'(//table[@id="table_txns"]/tbody/tr/td[contains(text(),"'+txn_id+'")]/../td/a)[1]')
+        locator2 = (By.XPATH, '//td[@style="display:none;" and contains(text(),"'+txn_id+'")]')
+        self.wait_for_element_invisible(locator2)
+        print("Element is invisible now")
+        return self.perform_click(locator)
+
+    def click_on_refund_button(self):
+        return self.perform_click(self.btn_refund)
+
+    # def perform_merchant_switched_verfication(self):
+    #     return self.wait_for_element(self.btn_switchedMerchant)
+
+    def perform_txn_count_search(self, value):
+        return self.perform_sendkeys(self.lbl_resultValueSearch, value)
+
+    def perform_txn_search(self):
+        return self.perform_click(self.btn_txnSearch)
+
+    # def perform_merchant_switched_verfication(self):
+    #     return self.wait_for_element(self.btn_switchedMerchant)
+
+    def perform_merchant_verfication(self):
+        return self.perform_click_cnp(self.btn_switchedMerchant)
+
+    def perform_merchant_switched_verfication(self):
+        return self.fetch_text(self.btn_switchedMerchant)
+
+    def search_merchant_name(self, org_code):
+        self.perform_sendkeys(self.txt_merchantSearch, org_code)
+        self.perform_sendkeys(self.txt_merchantSearch, Keys.ENTER)
+
+
+    def perfrom_search_Txn(self):
+        self.perform_click(self.btn_txnClick)
+        self.perform_click(self.btn_txnClick)
+        return self.fetch_text(self.btn_switchedMerchant)
 
 
