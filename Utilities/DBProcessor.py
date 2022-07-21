@@ -148,7 +148,41 @@ def get_value_from_db(query):
     return getValueFromDB(query)
 
 
-def getValueFromDB(query):
+def getValueFromDB(query:str, db_name: str = None):
+    """
+    This method is used to run a query and fetch the results from the specified db.
+    Only following values should be passed for the db_name:
+    1. information schema
+    2. acquirer
+    3. auth
+    4. closedloop
+    5. cnpware
+    6. config
+    7. ea
+    8. elm
+    9. eze_upi
+    10. ezetap_demo
+    11. khata
+    12. mware
+    13. rewards
+    14. rule_engine
+    15. sonar
+    16. vas
+    17. wware
+
+    :param query:str db_name: str
+    """
+    dev11_db_names = {"information schema": "information_schema", "acquirer":"acquirer_demo",\
+                      "auth": "auth_demo", "closedloop": "closedloop_demo", "cnpware": "cnpware_demo", \
+                      "config": "config_apps", "ea": "ea", "elm": "elm", "eze_upi": "eze_upi", \
+                      "ezetap_demo": "ezetap_demo", "khata": "khata", "mware": "mware_demo", \
+                      "rewards": "rewards", "rule_engine": "rule_engine", "sonar": "sonar", "vas":"vas",\
+                      "wware": "wware"}
+    actual_db_name = ""
+    if db_name is None:
+        actual_db_name = dev11_db_names.get("ezetap_demo")
+    else:
+        actual_db_name = dev11_db_names.get(db_name)
 
     envi = ConfigReader.read_config("APIs", "env")
     try:
@@ -165,48 +199,14 @@ def getValueFromDB(query):
     )
     
     tunnel.start()
-    conn = pymysql.connect(host='localhost', user='ezedemo', passwd='abc123', database='ezetap_demo',
+    conn = pymysql.connect(host='localhost', user='ezedemo', passwd='abc123', database=actual_db_name,
                            port=tunnel.local_bind_port)
 
     data = pd.read_sql_query(query, conn)
     conn.close()
     tunnel.close()
     return data
-#
-# def setValueToDB(query):
-#     envi = ConfigReader.read_config("APIs", "env")
-#     try:
-#         ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
-#     except Exception as e:
-#         logger.warning(e)
-#         ssh_private_key_password = None
-#
-#     tunnel = sshtunnel.SSHTunnelForwarder(
-#         ssh_address_or_host=envi.lower(),
-#         remote_bind_address=('localhost', 3306),
-#         ssh_private_key_password=ssh_private_key_password
-#     )
-#
-#     tunnel.start()
-#     try:
-#         conn = mysql.connector.connect(host='localhost', user='ezedemo', passwd='abc123', database='ezetap_demo',
-#                                        port=tunnel.local_bind_port)
-#         mycursor = conn.cursor()
-#         try:
-#             mycursor.execute(query)
-#             conn.commit()
-#         except:
-#             print("Running Update query failed..!")
-#             logger.error("Running Update query failed..!")
-#
-#         data = str(mycursor.rowcount) + ",record(s) affected"
-#         conn.close()
-#         tunnel.close()
-#     except:
-#         print("Not able to connect to Database for running update query")
-#         logger.error("Not able to connect to Database for running update query")
-#     return data
-#
+
 def setValueToDB(query, db_name="ezetap_demo") -> str:
     """
         This method is for running the DML query on the database.
