@@ -141,7 +141,7 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
     print("Starting the immediate rerun")
     if setRerunCount(testCaseID, rerunCount):
         # make status empty
-        rerunCommand = "python3.8 - m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport")
+        rerunCommand = "python3.8 -m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport")
         print(rerunCommand)
 
         if rerunCount >= 0:

@@ -22,11 +22,13 @@ class remotePayTxnPage(BasePage):
     btn_proceedToPay = (By.XPATH, "//button[contains(text(),'Proceed to pay')]")
     btn_submitButton = (By.XPATH, "//input[@value='Submit']")
     btn_successMessage = (By.XPATH, "//h3[contains(text(),'Your payment is successfully completed! You may cl')]")
-    txt_failedMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Please')]")
-    txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Your payment attempt failed, Sorry for the inconve')]")
-    txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Sorry!You have exceeded the time available to comp')]")
+    # txt_failedMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Please')]")
+    # txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Your payment attempt failed, Sorry for the inconve')]")
+    txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Any am')]")
+    # txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Sorry!You have exceeded the time available to comp')]")
+    txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Remote payment link has expired, Use a different m')]")
 
-
+    txt_failedMessage = (By.XPATH,"// h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
     btn_remotePayUpi = (By.XPATH,"//mat-panel-title[contains(text(),'UPI')]")
     btn_remotePayLaunchUpi = (By.XPATH,"//button[contains(text(),'Launch a UPI app ')]")
     btn_remotePayCancelUpi = (By.XPATH,"//button[@data-target='#confirmCancel']")
