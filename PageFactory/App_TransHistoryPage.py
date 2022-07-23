@@ -36,6 +36,7 @@ class TransHistoryPage(BasePage):
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
     txt_txnAmount = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
     txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView")
+    txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
     btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
 
     def __init__(self, driver):
@@ -118,6 +119,9 @@ class TransHistoryPage(BasePage):
 
     def fetch_RRN_text(self):
         return self.fetch_text(self.txt_rrNumber)
+
+    def fetch_settlement_status_text(self):
+        return self.fetch_text(self.txt_settlement_status)
 
     def fetch_txn_status_text(self):
         return str(self.fetch_text(self.txa_finalStatusField))

@@ -3,11 +3,8 @@ import shutil
 import sys
 import time
 from datetime import datetime
-import allure                       # REMOVE UNUSED IMPORTS
-import pandas as pd
+
 import pytest
-import requests
-from allure_commons.types import AttachmentType
 from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration
@@ -32,7 +29,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-# Initiate qr by app and perform pure upi success callback  #REMOVE THIS COMMENT
 def test_common_100_101_004():
     """
     Sub Feature Code: UI_Common_PM_UPI_Success_Via_Pure_UPI_Callback_HDFC
@@ -1605,8 +1601,8 @@ def test_common_100_101_016():  # Make sure to add the test case name as same as
 # Performing a pure upi failed callback via HDFC after expiry the qr when autorefund is disabled.
 def test_common_100_101_017():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_HDFC
-    Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr.
+    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_HDFC_AutoRefund_Disabled
+    Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr when auto refund is disabled
     100: Payment Method
     101: UPI
     017: TC017
@@ -1690,6 +1686,8 @@ def test_common_100_101_017():  # Make sure to add the test case name as same as
 
             payment_page.click_on_Upi_paymentMode()
             logger.info("selected payment mode is UPI")
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
 
             logger.info("resetting the com.ezetap.basicapp")
             app_driver.reset()

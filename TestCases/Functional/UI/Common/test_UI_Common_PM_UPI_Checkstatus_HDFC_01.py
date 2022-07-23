@@ -1,13 +1,9 @@
 import random
 import shutil
 import sys
-import time
 from datetime import datetime
-import allure
-import pandas as pd
+
 import pytest
-import requests
-from allure_commons.types import AttachmentType
 from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration
