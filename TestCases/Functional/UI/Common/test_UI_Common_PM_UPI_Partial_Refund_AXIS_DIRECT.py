@@ -22,16 +22,16 @@ from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_043():  # Make sure to add the test case name as same as the sub feature code.
+def test_common_100_101_043():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_full_Refund_via_API_AXIS_DIRECT
-    Sub Feature Description: Verification of a full refund using api for AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_Pure_UPI_partial_Refund_via_API_AXIS_DIRECT
+    Sub Feature Description: Verification of a partial refund using api for AXIS_DIRECT
     100: Payment Method
     101: UPI
     043: TC043
@@ -132,12 +132,12 @@ def test_common_100_101_043():  # Make sure to add the test case name as same as
             logger.debug(f"Fetched original transaction id : {txn_id_original}, original rrn : {rrn_original} ")
             logger.info("sending request to perform refund of the transaction using api")
             refund_amount = amount - 100
-            api_details = DBProcessor.get_api_details('paymentRefund',
-                                                      request_body={"username": username, "amount": refund_amount,
-                                                                    "originalTransactionId": str(txn_id_original)})
+            api_details = DBProcessor.get_api_details(
+                'paymentRefund', request_body={"username": username, "password": "A123456", "amount": refund_amount,
+                                               "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
-            print(response)
+            logger.debug(f"response : response")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id='" + txn_id_original + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
@@ -195,6 +195,13 @@ def test_common_100_101_043():  # Make sure to add the test case name as same as
                                        }
                 logger.debug(f"expected_app_values : {expected_app_values} for the test case {testcase_id}")
 
+                logger.info("resetting the app after sending the request for refund")
+                app_driver.reset()
+
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                login_page.perform_login(username, password)
+                home_page = HomePage(app_driver)
+
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
@@ -210,7 +217,8 @@ def test_common_100_101_043():  # Make sure to add the test case name as same as
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
                 app_txn_id_refunded = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
+                logger.debug(
+                    f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
                 app_payment_amt_refunded = transactions_history_page.fetch_txn_amount_text().split()[1]
                 logger.debug(
                     f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt_refunded}")
@@ -289,14 +297,17 @@ def test_common_100_101_043():  # Make sure to add the test case name as same as
                 logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
+                logger.debug(f"response : {response}")
                 status_api_refunded = response["status"]
                 amount_api_refunded = int(response["amount"])
                 payment_mode_api_refunded = response["paymentMode"]
 
-                logger.debug(f"Fetching Transaction status of refunded txn from transaction api : {status_api_refunded}")
-                logger.debug(f"Fetching Transaction amount of refunded txn from transaction api : {amount_api_refunded}")
-                logger.debug(f"Fetching Transaction payment of refunded txn mode from transaction api : {payment_mode_api_refunded}")
+                logger.debug(
+                    f"Fetching Transaction status of refunded txn from transaction api : {status_api_refunded}")
+                logger.debug(
+                    f"Fetching Transaction amount of refunded txn from transaction api : {amount_api_refunded}")
+                logger.debug(
+                    f"Fetching Transaction payment of refunded txn mode from transaction api : {payment_mode_api_refunded}")
                 logger.debug(
                     f"Fetching Transaction status of original txn from transaction api : {status_api_original}")
                 logger.debug(
@@ -438,13 +449,17 @@ def test_common_100_101_043():  # Make sure to add the test case name as same as
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 date = datetime.today().strftime('%Y-%m-%d')
-                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': "",
-                                   'BASE AMOUNT:': "Rs." + str(refund_amount) + ".00", 'date': date}
-                chargeslip_val_result_1 = receipt_validator.perform_charge_slip_validations(txn_id_refunded,
-                                                                  {"username": username, "password": password},
-                                                                  expected_values)
-                chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_refunded,
-                                                        {"username": username, "password": password}, expected_values)
+                expected_chargeslip_values_original = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                                       'RRN': "",
+                                                       'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                expected_chargeslip_values_refunded = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                                       'RRN': "",
+                                                       'BASE AMOUNT:': "Rs." + str(refund_amount) + ".00", 'date': date}
+                chargeslip_val_result_1 = receipt_validator.perform_charge_slip_validations(
+                    txn_id_original, {"username": username, "password": password}, expected_chargeslip_values_original)
+                chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(
+                    txn_id_refunded, {"username": username, "password": password}, expected_chargeslip_values_refunded)
+
                 if chargeslip_val_result_1 and chargeslip_val_result_2:
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
