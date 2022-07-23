@@ -34,7 +34,7 @@ def test_common_100_101_010():  # Make sure to add the test case name as same as
     Sub Feature Description: Performing a upi txn and full refund via portal
     100: Payment Method
     101: UPI
-    014: TC014
+    010: TC010
     """
 
     try:

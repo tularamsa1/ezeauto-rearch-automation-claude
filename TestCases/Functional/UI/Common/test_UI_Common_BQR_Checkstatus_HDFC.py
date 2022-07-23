@@ -475,7 +475,7 @@ def test_common_100_102_005():
             paymentPage.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             app_driver.reset()
-            query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"
+            query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1" # $$$$$$
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]

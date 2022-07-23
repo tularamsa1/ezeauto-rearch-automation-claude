@@ -123,6 +123,9 @@ class TransHistoryPage(BasePage):
     def fetch_RRN_text(self):
         return self.fetch_text(self.txt_rrNumber)
 
+    def fetch_settlement_status_text(self):
+        return self.fetch_text(self.txt_settlement_status)
+
     def fetch_txn_status_text(self):
         return str(self.fetch_text(self.txa_finalStatusField))
 
@@ -168,5 +171,3 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
-
-

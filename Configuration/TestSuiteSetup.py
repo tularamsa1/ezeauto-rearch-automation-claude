@@ -1,4 +1,5 @@
 import configparser
+import datetime
 import json
 import os
 import subprocess
@@ -314,13 +315,13 @@ def start_emulators(number_of_emulators_to_start):
                 logger.error(f"Some Error [return code: {return_code}] \
                     while running shell command to start emulator '{avd_name}'")
             else:
-                time.sleep(10)
                 logger.info(f"'{avd_name}' started succesfully!")
         else:
             number_of_threads_for_which_emulators_are_unavailable = number_of_emulators_to_start - i
             logger.warning(f"No more emulators are available for next {number_of_threads_for_which_emulators_are_unavailable} threads. " +
                 f"Currently only {i} emulators started. Therefore breaking the loop")
             break
+    time.sleep(10)
 
 
 def prepare_Consolidated_List_Of_TestcasesFile():  # later change function-name to snakecase
@@ -465,6 +466,7 @@ def initialize_app_driver(request):
     This method is used for initializing the app driver for the app operations
     """
     # test_case_id = request.node.name
+    function_start_time = datetime.datetime.now()
     test_case_id = request
     device_details = ResourceAssigner.getDeviceFromDB(test_case_id)
     appium_server_details = ResourceAssigner.getAppiumServerFromDB(test_case_id)
@@ -493,4 +495,6 @@ def initialize_app_driver(request):
     print("appium server url:", 'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub')
     GlobalVariables.appDriver = app_webdriver.Remote(
         'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub', desired_cap)
+    function_end_time = datetime.datetime.now()
+    print("Time taken for appium driver initialization is : ", str(function_end_time-function_start_time))
     return GlobalVariables.appDriver
