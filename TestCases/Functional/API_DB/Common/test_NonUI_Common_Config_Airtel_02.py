@@ -105,7 +105,7 @@ def test_common_300_302_006():
 
                 query = "select url from external_api_adapter where rule_id in (select id from rule where fetch_option_id in (select id from fetch_option where fetch_key = 'get_postpaid_Account') and active = 1);"
                 logger.debug(f"Query to fetch data from external_api_adapter table : {query}")
-                result = DBProcessor.getValueFromDB(query)
+                result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
                 url_db = result["url"].iloc[0]
                 actualDBValues = {"url": url_db}
@@ -135,7 +135,7 @@ def test_common_300_302_006():
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
             query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
             if len(result) > 1:
                 print("===Result is fetching more than 1 row====")
@@ -250,7 +250,7 @@ def test_common_300_302_007():
 
                 query = "select url from external_api_adapter where rule_id in (select id from rule where fetch_option_id in (select id from fetch_option where fetch_key = 'get_fixedLine_Mobile') and active = 1);"
                 logger.debug(f"Query to fetch data from external_api_adapter table : {query}")
-                result = DBProcessor.getValueFromDB(query)
+                result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
                 url_db = result["url"].iloc[0]
                 actualDBValues = {"url": url_db}
@@ -281,7 +281,7 @@ def test_common_300_302_007():
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
             query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
             if len(result) > 1:
                 print("===Result is fetching more than 1 row====")
@@ -396,7 +396,7 @@ def test_common_300_302_008():
 
                 query = "select url from external_api_adapter where rule_id in (select id from rule where fetch_option_id in (select id from fetch_option where fetch_key = 'get_fixedLine_Account') and active = 1);"
                 logger.debug(f"Query to fetch data from external_api_adapter table : {query}")
-                result = DBProcessor.getValueFromDB(query)
+                result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
                 url_db = result["url"].iloc[0]
                 actualDBValues = {"url": url_db}
@@ -427,7 +427,7 @@ def test_common_300_302_008():
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
             query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
             if len(result) > 1:
                 print("===Result is fetching more than 1 row====")
@@ -540,7 +540,7 @@ def test_common_300_302_009():
 
                 query = "select url from external_api_adapter where rule_id in (select id from rule where fetch_option_id in (select id from fetch_option where fetch_key = 'get_prepaid_details') and active = 1);"
                 logger.debug(f"Query to fetch data from external_api_adapter table : {query}")
-                result = DBProcessor.getValueFromDB(query)
+                result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
                 url_db = result["url"].iloc[0]
                 actualDBValues = {"url": url_db}
@@ -569,7 +569,7 @@ def test_common_300_302_009():
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
             query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
             if len(result) > 1:
                 print("===Result is fetching more than 1 row====")
@@ -681,7 +681,7 @@ def test_common_300_302_010():
 
                 query = "select url from external_api_adapter where rule_id in (select id from rule where fetch_option_id in (select id from fetch_option where fetch_key = 'get_active_butterfly') and active = 1);"
                 logger.debug(f"Query to fetch data from external_api_adapter table : {query}")
-                result = DBProcessor.getValueFromDB(query)
+                result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
                 url_db = result["url"].iloc[0]
                 actualDBValues = {"url": url_db}
@@ -711,7 +711,7 @@ def test_common_300_302_010():
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
             query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
             if len(result) > 1:
                 print("===Result is fetching more than 1 row====")

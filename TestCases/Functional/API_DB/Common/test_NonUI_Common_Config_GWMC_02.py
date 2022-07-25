@@ -102,7 +102,7 @@ def test_common_300_303_006():
 
                 query = "select url from external_api_adapter where rule_id in (select id from rule where fetch_option_id in (select id from fetch_option where fetch_key = 'get_gwmc_tax') and active = 1);"
                 logger.debug(f"Query to fetch data from external_api_adapter table : {query}")
-                result = DBProcessor.getValueFromDB(query)
+                result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
                 url_db = result["url"].iloc[0]
                 actualDBValues = {"url": url_db}
@@ -131,7 +131,7 @@ def test_common_300_303_006():
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
             query = "select * from ca_usergroup_org_map where org_code='GWMCCONFIGMERCHANT' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
             if len(result) > 1:
                 print("===Result is fetching more than 1 row====")
