@@ -5,7 +5,8 @@ from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
-dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
+dbPath = ConfigReader.read_config_paths("System", "automation_suite_path")+"/Database/ezeauto.db"
+
 
 
 
@@ -67,6 +68,7 @@ def getDeviceFromDB(testCaseID):
         return None
     else:
         return device
+
 
 
 def releaseDeviceInDBusingTestCaseID(testCaseID):
