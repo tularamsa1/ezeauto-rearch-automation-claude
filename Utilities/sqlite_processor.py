@@ -27,6 +27,7 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM devices;")
         cursor.execute("DELETE FROM appium_servers_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
+        cursor.execute("DELETE FROM api_details;")
         conn.commit()
         logger.info("All the assigner tables cleared successfully.")
     except Exception as e:

@@ -429,7 +429,7 @@ def prepareDevicesAndDB():
             start_emulators(additionalEmulatorsRequired)
         appiumServerCount = getThreadCount() + 1
     appium_server_ports = startAppiumServers(appiumServerCount)
-    ResourceAssigner.clearAssignerTables()
+    sqlite_processor.clearAssignerTables()
     devices = getDevicesList()
     if devices == None:
         print("Attempt to start the emulators failed.")
@@ -437,12 +437,12 @@ def prepareDevicesAndDB():
     else:
         ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
+    DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
     sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     merchant_creator.create_merchants_with_users()
     sqlite_processor.update_app_users_to_db()
     sqlite_processor.update_portal_users_to_db()
-    DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
     return True
 
 

@@ -12,7 +12,6 @@ dbPath = ConfigReader.read_config_paths("System", "automation_suite_path")+"/Dat
 excel_path = ConfigReader.read_config_paths("System", "automation_suite_path")+"/DataProvider/merchant_user_creation.xlsx"
 
 
-
 def create_merchants_with_users():
     """
     This method is used to create the merchants along with the users.
