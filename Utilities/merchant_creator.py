@@ -345,9 +345,9 @@ def check_merchant_exists_in_automation_db(merchant):
     return exists
 
 
-def get_merchants_list_from_excel(merchant_creation_excel_path) -> list:
+def get_merchants_list_from_excel() -> list:
     merchants_list = []
-    merchant_creation_excel_data = pandas.read_excel(merchant_creation_excel_path, sheet_name="UserDetails")
+    merchant_creation_excel_data = pandas.read_excel(excel_path, sheet_name="UserDetails")
     if len(merchant_creation_excel_data)>0:
         for i in range(0, len(merchant_creation_excel_data)):
             merchant_name = ""
@@ -366,9 +366,9 @@ def get_merchants_list_from_excel(merchant_creation_excel_path) -> list:
     return merchants_list
 
 
-def get_users_list_from_excel(merchant_creation_excel_path) -> list:
+def get_users_list_from_excel() -> list:
     users_list = []
-    merchant_creation_excel_data = pandas.read_excel(merchant_creation_excel_path, sheet_name="UserDetails")
+    merchant_creation_excel_data = pandas.read_excel(excel_path, sheet_name="UserDetails")
     if len(merchant_creation_excel_data) > 0:
         for i in range(0, len(merchant_creation_excel_data)):
             if str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() in ["portal", "admin", "app"]:
@@ -390,6 +390,6 @@ def get_users_list_from_excel(merchant_creation_excel_path) -> list:
     return users_list
 
 ResourceAssigner.clearAssignerTables()
-update_merchants_to_db(get_merchants_list_from_excel(excel_path))
-update_users_to_db(get_users_list_from_excel(excel_path))
+update_merchants_to_db(get_merchants_list_from_excel())
+update_users_to_db(get_users_list_from_excel())
 create_merchants_with_users()
