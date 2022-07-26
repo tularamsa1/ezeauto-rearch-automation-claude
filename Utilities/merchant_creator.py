@@ -2,7 +2,7 @@ import requests
 import json
 import pandas
 import sqlite3
-from Utilities import DBProcessor, ConfigReader
+from Utilities import DBProcessor, ConfigReader, ResourceAssigner
 from DataProvider import GlobalConstants
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -388,3 +388,8 @@ def get_users_list_from_excel(merchant_creation_excel_path) -> list:
     else:
         logger.warning("Unable to pull users list since no data available in the merchant creation excel file.")
     return users_list
+
+ResourceAssigner.clearAssignerTables()
+update_merchants_to_db(get_merchants_list_from_excel(excel_path))
+update_users_to_db(get_users_list_from_excel(excel_path))
+create_merchants_with_users()
