@@ -7,6 +7,8 @@ import sqlite3
 import json
 from jinja2 import Template
 from urllib.parse import urlencode
+
+from DataProvider import GlobalConstants
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
@@ -14,6 +16,7 @@ from DataProvider.GlobalConstants import SQLITE_DB_PATH
 
 logger = EzeAutoLogger(__name__)
 
+api_details_excel_path = ConfigReader.read_config_paths("System", "automation_suite_path")+"/Runtime/api_details.xlsx"
 
 def _get_raw_api_details(api_name) -> dict:
     """
@@ -104,16 +107,16 @@ def get_api_details(api_name:str, request_body:dict=None, expected_result:dict=N
 
     """
     details = _get_obj_api_details(api_name=api_name)
-    
+
     if details:
-        
+
         if request_body:
             if isinstance(request_body, dict):
                 for key in request_body:
                     if key in details['RequestBody']:
                         details['RequestBody'][key] = request_body[key]
                     else:
-                        logger.warning(f"ReqestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
+                        logger.warning(f"RequestBody of ({api_name}) does not contain the key {key}. Hence adding the key {key} ")
                         details['RequestBody'][key] = request_body[key]
             else:
                 logger.error(f"RequestBody is not a dict")
@@ -140,7 +143,7 @@ def get_api_details(api_name:str, request_body:dict=None, expected_result:dict=N
 
 
         logger.debug(f"Query fetched the result: {details}")
-    
+
     return details
 
 
@@ -246,3 +249,51 @@ def setValueToDB(query, db_name="ezetap_demo") -> str:
         logger.error("Not able to connect to Database for running update query")
     return data
 
+
+
+def update_api_details_db(api_details_list : list):
+    """
+    This method is used to update the api_details table of ezeauto.db.
+
+    :param api_details_list : list
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        for api  in api_details_list:
+                try:
+                    if str(api['CurlData']) == '':
+                        cursor.execute(f"insert into api_details(ApiName, Protocol, Method, EndPoint, Header, RequestBody, ExpectedResult, CurlData)values(\'{api['ApiName']}\', \'{api['Protocol']}\', \'{api['Method']}\', \'{api['EndPoint']}\', \'{api['Header']}\', \'{api['RequestBody']}\', \'{api['ExpectedResult']}\', \'{str(api['CurlData'])}\');")
+                        conn.commit()
+                        logger.info(f"Details of API {api['ApiName']} successfully added to the api_details db.")
+                    else:
+                        #For curl data to be entered, single quote should be given
+                        curl_data = str(api['CurlData']).replace("'", """''""")
+                        cursor.execute(
+                            f"insert into api_details(ApiName, Protocol, Method, EndPoint, Header, RequestBody, ExpectedResult, CurlData)values(\"{api['ApiName']}\", \"{api['Protocol']}\", \"{api['Method']}\", \"{api['EndPoint']}\", \"{api['Header']}\", \"{api['RequestBody']}\", \"{api['ExpectedResult']}\", \'{curl_data}\');")
+                        conn.commit()
+                        logger.info(f"Details of API {api['ApiName']} successfully added to the api_details db.")
+                except Exception as e:
+                    logger.error(f"Unable to add details of API {api['ApiName']} into db due to error {e}")
+    except Exception as e:
+        logger.error(f"Unable to connect to the db due to error {e}")
+    cursor.close()
+    conn.close()
+
+
+def get_api_details_list_from_excel() ->list:
+    """
+    This method is used for pulling the list of api's along with details that are added in the api_detail excel.
+    :return: list
+    """
+    api_detail_excel_data = pandas.read_excel(api_details_excel_path, sheet_name="api_details", na_filter= False)
+    api_list = []
+    if len(api_detail_excel_data)>0:
+        for i in range(0,len(api_detail_excel_data)):
+            api_details = api_detail_excel_data.loc[i].to_dict()
+            api_list.append(api_details)
+    else:
+        logger.warning("There are no entries in the api_details.xlsx file")
+    return api_list

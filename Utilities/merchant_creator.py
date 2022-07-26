@@ -2,7 +2,7 @@ import requests
 import json
 import pandas
 import sqlite3
-from Utilities import DBProcessor, ConfigReader, ResourceAssigner
+from Utilities import DBProcessor, ConfigReader
 from DataProvider import GlobalConstants
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -280,116 +280,5 @@ def generate_users_creation_api_body(merchant_code:str) -> list:
     return lst_user_creation_api_body
 
 
-def update_merchants_to_db(merchants_list : list):
-    conn = ""
-    cursor = ""
-    try:
-        conn = sqlite3.connect(dbPath)
-        cursor = conn.cursor()
-        for merchant in merchants_list:
-            try:
-                cursor.execute(f"insert into merchants(MerchantCode)values('{merchant}');")
-                conn.commit()
-                logger.info(f"Merchant {merchant} successfully added to the merchants db.")
-            except Exception as e:
-                logger.error(f"Unable to add the merchant {merchant} into db due to error {e}")
-    except Exception as e:
-        logger.error(f"Unable to connect to the db due to error {e}")
-    cursor.close()
-    conn.close()
-
-def update_users_to_db(users_list : list):
-    conn = ""
-    cursor = ""
-    try:
-        conn = sqlite3.connect(dbPath)
-        cursor = conn.cursor()
-        for user in users_list:
-            if(check_merchant_exists_in_automation_db(user["MerchantCode"])):
-                try:
-                    cursor.execute(f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\");")
-                    conn.commit()
-                    logger.info(f"User {user['Name']} successfully added to the users db.")
-                except Exception as e:
-                    logger.error(f"Unable to add the user {user['Name']} into db due to error {e}")
-            else:
-                logger.info(f"User {user['Name']} creation skipped since associated merchant is not available in merchants db.")
-    except Exception as e:
-        logger.error(f"Unable to connect to the db due to error {e}")
-    cursor.close()
-    conn.close()
 
 
-def check_merchant_exists_in_automation_db(merchant):
-    conn = ""
-    cursor = ""
-    exists = ""
-    try:
-        conn = sqlite3.connect(dbPath)
-        cursor = conn.cursor()
-        try:
-            cursor.execute(f"select * from merchants where MerchantCode = '{merchant}'")
-            merchant_info = cursor.fetchone()
-            if merchant_info is None:
-                logger.info(f"Merchant {merchant} is not available in the automation db.")
-                exists =  False
-            else:
-                logger.info(f"Merchant {merchant} is available in the automation db.")
-                exists =  True
-        except Exception as e:
-            logger.error(f"Unable to check if {merchant} is available in the automation db.")
-    except Exception as e:
-        logger.error(f"Unable to connect to the db due to error {e}")
-    cursor.close()
-    conn.close()
-    return exists
-
-
-def get_merchants_list_from_excel() -> list:
-    merchants_list = []
-    merchant_creation_excel_data = pandas.read_excel(excel_path, sheet_name="UserDetails")
-    if len(merchant_creation_excel_data)>0:
-        for i in range(0, len(merchant_creation_excel_data)):
-            merchant_name = ""
-            if str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() == "portal":
-                merchant_name = "EZETAP"
-            elif str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() in ["admin", "app"]:
-                merchant_name = (merchant_creation_excel_data.loc[i]).to_dict()["MerchantCode"]
-            else:
-                merchant_name = (merchant_creation_excel_data.loc[i]).to_dict()["MerchantCode"]
-                logger.error(f"Merchant {merchant_name} is not added to the list since type is specified wrongly.")
-                merchant_name = ""
-            if not merchant_name in merchants_list and merchant_name != "":
-                merchants_list.append(merchant_name)
-    else:
-        logger.warning("Unable to pull merchants list since no data available in the merchant creation excel file.")
-    return merchants_list
-
-
-def get_users_list_from_excel() -> list:
-    users_list = []
-    merchant_creation_excel_data = pandas.read_excel(excel_path, sheet_name="UserDetails")
-    if len(merchant_creation_excel_data) > 0:
-        for i in range(0, len(merchant_creation_excel_data)):
-            if str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() in ["portal", "admin", "app"]:
-                user_details = {}
-                user_details["Name"] = (merchant_creation_excel_data.loc[i]).to_dict()["Name"]
-                if str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() == "portal":
-                    user_details["MerchantCode"] = "EZETAP"
-                else:
-                    user_details["MerchantCode"] = (merchant_creation_excel_data.loc[i]).to_dict()["MerchantCode"]
-                user_details["Username"] = (merchant_creation_excel_data.loc[i]).to_dict()["Username"]
-                user_details["Password"] = (merchant_creation_excel_data.loc[i]).to_dict()["Password"]
-                user_details["Mobile"] = (merchant_creation_excel_data.loc[i]).to_dict()["Mobile"]
-                user_details["Type"] = (merchant_creation_excel_data.loc[i]).to_dict()["Type"]
-                users_list.append(user_details)
-            else:
-                logger.error(f"Type of user {(merchant_creation_excel_data.loc[i]).to_dict()['Name']} is defined wrongly. So its not added to user creation list.")
-    else:
-        logger.warning("Unable to pull users list since no data available in the merchant creation excel file.")
-    return users_list
-
-ResourceAssigner.clearAssignerTables()
-update_merchants_to_db(get_merchants_list_from_excel())
-update_users_to_db(get_users_list_from_excel())
-create_merchants_with_users()

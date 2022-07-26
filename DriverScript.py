@@ -5,7 +5,7 @@ from Utilities import DirectoryCreator
 
 DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
-from Utilities import ConfigReader
+from Utilities import ConfigReader, merchant_creator, sqlite_processor
 from Configuration import TestSuiteSetup
 from Utilities.execution_log_processor import EzeAutoLogger
 from Utilities.time_calculator import generate_excel_report as update_report_excel_with_timing_info

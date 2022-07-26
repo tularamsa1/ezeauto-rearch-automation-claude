@@ -16,14 +16,14 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator
-from Utilities import ResourceAssigner, ConfigReader
+from Utilities import DirectoryCreator, DBProcessor, sqlite_processor, merchant_creator
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 
 logger = EzeAutoLogger(__name__)
+from Utilities import ResourceAssigner, ConfigReader
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
@@ -304,14 +304,14 @@ def getDevicesList():
 
 
 def start_emulators(number_of_emulators_to_start):
-    currently_not_started_avds = get_the_list_of_currently_not_started_avds()  
+    currently_not_started_avds = get_the_list_of_currently_not_started_avds()
 
     for i in range(number_of_emulators_to_start):
         if currently_not_started_avds:
             avd_name = currently_not_started_avds.pop(0)  # pop will remove that avd_name from the avds list also
             logger.debug(f"Trying to start emulator with avd name '{avd_name}'")
             return_code = start_emulator(avd_name)
-            
+
             if return_code:
                 logger.error(f"Some Error [return code: {return_code}] \
                     while running shell command to start emulator '{avd_name}'")
@@ -437,12 +437,12 @@ def prepareDevicesAndDB():
     else:
         ResourceAssigner.updateDevicesInDB(devices)
     ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
-    # lst_appUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
-    #          {"Username": "7204644666", "Password": "A123456"}]
-    # portalUsersDetails = [{"Username": "7204644777", "Password": "A123456"}, {"Username": "7204644333", "Password": "A123456"},
-    #             {"Username": "7204644666", "Password": "A123456"}]
-    # ResourceAssigner.updateAppUsersInDB(lst_appUsersDetails)
-    # ResourceAssigner.updatePortalUsersInDB(portalUsersDetails)
+    sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
+    sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
+    merchant_creator.create_merchants_with_users()
+    sqlite_processor.update_app_users_to_db()
+    sqlite_processor.update_portal_users_to_db()
+    DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
     return True
 
 
