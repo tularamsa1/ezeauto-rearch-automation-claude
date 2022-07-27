@@ -157,18 +157,19 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             settlement_status = result['settlement_status'].values[0]
-            mid = result['mid'].values[0]
-            tid = result['tid'].values[0]
             acquirer_code = result['acquirer_code'].values[0]
             issuer_code = result['issuer_code'].values[0]
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
+            auth_code = result['auth_code'].values[0]
 
-            query = "select id from upi_merchant_config where org_code ='" + str(
+            query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             upi_mc_id = result['id'].values[0]
+            mid = result['mid'].values[0]
+            tid = result['tid'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -216,6 +217,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",
+                    "auth_code": auth_code
                 }
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -235,6 +237,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
+                app_auth_code = txn_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {app_payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -261,6 +265,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
+                    "auth_code": app_auth_code
                 }
 
                 logger.debug(f"actualAppValues: {actual_app_values}")
@@ -289,7 +294,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
-                    "org_code": org_code_txn
+                    "org_code": org_code_txn,
+                    "auth_code": auth_code
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -317,6 +323,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
+                auth_code_api = response["authCode"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -326,7 +333,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
-                    "org_code": orgCode_api
+                    "org_code": orgCode_api,
+                    "auth_code": auth_code_api
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -355,7 +363,9 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "payment_gateway": "HDFC",
                     "upi_txn_type": "UNKNOWN",
                     "upi_bank_code": "HDFC",
-                    "upi_mc_id": upi_mc_id
+                    "upi_mc_id": upi_mc_id,
+                    "mid": mid,
+                    "tid": tid
                 }
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
@@ -372,6 +382,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 acquirer_code_db = result["acquirer_code"].iloc[0]
                 bank_code_db = result["bank_code"].iloc[0]
                 settlement_status_db = result["settlement_status"].iloc[0]
+                tid_db = result['tid'].values[0]
+                mid_db = result['mid'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -394,7 +406,9 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "payment_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
-                    "upi_mc_id": upi_mc_id_db
+                    "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")

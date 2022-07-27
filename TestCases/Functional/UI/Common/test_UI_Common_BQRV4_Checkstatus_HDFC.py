@@ -85,7 +85,7 @@ def test_common_100_102_050():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('bqrGenerate',
-                                                      request_body={"app_username": app_username, "app_password": app_password,
+                                                      request_body={"username": app_username, "password": app_password,
                                                                     "amount": str(amount),
                                                                     "orderNumber": str(order_id)})
             response = APIProcessor.send_request(api_details)

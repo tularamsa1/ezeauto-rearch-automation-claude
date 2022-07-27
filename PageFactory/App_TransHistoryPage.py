@@ -31,7 +31,7 @@ class TransHistoryPage(BasePage):
     lnk_chargeSlip = (By.XPATH, "//*[contains(@text,'Click Here')]")
     lbl_receipt = (By.ID, "com.ezetap.service.demo:id/tvAmount")
     lbl_receiptNotFound = (By.XPATH, "//android.view.View[@content-desc='Not Found']")
-    txa_authCode = (By.XPATH, "//*[@text='Auth Code']/following-sibling::android.widget.TextView")
+    txa_authCode = (By.XPATH, "//*[@text='AUTH CODE']/following-sibling::android.widget.TextView")
     btn_toggleStausArrow = (By.ID, 'com.ezetap.service.demo:id/iv_ToggleStatus')
     txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")

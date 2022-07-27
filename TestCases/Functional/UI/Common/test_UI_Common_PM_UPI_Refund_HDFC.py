@@ -586,7 +586,7 @@ def test_common_100_101_011():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status_refunded}")
             payment_page.click_on_proceed_homepage()
 
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_original = result["id"].iloc[0]
@@ -594,8 +594,7 @@ def test_common_100_101_011():
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             settlement_status = result['settlement_status'].values[0]
-            mid = result['mid'].values[0]
-            tid = result['tid'].values[0]
+            auth_code = result['auth_code'].values[0]
             acquirer_code = result['acquirer_code'].values[0]
             issuer_code = result['issuer_code'].values[0]
             org_code_txn = result['org_code'].values[0]
@@ -604,11 +603,13 @@ def test_common_100_101_011():
 
             logger.debug(f"Fetching Transaction id from db query : {txn_id_original} ")
 
-            query = "select id from upi_merchant_config where org_code ='" + str(
+            query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             upi_mc_id = result['id'].values[0]
+            mid = result['mid'].values[0]
+            tid = result['tid'].values[0]
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": username, "password": "A123456",
@@ -618,10 +619,11 @@ def test_common_100_101_011():
             logger.debug(f"Response received for transaction details api is : {response}")
             logger.debug(f"response : response")
 
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id ='" + str(txn_id_original) +"'"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
+            refund_auth_code = result['auth_code'].values[0]
             txn_type_refunded = result['txn_type'].values[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
             rrn_refunded = result['rr_number'].iloc[0]
@@ -685,6 +687,8 @@ def test_common_100_101_011():
                     "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "rrn": str(rrn_original),
                     "refund_rrn": str(rrn_refunded),
+                    "auth_code": auth_code,
+                    "refund_auth_code": refund_auth_code
                 }
 
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
@@ -708,6 +712,8 @@ def test_common_100_101_011():
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
+                app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id_refunded}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
@@ -727,6 +733,8 @@ def test_common_100_101_011():
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_original)
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_original}, {app_rrn_original}")
+                app_auth_code_original = transactions_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id_original}, {app_auth_code_original}")
                 app_payment_status_original = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
@@ -767,6 +775,8 @@ def test_common_100_101_011():
                     "refund_pmt_msg": payment_msg_refunded,
                     "rrn": str(app_rrn_original),
                     "refund_rrn": str(app_rrn_refunded),
+                    "auth_code": app_auth_code_original,
+                    "refund_auth_code": app_auth_code_refunded
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
@@ -814,7 +824,9 @@ def test_common_100_101_011():
                     "issuer_code_refunded": "HDFC",
                     "refunded_txn_type": txn_type_refunded,
                     "refunded_mid": mid, "refunded_tid": tid,
-                    "refunded_org_code": org_code_txn
+                    "refunded_org_code": org_code_txn,
+                    "refund_auth_code": refund_auth_code,
+                    "original_auth_code": auth_code,
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -838,6 +850,7 @@ def test_common_100_101_011():
                 mid_api_original = response["mid"]
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
+                auth_code_api_original = response["authCode"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password,
@@ -858,6 +871,7 @@ def test_common_100_101_011():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
+                auth_code_api_refunded = response["authCode"]
 
                 actual_api_values = {
                     "pmt_status": status_api_original,
@@ -886,7 +900,9 @@ def test_common_100_101_011():
                     "issuer_code_refunded": issuer_code_api_refunded,
                     "refunded_txn_type": txn_type_api_refunded,
                     "refunded_mid": mid_api_refunded, "refunded_tid": tid_api_refunded,
-                    "refunded_org_code": org_code_api_refunded
+                    "refunded_org_code": org_code_api_refunded,
+                    "refund_auth_code": auth_code_api_refunded,
+                    "original_auth_code": auth_code_api_original,
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
@@ -931,6 +947,10 @@ def test_common_100_101_011():
                     "refunded_upi_bank_code": "HDFC",
                     "original_upi_mc_id": upi_mc_id,
                     "refunded_upi_mc_id": upi_mc_id,
+                    "original_mid": mid,
+                    "original_tid": tid,
+                    "refund_mid": mid,
+                    "refund_tid": tid,
                 }
 
                 logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
@@ -947,6 +967,8 @@ def test_common_100_101_011():
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
                 bank_code_db_refunded = result["bank_code"].iloc[0]
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
+                tid_db_refunded = result['tid'].values[0]
+                mid_db_refunded = result['mid'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id_refunded + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -969,6 +991,8 @@ def test_common_100_101_011():
                 acquirer_code_db_original = result["acquirer_code"].iloc[0]
                 bank_code_db_original = result["bank_code"].iloc[0]
                 settlement_status_db_original = result["settlement_status"].iloc[0]
+                tid_db_original = result['tid'].values[0]
+                mid_db_original = result['mid'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id_original + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -1004,6 +1028,10 @@ def test_common_100_101_011():
                     "refunded_upi_bank_code": upi_bank_code_db_refunded,
                     "original_upi_mc_id": upi_mc_id_db_original,
                     "refunded_upi_mc_id": upi_mc_id_db_refunded,
+                    "original_mid": mid_db_original,
+                    "original_tid": tid_db_original,
+                    "refund_mid": mid_db_refunded,
+                    "refund_tid": tid_db_refunded,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
@@ -1093,7 +1121,8 @@ def test_common_100_101_011():
                 date = datetime.today().strftime('%Y-%m-%d')
                 expected_chargeslip_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
                                               'RRN': str(rrn_refunded),
-                                              'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                                              'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date,
+                                              'AUTH CODE': refund_auth_code}
 
                 logger.debug(
                     f"expected_chargeslip_values : {expected_chargeslip_values} for the testcase_id {testcase_id}")
