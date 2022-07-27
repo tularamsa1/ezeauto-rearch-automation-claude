@@ -7,6 +7,7 @@ import threading
 import time
 
 import chromedriver_autoinstaller
+import geckodriver_autoinstaller
 import pandas as pd
 import paramiko
 from appium import webdriver as app_webdriver
@@ -460,6 +461,17 @@ def initialize_portal_driver():
     GlobalVariables.portalDriver.maximize_window()
     return GlobalVariables.portalDriver
 
+from selenium import webdriver
+import geckodriver_autoinstaller
+def initialize_firefox_driver():
+    """
+    This method is used for initializing the firefox driver.
+    """
+    GlobalVariables.portalDriver = geckodriver_autoinstaller.install()
+    GlobalVariables.portalDriver = webdriver.Firefox()
+    GlobalVariables.portalDriver.maximize_window()
+    return GlobalVariables.portalDriver
+
 
 def initialize_app_driver(request):
     """
@@ -498,3 +510,5 @@ def initialize_app_driver(request):
     function_end_time = datetime.datetime.now()
     print("Time taken for appium driver initialization is : ", str(function_end_time-function_start_time))
     return GlobalVariables.appDriver
+
+
