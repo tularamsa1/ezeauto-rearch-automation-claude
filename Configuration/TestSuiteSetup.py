@@ -461,8 +461,7 @@ def initialize_portal_driver():
     GlobalVariables.portalDriver.maximize_window()
     return GlobalVariables.portalDriver
 
-from selenium import webdriver
-import geckodriver_autoinstaller
+
 def initialize_firefox_driver():
     """
     This method is used for initializing the firefox driver.
