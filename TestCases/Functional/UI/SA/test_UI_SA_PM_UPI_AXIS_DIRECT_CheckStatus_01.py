@@ -1087,8 +1087,8 @@ def test_sa_100_101_037():
 @pytest.mark.appVal
 def test_sa_100_101_044():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_CheckStatus_After Expiry_HDFC
-    Sub Feature Description: Verification of a upi txn after expiry for HDFC using SA check status
+    Sub Feature Code: UI_SA_PM_UPI_SA_CheckStatus_After_Expiry_AXIS_DIRECT
+    Sub Feature Description: Verification of a upi txn after expiry for AXIS_DIRECT using SA check status
     100: Payment Method
     101: UPI
     044: TC44
