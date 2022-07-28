@@ -40,6 +40,7 @@ class TransHistoryPage(BasePage):
     txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView")
     txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView")
     txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
+    txt_date_time = (By.XPATH, "//*[@text='DATE']/following-sibling::android.widget.TextView")
     # txt_rrNumber = (By.XPATH, "//*[@text='RR Number']/following-sibling::android.widget.TextView")
     # txt_customer_name = (By.XPATH, "//*[@text='Customer Name']/following-sibling::android.widget.TextView")
     # txt_payer_name = (By.XPATH, "//*[@text='Payer Name']/following-sibling::android.widget.TextView")
@@ -176,3 +177,6 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
+
+    def fetch_date_time_text(self):
+        return self.fetch_text(self.txt_date_time)

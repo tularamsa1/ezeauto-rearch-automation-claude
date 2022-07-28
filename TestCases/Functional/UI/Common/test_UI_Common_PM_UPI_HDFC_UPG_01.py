@@ -365,7 +365,18 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "upi_bank_code": "HDFC",
                     "upi_mc_id": upi_mc_id,
                     "mid": mid,
-                    "tid": tid
+                    "tid": tid,
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "HDFC",
+                    "ipr_org_code": org_code,
+                    "ipr_auth_code": auth_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": amount,
+                    "ipr_mid": mid,
+                    "ipr_tid": tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    "ipr_pg_merchant_id": pgMerchantId,
                 }
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
@@ -394,6 +405,22 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
+                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
+                logger.debug(f"query : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                ipr_payment_mode = result["payment_mode"].iloc[0]
+                ipr_bank_code = result["bank_code"].iloc[0]
+                ipr_org_code = result["org_code"].iloc[0]
+                ipr_amount = result["amount"].iloc[0]
+                ipr_rrn = result["rrn"].iloc[0]
+                ipr_auth_code = result["auth_code"].iloc[0]
+                ipr_mid = result["mid"].iloc[0]
+                ipr_tid = result["tid"].iloc[0]
+                ipr_config_id = result["config_id"].iloc[0]
+                ipr_vpa = result["vpa"].iloc[0]
+                ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -408,7 +435,18 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
-                    "tid": tid_db
+                    "tid": tid_db,
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_auth_code": ipr_auth_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    "ipr_pg_merchant_id": ipr_pg_merchant_id,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
