@@ -14,7 +14,8 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner
+from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
+    date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -162,6 +163,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
             auth_code = result['auth_code'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
@@ -208,6 +210,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_AUTHORIZED",
@@ -217,7 +220,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",
-                    "auth_code": auth_code
+                    "auth_code": auth_code,
+                    "date": date_and_time
                 }
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -237,6 +241,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
                 logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
@@ -265,7 +271,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
-                    "auth_code": app_auth_code
+                    "auth_code": app_auth_code,
+                    "date": app_date_and_time
                 }
 
                 logger.debug(f"actualAppValues: {actual_app_values}")
@@ -286,6 +293,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
+                date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -295,7 +303,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "issuer_code": "HDFC",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    "auth_code": auth_code
+                    "auth_code": auth_code,
+                    "date": date
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -324,6 +333,7 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
+                date_api = response["postingDate"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -334,7 +344,8 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    "auth_code": auth_code_api
+                    "auth_code": auth_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -365,7 +376,18 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "upi_bank_code": "HDFC",
                     "upi_mc_id": upi_mc_id,
                     "mid": mid,
-                    "tid": tid
+                    "tid": tid,
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "HDFC",
+                    "ipr_org_code": org_code,
+                    "ipr_auth_code": auth_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": amount,
+                    "ipr_mid": mid,
+                    "ipr_tid": tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    "ipr_pg_merchant_id": pgMerchantId,
                 }
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
@@ -394,6 +416,22 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
+                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
+                logger.debug(f"query : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                ipr_payment_mode = result["payment_mode"].iloc[0]
+                ipr_bank_code = result["bank_code"].iloc[0]
+                ipr_org_code = result["org_code"].iloc[0]
+                ipr_amount = result["amount"].iloc[0]
+                ipr_rrn = result["rrn"].iloc[0]
+                ipr_auth_code = result["auth_code"].iloc[0]
+                ipr_mid = result["mid"].iloc[0]
+                ipr_tid = result["tid"].iloc[0]
+                ipr_config_id = result["config_id"].iloc[0]
+                ipr_vpa = result["vpa"].iloc[0]
+                ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -408,7 +446,18 @@ def test_common_100_101_020():  # Make sure to add the test case name as same as
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
-                    "tid": tid_db
+                    "tid": tid_db,
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_auth_code": ipr_auth_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    "ipr_pg_merchant_id": ipr_pg_merchant_id,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")

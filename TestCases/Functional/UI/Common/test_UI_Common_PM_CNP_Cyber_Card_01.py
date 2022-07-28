@@ -1,9 +1,11 @@
 import json
 import random
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import shutil
 import sys
+
+import pytz
 from termcolor import colored
 
 import pytest
@@ -18,7 +20,7 @@ from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner
+    ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -118,6 +120,10 @@ def test_common_100_103_001():
             txn_settlement_status = result['settlement_status'].values[0]
             txn_payment_mode = result['payment_mode'].values[0]
             txn_amount = result['amount'].values[0]
+            posting_date = result['posting_date'].values[0]
+
+
+
 
             logger.debug(f"Query result, txn_txn_id : {txn_txn_id}")
             logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
@@ -130,6 +136,8 @@ def test_common_100_103_001():
             logger.debug(f"Query result, txn_settlement_status : {txn_settlement_status}")
             logger.debug(f"Query result, txn_payment_mode : {txn_payment_mode}")
             logger.debug(f"Query result, txn_amount : {txn_amount}")
+            logger.debug(f"Query result, db date from db : {posting_date}")
+
 
             query = "select * from cnp_txn where txn_id='"+txn_txn_id+"';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -205,10 +213,16 @@ def test_common_100_103_001():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"pmt_mode": "PAY LINK", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),"txn_id": txn_txn_id,"rrn":cnp_txn_rrn,
-                                     "order_id":order_id,"msg":"PAYMENT SUCCESSFUL", "customer_name":txn_customer_name,
-                                     "settle_status":txn_settle_status,"auth_code":txn_auth_code}
+                expectedAppValues = {"pmt_mode": "PAY LINK", "pmt_status": "AUTHORIZED",
+                                     "txn_amt": str(amount),"txn_id": txn_txn_id,
+                                     "rrn":cnp_txn_rrn,
+                                     "order_id":order_id,"msg":"PAYMENT SUCCESSFUL",
+                                     "customer_name":txn_customer_name,
+                                     "settle_status":txn_settle_status,
+                                     "auth_code":txn_auth_code,
+                                     "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -239,19 +253,25 @@ def test_common_100_103_001():
                 payment_customer_name = txnHistoryPage.fetch_customer_name_text()
                 logger.info(f"Fetching txn customer name from txn history for the txn : {txn_txn_id}, {payment_customer_name}")
 
-                # payment_payer_name = txnHistoryPage.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_txn_id}, {payment_payer_name}")
-
                 payment_settlement_status = txnHistoryPage.fetch_settlement_status_text()
                 logger.info(f"Fetching txn settlement status from txn history for the txn : {txn_txn_id}, {payment_settlement_status}")
 
                 payment_auth_code = txnHistoryPage.fetch_auth_code_text()
                 logger.info(f"Fetching txn auth code from txn history for the txn : {txn_txn_id}, {payment_auth_code}")
+                app_date_and_time = txnHistoryPage.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_txn_id}, {app_date_and_time}")
 
-                actualAppValues = {"pmt_mode": payment_mode, "pmt_status": payment_status.split(':')[1],
-                                   "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id,"rrn":payment_rrn,"order_id":payment_orderId,
-                                   "msg":payment_status_msg,"customer_name":payment_customer_name,
-                                   "settle_status":payment_settlement_status,"auth_code":payment_auth_code}
+                actualAppValues = {"pmt_mode": payment_mode,
+                                   "pmt_status": payment_status.split(':')[1],
+                                   "txn_amt": app_amount.split(' ')[1],
+                                   "txn_id": app_txn_id,"rrn":payment_rrn,
+                                   "order_id":payment_orderId,
+                                   "msg":payment_status_msg,
+                                   "customer_name":payment_customer_name,
+                                   "settle_status":payment_settlement_status,
+                                   "auth_code":payment_auth_code,
+                                   "date": app_date_and_time
+                                   }
 
                 logger.debug(f"actualAppValues: {actualAppValues}")
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -267,12 +287,19 @@ def test_common_100_103_001():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
+                date = date_time_converter.db_datetime(posting_date)
                 logger.info(f"Started API validation for the test case : {testcase_id}")
-                expectedAPIValues = {"pmt_status": "AUTHORIZED", "txn_amt": amount,
-                                     "pmt_mode": "CNP","pmt_state":cnp_txn_state,
-                                     "acquirer_code":cnp_txn_acquirer_code, "settle_status":txn_settle_status,
-                                     "rrn":cnp_txn_rrn,"issuer_code":txn_issuer_code,
-                                     "txn_type":cnpware_txn_txn_type, "org_code":org_code}
+                expectedAPIValues = {"pmt_status": "AUTHORIZED",
+                                     "txn_amt": amount,
+                                     "pmt_mode": "CNP",
+                                     "pmt_state":cnp_txn_state,
+                                     "acquirer_code":cnp_txn_acquirer_code,
+                                     "settle_status":txn_settle_status,
+                                     "rrn":cnp_txn_rrn,
+                                     "issuer_code":txn_issuer_code,
+                                     "txn_type":cnpware_txn_txn_type,
+                                     "org_code":org_code,
+                                     "date": date}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                 #Use txn details
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username, "password": app_password})
@@ -291,12 +318,19 @@ def test_common_100_103_001():
                         issuerCode_api = elements["issuerCode"]
                         txnType_api = elements["txnType"]
                         orgCode_api = elements["orgCode"]
+                        date_api = elements["postingDate"]
 
                 actualAPIValues = {"pmt_status": status_api, "txn_amt": amount_api,
-                                     "pmt_mode": "CNP","pmt_state":cnp_txn_state,
-                                     "acquirer_code":acquirer_code__api, "settle_status":settlementStatus_api,
-                                     "rrn":rrNumber_api,"issuer_code":issuerCode_api,
-                                     "txn_type":txnType_api, "org_code":orgCode_api}
+                                    "pmt_mode": "CNP",
+                                   "pmt_state":cnp_txn_state,
+                                    "acquirer_code":acquirer_code__api,
+                                   "settle_status":settlementStatus_api,
+                                    "rrn":rrNumber_api,
+                                   "issuer_code":issuerCode_api,
+                                    "txn_type":txnType_api,
+                                   "org_code":orgCode_api,
+                                   "date": date_time_converter.from_api_to_datetime_format(date_api)
+                                   }
 
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -356,7 +390,7 @@ def test_common_100_103_001():
                                     "pmt_gateway":payment_gateway_db,
                                     "payment_mode":payment_mode,
                                     "auth_code":cnp_txn_auth_code,
-                                     "cnp_pmt_gateway": cnp_payment_gateway,
+                                    "cnp_pmt_gateway": cnp_payment_gateway,
                                     "cnpware_pmt_gateway": cnpware_payment_gateway,
                                     "pmt_flow":cnp_payment_flow,
                                     "pmt_intent_status": payment_intent_status
@@ -411,13 +445,17 @@ def test_common_100_103_001():
         # -----------------------------------------End of Portal Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+
             try:
-                date = datetime.today().strftime('%Y-%m-%d')
+                # date = datetime.today().strftime('%Y-%m-%d')
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                logger.info(f"date and time is: {date},{time}")
                 expectedValues = {'CARD TYPE': 'VISA',
                                     'merchant_ref_no': 'Ref # ' + str(order_id),
                                     'RRN': str(cnp_txn_rrn),
                                     'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                    'date': date,
+                                    'date': txn_date,
+                                   'time': txn_time,
                                     "AUTH CODE":txn_auth_code}
 
                 receipt_validator.perform_charge_slip_validations(txn_txn_id, {"username":app_username,"password":app_password}, expectedValues)
