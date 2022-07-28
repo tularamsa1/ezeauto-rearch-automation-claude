@@ -21,7 +21,7 @@ from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_val
+    ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -172,7 +172,7 @@ def test_common_100_103_004():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_val.date_and_time_val_against_app(posting_date)
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
@@ -258,7 +258,7 @@ def test_common_100_103_004():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_val.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -303,7 +303,7 @@ def test_common_100_103_004():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "auth_code": auth_code_api,
-                    "date": date_time_val.date_and_time_val_against_api(date_api)
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -399,7 +399,7 @@ def test_common_100_103_004():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                txn_date, txn_time = date_time_val.date_and_time_val_against_charge_slip(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_portal_values = {
                     "pmt_state": "Settled", "pmt_type": "UPI",
                     "txn_amt": "Rs." + str(amount) + ".00", "username": app_username,
@@ -451,7 +451,7 @@ def test_common_100_103_004():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_val.date_and_time_val_against_charge_slip(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
                                    'time': txn_time,
@@ -1004,7 +1004,7 @@ def test_common_100_103_014():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_val.date_and_time_val_against_app(posting_date)
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
@@ -1093,7 +1093,7 @@ def test_common_100_103_014():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_val.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -1138,7 +1138,7 @@ def test_common_100_103_014():
                                      "issuer_code": issuer_code_api,
                                      "txn_type": txn_type_api, "mid": mid_api,
                                      "tid": tid_api, "org_code": orgCode_api,
-                                     "date": date_time_val.date_and_time_val_against_api(date_api),
+                                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                                      "auth_code": auth_code_api
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -1288,7 +1288,7 @@ def test_common_100_103_014():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_val.date_and_time_val_against_charge_slip(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                    'date': txn_date, 'time': txn_time,

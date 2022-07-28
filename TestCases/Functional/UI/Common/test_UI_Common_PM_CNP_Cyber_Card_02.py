@@ -18,7 +18,7 @@ from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_val
+    ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -246,7 +246,7 @@ def test_common_100_103_007():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time = date_time_val.date_and_time_val_against_app(txn_posting_date)
+                date_and_time = date_time_converter.to_app_format(txn_posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),
                                      "txn_id": txn_txn_id, "rrn": cnp_txn_rrn,
                                      "order_id": order_id, "msg": "PAYMENT SUCCESSFUL",
@@ -322,7 +322,7 @@ def test_common_100_103_007():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                date = date_time_val.db_datetime(txn_posting_date)
+                date = date_time_converter.db_datetime(txn_posting_date)
                 logger.info(f"Started API validation for the test case : {testcase_id}")
                 expectedAPIValues = {"pmt_status": "AUTHORIZED", "txn_amt": amount,
                                      "pmt_mode": "CNP", "pmt_state": cnp_txn_state,
@@ -471,7 +471,7 @@ def test_common_100_103_007():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_val.date_and_time_val_against_charge_slip(txn_posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_posting_date)
                 expectedValues = {'CARD TYPE': 'VISA',
                                   'merchant_ref_no': 'Ref # ' + str(order_id),
                                   'RRN': str(cnp_txn_rrn),

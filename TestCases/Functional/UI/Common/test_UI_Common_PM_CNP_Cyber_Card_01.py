@@ -20,7 +20,7 @@ from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_val
+    ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -213,7 +213,7 @@ def test_common_100_103_001():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_val.date_and_time_val_against_app(posting_date)
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"pmt_mode": "PAY LINK", "pmt_status": "AUTHORIZED",
                                      "txn_amt": str(amount),"txn_id": txn_txn_id,
@@ -287,7 +287,7 @@ def test_common_100_103_001():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                date = date_time_val.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(posting_date)
                 logger.info(f"Started API validation for the test case : {testcase_id}")
                 expectedAPIValues = {"pmt_status": "AUTHORIZED",
                                      "txn_amt": amount,
@@ -329,7 +329,7 @@ def test_common_100_103_001():
                                    "issuer_code":issuerCode_api,
                                     "txn_type":txnType_api,
                                    "org_code":orgCode_api,
-                                   "date": date_time_val.date_and_time_val_against_api(date_api)
+                                   "date": date_time_converter.from_api_to_datetime_format(date_api)
                                    }
 
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
@@ -448,7 +448,7 @@ def test_common_100_103_001():
 
             try:
                 # date = datetime.today().strftime('%Y-%m-%d')
-                txn_date, txn_time = date_time_val.date_and_time_val_against_charge_slip(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 logger.info(f"date and time is: {date},{time}")
                 expectedValues = {'CARD TYPE': 'VISA',
                                     'merchant_ref_no': 'Ref # ' + str(order_id),

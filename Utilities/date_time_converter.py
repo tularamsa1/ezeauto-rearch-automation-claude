@@ -5,7 +5,7 @@ from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
 
-def date_and_time_val_against_app(posting_date_db):
+def to_app_format(posting_date_db):
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     app_format = "%d %b %Y, %I:%M %p"
     dt_str1 = datetime.strptime(str(posting_date_db), '%Y-%m-%dT%H:%M:%S.%f000').strftime("%Y-%m-%dT%H:%M:%S.%f")
@@ -16,7 +16,7 @@ def date_and_time_val_against_app(posting_date_db):
     return datetime_in_app_format
 
 
-def date_and_time_val_against_api(api_datetime_in_ms):
+def from_api_to_datetime_format(api_datetime_in_ms):
     my_datetime = datetime.fromtimestamp(int(api_datetime_in_ms) / 1000)  # Apply from timestamp function
     dt_str1 = my_datetime - timedelta(hours=11, minutes=0)
     db_date_time = datetime.strptime(str(dt_str1), '%Y-%m-%d %H:%M:%S').strftime("%Y-%m-%d %H:%M:%S")
@@ -32,7 +32,7 @@ def db_datetime(date_from_db):
     return dt_utc
 
 
-def date_and_time_val_against_charge_slip(posting_date_db):
+def to_chargeslip_format(posting_date_db):
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     format1 = "%Y-%m-%d, %H:%M:%S"
     dt_str = posting_date_db
