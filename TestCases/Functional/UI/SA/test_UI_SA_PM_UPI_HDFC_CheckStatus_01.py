@@ -40,7 +40,8 @@ def test_sa_100_101_001():
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -60,6 +61,17 @@ def test_sa_100_101_001():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"RESULT of updating DB setting inactive : {result}")
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"RESULT of updating DB setting inactive : {result}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -73,10 +85,13 @@ def test_sa_100_101_001():
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             amount = random.randint(300, 399)
@@ -107,20 +122,40 @@ def test_sa_100_101_001():
             rrn = result['rr_number'].values[0]
             txn_id = result['id'].values[0]
             status = result['status'].values[0]
+            customer_name = result['customer_name'].values[0]
+            payer_name = result['payer_name'].values[0]
+            settlement_status = result['settlement_status'].values[0]
+            acquirer_code = result['acquirer_code'].values[0]
+            issuer_code = result['issuer_code'].values[0]
+            org_code_txn = result['org_code'].values[0]
+            txn_type = result['txn_type'].values[0]
+            auth_code = result['auth_code'].values[0]
             logger.debug(
                 f"Fetching txn_id, rrn and status from the txn table : txn_id : {txn_id}, status : {status}")
+
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            upi_mc_id = result['id'].values[0]
+            tid = result['tid'].values[0]
+            mid = result['mid'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             print(colored(
-                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
                 GlobalVariables.time_calc.execution.pause()
-                print(colored("Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                        shutil.get_terminal_size().columns, "="), 'cyan'))
             GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(colored("Execution Timer resumed in execpt block of testcase function".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
 
             ReportProcessor.capture_ss_when_app_val_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -145,8 +180,19 @@ def test_sa_100_101_001():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                expected_app_values = {"Payment mode": "UPI", "Status": "AUTHORIZED", "Amount": str(amount),
-                                       "Txn_id": txn_id, "rrn": str(rrn)}
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str(amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": customer_name,
+                    "payer_name": payer_name,
+                    "order_id": order_id,
+                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "auth_code": auth_code
+                }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 home_page.wait_for_navigation_to_load()
@@ -154,23 +200,47 @@ def test_sa_100_101_001():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_auth_code = txn_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
-                actual_app_values = {"Payment mode": payment_mode, "Status": payment_status.split(':')[1],
-                                     "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn": str(app_rrn)}
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "payment_msg": app_payment_msg,
+                    "auth_code": app_auth_code
+                }
                 logger.debug(f"actual_app_values: {actual_app_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 ReportProcessor.capture_ss_when_app_val_exe_failed()
@@ -186,8 +256,17 @@ def test_sa_100_101_001():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values = {"Payment Status": "AUTHORIZED", "Amount": amount, "Payment Mode": "UPI",
-                                       "Payment State": "SETTLED", "rrn": str(rrn)}
+                expected_api_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": amount, "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED", "rrn": str(rrn),
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
+                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "org_code": org_code_txn,
+                    "auth_code": auth_code
+                }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -200,12 +279,28 @@ def test_sa_100_101_001():
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                auth_code_api = response["authCode"]
 
-                actual_api_values = {"Payment Status": status_api, "Amount": amount_api,
-                                     "Payment Mode": payment_mode_api,
-                                     "Payment State": state_api, "rrn": str(rrn_api)}
+                actual_api_values = {
+                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "org_code": orgCode_api,
+                    "auth_code": auth_code_api
+                }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 print("API Validation failed due to exception - " + str(e))
@@ -220,12 +315,25 @@ def test_sa_100_101_001():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_db_values = {"Payment Status": "AUTHORIZED", "Payment State": "SETTLED", "Payment mode": "UPI",
-                                      "Payment amount": amount, "UPI_Txn_Status": "AUTHORIZED"}
+                expected_db_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "upi_txn_status": "AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "payment_gateway": "HDFC",
+                    "upi_txn_type": "PAY_QR",
+                    "upi_bank_code": "HDFC",
+                    "upi_mc_id": upi_mc_id,
+                    "mid": mid,
+                    "tid": tid
+                }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
+                query = "select * from txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -233,15 +341,38 @@ def test_sa_100_101_001():
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 state_db = result["state"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+                acquirer_code_db = result["acquirer_code"].iloc[0]
+                bank_code_db = result["bank_code"].iloc[0]
+                settlement_status_db = result["settlement_status"].iloc[0]
+                tid_db = result['tid'].values[0]
+                mid_db = result['mid'].values[0]
 
-                query = "select status from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_status_db = result["status"].iloc[0]
-                actual_db_values = {"Payment Status": status_db, "Payment State": state_db,
-                                    "Payment mode": payment_mode_db,
-                                    "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
+                upi_txn_type_db = result["txn_type"].iloc[0]
+                upi_bank_code_db = result["bank_code"].iloc[0]
+                upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "payment_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db
+                }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -259,8 +390,9 @@ def test_sa_100_101_001():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_portal_values = {"Payment State": "Settled", "Payment Type": "UPI",
-                                          "Amount": "Rs." + str(amount) + ".00", "Username": app_username}
+                expected_portal_values = {
+                    "pmt_state": "Settled", "pmt_type": "UPI",
+                    "txn_amt": "Rs." + str(amount) + ".00", "username": app_username}
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
@@ -284,8 +416,9 @@ def test_sa_100_101_001():
                 portal_amount = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
 
-                actual_portal_values = {"Payment State": str(portal_status), "Payment Type": portal_type,
-                                        "Amount": portal_amount, "Username": portal_username}
+                actual_portal_values = {
+                    "pmt_state": str(portal_status), "pmt_type": portal_type,
+                    "txn_amt": portal_amount, "username": portal_username}
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
@@ -306,7 +439,8 @@ def test_sa_100_101_001():
             try:
                 date = datetime.today().strftime('%Y-%m-%d')
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date,
+                                   'AUTH CODE': auth_code}
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_values)
@@ -322,7 +456,8 @@ def test_sa_100_101_001():
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         print(
-            colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
+                    'cyan'))
         logger.info(f"Completed Validation for the test case : {testcase_id}")
     # -------------------------------------------End of Validation---------------------------------------------
 
@@ -335,7 +470,8 @@ def test_sa_100_101_001():
                     shutil.get_terminal_size().columns, "="), 'cyan'))
         GlobalVariables.time_calc.execution.resume()
         print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
 
         Configuration.executeFinallyBlock(testcase_id)
         if not GlobalVariables.setupCompletedSuccessfully:
@@ -350,7 +486,8 @@ def test_sa_100_101_001():
             # ----------------------------------------------------------------------------------------------------------
         GlobalVariables.time_calc.execution.end()
         print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
+            'cyan'))
 
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
@@ -407,7 +544,9 @@ def test_sa_100_101_002():
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
@@ -443,15 +582,19 @@ def test_sa_100_101_002():
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             print(colored(
-                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
             logger.info(f"Execution is completed for the test case : {testcase_id}")
 
         except Exception as e:
             if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
                 GlobalVariables.time_calc.execution.pause()
-                print(colored("Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                        shutil.get_terminal_size().columns, "="), 'cyan'))
             GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(colored("Execution Timer resumed in execpt block of testcase function".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
 
             ReportProcessor.capture_ss_when_app_val_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
@@ -469,7 +612,8 @@ def test_sa_100_101_002():
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
@@ -639,7 +783,8 @@ def test_sa_100_101_002():
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
-        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
         # -------------------------------------------End of Validation---------------------------------------------
@@ -652,7 +797,8 @@ def test_sa_100_101_002():
                           "function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         GlobalVariables.time_calc.execution.resume()
         print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
 
         Configuration.executeFinallyBlock(testcase_id)
         if not GlobalVariables.setupCompletedSuccessfully:
@@ -733,7 +879,9 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
@@ -782,14 +930,18 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             print(colored(
-                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
                 GlobalVariables.time_calc.execution.pause()
-                print(colored("Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                        shutil.get_terminal_size().columns, "="), 'cyan'))
             GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(colored("Execution Timer resumed in execpt block of testcase function".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
 
             ReportProcessor.capture_ss_when_app_val_exe_failed()
             GlobalVariables.bool_ss_app_val = 'Failed'
@@ -808,7 +960,8 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
@@ -971,11 +1124,13 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
         logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
         if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
             GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
+            print(colored(
+                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
                     shutil.get_terminal_size().columns, "="), 'cyan'))
         GlobalVariables.time_calc.execution.resume()
         print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                   "="), 'cyan'))
 
         Configuration.executeFinallyBlock(testcase_id)
         if not GlobalVariables.setupCompletedSuccessfully:
@@ -995,8 +1150,8 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
             logger.info("Reverted back all the settings that were done as preconditions")
         GlobalVariables.time_calc.execution.end()
         print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
+            'cyan'))
 
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
-

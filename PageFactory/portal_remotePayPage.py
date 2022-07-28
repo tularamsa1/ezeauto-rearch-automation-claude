@@ -27,6 +27,7 @@ class remotePayTxnPage(BasePage):
     txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Any am')]")
     # txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Sorry!You have exceeded the time available to comp')]")
     txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Remote payment link has expired, Use a different m')]")
+    txt_maxAttempts = (By.XPATH,"//h3[contains(text(),'Maximum number of attempts for this url exceeded. ')]")
 
     txt_failedMessage = (By.XPATH,"// h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
     btn_remotePayUpi = (By.XPATH,"//mat-panel-title[contains(text(),'UPI')]")
@@ -84,6 +85,9 @@ class remotePayTxnPage(BasePage):
 
     def timeoutScreenMessage(self):
         return self.fetch_text(self.txt_timeoutMessage)
+
+    def maxAttemptsMessage(self):
+        return self.fetch_text(self.txt_maxAttempts)
 
     def clickOnRemotePayUPI(self):
         self.perform_click_cnp(self.btn_remotePayUpi)

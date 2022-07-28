@@ -37,6 +37,14 @@ def send_request(api_details):
         logger.debug(
             f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
         return json_resp
+
+    if api_details['ApiName'] == 'confirm_axisdirect':
+        payload = payload['data']
+        resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
+        json_resp = json.loads(resp.text)
+        logger.debug(
+            f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+        return json_resp
     # print("url", type(url))
     # print("endPoint", endPoint)
     # print("protocol", protocol)

@@ -107,7 +107,6 @@ def test_common_100_102_014():
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
-            rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             logger.info("Opening Portal to perform refund of the transaction")
             ui_driver = TestSuiteSetup.initialize_portal_driver()
@@ -130,6 +129,7 @@ def test_common_100_102_014():
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
+            rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
             #
             # ------------------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ def test_common_100_102_014():
             try:
                 logger.info(f"Starting API Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues = {"Payment Status":"REFUNDED","Amount": amount, "Payment Mode": "BHARATQR", "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": amount, "Payment Mode Original": "BHARATQR"}
+                expectedAPIValues = {"Payment Status":"REFUNDED","Amount": amount, "Payment Mode": "BHARATQR","Txn Type":"REFUND", "Acquirer Code":"HDFC", "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": amount, "Payment Mode Original": "BHARATQR"}
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password,
                                                                         "txnId": txn_id_refunded})
@@ -233,6 +233,8 @@ def test_common_100_102_014():
                 status_api = response["status"]
                 amount_api = response["amount"]
                 payment_mode_api = response["paymentMode"]
+                txn_type_api = response["txnType"]
+                accuirer_code_api = response["acquirerCode"]
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
@@ -251,7 +253,7 @@ def test_common_100_102_014():
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api_original} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api_orginal} ")
                 #
-                actualAPIValues = {"Payment Status":status_api,"Amount": amount_api, "Payment Mode": payment_mode_api, "Payment Status Original":status_api_orginal,"Amount Original": amount_api_original, "Payment Mode Original": payment_mode_api_orginal}
+                actualAPIValues = {"Payment Status":status_api,"Amount": amount_api, "Payment Mode": payment_mode_api,"Txn Type":txn_type_api, "Acquirer Code":accuirer_code_api, "Payment Status Original":status_api_orginal,"Amount Original": amount_api_original, "Payment Mode Original": payment_mode_api_orginal}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
                 logger.info("API Validation Completed successfully for test case")
@@ -270,10 +272,10 @@ def test_common_100_102_014():
             try:
                 logger.info(f"Starting DB Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "REFUNDED", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": amount, "Payment Mode Original": "BHARATQR"}
+                expectedDBValues = {"Payment Status": "REFUNDED", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount),"Txn Type":"REFUND","Acquirer Code":"HDFC", "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": amount, "Payment Mode Original": "BHARATQR"}
                 #
-                query = "select status,amount,payment_mode,external_ref from txn where id='" + txn_id_refunded + "'"
-                logger.debug(f"DB query to fetch status, amount, payment mode and external reference from DB : {query}")
+                query = "select status,amount,payment_mode,external_ref,txn_type,acquirer_code from txn where id='" + txn_id_refunded + "'"
+                logger.debug(f"DB query to fetch status, amount, payment mode,txn_type,acquirer_code and external reference from DB : {query}")
                 print("Query:", query)
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from DB : {result} ")
@@ -281,6 +283,8 @@ def test_common_100_102_014():
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = "{:.2f}".format(result["amount"].iloc[0])
+                txn_type_db = result["txn_type"].iloc[0]
+                accuirer_code_db = result["acquirer_code"].iloc[0]
                 logger.debug(f"Fetching Transaction status from DB : {status_db} ")
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
@@ -297,7 +301,7 @@ def test_common_100_102_014():
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db_original} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db_original} ")
                 #
-                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db, "Payment Status Original":status_db_original,"Amount Original": amount_db_original, "Payment Mode Original": payment_mode_db_original}
+                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db,"Txn Type":txn_type_db, "Acquirer Code":accuirer_code_db, "Payment Status Original":status_db_original,"Amount Original": amount_db_original, "Payment Mode Original": payment_mode_db_original}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -601,7 +605,7 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
                 logger.info(f"Starting API Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
 
-                expectedAPIValues = {"Payment Status":"REFUNDED","Amount": amount, "Payment Mode": "BHARATQR", "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": amount, "Payment Mode Original": "BHARATQR"}
+                expectedAPIValues = {"Payment Status":"REFUNDED","Amount": amount, "Payment Mode": "BHARATQR","Txn Type":"REFUND", "Acquirer Code":"HDFC", "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": amount, "Payment Mode Original": "BHARATQR"}
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password,
                                                                         "txnId": txn_id_refunded})
@@ -612,6 +616,8 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
                 status_api = response["status"]
                 amount_api = response["amount"]
                 payment_mode_api = response["paymentMode"]
+                txn_type_api = response["txnType"]
+                accuirer_code_api = response["acquirerCode"]
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
@@ -630,7 +636,7 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api_original} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api_orginal} ")
                 #
-                actualAPIValues = {"Payment Status":status_api,"Amount": amount_api, "Payment Mode": payment_mode_api, "Payment Status Original":status_api_orginal,"Amount Original": amount_api_original, "Payment Mode Original": payment_mode_api_orginal}
+                actualAPIValues = {"Payment Status":status_api,"Amount": amount_api, "Payment Mode": payment_mode_api,"Txn Type":txn_type_api, "Acquirer Code":accuirer_code_api, "Payment Status Original":status_api_orginal,"Amount Original": amount_api_original, "Payment Mode Original": payment_mode_api_orginal}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
                 logger.info("API Validation Completed successfully for test case")
@@ -649,10 +655,10 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
             try:
                 logger.info(f"Starting DB Validation for the test case: {testcase_id}")
                 # --------------------------------------------------------------------------------------------
-                expectedDBValues = {"Payment Status": "REFUNDED", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount), "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": "{:.2f}".format(amount), "Payment Mode Original": "BHARATQR"}
+                expectedDBValues = {"Payment Status": "REFUNDED", "Payment mode":"BHARATQR" , "Payment amount":"{:.2f}".format(amount),"Txn Type":"REFUND","Acquirer Code":"HDFC", "Payment Status Original":"AUTHORIZED_REFUNDED","Amount Original": "{:.2f}".format(amount), "Payment Mode Original": "BHARATQR"}
                 #
-                query = "select status,amount,payment_mode,external_ref from txn where id='" + txn_id_refunded + "'"
-                logger.debug(f"DB query to fetch status, amount, payment mode and external reference from DB : {query}")
+                query = "select status,amount,payment_mode,external_ref,txn_type,acquirer_code from txn where id='" + txn_id_refunded + "'"
+                logger.debug(f"DB query to fetch status, amount, payment mode,txn_type,acquirer_code and external reference from DB : {query}")
                 print("Query:", query)
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Fetching Query result from DB : {result} ")
@@ -660,6 +666,8 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = "{:.2f}".format(result["amount"].iloc[0])
+                txn_type_db = result["txn_type"].iloc[0]
+                accuirer_code_db = result["acquirer_code"].iloc[0]
                 logger.debug(f"Fetching Transaction status from DB : {status_db} ")
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db} ")
@@ -676,7 +684,7 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
                 logger.debug(f"Fetching Transaction payment mode from DB : {payment_mode_db_original} ")
                 logger.debug(f"Fetching Transaction amount from DB : {amount_db_original} ")
                 #
-                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db, "Payment Status Original":status_db_original,"Amount Original": amount_db_original, "Payment Mode Original": payment_mode_db_original}
+                actualDBValues = {"Payment Status": status_db, "Payment mode":payment_mode_db , "Payment amount":amount_db,"Txn Type":txn_type_db, "Acquirer Code":accuirer_code_db, "Payment Status Original":status_db_original,"Amount Original": amount_db_original, "Payment Mode Original": payment_mode_db_original}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)

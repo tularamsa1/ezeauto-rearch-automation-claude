@@ -7,7 +7,6 @@ from PageFactory.App_BasePage import BasePage
 
 class TransHistoryPage(BasePage):
 
-
     lbl_summary = (By.ID, 'com.ezetap.service.demo:id/tvLblSummary')
     btn_backHome = (By.ID, 'com.ezetap.service.demo:id/iVBackArrow')
     btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
@@ -16,6 +15,7 @@ class TransHistoryPage(BasePage):
     lbl_noTransactionsAvailable = (By.ID, "com.ezetap.service.demo:id/tv_ErrorMsg")
     txa_amountField = (By.ID, 'com.ezetap.service.demo:id/tvAmount')
     txa_statusField = (By.ID, "com.ezetap.service.demo:id/tvTxnStatus")
+    txt_orderIdField = (By.ID, "com.ezetap.service.demo:id/tvOderId")
     btn_printReceipt = (By.ID, 'com.ezetap.service.demo:id/btnPrintReceipt')
     btn_printCustomerCopy = (By.ID, "com.ezetap.service.demo:id/btnNegative")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnPositive")
@@ -26,17 +26,26 @@ class TransHistoryPage(BasePage):
     btn_voidTransaction = (By.ID, "com.ezetap.service.demo:id/btnVoidTxn")
     btn_voidTransactionYes = (By.ID, "com.ezetap.service.demo:id/btnPositive")
     txa_finalStatusField = (By.ID, "com.ezetap.service.demo:id/tvTxnFinalStatus")
+    txa_payment_status_message = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
     snp_fetchingChargeSlipMessage = (By.XPATH, "//*[contains(@text, 'Fetching Charge-slip')]")
     lnk_chargeSlip = (By.XPATH, "//*[contains(@text,'Click Here')]")
     lbl_receipt = (By.ID, "com.ezetap.service.demo:id/tvAmount")
     lbl_receiptNotFound = (By.XPATH, "//android.view.View[@content-desc='Not Found']")
-    txa_authCode = (By.XPATH, "//*[@text='Auth Code']/following-sibling::android.widget.TextView")
+    txa_authCode = (By.XPATH, "//*[@text='AUTH CODE']/following-sibling::android.widget.TextView")
     btn_toggleStausArrow = (By.ID, 'com.ezetap.service.demo:id/iv_ToggleStatus')
     txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
     txt_txnAmount = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
     txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView")
-    btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
+    txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView")
+    txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView")
+    txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
+    # txt_rrNumber = (By.XPATH, "//*[@text='RR Number']/following-sibling::android.widget.TextView")
+    # txt_customer_name = (By.XPATH, "//*[@text='Customer Name']/following-sibling::android.widget.TextView")
+    # txt_payer_name = (By.XPATH, "//*[@text='Payer Name']/following-sibling::android.widget.TextView")
+    # txt_settlement_status = (By.XPATH, "//*[@text='Settlement Status']/following-sibling::android.widget.TextView")
+
+    txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -119,14 +128,32 @@ class TransHistoryPage(BasePage):
     def fetch_RRN_text(self):
         return self.fetch_text(self.txt_rrNumber)
 
+    def fetch_txn_payment_msg_text(self):
+        return str(self.fetch_text(self.txt_payment_msg_field))
+
+    def fetch_settlement_status_text(self):
+        return self.fetch_text(self.txt_settlement_status)
+
     def fetch_txn_status_text(self):
         return str(self.fetch_text(self.txa_finalStatusField))
+
+    def fetch_txn_payment_message_text(self):
+        return str(self.fetch_text(self.txa_payment_status_message))
 
     def fetch_txn_type_text(self):
         return str(self.fetch_text(self.txt_txnType))
 
+    def fetch_order_id_text(self):
+        return str(self.fetch_text(self.txt_orderIdField))
+
     def fetch_txn_amount_text(self):
         return str(self.fetch_text(self.txt_txnAmount))
+
+    def fetch_customer_name_text(self):
+        return self.fetch_text(self.txt_customer_name)
+
+    def fetch_payer_name_text(self):
+        return self.fetch_text(self.txt_payer_name)
 
     def click_charge_slip(self):
         self.perform_click(self.lnk_chargeSlip)

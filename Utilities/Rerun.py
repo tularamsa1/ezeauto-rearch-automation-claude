@@ -9,7 +9,24 @@ from Utilities import ConfigReader, DirectoryCreator, ExcelProcessor
 
 immediateRerun = True
 
-EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport")+"/Report.xlsx"
+EXCEL_reportFilePath = DirectoryCreator.getDirectoryPath("ExcelReport") + "/Report.xlsx"
+
+DYNAMIC_EXCEL_REPORT_PATH = os.path.join(DirectoryCreator.getDirectoryPath("ExcelReport"), 'Report.xlsx')
+RESULT_COLUMNS = ['TC Execution', 'API Val', 'DB Val', 'Portal Val', 'App Val', 'UI Val', 'ChargeSlip Val', ]
+
+
+def is_previous_attempt_a_failure():
+    "This function is to evaluate whether the previous run was failure. if so it will return True"
+    return bool((pd.read_excel(DYNAMIC_EXCEL_REPORT_PATH)[RESULT_COLUMNS] == 'Fail').sum().sum())
+
+
+def is_rerun_at_the_end_enabled():
+    return ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true"
+
+
+def is_rerun_at_the_end_required():
+    return is_previous_attempt_a_failure() and is_rerun_at_the_end_enabled()
+
 
 def rerunTestAtTheEnd():
     # print("Rerun count is: ", rerunCount)
@@ -67,7 +84,7 @@ def rerunTestAtTheEnd():
     ls_rerunTestCases = list(setOfTest)
     listToStr = ' '.join([str(elem) for elem in ls_rerunTestCases])
 
-    print("pytest -v " + listToStr + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport"))
+    print("python3.8 -m pytest -v " + listToStr + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
     print(list(setOfTest))
     print("List of exe tcs failed", exeFail)
     print("List of apiVal tcs failed", apiValFail)
@@ -82,7 +99,7 @@ def rerunTestAtTheEnd():
         ls_TestCasesForRerun = list(setOfRerunTest)
         changeOverallStatusToEmpty(ls_TestCasesForRerun)
         os.system(
-            "python3.8 -m pytest -v " + listToStr + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport"))
+            "python3.8 -m pytest -v " + listToStr + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
 
     return len(listToStr.strip())
 
@@ -125,7 +142,7 @@ def changeOverallStatusToEmpty(ls_TestCasesForRerun):
     sheet = wb['Sheet1']
 
     for rerun_tesecase in ls_TestCasesForRerun:
-        for i in range(2,sheet.max_row+1):
+        for i in range(2, sheet.max_row + 1):
             colNum_testcase = ExcelProcessor.getColumnNumberFromName("", sheet, 'Test Case ID')
             testcase = (sheet.cell(row=i, column=colNum_testcase)).value
 
@@ -134,20 +151,23 @@ def changeOverallStatusToEmpty(ls_TestCasesForRerun):
                 sheet.cell(row=i, column=colNum_overallStatus).value = ""
     wb.save(EXCEL_reportFilePath)
 
+
 from termcolor import colored
 import shutil
+
 
 def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
     print("Starting the immediate rerun")
     if setRerunCount(testCaseID, rerunCount):
         # make status empty
-        rerunCommand = "python3.8 -m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir='+DirectoryCreator.getDirectoryPath("AllureReport")
+        rerunCommand = "python3.8 -m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir=' + DirectoryCreator.getDirectoryPath(
+            "AllureReport")
         print(rerunCommand)
 
         if rerunCount >= 0:
             GlobalVariables.time_calc.teardown.pause()
-            print(colored("Teardown Timer paused (since rerun) inside rerunTestImmediately method".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-                
+            print(colored("Teardown Timer paused (since rerun) inside rerunTestImmediately method".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
 
             # To send the testcaseID as a list to change the overall_Status as empty
             setOfRerunTest = set()
@@ -158,10 +178,14 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
             print("$$$$$$$$$$$$$$$$$$$$ Rerun Immediately #################")
             os.system(rerunCommand)
             GlobalVariables.time_calc.teardown.resume()
-            print(colored("Teardown Timer resumed (after rerun) inside rerunTestImmediately method".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        if rerunCount == -1 and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
+            print(colored("Teardown Timer resumed (after rerun) inside rerunTestImmediately method".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
+        if rerunCount == -1 and ConfigReader.read_config("Validations",
+                                                         "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required(
+                "bool_capt_log_last_run") == "True":
             GlobalVariables.time_calc.teardown.pause()
-            print(colored("Teardown Timer paused (before logon failure) in rerun immediately method".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(colored("Teardown Timer paused (before logon failure) in rerun immediately method".center(
+                shutil.get_terminal_size().columns, "="), 'cyan'))
             # print("log on failure method calling")
             # print("testCaseID", testCaseID)
             # print("getRerunCount(testCaseID)", int(getRerunCount(testCaseID)))
@@ -169,29 +193,33 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
             print("isRerunRequiredImmediately(testCaseID)", isRerunRequiredImmediately(testCaseID))
             conftest.log_on_failure(request)
             GlobalVariables.time_calc.teardown.resume()
-            print(colored("Teardown Timer resumed (after logon failure)".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            print(
+                colored("Teardown Timer resumed (after logon failure)".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
     else:
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 
 
 from DataProvider.GlobalConstants import RUNTIME_DIR
+
 xl_RerunCountPath = os.path.join(RUNTIME_DIR, 'RerunCount.xlsx')
 # xl_RerunCountPath = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
 
 
-xl_Timestamp = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/Timestamp.xlsx"
+xl_Timestamp = str(ConfigReader.read_config_paths("System", "automation_suite_path")) + "/TestCases/Timestamp.xlsx"
 
 
 def prepareImmediateRerunExcel():
     # df_overallTClist = pd.read_excel("/home/oem/PycharmProjects/EzeAuto/DataProvider/TestCasesDetail.xlsx")
 
     # Added on Apr 11
-    df_overallTClist = pd.read_excel(str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/Runtime/AllTestcaseSuite.xlsx")
+    df_overallTClist = pd.read_excel(
+        str(ConfigReader.read_config_paths("System", "automation_suite_path")) + "/Runtime/AllTestcaseSuite.xlsx")
 
     df_overallTClist.set_index('Test Case ID', inplace=True)
     # df_overallTClist.drop(columns=['File Name', 'Execute'], inplace=True)
 
-    df_overallTClist.drop(columns=['File Name', 'Execute','Unnamed: 0'], inplace=True)
+    df_overallTClist.drop(columns=['File Name', 'Execute', 'Unnamed: 0'], inplace=True)
 
     # Added for adding rerun attempts in Report excel
     df_overallTClist.drop(columns=['Directory Name'], inplace=True)
@@ -242,6 +270,7 @@ def getRerunCount(testCaseID):
         except:
             return -2
 
+
 def set_rerun_at_the_end_count_up_to_report_excel_file(count_up_rerun):
     if count_up_rerun:
         DYNAMIC_EXCEL_REPORT_PATH = DirectoryCreator.getDirectoryPath("ExcelReport") + "/Report.xlsx"
@@ -250,6 +279,7 @@ def set_rerun_at_the_end_count_up_to_report_excel_file(count_up_rerun):
         df.to_excel(DYNAMIC_EXCEL_REPORT_PATH, index=False)
     else:
         pass
+
 
 def setRerunCount(testCaseID, rerunCount):
     if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
