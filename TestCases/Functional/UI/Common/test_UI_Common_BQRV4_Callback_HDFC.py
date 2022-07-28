@@ -186,10 +186,10 @@ def test_common_100_102_046():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                expected_app_values = {"pmt_mode": "UPI", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "UPI", "	pmt_status": "AUTHORIZED","	txn_amt": str(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
-                                       "customer_name": vpa,"payer_name": vpa,"settle_status": "SETTLED",
-                                       "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
+                                       "customer_name": vpa,"payer_name": vpa,
+                                       "order_id": order_id,"payment_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 payment_page.click_on_proceed_homepage()
@@ -266,7 +266,7 @@ def test_common_100_102_046():
                 orgCode_api = response["orgCode"]
                 mid_api = response["mid"]
                 tid_api = response["tid"]
-                txn_type_api = response["txnType"]
+                txn_type_api = response["txnType"],
                 auth_code_api = response["authCode"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
