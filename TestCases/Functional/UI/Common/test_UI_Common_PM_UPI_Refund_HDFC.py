@@ -612,7 +612,7 @@ def test_common_100_101_011():
             tid = result['tid'].values[0]
 
             api_details = DBProcessor.get_api_details('paymentRefund',
-                                                      request_body={"username": username, "password": "A123456",
+                                                      request_body={"username": username, "password": password,
                                                                     "amount": amount,
                                                                     "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)
@@ -1291,7 +1291,7 @@ def test_common_100_101_046():
             logger.info("sending request to perform refund of the transaction using api")
 
             api_details = DBProcessor.get_api_details(
-                'paymentRefund', request_body={"username": username, "password": "A123456", "amount": amount,
+                'paymentRefund', request_body={"username": username, "password": password, "amount": amount,
                                                "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
@@ -1785,7 +1785,7 @@ def test_common_100_101_047():
             logger.info("sending request to perform refund of the transaction using api")
 
             api_details = DBProcessor.get_api_details(
-                'paymentRefund', request_body={"username": username, "password": "A123456", "amount": amount,
+                'paymentRefund', request_body={"username": username, "password": password, "amount": amount,
                                                "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")

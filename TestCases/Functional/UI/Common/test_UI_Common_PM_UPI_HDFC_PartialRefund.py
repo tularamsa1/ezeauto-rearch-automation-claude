@@ -120,7 +120,7 @@ def test_common_100_101_012():
             logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
             api_details = DBProcessor.get_api_details('paymentRefund',
-                                                      request_body={"username": username, "password": "A123456",
+                                                      request_body={"username": username, "password": password,
                                                                     "amount": refund_amount,
                                                                     "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)

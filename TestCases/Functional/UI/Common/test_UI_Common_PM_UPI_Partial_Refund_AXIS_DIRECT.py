@@ -133,7 +133,7 @@ def test_common_100_101_043():
             logger.info("sending request to perform refund of the transaction using api")
             refund_amount = amount - 100
             api_details = DBProcessor.get_api_details(
-                'paymentRefund', request_body={"username": username, "password": "A123456", "amount": refund_amount,
+                'paymentRefund', request_body={"username": username, "password": password, "amount": refund_amount,
                                                "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
