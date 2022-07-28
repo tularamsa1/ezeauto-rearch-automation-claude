@@ -85,7 +85,7 @@ def test_common_100_102_050():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('bqrGenerate',
-                                                      request_body={"app_username": app_username, "app_password": app_password,
+                                                      request_body={"username": app_username, "password": app_password,
                                                                     "amount": str(amount),
                                                                     "orderNumber": str(order_id)})
             response = APIProcessor.send_request(api_details)
@@ -107,6 +107,11 @@ def test_common_100_102_050():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             print(response)
+
+            query = "select auth_code from txn where id = '" + txn_id + "';"
+            logger.debug(f"Query to auth code from database : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            auth_code = result['auth_code'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -144,7 +149,9 @@ def test_common_100_102_050():
                 expected_app_values = {"Payment mode": "UPI", "Status": "AUTHORIZED","Amount": str(amount),
                                        "settlement_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": "Test Payer","payer_name": "Test Payer",
-                                       "order_id": order_id,"payment_msg": "PAYMENT SUCCESSFUL"}
+                                       "order_id": order_id,"payment_msg": "PAYMENT SUCCESSFUL",
+                                       "auth_code": auth_code
+                                       }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(
@@ -160,6 +167,8 @@ def test_common_100_102_050():
                 txn_history_page.click_on_transaction_by_order_id(order_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_auth_code = txn_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -184,7 +193,7 @@ def test_common_100_102_050():
                                      "Amount": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      "customer_name": app_customer_name,"settlement_status": app_settlement_status,
                                      "payer_name": app_payer_name,"order_id": app_order_id,
-                                     "payment_msg": app_payment_msg}
+                                     "payment_msg": app_payment_msg, "auth_code": app_auth_code}
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -207,7 +216,8 @@ def test_common_100_102_050():
                                        "settlement_status": "SETTLED",
                                        "acquirer_code": "HDFC",
                                        "issuer_code": "HDFC",
-                                       "txn_type": "CHARGE", "mid": mid, "tid": tid, "org_code": org_code
+                                       "txn_type": "CHARGE", "mid": mid, "tid": tid, "org_code": org_code,
+                                       "auth_code": auth_code
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -228,6 +238,7 @@ def test_common_100_102_050():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
+                auth_code_api = response["authCode"]
 
                 actual_api_values = {"Payment Status": status_api, "Amount": amount_api,
                                      "Payment Mode": payment_mode_api,
@@ -235,7 +246,8 @@ def test_common_100_102_050():
                                      "settlement_status": settlement_status_api,
                                      "acquirer_code": acquirer_code_api,
                                      "issuer_code": issuer_code_api,
-                                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api, "org_code": orgCode_api
+                                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api, "org_code": orgCode_api,
+                                     "auth_code": auth_code_api
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -350,7 +362,7 @@ def test_common_100_102_050():
             try:
                 date = datetime.today().strftime('%Y-%m-%d')
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date}
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date, 'AUTH CODE': auth_code}
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_values)

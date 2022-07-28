@@ -7,7 +7,6 @@ from PageFactory.App_BasePage import BasePage
 
 class TransHistoryPage(BasePage):
 
-
     lbl_summary = (By.ID, 'com.ezetap.service.demo:id/tvLblSummary')
     btn_backHome = (By.ID, 'com.ezetap.service.demo:id/iVBackArrow')
     btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
@@ -32,7 +31,7 @@ class TransHistoryPage(BasePage):
     lnk_chargeSlip = (By.XPATH, "//*[contains(@text,'Click Here')]")
     lbl_receipt = (By.ID, "com.ezetap.service.demo:id/tvAmount")
     lbl_receiptNotFound = (By.XPATH, "//android.view.View[@content-desc='Not Found']")
-    txa_authCode = (By.XPATH, "//*[@text='Auth Code']/following-sibling::android.widget.TextView")
+    txa_authCode = (By.XPATH, "//*[@text='AUTH CODE']/following-sibling::android.widget.TextView")
     btn_toggleStausArrow = (By.ID, 'com.ezetap.service.demo:id/iv_ToggleStatus')
     txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
@@ -41,6 +40,12 @@ class TransHistoryPage(BasePage):
     txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView")
     txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView")
     txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
+    # txt_rrNumber = (By.XPATH, "//*[@text='RR Number']/following-sibling::android.widget.TextView")
+    # txt_customer_name = (By.XPATH, "//*[@text='Customer Name']/following-sibling::android.widget.TextView")
+    # txt_payer_name = (By.XPATH, "//*[@text='Payer Name']/following-sibling::android.widget.TextView")
+    # txt_settlement_status = (By.XPATH, "//*[@text='Settlement Status']/following-sibling::android.widget.TextView")
+
+    txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -123,6 +128,12 @@ class TransHistoryPage(BasePage):
     def fetch_RRN_text(self):
         return self.fetch_text(self.txt_rrNumber)
 
+    def fetch_txn_payment_msg_text(self):
+        return str(self.fetch_text(self.txt_payment_msg_field))
+
+    def fetch_settlement_status_text(self):
+        return self.fetch_text(self.txt_settlement_status)
+
     def fetch_txn_status_text(self):
         return str(self.fetch_text(self.txa_finalStatusField))
 
@@ -143,9 +154,6 @@ class TransHistoryPage(BasePage):
 
     def fetch_payer_name_text(self):
         return self.fetch_text(self.txt_payer_name)
-
-    def fetch_settlement_status_text(self):
-        return self.fetch_text(self.txt_settlement_status)
 
     def click_charge_slip(self):
         self.perform_click(self.lnk_chargeSlip)
@@ -168,5 +176,3 @@ class TransHistoryPage(BasePage):
                 li.append(text)
             action.drag_and_drop(el1[-1], el1[0]).perform()
         return li
-
-

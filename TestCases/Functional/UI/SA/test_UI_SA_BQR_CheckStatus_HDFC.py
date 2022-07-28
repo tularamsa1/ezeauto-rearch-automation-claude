@@ -153,7 +153,7 @@ def test_sa_100_102_007():
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                homePage.check_home_page_logo()     # one more check we can do wait for txn_history button to load
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)

@@ -72,6 +72,8 @@ def test_sa_100_101_024():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(301, 1000)
