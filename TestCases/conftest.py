@@ -1,6 +1,8 @@
 import datetime
+import fcntl
 import json
 import os
+import time
 from random import randint
 import shutil
 from selenium.webdriver.chrome import webdriver
@@ -123,89 +125,100 @@ def convert_DF_To_Excel():
 
 
 def updatingHighLevelReportAfterEachTCS():
-    workbook = openpyxl.load_workbook(EXCEL_reportFilePath)
-    sheet = workbook["Sheet1"]
-    GlobalVariables.EXCEL_testCaseName = os.environ.get('PYTEST_CURRENT_TEST').replace(" (teardown)", '').split('::')[1]
-    print("Testcase name", GlobalVariables.EXCEL_testCaseName)
-    Overall_Status = 'Broken'
-    if GlobalVariables.EXCEL_TC_Execution == 'Pass':
+    timer = 0
+    while timer < 10:
+        try:
+            with open(EXCEL_reportFilePath, 'a') as locked_file:
+                fcntl.flock(locked_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                workbook = openpyxl.load_workbook(EXCEL_reportFilePath)
+                sheet = workbook["Sheet1"]
+                GlobalVariables.EXCEL_testCaseName = os.environ.get('PYTEST_CURRENT_TEST').replace(" (teardown)", '').split('::')[1]
+                print("Testcase name", GlobalVariables.EXCEL_testCaseName)
+                Overall_Status = 'Broken'
+                if GlobalVariables.EXCEL_TC_Execution == 'Pass':
 
-        # Pass or N/A
-        if GlobalVariables.str_api_val_result != 'Fail' \
-            and GlobalVariables.str_app_val_result != 'Fail' \
-                and GlobalVariables.str_db_val_result != 'Fail' \
-                    and GlobalVariables.str_portal_val_result != 'Fail' \
-                        and GlobalVariables.str_ui_val_result != 'Fail'\
-                            and GlobalVariables.str_chargeslip_val_result != "Fail":
-            Overall_Status = 'Pass'
+                    # Pass or N/A
+                    if GlobalVariables.str_api_val_result != 'Fail' \
+                        and GlobalVariables.str_app_val_result != 'Fail' \
+                            and GlobalVariables.str_db_val_result != 'Fail' \
+                                and GlobalVariables.str_portal_val_result != 'Fail' \
+                                    and GlobalVariables.str_ui_val_result != 'Fail'\
+                                        and GlobalVariables.str_chargeslip_val_result != "Fail":
+                        Overall_Status = 'Pass'
 
-        elif GlobalVariables.str_api_val_result == 'Fail' \
-            or GlobalVariables.str_app_val_result == 'Fail' \
-                or GlobalVariables.str_db_val_result == 'Fail' \
-                    or GlobalVariables.str_portal_val_result == 'Fail' \
-                        or GlobalVariables.str_ui_val_result == 'Fail'\
-                            or GlobalVariables.str_chargeslip_val_result == 'Fail':
-            Overall_Status = 'Fail'
-    elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
-        Overall_Status = 'Fail'
-    rowNumber = ExcelProcessor.getRowNumberFromValue(workbook, sheet, 'Test Case ID',
-                                                     GlobalVariables.EXCEL_testCaseName)
+                    elif GlobalVariables.str_api_val_result == 'Fail' \
+                        or GlobalVariables.str_app_val_result == 'Fail' \
+                            or GlobalVariables.str_db_val_result == 'Fail' \
+                                or GlobalVariables.str_portal_val_result == 'Fail' \
+                                    or GlobalVariables.str_ui_val_result == 'Fail'\
+                                        or GlobalVariables.str_chargeslip_val_result == 'Fail':
+                        Overall_Status = 'Fail'
+                elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
+                    Overall_Status = 'Fail'
+                rowNumber = ExcelProcessor.getRowNumberFromValue(workbook, sheet, 'Test Case ID',
+                                                                 GlobalVariables.EXCEL_testCaseName)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'File Name')
-    GlobalVariables.EXCEL_testCaseFileName = sheet.cell(row=rowNumber, column=columnNumber).value
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'File Name')
+                GlobalVariables.EXCEL_testCaseFileName = sheet.cell(row=rowNumber, column=columnNumber).value
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'OverAll Results')
-    sheet.cell(row=rowNumber, column=columnNumber).value = Overall_Status
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'OverAll Results')
+                sheet.cell(row=rowNumber, column=columnNumber).value = Overall_Status
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'TC Execution')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_TC_Execution
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'TC Execution')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_TC_Execution
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_val_result
-    print("API VaL: ", GlobalVariables.str_api_val_result)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Val')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_val_result
+                print("API VaL: ", GlobalVariables.str_api_val_result)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'DB Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_db_val_result
-    print("DB VaL: ", GlobalVariables.str_db_val_result)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'DB Val')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_db_val_result
+                print("DB VaL: ", GlobalVariables.str_db_val_result)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Portal Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_portal_val_result
-    print("Portal VaL: ", GlobalVariables.str_portal_val_result)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Portal Val')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_portal_val_result
+                print("Portal VaL: ", GlobalVariables.str_portal_val_result)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'App Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_app_val_result
-    print("App VaL: ", GlobalVariables.str_app_val_result)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'App Val')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_app_val_result
+                print("App VaL: ", GlobalVariables.str_app_val_result)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
-    print("UI VaL: ", GlobalVariables.str_ui_val_result)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
+                print("UI VaL: ", GlobalVariables.str_ui_val_result)
 
-    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'ChargeSlip Val')
-    sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_chargeslip_val_result
-    print("ChargeSlip VaL: ", GlobalVariables.str_chargeslip_val_result)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'ChargeSlip Val')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_chargeslip_val_result
+                print("ChargeSlip VaL: ", GlobalVariables.str_chargeslip_val_result)
 
-    # sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
+                # sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
 
-    # Added on Apr 11
-    # To add the rerun count after every executed testcases
-    # if bool_rerun_at_the_end & bool_rerun_immediately are enabled, bool_rerun_at_the_end will be considered
-    # if (bool_rerun_at_the_end is TRUE) OR (bool_rerun_at_the_end & bool_rerun_immediately are TRUE)
-    if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
-            "Validations", "bool_rerun_immediately").lower() == "false") \
-            or (
-            ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
-        "Validations", "bool_rerun_immediately").lower() == "true"):
-        columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Attempts')
-        if sheet.cell(row=rowNumber, column=columnNumber).value is None or sheet.cell(row=rowNumber, column=columnNumber).value == 'N/A':
-            sheet.cell(row=rowNumber, column=columnNumber).value =  0
-        else:
+                # Added on Apr 11
+                # To add the rerun count after every executed testcases
+                # if bool_rerun_at_the_end & bool_rerun_immediately are enabled, bool_rerun_at_the_end will be considered
+                # if (bool_rerun_at_the_end is TRUE) OR (bool_rerun_at_the_end & bool_rerun_immediately are TRUE)
+                if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
+                        "Validations", "bool_rerun_immediately").lower() == "false") \
+                        or (
+                        ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
+                    "Validations", "bool_rerun_immediately").lower() == "true"):
+                    columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Attempts')
+                    if sheet.cell(row=rowNumber, column=columnNumber).value is None or sheet.cell(row=rowNumber, column=columnNumber).value == 'N/A':
+                        sheet.cell(row=rowNumber, column=columnNumber).value =  0
+                    else:
 
-            currentRetryCountsheet = sheet.cell(row=rowNumber, column=columnNumber).value
-            sheet.cell(row=rowNumber, column=columnNumber).value = currentRetryCountsheet + 1
-    # =====================================================================================
+                        currentRetryCountsheet = sheet.cell(row=rowNumber, column=columnNumber).value
+                        sheet.cell(row=rowNumber, column=columnNumber).value = currentRetryCountsheet + 1
+                # =====================================================================================
 
-    workbook.save(EXCEL_reportFilePath)
-    workbook.close()
+                workbook.save(EXCEL_reportFilePath)
+                workbook.close()
+                fcntl.flock(locked_file, fcntl.LOCK_UN)
+                break
+        except Exception as e:
+            print(f"Unable to update the tc result to report due to error {str(e)}. Retrying..")
+            timer += 1
+            time.sleep(1)
 
 
 def captureLogs(request):
