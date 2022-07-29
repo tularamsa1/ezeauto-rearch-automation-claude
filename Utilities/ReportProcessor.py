@@ -427,17 +427,17 @@ def updateTestCaseResult(msg):
     if not GlobalVariables.bool_val_exe:
         if GlobalVariables.str_api_val_result == "Fail":
             ls_validation_msg.append("Execution of API validation Failed!!")
-        elif GlobalVariables.str_db_val_result == "Fail":
+        if GlobalVariables.str_db_val_result == "Fail":
             ls_validation_msg.append("Execution of DB validation Failed!!")
-        elif GlobalVariables.str_portal_val_result == "Fail":
+        if GlobalVariables.str_portal_val_result == "Fail":
             ls_validation_msg.append("Execution of PORTAL validation Failed!!")
-        elif GlobalVariables.str_app_val_result == "Fail":
+        if GlobalVariables.str_app_val_result == "Fail":
             ls_validation_msg.append("Execution of APP validation Failed!!")
-        elif GlobalVariables.str_ui_val_result == "Fail":
+        if GlobalVariables.str_ui_val_result == "Fail":
             ls_validation_msg.append("Execution of UI validation Failed!!")
-        elif GlobalVariables.str_chargeslip_val_result == 'Fail':
+        if GlobalVariables.str_chargeslip_val_result == 'Fail':
             ls_validation_msg.append("Execution of Charge-Slip validation Failed!!")
-        elif GlobalVariables.str_api_val_result == "Fail" \
+        if GlobalVariables.str_api_val_result == "Fail" \
             or GlobalVariables.str_db_val_result == "Fail" \
                 or GlobalVariables.str_portal_val_result == "Fail" \
                     or GlobalVariables.str_app_val_result == "Fail" \
