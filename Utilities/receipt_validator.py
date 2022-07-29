@@ -1,18 +1,14 @@
-# import os
 import re
-# import time
-# from datetime import datetime
 import requests
 import json
-
 import chromedriver_autoinstaller
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+import pytest_check as check
 
 from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
-
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider import GlobalVariables as global_variables
 
@@ -441,6 +437,7 @@ def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:
 
 
 def compare_present_receipt_info_with_expected_receipt_info(present_details: dict, expected_details: dict) -> bool:
+    print("=======   CHARGE SLIP Validation Started    =======")
     fields_that_are_not_present = set()
     matching_fields = set()
     unmatching_fields = set()
@@ -452,22 +449,25 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
                 logger.debug(f"{key} found")
                 if expected_details[key] == present_details[key]:
                     matching_fields.add(key)
-                    print(f"'{key}' is matching")
+                    # print(f"'{key}' is matching")
                     logger.debug(f"'{key}' is matching")
-                    
+
                 else:
                     unmatching_fields.add(key)
-                    print(f"'{key}' is not matching")
+                    # print(f"'{key}' is not matching")
                     logger.debug(f"'{key}' is not matching")
+                    print("expectedVal from charge slip for the " + str(key) + ": ", expected_details[key])
+                    print("actualVal from charge slip for the " + str(key) + ": ", present_details[key])
+                    check.equal(expected_details[key], present_details[key])
             else:
                 fields_that_are_not_present.add(key)
                 print(f"The field '{key}' not present")
                 logger.debug(f"The field '{key}' not present")
-    
+
     else:
         print("No present receipt info found")
         logger.warning("No present receipt info found")
-
+    print("=======   CHARGE SLIP Validation Completed    =======")
     return {
         "fields_that_are_not_present": fields_that_are_not_present,
         "matching_fields": matching_fields,
