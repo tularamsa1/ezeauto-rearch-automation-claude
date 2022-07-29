@@ -436,7 +436,7 @@ def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:
     return present_receipt_info
 
 
-def compare_present_receipt_info_with_expected_receipt_info(present_details: dict, expected_details: dict) -> bool:
+def compare_present_receipt_info_with_expected_receipt_info(present_details: dict, expected_details: dict) -> dict:
     print("=======   CHARGE SLIP Validation Started    =======")
     fields_that_are_not_present = set()
     matching_fields = set()
@@ -449,12 +449,10 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
                 logger.debug(f"{key} found")
                 if expected_details[key] == present_details[key]:
                     matching_fields.add(key)
-                    # print(f"'{key}' is matching")
                     logger.debug(f"'{key}' is matching")
 
                 else:
                     unmatching_fields.add(key)
-                    # print(f"'{key}' is not matching")
                     logger.debug(f"'{key}' is not matching")
                     print("expectedVal from charge slip for the " + str(key) + ": ", expected_details[key])
                     print("actualVal from charge slip for the " + str(key) + ": ", present_details[key])
