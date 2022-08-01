@@ -1,11 +1,13 @@
 import os
 import openpyxl
 import pandas as pd
-from DataProvider import GlobalConstants
 from PageFactory import Base_Actions
 from TestCases import conftest
 from DataProvider import GlobalVariables
 from Utilities import ConfigReader, DirectoryCreator, ExcelProcessor
+from Configuration import TestSuiteSetup
+from termcolor import colored
+import shutil
 
 immediateRerun = True
 
@@ -29,7 +31,6 @@ def is_rerun_at_the_end_required():
 
 
 def rerunTestAtTheEnd():
-    # print("Rerun count is: ", rerunCount)
     df_rerunTestCases = pd.DataFrame(
         pd.read_excel(EXCEL_reportFilePath))
 
@@ -84,7 +85,7 @@ def rerunTestAtTheEnd():
     ls_rerunTestCases = list(setOfTest)
     listToStr = ' '.join([str(elem) for elem in ls_rerunTestCases])
 
-    print("python3.8 -m pytest -v " + listToStr + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
+    print("python3.8 -m pytest -v " + listToStr + " " + TestSuiteSetup.calculateTestCasesCountForParallelExecution() + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
     print(list(setOfTest))
     print("List of exe tcs failed", exeFail)
     print("List of apiVal tcs failed", apiValFail)
@@ -99,7 +100,7 @@ def rerunTestAtTheEnd():
         ls_TestCasesForRerun = list(setOfRerunTest)
         changeOverallStatusToEmpty(ls_TestCasesForRerun)
         os.system(
-            "python3.8 -m pytest -v " + listToStr + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
+            "python3.8 -m pytest -v " + listToStr + " " + TestSuiteSetup.calculateTestCasesCountForParallelExecution() +' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
 
     return len(listToStr.strip())
 
@@ -152,10 +153,6 @@ def changeOverallStatusToEmpty(ls_TestCasesForRerun):
     wb.save(EXCEL_reportFilePath)
 
 
-from termcolor import colored
-import shutil
-
-
 def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
     print("Starting the immediate rerun")
     if setRerunCount(testCaseID, rerunCount):
@@ -186,9 +183,6 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
             GlobalVariables.time_calc.teardown.pause()
             print(colored("Teardown Timer paused (before logon failure) in rerun immediately method".center(
                 shutil.get_terminal_size().columns, "="), 'cyan'))
-            # print("log on failure method calling")
-            # print("testCaseID", testCaseID)
-            # print("getRerunCount(testCaseID)", int(getRerunCount(testCaseID)))
 
             print("isRerunRequiredImmediately(testCaseID)", isRerunRequiredImmediately(testCaseID))
             conftest.log_on_failure(request)
@@ -203,21 +197,16 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
 from DataProvider.GlobalConstants import RUNTIME_DIR
 
 xl_RerunCountPath = os.path.join(RUNTIME_DIR, 'RerunCount.xlsx')
-# xl_RerunCountPath = str(ConfigReader.read_config_paths("System","automation_suite_path"))+"/TestCases/RerunCount.xlsx"
-
 
 xl_Timestamp = str(ConfigReader.read_config_paths("System", "automation_suite_path")) + "/TestCases/Timestamp.xlsx"
 
 
 def prepareImmediateRerunExcel():
-    # df_overallTClist = pd.read_excel("/home/oem/PycharmProjects/EzeAuto/DataProvider/TestCasesDetail.xlsx")
-
     # Added on Apr 11
     df_overallTClist = pd.read_excel(
         str(ConfigReader.read_config_paths("System", "automation_suite_path")) + "/Runtime/AllTestcaseSuite.xlsx")
 
     df_overallTClist.set_index('Test Case ID', inplace=True)
-    # df_overallTClist.drop(columns=['File Name', 'Execute'], inplace=True)
 
     df_overallTClist.drop(columns=['File Name', 'Execute', 'Unnamed: 0'], inplace=True)
 
@@ -226,7 +215,6 @@ def prepareImmediateRerunExcel():
 
     reRunCount = []
     for i in range(0, len(df_overallTClist.index)):
-        # reRunCount.append(GlobalVariables.int_immediateRerunCount)
         try:
             configuredImmediateRerunCount = int(ConfigReader.read_config("Validations", "int_rerun_count"))
             reRunCount.append(configuredImmediateRerunCount)
@@ -254,19 +242,16 @@ def getRerunCount(testCaseID):
             try:
                 return df_TClist['Rerun Count'][testCaseID]
             except:
-                None
+                pass
         except:
             return -2
     if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
         try:
             df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun At The End")
-            # df_TClist.set_index('Test Case ID', inplace=True)
             try:
-                # breakpoint()
-                # print(df_TClist['Rerun Count'][0])
                 return df_TClist['Rerun Count'][0]
             except:
-                None
+                pass
         except:
             return -2
 
