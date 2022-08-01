@@ -210,7 +210,6 @@ def generate_merchant_creation_api_body() -> list:
                 else:
                     create_users_for_merchant(merchant[0])
                     cursor.execute("update merchants set CreationStatus = 'Existed', Availability = 'Available' where MerchantCode ='"+merchant[0]+"';")
-                    cursor.execute("update users set CreationStatus = 'Existed', Availability = 'Available'  where MerchantCode ='"+merchant[0]+"';")
                     conn.commit()
             cursor.close()
             conn.close()
