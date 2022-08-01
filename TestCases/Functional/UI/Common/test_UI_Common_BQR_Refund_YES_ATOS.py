@@ -531,17 +531,25 @@ def test_common_100_102_036():
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
+
             api_details = DBProcessor.get_api_details('paymentRefund',
-                                                      request_body={"username": username, "amount": amount, "originalTransactionId":str(txn_id)})
+                                                      request_body={"username": username, "password": password,
+                                                                    "amount": amount,
+                                                                    "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
-            print(response)
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            partial_refund_message = response["message"]
+            logger.debug(f"Message for performing partial refund of txn is : {partial_refund_message}")
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
             rrn = "RE" + txn_id.split('E')[1]
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            refund_auth_code = result['auth_code'].values[0]
+            rrn_refunded = result['rr_number'].iloc[0]
+            posting_date_refunded = result['posting_date'].values[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}")
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -584,7 +592,10 @@ def test_common_100_102_036():
                 logger.info("Starting App Validation for the test case")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:REFUNDED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id_refunded, "Payment Amt": str(amount), "Payment Status Original": "STATUS:AUTHORIZED_REFUNDED", "Payment mode Original": "BHARAT QR", "Payment Txn ID Original": txn_id, "Payment Amt Original": str(amount)}
-
+                app_driver.reset()
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                loginPage.perform_login(username, password)
+                homePage = HomePage(app_driver)
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)

@@ -51,6 +51,23 @@ def test_sa_100_102_049():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                 "'" + str(org_code) + "'; "
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")

@@ -25,11 +25,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_sa_100_102_062():
+def test_sa_100_102_059():
     """
     :Description: Verification of a BQRV4 Check Status Success transaction through SA via YES_ATOS
-    :Subfeature code: UI_SA_PM_BQRV4_Checkstatus_Success_YES_ATOS_26
-    :TC naming code description: 100->Payment Method, 102->BQR, 026-> TC26
+    :Subfeature code: UI_SA_BQRV4_Checkstatus_Success_YES_ATOS_59
+    :TC naming code description: 100->Payment Method, 102->BQR, 059-> TC59
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

@@ -11,7 +11,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, ResourceAssigner
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -36,6 +36,32 @@ def test_sa_100_102_051():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # ---------------------------------------------------------------------------------------------------------

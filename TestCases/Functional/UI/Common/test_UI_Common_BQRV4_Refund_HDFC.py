@@ -30,7 +30,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_102_052():
     """
     :Description: Verification of a BQRV4 Refund transaction via HDFC
-    :Subfeature code: UI_Common_BQRV4_Refund_via_HDFC_055
+    :Subfeature code: UI_Common_BQRV4_Refund_via_HDFC_052
     :TC naming code description:100->Payment Method, 102->BQR, 052-> TC052
     """
     try:
@@ -56,6 +56,22 @@ def test_common_100_102_052():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -484,6 +500,23 @@ def test_common_100_102_053():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)

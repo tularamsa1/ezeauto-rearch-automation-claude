@@ -59,6 +59,18 @@ def test_common_100_102_016():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -112,15 +124,21 @@ def test_common_100_102_016():
             logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
             api_details = DBProcessor.get_api_details('paymentRefund',
-                                                      request_body={"username": username, "amount": refund_amount,
+                                                      request_body={"username": username, "password": password,
+                                                                    "amount": refund_amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for refund api is : {response}")
-            query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
+            logger.debug(f"Response received for transaction details api is : {response}")
+            print(response)
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_refunded = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            refund_auth_code = result['auth_code'].values[0]
+            rrn_refunded = result['rr_number'].iloc[0]
+            posting_date_refunded = result['posting_date'].values[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -167,7 +185,10 @@ def test_common_100_102_016():
                                      "Payment Status Original": "STATUS:AUTHORIZED",
                                      "Payment mode Original": "BHARAT QR", "Payment Txn ID Original": txn_id,
                                      "Payment Amt Original": str(amount)}
-
+                app_driver.reset()
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                loginPage.perform_login(username, password)
+                homePage = HomePage(app_driver)
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)

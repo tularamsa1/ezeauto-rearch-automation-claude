@@ -1,15 +1,23 @@
 import shutil
 import sys
 from datetime import datetime
+from time import sleep
+
 import pytest
 import random
+
 from termcolor import colored
+
 from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
+from PageFactory.App_TransHistoryPage import TransHistoryPage
+from PageFactory.Portal_HomePage import PortalHomePage
+from PageFactory.Portal_LoginPage import PortalLoginPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
+from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -17,13 +25,13 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_sa_100_102_010():
+def test_sa_100_102_060():
     """
-    :Description: Verification of a BQR QR Generation Success through SA via HDFC
-    :Subfeature code: UI_SA_PM_BQR_HDFC_QR_Generation_Success_010
+    :Description: Verification of a BQRV4 QR Generation Success through SA via YES_ATOS
+    :Subfeature code: UI_SA_BQRV4_QR_Generation_Success_YES_ATOS_60
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                010-> TC10
+                                060-> TC60
     """
 
     try:
@@ -33,35 +41,40 @@ def test_sa_100_102_010():
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         username = app_cred['Username']
         password = app_cred['Password']
-
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
-
         query = "select org_code from org_employee where username='" + str(username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
+        result = DBProcessor.getValueFromDB(query)
+        mid = result["mid"].iloc[0]
+        logger.debug(f"Fetching mid from database for current merchant:{mid}")
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "' "
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting inactive", result)
-        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '" + mid + "' and org_code='" + org_code + "' and bank_code='YES' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='YES' "
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                                "password": portal_password})
+                                                                              "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
-
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -130,11 +143,9 @@ def test_sa_100_102_010():
         GlobalVariables.time_calc.validation.start()
         print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
-                logger.info(f"Started APP validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Screen text": "Scan QR code using"}
 
@@ -152,7 +163,6 @@ def test_sa_100_102_010():
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-
         # -----------------------------------------End of App Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
@@ -160,6 +170,7 @@ def test_sa_100_102_010():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
     # -------------------------------------------End of Validation---------------------------------------------
+
     finally:
         logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
         if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
@@ -177,10 +188,19 @@ def test_sa_100_102_010():
             print("Test case setup itself failed. So the test case was not executed.")
             logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
         else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
+            ReportProcessor.updateTestCaseResult(msg)
         # -------------------------------Revert Preconditions done(setup)--------------------------------------------
         logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where mid = '" + mid + "' and org_code='" + org_code + "' and bank_code='YES'"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         logger.info("Reverted back all the settings that were done as preconditions")
         # ----------------------------------------------------------------------------------------------------------
         GlobalVariables.time_calc.execution.end()
@@ -190,3 +210,4 @@ def test_sa_100_102_010():
 
         logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
         logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
+        # ----------------------------------------------------------------------------------------------------------

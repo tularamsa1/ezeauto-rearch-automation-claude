@@ -122,18 +122,24 @@ def test_common_100_102_037():
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
+
             api_details = DBProcessor.get_api_details('paymentRefund',
-                                                      request_body={"username": username, "amount": refund_amount,
+                                                      request_body={"username": username, "password": password,
+                                                                    "amount": refund_amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for refund api is : {response}")
+            logger.debug(f"Response received for transaction details api is : {response}")
             partial_refund_message = response["message"]
             logger.debug(f"Message for performing partial refund of txn is : {partial_refund_message}")
-            query = "select id from txn where org_code='" + org_code + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id = result["id"].iloc[0]
-            logger.debug(f"Fetching Transaction id from db after performing partial refund : {txn_id} ")
+            txn_id_refunded = result["id"].iloc[0]
+            logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
+            refund_auth_code = result['auth_code'].values[0]
+            rrn_refunded = result['rr_number'].iloc[0]
+            posting_date_refunded = result['posting_date'].values[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -178,7 +184,10 @@ def test_common_100_102_037():
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR",
                                      "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
-
+                app_driver.reset()
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                loginPage.perform_login(username, password)
+                homePage = HomePage(app_driver)
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)

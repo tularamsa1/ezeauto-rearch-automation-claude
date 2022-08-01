@@ -901,7 +901,7 @@ def test_common_100_101_031():
             logger.info(
                 f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
-            amount = random.randint(301, 399)
+            amount = random.randint(201, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
@@ -913,8 +913,8 @@ def test_common_100_101_031():
 
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
-            payment_page.click_on_Upi_paymentMode()
-            logger.info("selected payment mode is UPI")
+            payment_page.click_on_Bqr_paymentMode()
+            logger.info("selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
 
@@ -1230,8 +1230,8 @@ def test_common_100_101_031():
                                       "UPI_Txn_Status new": "AUTHORIZED",
                                       "UPI_Txn resp_code Original": "SUCCESS",
                                       "UPI_Txn resp_code new": "SUCCESS",
-                                      "UPI_Txn txn_type Original": "PAY_QR",
-                                      "UPI_Txn txn_type new": "PAY_QR",
+                                      "UPI_Txn txn_type Original": "PAY_BQR",
+                                      "UPI_Txn txn_type new": "PAY_BQR",
                                       "UPI_Txn bank_code Original": "HDFC",
                                       "UPI_Txn bank_code new": "HDFC",
                                       }

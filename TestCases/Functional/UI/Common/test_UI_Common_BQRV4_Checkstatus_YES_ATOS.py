@@ -29,8 +29,8 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_102_061():
     """
     :Description: Verification of a BQRV4 Check Status Success transaction via YES_ATOS
-    :Subfeature code: UI_Common_PM_BQR_Checkstatus_Success_YES_ATOS_30
-    :TC naming code description: 100->Payment Method, 102->BQR, 030-> TC30
+    :Subfeature code: UI_Common_BQRV4_Checkstatus_Success_YES_ATOS_61
+    :TC naming code description: 100->Payment Method, 102->BQR, 061-> TC61
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
