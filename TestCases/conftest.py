@@ -155,6 +155,7 @@ def updatingHighLevelReportAfterEachTCS():
                         Overall_Status = 'Fail'
                 elif GlobalVariables.EXCEL_TC_Execution == 'Fail':
                     Overall_Status = 'Fail'
+                    set_dne_status()
                 rowNumber = ExcelProcessor.getRowNumberFromValue(workbook, sheet, 'Test Case ID',
                                                                  GlobalVariables.EXCEL_testCaseName)
 
@@ -219,6 +220,20 @@ def updatingHighLevelReportAfterEachTCS():
             print(f"Unable to update the tc result to report due to error {str(e)}. Retrying..")
             timer += 1
             time.sleep(1)
+
+def set_dne_status():
+    if ConfigReader.read_config("Validations", "api_validation").lower() == "true" and 'apiVal' in GlobalVariables.tc_markers:
+        GlobalVariables.str_api_val_result = 'DNE'
+    if ConfigReader.read_config("Validations", "db_validation").lower() == "true" and 'dbVal' in GlobalVariables.tc_markers:
+        GlobalVariables.str_db_val_result = 'DNE'
+    if ConfigReader.read_config("Validations", "portal_validation").lower() == "true" and 'portalVal' in GlobalVariables.tc_markers:
+        GlobalVariables.str_portal_val_result = 'DNE'
+    if ConfigReader.read_config("Validations", "app_validation").lower() == "true" and 'appVal' in GlobalVariables.tc_markers:
+        GlobalVariables.str_app_val_result = 'DNE'
+    if ConfigReader.read_config("Validations", "ui_validation").lower() == "true" and 'uiVal' in GlobalVariables.tc_markers:
+        GlobalVariables.str_ui_val_result = 'DNE'
+    if ConfigReader.read_config("Validations", "charge_slip_validation").lower() == "true" and 'chargeSlipVal' in GlobalVariables.tc_markers:
+        GlobalVariables.str_chargeslip_val_result = 'DNE'
 
 
 def captureLogs(request):
@@ -384,6 +399,7 @@ def method_setup(request):
         GlobalVariables.time_calc.setup.start()
         print(colored("Setup Timer started in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
+    GlobalVariables.tc_markers = [m.name for m in request.node.iter_markers()]
     GlobalVariables.time_calc.setup.pause()
     print(colored("Setup Timer paused in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
