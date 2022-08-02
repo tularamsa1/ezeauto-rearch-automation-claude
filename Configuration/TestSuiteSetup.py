@@ -16,14 +16,14 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator, DBProcessor, sqlite_processor, merchant_creator
+from Utilities import DirectoryCreator,Ezewallet_Setup
+from Utilities import ResourceAssigner, ConfigReader
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 
 logger = EzeAutoLogger(__name__)
-from Utilities import ResourceAssigner, ConfigReader
 
 GlobalVariables.ssh = paramiko.SSHClient()
 router_ip = Base_Actions.get_environment("str_exe_env_ip")  # dev11
