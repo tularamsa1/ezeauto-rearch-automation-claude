@@ -871,13 +871,8 @@ def test_common_200_203_010():
                             logger.error("Withdraw from Agent Failed")
                             raise Exception("Withdraw from Agent Failed")
                     else:
-<<<<<<< HEAD
-                        logger.error("Refund Payment of cash collected Failed")
-                        raise Exception("Refund Payment of cash collected Failed")
-=======
                         logger.error("Refund Payment of cash colllected Failed")
                         raise Exception("Refund Payment of cash colllected Failed")
->>>>>>> Added Ezewallet related TCS
 
                 else:
                     logger.error("Cash Payment Failed")

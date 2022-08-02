@@ -17,11 +17,7 @@ from selenium import webdriver
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import DirectoryCreator,Ezewallet_Setup
-<<<<<<< HEAD
-from Utilities import ResourceAssigner, ConfigReader, sqlite_processor,merchant_creator,DBProcessor
-=======
 from Utilities import ResourceAssigner, ConfigReader
->>>>>>> Added Ezewallet related TCS
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -413,47 +409,40 @@ def getThreadCount():
 
 
 def prepareDevicesAndDB():
-    if str(ConfigReader.read_config("standalone_features", "config_and_ezewallet")).lower() == "true":
-        Ezewallet_Setup.db_reset()
-        sqlite_processor.clearAssignerTables()
-        DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
-
-
-    else:
-        global devices, appiumServerCount
-        devices = getDevicesList()
-        if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
-            if devices == None:
-                print("No physical device is connected. \
-                So cannot start the execution since device only option is configured.")
-                return False
-            else:
-                appiumServerCount = len(devices) + 1
-        else:
-            if devices == None:
-                print("Attempting to start emulators")
-                additionalEmulatorsRequired = getThreadCount()
-            else:
-                additionalEmulatorsRequired = getThreadCount() - len(devices)
-
-            if (additionalEmulatorsRequired > 0):
-                start_emulators(additionalEmulatorsRequired)
-            appiumServerCount = getThreadCount() + 1
-        appium_server_ports = startAppiumServers(appiumServerCount)
-        sqlite_processor.clearAssignerTables()
-        devices = getDevicesList()
+    global devices, appiumServerCount
+    devices = getDevicesList()
+    if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == "true":
         if devices == None:
-            print("Attempt to start the emulators failed.")
-            print("No devices available. Hence DB update operation for adding devices is skipped.")
+            print("No physical device is connected. \
+            So cannot start the execution since device only option is configured.")
+            return False
         else:
-            ResourceAssigner.updateDevicesInDB(devices)
-        ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
-        DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
-        sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
-        sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
-        merchant_creator.create_merchants_with_users()
-        sqlite_processor.update_app_users_to_db()
-        sqlite_processor.update_portal_users_to_db()
+            appiumServerCount = len(devices) + 1
+    else:
+        if devices == None:
+            print("Attempting to start emulators")
+            additionalEmulatorsRequired = getThreadCount()
+        else:
+            additionalEmulatorsRequired = getThreadCount() - len(devices)
+
+        if (additionalEmulatorsRequired > 0):
+            start_emulators(additionalEmulatorsRequired)
+        appiumServerCount = getThreadCount() + 1
+    appium_server_ports = startAppiumServers(appiumServerCount)
+    sqlite_processor.clearAssignerTables()
+    devices = getDevicesList()
+    if devices == None:
+        print("Attempt to start the emulators failed.")
+        print("No devices available. Hence DB update operation for adding devices is skipped.")
+    else:
+        ResourceAssigner.updateDevicesInDB(devices)
+    ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
+    DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
+    sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
+    sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
+    merchant_creator.create_merchants_with_users()
+    sqlite_processor.update_app_users_to_db()
+    sqlite_processor.update_portal_users_to_db()
     return True
 
 
