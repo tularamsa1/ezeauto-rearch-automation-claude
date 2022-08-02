@@ -473,51 +473,15 @@ def test_common_200_201_003():
                 logger.debug(f"Agency Balance before Transfer : {agency_balance_before}")
                 logger.debug(f"Actual amount for Transfer  : {original_transfer_amt}")
 
-                expectedDBValues = {"clw_txn_amt":original_transfer_amt,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"TRANSFER",
-                                    "clw_transfer_status":"SUCCESS","clw_transfer_type":"MANUAL","clw_leg_amt_cr":original_transfer_amt,
-                                    "clw_account_entity_type_cr":"AGENT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_transfer_amt,
-                                    "clw_account_entity_type_dt":"MERCHANT","clw_source_type_dt":"DEBIT",
-                                    "agency_balance": (agency_balance_before - original_transfer_amt)}
+                expectedDBValues = {"Agency balance": (agency_balance_before - original_transfer_amt)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
-
-                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + wallet_txn_id + "';"
-                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
-                logger.debug(f"Query result URL: {result_wallet_txn_db}")
-
-                clw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
-                clw_merchant_id =result_wallet_txn_db['merchant_id'].iloc[0]
-                clw_transfer_mode =result_wallet_txn_db['transfer_mode'].iloc[0]
-                clw_transfer_status =result_wallet_txn_db['txn_status'].iloc[0]
-                clw_transfer_type =result_wallet_txn_db['transfer_type'].iloc[0]
-
-                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'CREDIT';"
-                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
-                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
-
-                clw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
-                clw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
-                clw_source_type_cr =result_wallet_txn_leg_cr['source_type'].iloc[0]
-
-                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'DEBIT';"
-                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
-                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
-
-                clw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
-                clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
-                clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agency_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"clw_txn_amt":clw_txn_amt,"clw_merchant_id":clw_merchant_id,"clw_transfer_mode":clw_transfer_mode,
-                                    "clw_transfer_status":clw_transfer_status,"clw_transfer_type":clw_transfer_type,
-                                  "clw_leg_amt_cr": clw_leg_amt_cr,
-                                  "clw_account_entity_type_cr": clw_account_entity_type_cr, "clw_source_type_cr": clw_source_type_cr,
-                                  "clw_leg_amt_dt": clw_leg_amt_dt,
-                                  "clw_account_entity_type_dt": clw_account_entity_type_dt, "clw_source_type_dt": clw_source_type_dt,
-                                  "agency_balance": agency_bal_after}
+                actualDBValues = {"Agency balance": agency_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
