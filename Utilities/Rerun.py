@@ -85,7 +85,12 @@ def rerunTestAtTheEnd():
     ls_rerunTestCases = list(setOfTest)
     listToStr = ' '.join([str(elem) for elem in ls_rerunTestCases])
 
-    print("python3.8 -m pytest -v " + listToStr + " " + TestSuiteSetup.calculateTestCasesCountForParallelExecution() + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
+    if str(ConfigReader.read_config("Validations", "bool_rerun_at_the_end_parallel")).lower() == 'true':
+        number_of_threads = TestSuiteSetup.calculateTestCasesCountForParallelExecution()
+    else:
+        number_of_threads = ""
+
+    print("python3.8 -m pytest -v " + listToStr + " " + number_of_threads + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
     print(list(setOfTest))
     print("List of exe tcs failed", exeFail)
     print("List of apiVal tcs failed", apiValFail)
@@ -100,7 +105,7 @@ def rerunTestAtTheEnd():
         ls_TestCasesForRerun = list(setOfRerunTest)
         changeOverallStatusToEmpty(ls_TestCasesForRerun)
         os.system(
-            "python3.8 -m pytest -v " + listToStr + " " + TestSuiteSetup.calculateTestCasesCountForParallelExecution() +' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
+            "python3.8 -m pytest -v " + listToStr + " " + number_of_threads +' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
 
     return len(listToStr.strip())
 
