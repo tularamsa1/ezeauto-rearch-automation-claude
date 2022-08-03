@@ -68,6 +68,7 @@ charge_slip_driver = ''
 passed1 = 0
 count = 1
 
+tc_markers = ""
 
 df_testCasesDetail = ""
 
