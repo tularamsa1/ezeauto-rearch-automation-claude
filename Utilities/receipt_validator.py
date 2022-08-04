@@ -10,6 +10,7 @@ import pytest_check as check
 from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
 from Utilities.execution_log_processor import EzeAutoLogger
+from Utilities import Validator
 from DataProvider import GlobalVariables as global_variables
 
 
@@ -454,13 +455,13 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
                 else:
                     unmatching_fields.add(key)
                     logger.debug(f"'{key}' is not matching")
-                    print("expectedVal from charge slip for the " + str(key) + ": ", expected_details[key])
-                    print("actualVal from charge slip for the " + str(key) + ": ", present_details[key])
                     check.equal(expected_details[key], present_details[key])
             else:
                 fields_that_are_not_present.add(key)
                 print(f"The field '{key}' not present")
                 logger.debug(f"The field '{key}' not present")
+
+        Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
 
     else:
         print("No present receipt info found")
@@ -613,4 +614,3 @@ def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_detai
     global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
 
     return validation_sucessful
-
