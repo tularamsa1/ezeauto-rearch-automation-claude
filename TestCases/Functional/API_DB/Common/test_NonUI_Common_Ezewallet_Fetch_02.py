@@ -871,8 +871,8 @@ def test_common_200_203_010():
                             logger.error("Withdraw from Agent Failed")
                             raise Exception("Withdraw from Agent Failed")
                     else:
-                        logger.error("Refund Payment of cash colllected Failed")
-                        raise Exception("Refund Payment of cash colllected Failed")
+                        logger.error("Refund Payment of cash collected Failed")
+                        raise Exception("Refund Payment of cash collected Failed")
 
                 else:
                     logger.error("Cash Payment Failed")

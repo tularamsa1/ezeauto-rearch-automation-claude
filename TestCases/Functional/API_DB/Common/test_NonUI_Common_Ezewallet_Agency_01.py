@@ -54,10 +54,12 @@ def test_common_200_201_001():
 
             card_payment_success = response['success']
             amount = float(response['amount'])
+            payment_mode = response['paymentMode']
             txn_id = response['txnId']
             status = response['status']
+            settlement_status = response['settlementStatus']
             account_label = response['accountLabel']
-            logger.info(f"API Result: Fetch Response of Card Payment - Digital Agency Top Up: {card_payment_success}, {amount}, {txn_id}, {status}, {account_label}")
+            logger.info(f"API Result: Fetch Response of Card Payment - Digital Agency Top Up: {card_payment_success}, {amount}, {txn_id}, {status},{settlement_status},{payment_mode}, {account_label}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -86,8 +88,8 @@ def test_common_200_201_001():
             try:
                 if card_payment_success == True:
                     time.sleep(3)
-                    expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
-                                         "accountLabel": "TOPUP", "balance":agency_balance_before+original_amount}
+                    expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED","settlement_status":"PENDING",
+                                        "payment_mode":"CARD", "account_label": "TOPUP", "balance":agency_balance_before+original_amount}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -95,8 +97,9 @@ def test_common_200_201_001():
                     result = DBProcessor.getValueFromDB(query, "closedloop")
                     bal_after_posting = float(result["balance"].iloc[0])
 
-                    actualAPIValues = {"success": card_payment_success, "cardpay_amount": amount, "status":status,
-                                           "accountLabel": account_label, "balance":bal_after_posting}
+                    actualAPIValues = {"success": card_payment_success, "cardpay_amount": amount, "status":status,"settlement_status":settlement_status,
+                                        "payment_mode":payment_mode,
+                                           "account_label": account_label, "balance":bal_after_posting}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
 
@@ -107,8 +110,6 @@ def test_common_200_201_001():
                         logger.error("Posting is Unsuccesfull")
                 else:
                     raise Exception("Card Payment is not successfull")
-
-
 
             except Exception as e:
                 msg = "Digital Top up has been failed for an Agency" + GlobalConstants.ORG
@@ -128,15 +129,29 @@ def test_common_200_201_001():
                 logger.debug(f"Agency Balance before Top Up : {agency_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-                expectedDBValues = {"Agency balance": (agency_balance_before + original_amount)}
+                expectedDBValues = {"txn_amt":original_amount,"pmt_mode":payment_mode, "settle_status":settlement_status,
+                                    "pmt_status":status,
+                                    "agency_balance": (agency_balance_before + original_amount)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
-                logger.debug(f"Query to fetch data from account table : {query}")
-                result = DBProcessor.getValueFromDB(query, "closedloop")
-                logger.debug(f"Query result URL: {result}")
-                bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": bal_after_posting}
+                query_txn = "select id, amount, payment_mode, settlement_status, status from txn where id = '"+txn_id+"';"
+                result_txn = DBProcessor.getValueFromDB(query_txn)
+                logger.debug(f"Query result URL: {result_txn}")
+
+                txn_amt = float(result_txn["amount"].iloc[0])
+                pmt_mode = result_txn["payment_mode"].iloc[0]
+                settle_status = result_txn["settlement_status"].iloc[0]
+                pmt_status = result_txn["status"].iloc[0]
+
+                query_wallet = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+                logger.debug(f"Query to fetch data from account table : {query_wallet}")
+                result_wallet = DBProcessor.getValueFromDB(query_wallet, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet}")
+                bal_after_posting = float(result_wallet["balance"].iloc[0])
+
+
+                actualDBValues = {"txn_amt":txn_amt,"pmt_mode":pmt_mode, "settle_status":settle_status,
+                                    "pmt_status":pmt_status,"agency_balance": bal_after_posting}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -171,6 +186,7 @@ def test_common_200_201_001():
         GlobalVariables.time_calc.execution.end()
         print(colored("Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
             'cyan'))
+
 
 
 
@@ -267,11 +283,10 @@ def test_common_200_201_002():
             try:
 
                 expectedAPIValues = {"success": True, "upipay_amount": original_amount, "status":"PENDING",
-                                    "settlement_status":"PENDING","accountLabel": "TOPUP","payment_mode":"UPI",
+                                    "settlement_status":"PENDING","accountlabel": "TOPUP","payment_mode":"UPI",
                                       "confirm_success":False,"error_code":"EZETAP_0000703","real_code":"STOP_PAYMENT_NOT_ALLOWED_FOR_AUTHORIZED_TRANSACTION",
                                      "confirm_amount":original_amount,"confirm_settlement_status":"SETTLED", "confirm_status":"AUTHORIZED",
                                      "confirm_account_label":"TOPUP","confirm_payment_mode":"UPI","balance":agency_balance_before+original_amount}
-
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -279,7 +294,7 @@ def test_common_200_201_002():
                 bal_after_posting = float(result["balance"].iloc[0])
 
                 actualAPIValues = {"success": True, "upipay_amount": original_amount, "status":status,
-                                    "settlement_status":settlement_status,"accountLabel":account_label,"payment_mode":payment_mode,
+                                    "settlement_status":settlement_status,"accountlabel":account_label,"payment_mode":payment_mode,
                                       "confirm_success":confirm_upi_success,"error_code":error_code,"real_code":real_code,
                                      "confirm_amount":confirm_amount,"confirm_settlement_status":confirm_settlement_status, "confirm_status":confirm_status,
                                      "confirm_account_label":confirm_accountlabel,"confirm_payment_mode":confirm_payment_mode,"balance":bal_after_posting}
@@ -287,8 +302,6 @@ def test_common_200_201_002():
 
 
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-
-
 
             except Exception as e:
                 msg = "Digital Top up has been failed for an Agency" + GlobalConstants.ORG
@@ -308,16 +321,29 @@ def test_common_200_201_002():
                 logger.debug(f"Agency Balance before Top Up : {agency_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-                expectedDBValues = {"Agency balance": (agency_balance_before + original_amount)}
+                expectedDBValues = {"txn_amt": original_amount, "pmt_mode": confirm_payment_mode,
+                                    "settle_status": confirm_settlement_status,
+                                    "pmt_status": confirm_status,
+                                    "agency_balance": (agency_balance_before + original_amount)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
-                logger.debug(f"Query to fetch data from account table : {query}")
-                result = DBProcessor.getValueFromDB(query, "closedloop")
-                logger.debug(f"Query result URL: {result}")
-                bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": bal_after_posting}
-                logger.debug(f"actualDBValues : {actualDBValues}")
+                query_txn = "select id, amount, payment_mode, settlement_status, status from txn where id = '" + txn_id + "';"
+                result_txn = DBProcessor.getValueFromDB(query_txn)
+                logger.debug(f"Query result URL: {result_txn}")
+
+                txn_amt = float(result_txn["amount"].iloc[0])
+                pmt_mode = result_txn["payment_mode"].iloc[0]
+                settle_status = result_txn["settlement_status"].iloc[0]
+                pmt_status = result_txn["status"].iloc[0]
+
+                query_wallet = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+                logger.debug(f"Query to fetch data from account table : {query_wallet}")
+                result_wallet = DBProcessor.getValueFromDB(query_wallet, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet}")
+                bal_after_posting = float(result_wallet["balance"].iloc[0])
+
+                actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode, "settle_status": settle_status,
+                                  "pmt_status": pmt_status, "agency_balance": bal_after_posting}
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
             except Exception as e:
@@ -434,9 +460,9 @@ def test_common_200_201_003():
             try:
                 if transfer_pay_success == True:
                     expectedAPIValues = {"success": True,
-                                     "realCode": "TRANSACTION_SUCCESSFUL", "successCode": "CLOSED_LOOP_000027",
-                                     "creditAccBalance": agent_balance_before + original_transfer_amt,
-                                     "debitAccBalance": agency_balance_before - original_transfer_amt,
+                                     "real_code": "TRANSACTION_SUCCESSFUL", "success_code": "CLOSED_LOOP_000027",
+                                     "credit_acc_balance": agent_balance_before + original_transfer_amt,
+                                     "debit_acc_balance": agency_balance_before - original_transfer_amt,
                                      "bal_after_transfer": agency_balance_before - original_transfer_amt}
 
                     query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -445,8 +471,8 @@ def test_common_200_201_003():
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": transfer_pay_success,
-                                       "realCode": realcode, "successCode": successcode,
-                                       "creditAccBalance": credit_acc_bal, "debitAccBalance": debit_acc_bal,
+                                       "real_code": realcode, "success_code": successcode,
+                                       "credit_acc_balance": credit_acc_bal, "debit_acc_balance": debit_acc_bal,
                                         "bal_after_transfer": agency_bal_after}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
