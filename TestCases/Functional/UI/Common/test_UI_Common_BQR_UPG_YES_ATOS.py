@@ -1131,7 +1131,7 @@ def test_common_100_102_042():
 @pytest.mark.appVal
 def test_common_100_102_043():
     """
-    :Description: Verification of  a BQR UPG Refund txn when Auto refund is disabled through API via YES_ATOS
+    :Description: Verification of  a BQR UPG Refund txn when Auto refund is disabled through Portal via YES_ATOS
     :Sub Feature code: UI_Common_PM_BQR_UPG_Refund_API_YES_ATOS_43
     :TC naming code description: 100->Payment Method
                                 102->BQR

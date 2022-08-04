@@ -2,7 +2,6 @@ import random
 import shutil
 import sys
 from datetime import datetime
-from time import sleep
 import pytest
 from termcolor import colored
 from Configuration import TestSuiteSetup, Configuration
@@ -213,7 +212,7 @@ def test_common_100_102_046():
                 date_and_time = date_time_val.date_and_time_val_against_app(posting_date)
                 expected_app_values = {"pmt_mode": "UPI", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
-                                       "customer_name": vpa,"payer_name": vpa,"settle_status": "SETTLED",
+                                       "customer_name": vpa,"payer_name": vpa,
                                        "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
