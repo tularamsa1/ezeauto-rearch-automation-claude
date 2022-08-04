@@ -238,7 +238,7 @@ def print_validation_result(expected_values:{},acutal_values:{}, lst_passed_fiel
             for field in lst_failed_fields:
                 try:
                     print(f"Expected value of {field}   : {expected_values[field]}")
-                    print(f"Actual value of {field}     : {acutal_values[field]}")
+                    print(f"Actual value of {field}     : {acutal_values[field]}", 'red')
                     print()
                 except Exception:
                     print(f"Field {field} is not available in the actual values list.")
