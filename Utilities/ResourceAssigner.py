@@ -286,7 +286,7 @@ def getPortalUserCredentials(testCaseID):
                             print("Unable to change the status of portal user in DB, so deleting the entry in portal_users_blocked table.")
                             cursor.execute("DELETE FROM portal_users_blocked WHERE username = '"+username+"';")
                             conn.commit()
-                            proceed == False
+                            proceed = False
                     except Exception as e:
                         proceed = False
                         if str(e).__contains__("UNIQUE constraint failed"):
@@ -302,7 +302,7 @@ def getPortalUserCredentials(testCaseID):
             proceed = False
 
         if proceed:
-            break;
+            break
         else:
             time.sleep(1)
             timer += 1
