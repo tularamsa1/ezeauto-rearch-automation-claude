@@ -56,6 +56,10 @@ def test_common_100_102_046():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        # test case itself should do the upi and bqr configuration part.
+        # test case should handle the making active and inactive part of the upi/bqr configuration.
+        # instead of fetching from terminal_info we should fetch from merchant_config table that would be better.
+        # Because under one acquisition there can be multiple terminals we can configured.
         query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]

@@ -84,7 +84,10 @@ class HomePage(BasePage):
     def type_amount(self, amt):
         li = []
         for i in str(amt):
-            li.append((By.ID, "com.ezetap.basicapp:id/button_"+i+""))
+            if i == '.':
+                li.append((By.ID, "com.ezetap.basicapp:id/button_dot"))
+            else:
+                li.append((By.ID, "com.ezetap.basicapp:id/button_"+i+""))
         return li
 
     # def enter_order_number(self, order_number):

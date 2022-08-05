@@ -7,7 +7,7 @@ from datetime import datetime
 import pytest
 from termcolor import colored
 
-from Configuration import Configuration, TestSuiteSetup
+from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -33,6 +33,7 @@ def test_sa_100_101_001():
     """
     Sub Feature Code: UI_SA_PM_UPI_Success_Via_SA_CheckStatus_HDFC
     Sub Feature Description: Verification of a successful upi txn via HDFC using SA check status
+    TC naming code description:
     100: Payment Method
     101: UPI
     001: TC01
@@ -61,17 +62,8 @@ def test_sa_100_101_001():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"RESULT of updating DB setting inactive : {result}")
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"RESULT of updating DB setting inactive : {result}")
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -473,35 +465,7 @@ def test_sa_100_101_001():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info("Reverting back all the settings that were done as preconditions")
-            # Write the code here to revert the settings that were done as precondition
-            logger.info("Reverted back all the settings that were done as preconditions")
-            # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -513,6 +477,7 @@ def test_sa_100_101_002():
     """
     Sub Feature Code: UI_SA_PM_UPI_Failed_Via_SA_CheckStatus_HDFC
     Sub Feature Description: Verification of a failed UPI txn via HDFC using SA check status
+    TC naming code description:
     100: Payment Method
     101: UPI
     002: TC02
@@ -540,6 +505,9 @@ def test_sa_100_101_002():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed pre condition setup for the test case : {testcase_id}")
@@ -801,34 +769,7 @@ def test_sa_100_101_002():
         # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase "
-                          "function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
@@ -838,8 +779,9 @@ def test_sa_100_101_002():
 @pytest.mark.appVal
 def test_sa_100_101_003():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_UPI_CheckStatus_After Expiry_HDFC
+    Sub Feature Code: UI_Common_PM_UPI_SA_CheckStatus_After_Expiry_HDFC
     Sub Feature Description: Verification of a upi txn after expiry for HDFC using SA check status
+    TC naming code description:
     100: Payment Method
     101: UPI
     003: TC03
@@ -867,6 +809,9 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
@@ -1132,37 +1077,4 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
-            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 6
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions is : {response}")
-            logger.info("Reverted back all the settings that were done as preconditions")
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
