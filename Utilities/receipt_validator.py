@@ -509,10 +509,10 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
                 validation_successful = True
 
             if results['unmatching_fields']:
-                print("Some fields are not matching")
+                # print("Some fields are not matching")
                 logger.warning("Some fields are not matching")
         
-                print("The following fields are not matching:", ", ".join(results['unmatching_fields']))
+                # print("The following fields are not matching:", ", ".join(results['unmatching_fields']))
                 validation_successful = False
 
             # if take_screenshot is True:  # (take_screenshot is True) and (get_config("APIs", "screenshot_on_failure") == "True"):  # check type of bool also
