@@ -226,7 +226,7 @@ def test_common_100_102_037():
                 logger.info(f"Starting API Validation for the test case :{testcase_id}")
                 # --------------------------------------------------------------------------------------------
 
-                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount,"Acquirer Code":"YES", "Payment Mode": "BHARATQR", "Partial Refund message": "Partial refund is not supported."}
+                expectedAPIValues = {"Payment Status": "AUTHORIZED", "Amount": amount,"Acquirer Code":"YES", "Payment Mode": "BHARATQR", "Partial Refund message": "Partial Refund is not supported for YES transactions."}
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password,
                                                                         "txnId": txn_id})

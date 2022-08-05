@@ -827,26 +827,15 @@ def test_common_100_102_032():
             print(
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {username}")
-            loginPage = LoginPage(app_driver)
-            loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
-            homePage.check_home_page_logo()
-            homePage.wait_for_home_page_load()
-            logger.info(f"App homepage loaded successfully")
             amount = random.randint(401, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            homePage.enter_amount_and_order_number(amount, order_id)
-            logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
-            paymentPage = PaymentPage(app_driver)
-            paymentPage.is_payment_page_displayed(amount, order_id)
-            paymentPage.click_on_Bqr_paymentMode()
-            logger.info("Selected payment mode is BQR")
-            paymentPage.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
+            logger.debug("Generating QR using BQR QR generate APi")
+            api_details = DBProcessor.get_api_details('bqrGenerate',
+                                                      request_body={"username": username, "password": password,
+                                                                    "amount": str(amount),
+                                                                    "orderNumber": str(order_id)})
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"Resonse recived for QR genration api is : {response}")
             query = "select * from bharatqr_txn where org_code='"+org_code+"' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -864,9 +853,7 @@ def test_common_100_102_032():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for 1st call back : {response}")
 
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            paymentPage.click_on_proceed_homepage()
+            logger.debug("Perfroming Second callback")
             api_details = DBProcessor.get_api_details('callbackYES',
                                                       request_body={"primary_id": pid, "secondary_id": sid,
                                                                     "txn_amount": str(amount),
@@ -874,7 +861,6 @@ def test_common_100_102_032():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for 2nd call back : {response}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -917,7 +903,15 @@ def test_common_100_102_032():
             try:
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "BHARAT QR", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                loginPage = LoginPage(app_driver)
+                loginPage.perform_login(username, password)
+                homePage = HomePage(app_driver)
                 homePage.check_home_page_logo()
+                homePage.wait_for_home_page_load()
+                homePage.wait_for_navigation_to_load()
+                logger.info(f"App homepage loaded successfully")
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)

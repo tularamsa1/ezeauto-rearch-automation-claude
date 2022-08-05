@@ -98,6 +98,8 @@ def test_common_100_102_061():
             login_page.perform_login(username, password)
             home_page = HomePage(app_driver)
             home_page.check_home_page_logo()
+            home_page.wait_for_home_page_load()
+            home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -389,7 +391,7 @@ def test_common_100_102_061():
         query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='YES' "
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
 

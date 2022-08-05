@@ -2186,6 +2186,7 @@ def test_common_100_102_056():
             logger.info("selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
+            app_driver.reset()
             logger.info("starting first callback")
             logger.info(
                 "fetching pg merchant id and vps from the upi_merchant_config table to perform the 1st upi callback")
@@ -2314,10 +2315,14 @@ def test_common_100_102_056():
                                        "rrn new": str(callback_2_rrn),
                                        }
                 logger.debug(f"expected_app_values: {expected_app_values}")
-                payment_page.click_on_proceed_homepage()
+                app_driver.reset()
+                login_page = LoginPage(app_driver)
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                login_page.perform_login(app_username, app_password)
+                home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(new_txn_id)
@@ -2729,26 +2734,30 @@ def test_common_100_102_057():
             print(
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            login_page = LoginPage(app_driver)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page.perform_login(app_username, app_password)
-            amount = random.randint(201, 300)
+            amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            home_page = HomePage(app_driver)
-            home_page.wait_for_navigation_to_load()
-            home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
-            home_page.enter_amount_and_order_number(amount, order_id)
-            logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
-            payment_page = PaymentPage(app_driver)
-            payment_page.is_payment_page_displayed(amount, order_id)
-            payment_page.click_on_Bqr_paymentMode()
-            logger.info("selected payment mode is BQR")
-            payment_page.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
+            logger.debug("Generating QR using BQR QR generate APi")
+            api_details = DBProcessor.get_api_details('bqrGenerate',
+                                                      request_body={"username": app_username, "password": app_password,
+                                                                    "amount": str(amount),
+                                                                    "orderNumber": str(order_id)})
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"Resonse recived for QR genration api is : {response}")
+
+            # home_page = HomePage(app_driver)
+            # home_page.wait_for_navigation_to_load()
+            # home_page.wait_for_home_page_load()
+            # home_page.check_home_page_logo()
+            # home_page.enter_amount_and_order_number(amount, order_id)
+            # logger.debug(f"Entered amount is : {amount}")
+            # logger.debug(f"Entered order_id is : {order_id}")
+            # payment_page = PaymentPage(app_driver)
+            # payment_page.is_payment_page_displayed(amount, order_id)
+            # payment_page.click_on_Bqr_paymentMode()
+            # logger.info("selected payment mode is BQR")
+            # payment_page.validate_upi_bqr_payment_screen()
+            # logger.info("Payment QR generated and displayed successfully")
+            # app_driver.reset()
             logger.info("starting first callback")
             logger.info(
                 "fetching pg merchant id and vps from the upi_merchant_config table to perform the 1st upi callback")
@@ -2877,7 +2886,12 @@ def test_common_100_102_057():
                                        "rrn new": str(callback_2_rrn),
                                        }
                 logger.debug(f"expected_app_values: {expected_app_values}")
-                payment_page.click_on_proceed_homepage()
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                login_page = LoginPage(app_driver)
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()

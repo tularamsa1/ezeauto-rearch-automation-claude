@@ -184,7 +184,7 @@ def test_common_100_102_050():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()

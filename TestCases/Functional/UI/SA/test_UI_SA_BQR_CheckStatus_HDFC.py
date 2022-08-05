@@ -944,7 +944,7 @@ def test_sa_100_102_009():
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "EXPIRED", "Payment mode": "BHARATQR","Acquirer Code":"HDFC",
                                     "Payment amount": "{:.2f}".format(amount), "State": "EXPIRED", "State Bharatqr": "EXPIRED",
-                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
+                                    "Amount Bharatqr": amount}
                 #
                 query = "select status,amount,payment_mode,acquirer_code,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, acquirer_code,amount, payment mode and state from DB : {query}")
@@ -966,15 +966,12 @@ def test_sa_100_102_009():
                 logger.debug(f"Fetching Query result from bharatqr txn table of DB : {result} ")
                 state_bharatqr_db = result["state"].iloc[0]
                 amount_bharatqr_db = result["txn_amount"].iloc[0]
-                status_bharatqr_db = result["status_desc"].iloc[0]
                 logger.debug(f"Fetching Transaction state from bharatqr txn table of DB : {state_bharatqr_db} ")
                 logger.debug(f"Fetching Transaction amount from bharatqr txn table of DB : {amount_bharatqr_db} ")
-                logger.debug(
-                    f"Fetching Transaction status description from bharatqr txn table of DB : {status_bharatqr_db} ")
                 #
                 actualDBValues = {"Payment Status": status_db, "Payment mode": payment_mode_db,"Acquirer Code":accuirer_code_db,
                                   "Payment amount": amount_db, "State": state_db, "State Bharatqr": state_bharatqr_db,
-                                  "Amount Bharatqr": amount_bharatqr_db, "Status Bharatqr": status_bharatqr_db}
+                                  "Amount Bharatqr": amount_bharatqr_db}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)

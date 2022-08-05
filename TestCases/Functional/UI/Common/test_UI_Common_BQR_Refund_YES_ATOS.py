@@ -538,8 +538,6 @@ def test_common_100_102_036():
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
-            partial_refund_message = response["message"]
-            logger.debug(f"Message for performing partial refund of txn is : {partial_refund_message}")
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)

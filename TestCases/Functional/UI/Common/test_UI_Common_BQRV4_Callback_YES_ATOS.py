@@ -525,7 +525,6 @@ def test_common_100_102_069():
                                                                     "orderNumber": str(order_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Resonse recived for QR genration api is : {response}")
-            logger.info("Payment QR generated and displayed successfully")
             query = "select * from bharatqr_txn where org_code='"+org_code+"' and id LIKE '"+datetime.utcnow().strftime('%y%m%d')+"%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)

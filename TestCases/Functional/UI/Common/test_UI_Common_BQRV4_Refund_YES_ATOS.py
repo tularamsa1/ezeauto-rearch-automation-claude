@@ -95,38 +95,40 @@ def test_common_100_102_062():
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            loginPage = LoginPage(app_driver)
-            logger.info(f"Logging in the MPOSX application using username : {username}")
-            loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
-            homePage.wait_for_navigation_to_load()
-            homePage.wait_for_home_page_load()
-            homePage.check_home_page_logo()
-            logger.info(f"App homepage loaded successfully")
             amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            print("Order id", order_id)
-            homePage.enter_amount_and_order_number(amount, order_id)
-            logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
-            paymentPage = PaymentPage(app_driver)
-            paymentPage.is_payment_page_displayed(amount, order_id)
-            paymentPage.click_on_Bqr_paymentMode()
-            logger.info("Selected payment mode is BQR")
-            paymentPage.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
-            paymentPage.click_on_back_btn()
-            paymentPage.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
-            paymentPage.click_on_proceed_homepage()
+            logger.debug("Generating QR using BQR QR generate APi")
+            api_details = DBProcessor.get_api_details('bqrGenerate',
+                                                      request_body={"username": username, "password": password,
+                                                                    "amount": str(amount),
+                                                                    "orderNumber": str(order_id)})
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"Resonse recived for QR genration api is : {response}")
+            # homePage.enter_amount_and_order_number(amount, order_id)
+            # logger.debug(f"Entered amount is : {amount}")
+            # logger.debug(f"Entered order_id is : {order_id}")
+            # paymentPage = PaymentPage(app_driver)
+            # paymentPage.is_payment_page_displayed(amount, order_id)
+            # paymentPage.click_on_Bqr_paymentMode()
+            # logger.info("Selected payment mode is BQR")
+            # paymentPage.validate_upi_bqr_payment_screen()
+            # logger.info("Payment QR generated and displayed successfully")
+            # paymentPage.click_on_back_btn()
+            # paymentPage.click_on_transaction_cancel_yes()
+            # logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            # app_payment_status = paymentPage.fetch_payment_status()
+            # logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
+            # paymentPage.click_on_proceed_homepage()
             query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
+            api_details = DBProcessor.get_api_details('stopPayment',
+                                                      request_body={"username": username, "password": password,
+                                                                    "orgCode":org_code ,"txnId": txn_id})
+            response = APIProcessor.send_request(api_details)
+            print("Response received:", response)
             logger.info("Opening Portal to perform refund of the transaction")
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             loginPagePortal = PortalLoginPage(ui_driver)
@@ -178,7 +180,6 @@ def test_common_100_102_062():
             logger.exception(f"Execution is completed for the test case : {testcase_id}")
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -194,10 +195,15 @@ def test_common_100_102_062():
                                      "Payment Status Original": "STATUS:AUTHORIZED_REFUNDED",
                                      "Payment mode Original": "UPI", "Payment Txn ID Original": txn_id,
                                      "Payment Amt Original": str(amount), "rrn":str(rrn)}
-
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                loginPage = LoginPage(app_driver)
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                loginPage.perform_login(username, password)
+                homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
+                logger.info(f"App homepage loaded successfully")
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
