@@ -242,3 +242,11 @@ def print_validation_result(expected_values:{},acutal_values:{}, lst_passed_fiel
                     print()
                 except Exception:
                     print(f"Field {field} is not available in the actual values list.")
+
+
+def filter_based_on_inclusion(expected_values:dict, actual_values:dict) -> dict and dict():
+
+    """
+    This method is used to filter out the values from the expected and actual values dictionary.
+    This takes the expected and actual dictionary as input, reads the configuration and returns the filtered dictionary
+    """
