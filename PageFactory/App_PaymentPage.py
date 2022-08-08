@@ -1,11 +1,11 @@
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
+
 from PageFactory.App_BasePage import BasePage
 from PageFactory.App_HomePage import HomePage
 
 
 class PaymentPage(BasePage):
-
     btn_cash = (By.XPATH, '//android.widget.TextView[@text = "Cash"]')
     btn_Details = (By.ID, 'com.ezetap.service.demo:id/btnDetails')
     btn_dismissDetails = (By.ID, 'com.ezetap.service.demo:id/btnDismiss')
@@ -34,12 +34,18 @@ class PaymentPage(BasePage):
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
 
-
     def __init__(self, driver):
         super().__init__(driver)
 
     def click_on_Upi_paymentMode(self):
-        self.perform_click(self.btn_upi)
+        stale_element = True
+        while stale_element:
+            try:
+                self.perform_click(self.btn_upi)
+                stale_element = False
+            except StaleElementReferenceException:
+                print("STALE ELEMENT EXECPTION....!!!!!!!!!")
+                stale_element = True
 
     def click_on_Bqr_paymentMode(self):
         self.scroll_to_text("Bharat QR")
@@ -53,7 +59,6 @@ class PaymentPage(BasePage):
 
     def fetch_promo_offer(self):
         return self.fetch_text(self.txa_promoMessage)
-
 
     def click_on_Cash(self):
         self.scroll_to_text("Cash")
@@ -82,9 +87,9 @@ class PaymentPage(BasePage):
 
     def fetch_payment_mode(self):
         return self.fetch_text(self.lbl_paymentMode)
+
     def fetch_payment_amount(self):
         return self.fetch_text(self.lbl_paymentAmt)
-
 
     def click_on_proceed_homepage(self):
         self.perform_click(self.btn_proceedToHomepage)
@@ -98,10 +103,6 @@ class PaymentPage(BasePage):
             except StaleElementReferenceException:
                 print("STALE ELEMENT EXECPTION....!!!!!!!!!")
                 staleElement = True
-
-
-
-
 
     def get_transaction_details(self):
         self.perform_click(self.btn_viewDetails)
@@ -139,4 +140,3 @@ class PaymentPage(BasePage):
 
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
-
