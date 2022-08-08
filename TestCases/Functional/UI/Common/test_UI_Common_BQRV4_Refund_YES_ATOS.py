@@ -4,7 +4,7 @@ import sys
 from datetime import datetime
 import pytest
 from termcolor import colored
-from Configuration import Configuration, TestSuiteSetup
+from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -54,26 +54,13 @@ def test_common_100_102_062():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
         query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         logger.debug(f"Fetching mid from database for current merchant:{mid}")
-        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '"+ mid+"' and org_code='" + org_code + "' and bank_code='YES' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='YES' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                                "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -104,21 +91,6 @@ def test_common_100_102_062():
                                                                     "orderNumber": str(order_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Resonse recived for QR genration api is : {response}")
-            # homePage.enter_amount_and_order_number(amount, order_id)
-            # logger.debug(f"Entered amount is : {amount}")
-            # logger.debug(f"Entered order_id is : {order_id}")
-            # paymentPage = PaymentPage(app_driver)
-            # paymentPage.is_payment_page_displayed(amount, order_id)
-            # paymentPage.click_on_Bqr_paymentMode()
-            # logger.info("Selected payment mode is BQR")
-            # paymentPage.validate_upi_bqr_payment_screen()
-            # logger.info("Payment QR generated and displayed successfully")
-            # paymentPage.click_on_back_btn()
-            # paymentPage.click_on_transaction_cancel_yes()
-            # logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            # app_payment_status = paymentPage.fetch_payment_status()
-            # logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
-            # paymentPage.click_on_proceed_homepage()
             query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -442,35 +414,7 @@ def test_common_100_102_062():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -481,7 +425,7 @@ def test_common_100_102_062():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_063():
     """
-    :Description: Verification of a BQRV4 Refund transaction through API via HDFC
+    :Description: Verification of a BQRV4 Refund transaction through API via YES_ATOS
     :Subfeature code: UI_Common_BQRV4_Refund_via_API_YES_ATOS_063
     :TC naming code description:100->Payment Method, 102->BQR, 063-> TC063
     """
@@ -506,32 +450,13 @@ def test_common_100_102_063():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
-        result = DBProcessor.getValueFromDB(query)
-        mid = result["mid"].iloc[0]
-        logger.debug(f"Fetching mid from database for current merchant:{mid}")
-        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update bharatqr_merchant_config set status = 'ACTIVE' where mid = '"+ mid+"' and org_code='" + org_code + "' and bank_code='YES' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='YES' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                                "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
 
-        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='HDFC'"
+        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
-        query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
+        query = "select * from upi_merchant_config where bank_code = 'YES' AND status = 'ACTIVE' AND org_code = " \
                 "'" + str(org_code) + "'; "
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
@@ -663,7 +588,6 @@ def test_common_100_102_063():
                     "rrn": str(rrn),
                     "refund_rrn": str(rrn_refunded),
                     "auth_code": auth_code,
-                    "refund_auth_code": refund_auth_code,
                     "date": date_and_time,
                     "refund_date": refund_date_and_time
                 }
@@ -689,8 +613,6 @@ def test_common_100_102_063():
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
-                app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id_refunded}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
@@ -757,7 +679,7 @@ def test_common_100_102_063():
                     "rrn": str(app_rrn_original),
                     "refund_rrn": str(app_rrn_refunded),
                     "auth_code": app_auth_code_original,
-                    "refund_auth_code": app_auth_code_refunded, "date": app_date_and_time,
+                    "date": app_date_and_time,
                     "refund_date": app_date_and_time_refunded
                 }
 
@@ -803,11 +725,10 @@ def test_common_100_102_063():
                     "original_txn_type": "CHARGE",
                     "original_mid": mid, "original_tid": tid,
                     "original_org_code": org_code,
-                    "refunded_acquirer_code": "HDFC",
+                    "refunded_acquirer_code": "YES",
                     "refunded_txn_type": "REFUND",
                     "refunded_mid": mid, "refunded_tid": tid,
                     "refunded_org_code": org_code,
-                    "refund_auth_code": refund_auth_code,
                     "original_auth_code": auth_code,"date": date, "refunded_date": refund_date
                 }
 
@@ -853,7 +774,6 @@ def test_common_100_102_063():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["postingDate"]
 
                 actual_api_values = {
@@ -883,7 +803,6 @@ def test_common_100_102_063():
                     "refunded_txn_type": txn_type_api_refunded,
                     "refunded_mid": mid_api_refunded, "refunded_tid": tid_api_refunded,
                     "refunded_org_code": org_code_api_refunded,
-                    "refund_auth_code": auth_code_api_refunded,
                     "original_auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded)
@@ -1074,11 +993,10 @@ def test_common_100_102_063():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.date_and_time_val_against_charge_slip(posting_date)
-                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time,
-                                   'AUTH CODE': auth_code}
-                receipt_validator.perform_charge_slip_validations(txn_id,
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
+                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_refunded),
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time}
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": username, "password": password},
                                                                   expected_values)
             except Exception as e:
@@ -1099,32 +1017,4 @@ def test_common_100_102_063():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")

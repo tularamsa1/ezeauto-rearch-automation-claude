@@ -4,7 +4,7 @@ import sys
 from datetime import datetime
 import pytest
 from termcolor import colored
-from Configuration import TestSuiteSetup, Configuration
+from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -56,23 +56,7 @@ def test_common_100_102_050():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" +org_code+ "' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                                "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
 
         query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                 "'" + str(org_code) + "'; "
@@ -410,34 +394,5 @@ def test_common_100_102_050():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
-
 

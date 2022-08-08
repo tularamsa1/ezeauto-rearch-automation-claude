@@ -4,7 +4,7 @@ import pytest
 import random
 from termcolor import colored
 
-from Configuration import Configuration, TestSuiteSetup
+from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -55,6 +55,8 @@ def test_common_100_102_019():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQR')
 
         api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
@@ -311,41 +313,6 @@ def test_common_100_102_019():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
-        Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-    # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        api_details = DBProcessor.get_api_details('UPGRefund', request_body={"username": portal_username,
-                                                                                 "password": portal_password,
-                                                                                 "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for reverting preconditions AutoRefund is : {response}")
-        logger.info("Reverted back all the settings that were done as preconditions")
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -385,11 +352,8 @@ def test_common_100_102_020():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQR')
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info("Finished performing preconditions before starting test case execution")
         # Set the below variables depending on the log capturing need of the test case.
@@ -397,7 +361,6 @@ def test_common_100_102_020():
         msg = ""
         GlobalVariables.time_calc.setup.end()
         print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -638,44 +601,7 @@ def test_common_100_102_020():
         # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        api_details = DBProcessor.get_api_details('UPGRefund', request_body={"username": portal_username,
-                                                                             "password": portal_password,
-                                                                             "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for reverting preconditions AutoRefund is : {response}")
-
-        logger.info("Reverted back all the settings that were done as preconditions")
-            # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="),
-                'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(
-                f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -714,6 +640,8 @@ def test_common_100_102_021():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQR')
 
         api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
@@ -970,41 +898,7 @@ def test_common_100_102_021():
 
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-
-            # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        api_details = DBProcessor.get_api_details('UPGRefund', request_body={"username": portal_username,
-                                                                                 "password": portal_password,
-                                                                                 "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for reverting preconditions AutoRefund is : {response}")
-        logger.info("Reverted back all the settings that were done as preconditions")
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -1044,11 +938,16 @@ def test_common_100_102_022():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQR')
+
+        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
+                                                                                    "password": portal_password,
+                                                                                    "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -1339,40 +1238,7 @@ def test_common_100_102_022():
         # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        api_details = DBProcessor.get_api_details('UPGRefund', request_body={"username": portal_username,
-                                                                                 "password": portal_password,
-                                                                                 "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for reverting preconditions AutoRefund is : {response}")
-            # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -1412,7 +1278,12 @@ def test_common_100_102_023():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        api_details = DBProcessor.get_api_details('UPGRefund',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQR')
+
+        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
+                                                                                    "password": portal_password,
+                                                                                    "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
@@ -1711,39 +1582,4 @@ def test_common_100_102_023():
 
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        api_details = DBProcessor.get_api_details('UPGRefund', request_body={"username": portal_username,
-                                                                             "password": portal_password,
-                                                                             "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for reverting preconditions AutoRefund is : {response}")
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
-        # ----------------------------------------------------------------------------------------------------------
