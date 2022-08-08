@@ -29,7 +29,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_103_004():
     """
-    Sub Feature Code: UI_Common_PM_RP_upi collect_Success_Via_Pure_upi collect_Checkstatus_HDFC
+    Sub Feature Code: UI_Common_PM_RP_upi collect_Success_Via_upi_Collect_Checkstatus_HDFC
     Sub Feature Description: Verification of a Remote Pay successful upi collect txn via HDFC using check status
     TC naming code description:
     100: Payment Method
