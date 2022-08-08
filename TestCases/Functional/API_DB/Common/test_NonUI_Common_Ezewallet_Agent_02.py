@@ -793,8 +793,12 @@ def test_common_200_202_010():
             settlement_status = response['settlementStatus']
             clw_status = response['clwStatus']
             account_label = response['accountLabel']
+<<<<<<< HEAD
             payment_mode = response['paymentMode']
             logger.info(f"API Result: Fetch Response of Cash Payment - BILLPAY: {cash_payment_success}, {original_amount_cashpay},{payment_mode}, {username}, {amount},{settlement_status}, {clw_status}, {txn_id}, {status}, {account_label}")
+=======
+            logger.info(f"API Result: Fetch Response of Cash Payment - BILLPAY: {cash_payment_success}, {original_amount_cashpay}, {username}, {amount},{settlement_status}, {clw_status}, {txn_id}, {status}, {account_label}")
+>>>>>>> Added Ezewallet related TCS
 
             GlobalVariables.collection_amt += (original_amount_cashpay+0.25)
             GlobalVariables.collection_count += 1
@@ -862,6 +866,7 @@ def test_common_200_202_010():
                 logger.debug(f"Agent Balance before Cash Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for BILLPAY  : {original_amount_cashpay + 0.25}")
 
+<<<<<<< HEAD
                 expectedDBValues = {"txn_amt":original_amount_cashpay+0.25,"pmt_mode":payment_mode, "settle_status":settlement_status,
                                     "pmt_status":status,"agent_balance": agent_balance_before - (original_amount_cashpay+0.25),
                                     "settlement_balance": settlement_bal_before + (original_amount_cashpay+0.25)}
@@ -876,6 +881,12 @@ def test_common_200_202_010():
                 settle_status = result_txn["settlement_status"].iloc[0]
                 pmt_status = result_txn["status"].iloc[0]
 
+=======
+                expectedDBValues = {"Agent_balance": agent_balance_before - (original_amount_cashpay+0.25),
+                                    "settlement_balance": settlement_bal_before + (original_amount_cashpay+0.25)}
+                logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+>>>>>>> Added Ezewallet related TCS
                 query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
                 logger.debug(f"Query to fetch data from account table : {query_agent_bal}, {query_settlement_bal}")
@@ -885,8 +896,12 @@ def test_common_200_202_010():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
+<<<<<<< HEAD
                 actualDBValues = {"txn_amt":txn_amt,"pmt_mode":pmt_mode, "settle_status":settle_status,
                                     "pmt_status":pmt_status,"agent_balance": agentbal_after_cash_payment,
+=======
+                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
+>>>>>>> Added Ezewallet related TCS
                                     "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
