@@ -984,7 +984,6 @@ def test_common_100_101_009():
         GlobalVariables.time_calc.validation.start()
         print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -1013,8 +1012,10 @@ def test_common_100_101_009():
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
 
-                actual_app_values = {"Payment Status": payment_status.split(':')[1], "Payment mode": payment_mode,
-                                     "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn": str(app_rrn)}
+                actual_app_values = {"Payment Status": payment_status.split(':')[1],
+                                     "Payment mode": payment_mode,
+                                     "Amount": app_amount.split(' ')[1],
+                                     "Txn_id": app_txn_id, "rrn": str(app_rrn)}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)

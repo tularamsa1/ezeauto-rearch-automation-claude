@@ -214,11 +214,15 @@ def test_common_100_101_018():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                expected_app_values = {"Payment Status Original": "EXPIRED", "Payment mode": "UPI",
-                                       "Payment Txn ID": new_txn_id, "Payment Amt": str(amount),
+                expected_app_values = {"Payment Status Original": "EXPIRED",
+                                       "Payment mode": "UPI",
+                                       "Payment Txn ID": new_txn_id,
+                                       "Payment Amt": str(amount),
                                        "Payment Status": "REFUND_PENDING",
-                                       "Payment mode Original": "UPI", "Payment Txn ID Original": original_txn_id,
-                                       "Payment Amt Original": str(amount), "rrn": str(rrn),
+                                       "Payment mode Original": "UPI",
+                                       "Payment Txn ID Original": original_txn_id,
+                                       "Payment Amt Original": str(amount),
+                                       "rrn": str(rrn),
                                        "rrn original": str(original_rrn)}
                 logger.debug(f"expected_app_values : {expected_app_values}")
 
