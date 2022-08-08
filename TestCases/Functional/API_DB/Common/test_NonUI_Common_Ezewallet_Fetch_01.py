@@ -82,7 +82,11 @@ def test_common_200_203_001():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
+<<<<<<< HEAD
                                      "account_label": "TOPUP","txn_status": "SUCCESS", "transfer_mode": "ADDFUNDS",
+=======
+                                     "accountLabel": "TOPUP","txnStatus": "SUCCESS", "transferMode": "ADDFUNDS",
+>>>>>>> Added Ezewallet related TCS
                                      "fetch_amount": amount, "externalRefId": txn_id}
                 if card_payment_success == True:
                     time.sleep(3)
@@ -100,7 +104,11 @@ def test_common_200_203_001():
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_statment_success, "cardpay_amount": amount, "status":status,
+<<<<<<< HEAD
                                        "account_label": account_label, "txn_status": txn_status, "transfer_mode": transfer_mode ,
+=======
+                                       "accountLabel": account_label, "txnStatus": txn_status, "transferMode": transfer_mode ,
+>>>>>>> Added Ezewallet related TCS
                                        "fetch_amount":actual_amount, "externalRefId" : external_ref_Id}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
