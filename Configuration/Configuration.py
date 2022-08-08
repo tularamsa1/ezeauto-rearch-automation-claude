@@ -1,3 +1,5 @@
+import pytest
+
 from DataProvider import GlobalVariables
 from Utilities import ResourceAssigner, ReportProcessor
 
@@ -16,6 +18,7 @@ def configureLogCaptureVariables(apiLog : bool = False, portalLog : bool = False
 
 
 def executeFinallyBlock(testcase_Id):
+    fail_testcase = False
     logger.info(f"Starting execution of finally block for the test case : {testcase_Id}")
     if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
         GlobalVariables.time_calc.execution.pause()
@@ -31,8 +34,10 @@ def executeFinallyBlock(testcase_Id):
     ResourceAssigner.releaseAppiumServerInDBUsingTestCaseID(testcase_Id)
 
     if not GlobalVariables.setupCompletedSuccessfully:
-        print("Test case setup itself failed. So the test case was not executed.")
-        logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
+        print("Test case setup itself failed.")
+        logger.error("Test case pre condition setup itself failed.")
+        GlobalVariables.EXCEL_TC_Execution = "Fail"
+        fail_testcase = True
     else:
         ReportProcessor.updateTestCaseResult('')
 
@@ -41,6 +46,9 @@ def executeFinallyBlock(testcase_Id):
         logger.debug("Execution Timer end in finally block of testcase function")
     logger.info(f"Completed execution of finally block for the test case : {testcase_Id}")
     logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_Id}")
+
+    if fail_testcase:
+        pytest.fail("Failing the test case in finally block since a failure was observed due to unhandled exception.")
 
 
 def perform_exe_exception(testcase_id):
