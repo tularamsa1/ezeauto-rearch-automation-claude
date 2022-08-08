@@ -135,6 +135,6 @@ class remotePayTxnPage(BasePage):
         self.wait_for_visibility_of_Element(self.txt_timeoutMessage)
 
     def wait_for_failed_message(self):
-        self.wait_for_visibility_of_Element(self.txt_failedMessage)
+        self.wait_for_element(self.txt_failedMessage)
 
 

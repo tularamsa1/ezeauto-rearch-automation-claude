@@ -7,7 +7,7 @@ from datetime import datetime
 import pytest
 from termcolor import colored
 
-from Configuration import TestSuiteSetup, Configuration
+from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -22,16 +22,16 @@ from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-# Performing a pure upi success callback via HDFC after qr expiry when autorefund is enabled.
-def test_common_100_101_018():  # Make sure to add the test case name as same as the sub feature code.
+def test_common_100_101_018():
     """
     Sub Feature Code: UI_Common_PM_UPI_success_callback_after_qr_expiry_AutoRefund_Enabled_HDFC
     Sub Feature Description: Performing a pure upi success callback via HDFC after qr expiry when autorefund is enabled.
+    TC naming code description:
     100: Payment Method
     101: UPI
     018: TC018
@@ -59,6 +59,9 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
@@ -124,7 +127,7 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
             time.sleep(62)
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
-                    "'" + str(org_code) + "' order by created_time desc limit 1"
+                    "'" + str(org_code) + "'"
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
             pg_merchant_id = result['pgMerchantId'].values[0]
@@ -211,11 +214,15 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                expected_app_values = {"Payment Status Original": "EXPIRED", "Payment mode": "UPI",
-                                       "Payment Txn ID": new_txn_id, "Payment Amt": str(amount),
+                expected_app_values = {"Payment Status Original": "EXPIRED",
+                                       "Payment mode": "UPI",
+                                       "Payment Txn ID": new_txn_id,
+                                       "Payment Amt": str(amount),
                                        "Payment Status": "REFUND_PENDING",
-                                       "Payment mode Original": "UPI", "Payment Txn ID Original": original_txn_id,
-                                       "Payment Amt Original": str(amount), "rrn": str(rrn),
+                                       "Payment mode Original": "UPI",
+                                       "Payment Txn ID Original": original_txn_id,
+                                       "Payment Amt Original": str(amount),
+                                       "rrn": str(rrn),
                                        "rrn original": str(original_rrn)}
                 logger.debug(f"expected_app_values : {expected_app_values}")
 
@@ -473,61 +480,19 @@ def test_common_100_101_018():  # Make sure to add the test case name as same as
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
-            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 6
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions is : {response}")
-
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-            api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
-                                                                                  "password": portal_password,
-                                                                                  "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "false"
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-            logger.info("Reverted back all the settings that were done as preconditions")
-            GlobalVariables.time_calc.execution.end()
-            print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-# Performing a pure upi failed callback via HDFC after expiry the qr when autorefund is enabled.
-def test_common_100_101_019():  # Make sure to add the test case name as same as the sub feature code.
+def test_common_100_101_019():
     """
     Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_AutoRefund_Enabled_HDFC
     Sub Feature Description: Performing a pure upi failed callback via HDFC after expiry the qr when autorefund is enabled.
+    TC naming code description:
     100: Payment Method
     101: UPI
     019: TC019
@@ -555,6 +520,9 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
@@ -896,46 +864,7 @@ def test_common_100_101_019():  # Make sure to add the test case name as same as
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
-            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 6
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions is : {response}")
-
-            api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
-                                                                                  "password": portal_password,
-                                                                                  "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "false"
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-            logger.info("Reverted back all the settings that were done as preconditions")
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -947,6 +876,7 @@ def test_common_100_101_026():
     """
     Sub Feature Code: UI_Common_PM_2_Pure_UPI_success_callback_after_qr_expiry_HDFC_AutoRefund_Disabled
     Sub Feature Description: Performing two pure upi success callback via HDFC after expiry the qr when autorefund is disabled
+    TC naming code description:
     100: Payment Method
     101: UPI
     026: TC026
@@ -974,6 +904,9 @@ def test_common_100_101_026():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
@@ -1565,39 +1498,7 @@ def test_common_100_101_026():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
-            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 6
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions is : {response}")
-            logger.info("Reverted back all the settings that were done as preconditions")
-            GlobalVariables.time_calc.execution.end()
-            print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -1609,6 +1510,7 @@ def test_common_100_101_027():
     """
     Sub Feature Code: UI_Common_PM_2_Pure_UPI_success_callback_after_qr_expiry_HDFC_AutoRefund_Enabled
     Sub Feature Description: Performing two pure upi success callback via HDFC after expiry the qr when autorefund is enabled
+    TC naming code description:
     100: Payment Method
     101: UPI
     027: TC027
@@ -1637,6 +1539,8 @@ def test_common_100_101_027():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -1954,51 +1858,54 @@ def test_common_100_101_027():
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnDetails',
+                api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": new_txn_id_1})
+                                                                        "password": app_password})
                 print("API DETAILS for new_txn_id_1 after callback:", api_details)
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
+                status_api_1 = amount_api_1 = payment_mode_api_1 = state_api_1 = rrn_api_1 = ''
+                list_txns = response['txns']
+                for txn in list_txns:
+                    if txn['txnId'] == new_txn_id_1:
+                        status_api_1 = txn["status"]
+                        amount_api_1 = int(txn["amount"])
+                        payment_mode_api_1 = txn["paymentMode"]
+                        state_api_1 = txn["states"][0]
+                        rrn_api_1 = txn["rrNumber"]
 
-                status_api_1 = response["status"]
-                amount_api_1 = int(response["amount"])
-                payment_mode_api_1 = response["paymentMode"]
-                state_api_1 = response["states"][0]
-                rrn_api_1 = response["rrNumber"]
-
-                api_details = DBProcessor.get_api_details('txnDetails',
+                api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": original_txn_id})
+                                                                        "password": app_password})
                 print("API DETAILS for original_txn_id:", api_details)
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
+                status_api_original = amount_api_original = payment_mode_api_original = state_api_original = rrn_api_original = ''
+                list_txns = response['txns']
+                for txn in list_txns:
+                    if txn['txnId'] == original_txn_id:
+                        status_api_original = txn["status"]
+                        amount_api_original = int(txn["amount"])
+                        payment_mode_api_original = txn["paymentMode"]
+                        state_api_original = txn["states"][0]
+                        rrn_api_original = txn["rrNumber"]
 
-                status_api_original = response["status"]
-                amount_api_original = int(response["amount"])
-                payment_mode_api_original = response["paymentMode"]
-                state_api_original = response["states"][0]
-                rrn_api_original = response["rrNumber"]
-
-                api_details = DBProcessor.get_api_details('txnDetails',
+                api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": new_txn_id_2})
-                print("API DETAILS for new_txn_id_2 after callback:", api_details)
+                                                                        "password": app_password})
+                print("API DETAILS for new_txn_id_2:", api_details)
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
+                status_api_2 = amount_api_2 = payment_mode_api_2 = state_api_2 = rrn_api_2 = ''
+                list_txns = response['txns']
+                for txn in list_txns:
+                    if txn['txnId'] == new_txn_id_2:
+                        status_api_2 = txn["status"]
+                        amount_api_2 = int(txn["amount"])
+                        payment_mode_api_2 = txn["paymentMode"]
+                        state_api_2 = txn["states"][0]
+                        rrn_api_2 = txn["rrNumber"]
 
-                status_api_2 = response["status"]
-                amount_api_2 = int(response["amount"])
-                payment_mode_api_2 = response["paymentMode"]
-                state_api_2 = response["states"][0]
-                rrn_api_2 = response["rrNumber"]
-                #
                 actual_api_values = {"Payment Status Original": status_api_original,
                                      "Payment Status 1": status_api_1,
                                      "Payment Status 2": status_api_2,
@@ -2016,7 +1923,7 @@ def test_common_100_101_027():
                                      "rrn 2": str(rrn_api_2)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 print("API Validation failed due to exception - " + str(e))
@@ -2229,39 +2136,7 @@ def test_common_100_101_027():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
-            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 6
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions is : {response}")
-            logger.info("Reverted back all the settings that were done as preconditions")
-            GlobalVariables.time_calc.execution.end()
-            print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -2273,6 +2148,7 @@ def test_common_100_101_028():
     """
     Sub Feature Code: UI_Common_PM_2_Pure_UPI_failed_callback_after_qr_expiry_HDFC_AutoRefund_Disabled
     Sub Feature Description: Performing two pure upi failed callback via HDFC after expiry the qr when autorefund is disabled
+    TC naming code description:
     100: Payment Method
     101: UPI
     028: TC028
@@ -2300,6 +2176,9 @@ def test_common_100_101_028():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
@@ -2687,37 +2566,5 @@ def test_common_100_101_028():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)
-            # -------------------------------Revert Preconditions done(setup)------------------------------------------
-            logger.info(f"Reverting all the settings that were done as preconditions for test case : {testcase_id}")
-            api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code})
-            api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 6
-            logger.debug(f"API details  : {api_details} ")
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting preconditions is : {response}")
-            logger.info("Reverted back all the settings that were done as preconditions")
-            GlobalVariables.time_calc.execution.end()
-            print(colored(
-                "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 

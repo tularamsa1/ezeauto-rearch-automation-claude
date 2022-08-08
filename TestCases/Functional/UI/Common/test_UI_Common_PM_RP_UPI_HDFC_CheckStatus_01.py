@@ -1,15 +1,8 @@
-import json
 import random
 import shutil
 import sys
-import time
 from datetime import datetime
-
-# import pyautogui
 import pytest
-import pytz
-import requests
-from pytz import timezone
 from termcolor import colored
 
 from Configuration import Configuration, TestSuiteSetup
@@ -24,10 +17,10 @@ from PageFactory.portal_remotePayPage import remotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
-
 logger = EzeAutoLogger(__name__)
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
@@ -37,15 +30,18 @@ def test_common_100_103_003():
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_CheckStatus_HDFC
     Sub Feature Description: Verification of a Remote Pay successful upi txn via HDFC using check status
+    TC naming code description:
     100: Payment Method
     103: RemotePay
+    003: TC_003
     """
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_003')
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
@@ -55,10 +51,26 @@ def test_common_100_103_003():
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
-        GlobalVariables.setupCompletedSuccessfully = True  #Do not remove this line of code.
-        #---------------------------------------------------------------------------------------------------------
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        #Use loggers
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+
+        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = True, middlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
@@ -66,19 +78,16 @@ def test_common_100_103_003():
         GlobalVariables.time_calc.setup.end()
         print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        #-----------------------------------------Start of Test Execution-------------------------------------
+        # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             print(
-                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
+
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -123,7 +132,8 @@ def test_common_100_103_003():
             result = DBProcessor.getValueFromDB(query)
             upi_mc_id = result['id'].values[0]
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
@@ -131,12 +141,12 @@ def test_common_100_103_003():
             logger.debug(f"Query result, Txn_id : {Txn_id}")
             logger.debug(f"Query result, date_time : {posting_date}")
 
-
-
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            print(colored(
+                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
+                                                                                  "="), 'cyan'))
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
@@ -164,7 +174,8 @@ def test_common_100_103_003():
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
@@ -182,6 +193,7 @@ def test_common_100_103_003():
                     "payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -253,12 +265,16 @@ def test_common_100_103_003():
                 date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
-                    "pmt_state": "SETTLED", "rrn": str(rrn),
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid,
+                    "tid": tid,
                     "org_code": org_code_txn,
                     "date": date
                 }
@@ -284,13 +300,17 @@ def test_common_100_103_003():
                 date_api = response["postingDate"]
 
                 actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
-                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
@@ -319,7 +339,6 @@ def test_common_100_103_003():
                     "settle_status": "SETTLED",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "payment_gateway": "HDFC",
                     "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                     "upi_bank_code": "HDFC",
                     "upi_mc_id": upi_mc_id,
@@ -335,7 +354,6 @@ def test_common_100_103_003():
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
                 acquirer_code_db = result["acquirer_code"].iloc[0]
                 bank_code_db = result["bank_code"].iloc[0]
                 settlement_status_db = result["settlement_status"].iloc[0]
@@ -363,7 +381,6 @@ def test_common_100_103_003():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
@@ -435,7 +452,7 @@ def test_common_100_103_003():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': date,
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                    'date': txn_date,
                                    'time': txn_time,
                                    }
@@ -460,62 +477,53 @@ def test_common_100_103_003():
     # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_103_006(): #Make sure to add the test case name as same as the sub feature code.
+def test_common_100_103_006():
     """
     UI_Common_PM_RP_UPI_Failed_Via_CheckStatus_HDFC
     Verification of a Remote Pay failed UPI txn via HDFC using check status
+    TC naming code description:
+    100: Payment Method
+    103: RemotePay
+    006: TC_006
     """
     try:
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         # Write the setup code here
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_003')
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        username = app_cred['Username']
-        password = app_cred['Password']
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
         portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_003')
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting inactive", result)
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         # ---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
@@ -527,15 +535,16 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
         GlobalVariables.time_calc.setup.end()
         print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        #-----------------------------------------Start of Test Execution-------------------------------------
+        # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             # ------------------------------------------------------------------------------------------------
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
 
-            query = "select org_code from org_employee where username='" + str(username) + "';"
+            query = "select org_code from org_employee where username='" + str(app_username) + "';"
             logger.debug(f"Query to fetch org_code from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             org_code = result['org_code'].values[0]
@@ -546,7 +555,7 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
-                                                                    "username": username, "password": password})
+                                                                    "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
             ui_driver = TestSuiteSetup.initialize_firefox_driver()
             paymentLinkUrl = response['paymentLink']
@@ -574,7 +583,8 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
         except Exception as e:
             if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
                 GlobalVariables.time_calc.execution.pause()
-                print(colored("Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
+                print(colored(
+                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
                         shutil.get_terminal_size().columns, "="), 'cyan'))
             GlobalVariables.time_calc.execution.resume()
             print(colored("Execution Timer resumed in execpt block of testcase function".center(
@@ -611,7 +621,7 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                loginPage.perform_login(username, password)
+                loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.check_home_page_logo()
@@ -637,7 +647,7 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 print("App Validation failed due to exception - " + str(e))
                 msg = msg + "App Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_app_val_result="Fail"
+                GlobalVariables.str_app_val_result = "Fail"
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of App Validation---------------------------------------
@@ -650,8 +660,8 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "UPI"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": username,
-                                                                                      "password": password,
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": app_username,
+                                                                                      "password": app_password,
                                                                                       "txnId": Txn_id})
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
@@ -663,14 +673,13 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
-                Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
+                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
             except Exception as e:
-                print("API Validation failed due to exception - "+str(e))
+                print("API Validation failed due to exception - " + str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_api_val_result= "Fail"
+                GlobalVariables.str_api_val_result = "Fail"
             logger.info(f"Completed API validation for the test case : {testcase_id}")
-
 
         # -----------------------------------------End of API Validation---------------------------------------
 
@@ -705,12 +714,11 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
             except Exception as e:
-                print("DB Validation failed due to exception - "+str(e))
+                print("DB Validation failed due to exception - " + str(e))
                 msg = msg + "DB Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_db_val_result= 'Fail'
+                GlobalVariables.str_db_val_result = 'Fail'
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
-
 
         # -----------------------------------------End of DB Validation---------------------------------------
 
@@ -720,7 +728,7 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 # --------------------------------------------------------------------------------------------
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 expectedPortalValues = {"Payment State": "Failed", "Payment Type": "UPI",
-                                        "Amount": "Rs." + str(amount) + ".00", "Username": username}
+                                        "Amount": "Rs." + str(amount) + ".00", "Username": app_username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
 
                 portal_driver = GlobalVariables.portalDriver
@@ -747,7 +755,7 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
                 ReportProcessor.capture_ss_when_exe_failed()
-                print("Portal Validation failed due to exception - "+str(e))
+                print("Portal Validation failed due to exception - " + str(e))
                 msg = msg + "Portal Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_portal_val_result = 'Fail'
@@ -755,36 +763,9 @@ def test_common_100_103_006(): #Make sure to add the test case name as same as t
 
         # -----------------------------------------End of Portal Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
-        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
+                      'cyan'))
         logger.info(f"Completed Validation for the test case : {testcase_id}")
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        logger.info(f"Starting execution of finally block for the test case : {testcase_id}")
-        if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-            GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in finally block (bcz not pausing in previous blocks) of testcase function".center(
-                    shutil.get_terminal_size().columns, "="), 'cyan'))
-        GlobalVariables.time_calc.execution.resume()
-        print(colored(
-            "Execution Timer resumed in finally block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                   "="), 'cyan'))
-
         Configuration.executeFinallyBlock(testcase_id)
-        if not GlobalVariables.setupCompletedSuccessfully:
-            print("Test case setup itself failed. So the test case was not executed.")
-            logger.error("Test case pre condition setup itself failed. So the test case was not executed.")
-        else:
-            ReportProcessor.updateTestCaseResult(msg)  # pass msg
-        # -------------------------------Revert Preconditions done(setup)--------------------------------------------
-        logger.info("Reverting back all the settings that were done as preconditions")
-        # Write the code here to revert the settings that were done as precondition
-        logger.info("Reverted back all the settings that were done as preconditions")
-        # ----------------------------------------------------------------------------------------------------------
-        GlobalVariables.time_calc.execution.end()
-        print(colored(
-            "Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
-            'cyan'))
-
-        logger.info(f"Completed execution of finally block for the test case : {testcase_id}")
-        logger.info(f"Completed test case execution, validation and finally block for the test case : {testcase_id}")

@@ -19,12 +19,15 @@ startLineNumberAPI = ''
 startLineNumberMiddlewware = ''
 startLineNumberCnpware = ''
 start_line_number_config = ''
+start_line_number_closedloop = ''
+
 
 apiLogs = False
 portalLogs = False
 cnpWareLogs = False
 middleWareLogs = False
 config_logs = False
+closedloop_logs = False
 
 # portalSS = False
 
@@ -81,4 +84,18 @@ ssh = ''
 
 LogCollTime = 0
 list_deselected_testcases=[]
+
+#Ezewallet(Add detail Description)
+cash_txn_id = 0
+selftopup_amt = 0
+selftopup_count = 0
+transfer_amt = 0
+transfer_count = 0
+withdraw_amt = 0
+withdraw_count = 0
+refund_amt = 0
+refund_count = 0
+collection_amt = 0
+collection_count = 0
+
 
