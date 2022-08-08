@@ -142,7 +142,7 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
             try:
                 defaultValue = DBProcessor.getValueFromDB(query1)
                 setting_value = int(defaultValue['setting_value'].values[0])
-                logger.info(f"max upi attempt is: {setting_value}")
+                logger.info(f"Wating for timeout attempt: {setting_value}")
             except NameError as e:
                 setting_value = None
                 print(e)
@@ -153,10 +153,10 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
                 print(e)
 
             if org_setting_value:
-                logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
+                logger.info(f"Wating for timeout attempt time: {org_setting_value} min.")
                 time.sleep(3 + (org_setting_value * 60))
             else:
-                logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
+                logger.info(f"Wating for timeout for Ezetap org time: {org_setting_value} min.")
                 time.sleep(3 + (setting_value * 60))
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
@@ -167,8 +167,6 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
             vpa = result['vpa'].values[0]
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
-
-            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
