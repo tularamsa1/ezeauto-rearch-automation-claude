@@ -54,19 +54,12 @@ def test_common_200_201_001():
 
             card_payment_success = response['success']
             amount = float(response['amount'])
-<<<<<<< HEAD
             payment_mode = response['paymentMode']
             txn_id = response['txnId']
             status = response['status']
             settlement_status = response['settlementStatus']
             account_label = response['accountLabel']
             logger.info(f"API Result: Fetch Response of Card Payment - Digital Agency Top Up: {card_payment_success}, {amount}, {txn_id}, {status},{settlement_status},{payment_mode}, {account_label}")
-=======
-            txn_id = response['txnId']
-            status = response['status']
-            account_label = response['accountLabel']
-            logger.info(f"API Result: Fetch Response of Card Payment - Digital Agency Top Up: {card_payment_success}, {amount}, {txn_id}, {status}, {account_label}")
->>>>>>> Added Ezewallet related TCS
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -95,13 +88,8 @@ def test_common_200_201_001():
             try:
                 if card_payment_success == True:
                     time.sleep(3)
-<<<<<<< HEAD
                     expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED","settlement_status":"PENDING",
                                         "payment_mode":"CARD", "account_label": "TOPUP", "balance":agency_balance_before+original_amount}
-=======
-                    expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
-                                         "accountLabel": "TOPUP", "balance":agency_balance_before+original_amount}
->>>>>>> Added Ezewallet related TCS
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -109,14 +97,9 @@ def test_common_200_201_001():
                     result = DBProcessor.getValueFromDB(query, "closedloop")
                     bal_after_posting = float(result["balance"].iloc[0])
 
-<<<<<<< HEAD
                     actualAPIValues = {"success": card_payment_success, "cardpay_amount": amount, "status":status,"settlement_status":settlement_status,
                                         "payment_mode":payment_mode,
                                            "account_label": account_label, "balance":bal_after_posting}
-=======
-                    actualAPIValues = {"success": card_payment_success, "cardpay_amount": amount, "status":status,
-                                           "accountLabel": account_label, "balance":bal_after_posting}
->>>>>>> Added Ezewallet related TCS
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
 
@@ -128,11 +111,6 @@ def test_common_200_201_001():
                 else:
                     raise Exception("Card Payment is not successfull")
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> Added Ezewallet related TCS
             except Exception as e:
                 msg = "Digital Top up has been failed for an Agency" + GlobalConstants.ORG
                 print("API Validation failed due to exception - "+str(e))
@@ -151,7 +129,6 @@ def test_common_200_201_001():
                 logger.debug(f"Agency Balance before Top Up : {agency_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-<<<<<<< HEAD
                 expectedDBValues = {"txn_amt":original_amount,"pmt_mode":payment_mode, "settle_status":settlement_status,
                                     "pmt_status":status,
                                     "agency_balance": (agency_balance_before + original_amount)}
@@ -175,17 +152,6 @@ def test_common_200_201_001():
 
                 actualDBValues = {"txn_amt":txn_amt,"pmt_mode":pmt_mode, "settle_status":settle_status,
                                     "pmt_status":pmt_status,"agency_balance": bal_after_posting}
-=======
-                expectedDBValues = {"Agency balance": (agency_balance_before + original_amount)}
-                logger.debug(f"expectedDBValues: {expectedDBValues}")
-
-                query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
-                logger.debug(f"Query to fetch data from account table : {query}")
-                result = DBProcessor.getValueFromDB(query, "closedloop")
-                logger.debug(f"Query result URL: {result}")
-                bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": bal_after_posting}
->>>>>>> Added Ezewallet related TCS
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -223,10 +189,7 @@ def test_common_200_201_001():
 
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> Added Ezewallet related TCS
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -320,18 +283,10 @@ def test_common_200_201_002():
             try:
 
                 expectedAPIValues = {"success": True, "upipay_amount": original_amount, "status":"PENDING",
-<<<<<<< HEAD
                                     "settlement_status":"PENDING","accountlabel": "TOPUP","payment_mode":"UPI",
                                       "confirm_success":False,"error_code":"EZETAP_0000703","real_code":"STOP_PAYMENT_NOT_ALLOWED_FOR_AUTHORIZED_TRANSACTION",
                                      "confirm_amount":original_amount,"confirm_settlement_status":"SETTLED", "confirm_status":"AUTHORIZED",
                                      "confirm_account_label":"TOPUP","confirm_payment_mode":"UPI","balance":agency_balance_before+original_amount}
-=======
-                                    "settlement_status":"PENDING","accountLabel": "TOPUP","payment_mode":"UPI",
-                                      "confirm_success":False,"error_code":"EZETAP_0000703","real_code":"STOP_PAYMENT_NOT_ALLOWED_FOR_AUTHORIZED_TRANSACTION",
-                                     "confirm_amount":original_amount,"confirm_settlement_status":"SETTLED", "confirm_status":"AUTHORIZED",
-                                     "confirm_account_label":"TOPUP","confirm_payment_mode":"UPI","balance":agency_balance_before+original_amount}
-
->>>>>>> Added Ezewallet related TCS
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -339,11 +294,7 @@ def test_common_200_201_002():
                 bal_after_posting = float(result["balance"].iloc[0])
 
                 actualAPIValues = {"success": True, "upipay_amount": original_amount, "status":status,
-<<<<<<< HEAD
                                     "settlement_status":settlement_status,"accountlabel":account_label,"payment_mode":payment_mode,
-=======
-                                    "settlement_status":settlement_status,"accountLabel":account_label,"payment_mode":payment_mode,
->>>>>>> Added Ezewallet related TCS
                                       "confirm_success":confirm_upi_success,"error_code":error_code,"real_code":real_code,
                                      "confirm_amount":confirm_amount,"confirm_settlement_status":confirm_settlement_status, "confirm_status":confirm_status,
                                      "confirm_account_label":confirm_accountlabel,"confirm_payment_mode":confirm_payment_mode,"balance":bal_after_posting}
@@ -352,11 +303,6 @@ def test_common_200_201_002():
 
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> Added Ezewallet related TCS
             except Exception as e:
                 msg = "Digital Top up has been failed for an Agency" + GlobalConstants.ORG
                 print("API Validation failed due to exception - "+str(e))
@@ -375,7 +321,6 @@ def test_common_200_201_002():
                 logger.debug(f"Agency Balance before Top Up : {agency_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-<<<<<<< HEAD
                 expectedDBValues = {"txn_amt": original_amount, "pmt_mode": confirm_payment_mode,
                                     "settle_status": confirm_settlement_status,
                                     "pmt_status": confirm_status,
@@ -399,18 +344,6 @@ def test_common_200_201_002():
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode, "settle_status": settle_status,
                                   "pmt_status": pmt_status, "agency_balance": bal_after_posting}
-=======
-                expectedDBValues = {"Agency balance": (agency_balance_before + original_amount)}
-                logger.debug(f"expectedDBValues: {expectedDBValues}")
-
-                query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
-                logger.debug(f"Query to fetch data from account table : {query}")
-                result = DBProcessor.getValueFromDB(query, "closedloop")
-                logger.debug(f"Query result URL: {result}")
-                bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": bal_after_posting}
-                logger.debug(f"actualDBValues : {actualDBValues}")
->>>>>>> Added Ezewallet related TCS
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
             except Exception as e:
@@ -527,15 +460,9 @@ def test_common_200_201_003():
             try:
                 if transfer_pay_success == True:
                     expectedAPIValues = {"success": True,
-<<<<<<< HEAD
                                      "real_code": "TRANSACTION_SUCCESSFUL", "success_code": "CLOSED_LOOP_000027",
                                      "credit_acc_balance": agent_balance_before + original_transfer_amt,
                                      "debit_acc_balance": agency_balance_before - original_transfer_amt,
-=======
-                                     "realCode": "TRANSACTION_SUCCESSFUL", "successCode": "CLOSED_LOOP_000027",
-                                     "creditAccBalance": agent_balance_before + original_transfer_amt,
-                                     "debitAccBalance": agency_balance_before - original_transfer_amt,
->>>>>>> Added Ezewallet related TCS
                                      "bal_after_transfer": agency_balance_before - original_transfer_amt}
 
                     query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -544,13 +471,8 @@ def test_common_200_201_003():
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": transfer_pay_success,
-<<<<<<< HEAD
                                        "real_code": realcode, "success_code": successcode,
                                        "credit_acc_balance": credit_acc_bal, "debit_acc_balance": debit_acc_bal,
-=======
-                                       "realCode": realcode, "successCode": successcode,
-                                       "creditAccBalance": credit_acc_bal, "debitAccBalance": debit_acc_bal,
->>>>>>> Added Ezewallet related TCS
                                         "bal_after_transfer": agency_bal_after}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -577,15 +499,51 @@ def test_common_200_201_003():
                 logger.debug(f"Agency Balance before Transfer : {agency_balance_before}")
                 logger.debug(f"Actual amount for Transfer  : {original_transfer_amt}")
 
-                expectedDBValues = {"Agency balance": (agency_balance_before - original_transfer_amt)}
+                expectedDBValues = {"clw_txn_amt":original_transfer_amt,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"TRANSFER",
+                                    "clw_transfer_status":"SUCCESS","clw_transfer_type":"MANUAL","clw_leg_amt_cr":original_transfer_amt,
+                                    "clw_account_entity_type_cr":"AGENT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_transfer_amt,
+                                    "clw_account_entity_type_dt":"MERCHANT","clw_source_type_dt":"DEBIT",
+                                    "agency_balance": (agency_balance_before - original_transfer_amt)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + wallet_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_merchant_id =result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_transfer_mode =result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_transfer_status =result_wallet_txn_db['txn_status'].iloc[0]
+                clw_transfer_type =result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_source_type_cr =result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agency_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": agency_bal_after}
+                actualDBValues = {"clw_txn_amt":clw_txn_amt,"clw_merchant_id":clw_merchant_id,"clw_transfer_mode":clw_transfer_mode,
+                                    "clw_transfer_status":clw_transfer_status,"clw_transfer_type":clw_transfer_type,
+                                  "clw_leg_amt_cr": clw_leg_amt_cr,
+                                  "clw_account_entity_type_cr": clw_account_entity_type_cr, "clw_source_type_cr": clw_source_type_cr,
+                                  "clw_leg_amt_dt": clw_leg_amt_dt,
+                                  "clw_account_entity_type_dt": clw_account_entity_type_dt, "clw_source_type_dt": clw_source_type_dt,
+                                  "agency_balance": agency_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
