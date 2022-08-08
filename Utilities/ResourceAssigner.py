@@ -9,6 +9,10 @@ logger = EzeAutoLogger(__name__)
 dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
 
 
+
+
+
+
 def getDeviceFromDB(testCaseID):
     proceed = False
     print("Trying to get available device from DB")

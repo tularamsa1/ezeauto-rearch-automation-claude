@@ -1,9 +1,13 @@
 import shutil
 import sys
 from datetime import datetime
+from time import sleep
+
 import pytest
 import random
+
 from termcolor import colored
+
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -17,13 +21,13 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_sa_100_102_010():
+def test_sa_100_102_060():
     """
-    :Description: Verification of a BQR QR Generation Success through SA via HDFC
-    :Subfeature code: UI_SA_PM_BQR_HDFC_QR_Generation_Success_010
+    :Description: Verification of a BQRV4 QR Generation Success through SA via YES_ATOS
+    :Subfeature code: UI_SA_BQRV4_QR_Generation_Success_YES_ATOS_60
     :TC naming code description: 100->Payment Method
                                 102->BQR
-                                010-> TC10
+                                060-> TC60
     """
 
     try:
@@ -33,24 +37,21 @@ def test_sa_100_102_010():
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         username = app_cred['Username']
         password = app_cred['Password']
-
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
-
         query = "select org_code from org_employee where username='" + str(username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQR')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -120,11 +121,9 @@ def test_sa_100_102_010():
         GlobalVariables.time_calc.validation.start()
         print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
-                logger.info(f"Started APP validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Screen text": "Scan QR code using"}
 
@@ -142,7 +141,6 @@ def test_sa_100_102_010():
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-
         # -----------------------------------------End of App Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
@@ -150,5 +148,6 @@ def test_sa_100_102_010():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
     # -------------------------------------------End of Validation---------------------------------------------
+
     finally:
         Configuration.executeFinallyBlock(testcase_id)

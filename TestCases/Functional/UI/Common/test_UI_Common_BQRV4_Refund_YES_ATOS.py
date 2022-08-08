@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 import pytest
 from termcolor import colored
-
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -15,23 +14,22 @@ from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_val
+    ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
-
 logger = EzeAutoLogger(__name__)
 
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")  # Mandatory line.
+@pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_102_052():
+def test_common_100_102_062():
     """
-    :Description: Verification of a BQRV4 Refund transaction via HDFC
-    :Subfeature code: UI_Common_BQRV4_Refund_via_HDFC_052
-    :TC naming code description:100->Payment Method, 102->BQR, 052-> TC052
+    :Description: Verification of a BQRV4 Refund transaction via YES_ATOS
+    :Subfeature code: UI_Common_BQRV4_Refund_via_YES_ATOS_062
+    :TC naming code description:100->Payment Method, 102->BQR, 062-> TC062
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -57,7 +55,12 @@ def test_common_100_102_052():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
+        query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
+        result = DBProcessor.getValueFromDB(query)
+        mid = result["mid"].iloc[0]
+        logger.debug(f"Fetching mid from database for current merchant:{mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -79,39 +82,25 @@ def test_common_100_102_052():
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
-            loginPage = LoginPage(app_driver)
-            logger.info(f"Logging in the MPOSX application using username : {username}")
-            loginPage.perform_login(username, password)
-            homePage = HomePage(app_driver)
-            homePage.wait_for_navigation_to_load()
-            homePage.wait_for_home_page_load()
-            homePage.check_home_page_logo()
-            logger.info(f"App homepage loaded successfully")
-            amount = random.randint(201, 300)
+            amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            print("Order id", order_id)
-            homePage.enter_amount_and_order_number(amount, order_id)
-            logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
-            paymentPage = PaymentPage(app_driver)
-            paymentPage.is_payment_page_displayed(amount, order_id)
-            paymentPage.click_on_Bqr_paymentMode()
-            logger.info("Selected payment mode is BQR")
-            paymentPage.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
-            paymentPage.click_on_back_btn()
-            paymentPage.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
-            paymentPage.click_on_proceed_homepage()
+            logger.debug("Generating QR using BQR QR generate APi")
+            api_details = DBProcessor.get_api_details('bqrGenerate',
+                                                      request_body={"username": username, "password": password,
+                                                                    "amount": str(amount),
+                                                                    "orderNumber": str(order_id)})
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"Resonse recived for QR genration api is : {response}")
             query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
+            api_details = DBProcessor.get_api_details('stopPayment',
+                                                      request_body={"username": username, "password": password,
+                                                                    "orgCode":org_code ,"txnId": txn_id})
+            response = APIProcessor.send_request(api_details)
+            print("Response received:", response)
             logger.info("Opening Portal to perform refund of the transaction")
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             loginPagePortal = PortalLoginPage(ui_driver)
@@ -134,8 +123,6 @@ def test_common_100_102_052():
             txn_id_refunded = result["id"].iloc[0]
             rrn = result['rr_number'].iloc[0]
             logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
-
-            #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -165,7 +152,6 @@ def test_common_100_102_052():
             logger.exception(f"Execution is completed for the test case : {testcase_id}")
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -181,10 +167,15 @@ def test_common_100_102_052():
                                      "Payment Status Original": "STATUS:AUTHORIZED_REFUNDED",
                                      "Payment mode Original": "UPI", "Payment Txn ID Original": txn_id,
                                      "Payment Amt Original": str(amount), "rrn":str(rrn)}
-
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                loginPage = LoginPage(app_driver)
+                logger.info(f"Logging in the MPOSX application using username : {username}")
+                loginPage.perform_login(username, password)
+                homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
+                logger.info(f"App homepage loaded successfully")
                 homePage.click_on_history()
                 transactionsHistoryPage = TransHistoryPage(app_driver)
                 transactionsHistoryPage.click_on_transaction_by_order_id(order_id)
@@ -432,11 +423,11 @@ def test_common_100_102_052():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_102_053():
+def test_common_100_102_063():
     """
-    :Description: Verification of a BQRV4 Refund transaction through API via HDFC
-    :Subfeature code: UI_Common_BQRV4_Refund_via_API_HDFC_055
-    :TC naming code description:100->Payment Method, 102->BQR, 053-> TC053
+    :Description: Verification of a BQRV4 Refund transaction through API via YES_ATOS
+    :Subfeature code: UI_Common_BQRV4_Refund_via_API_YES_ATOS_063
+    :TC naming code description:100->Payment Method, 102->BQR, 063-> TC063
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -459,13 +450,13 @@ def test_common_100_102_053():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
 
-        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='HDFC'"
+        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
-        query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
+        query = "select * from upi_merchant_config where bank_code = 'YES' AND status = 'ACTIVE' AND org_code = " \
                 "'" + str(org_code) + "'; "
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
@@ -495,7 +486,7 @@ def test_common_100_102_053():
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
-            amount = random.randint(201, 300)
+            amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             print("Order id", order_id)
             home_page.enter_amount_and_order_number(amount, order_id)
@@ -574,8 +565,8 @@ def test_common_100_102_053():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_val.date_and_time_val_against_app(posting_date)
-                refund_date_and_time = date_time_val.date_and_time_val_against_app(posting_date_refunded)
+                date_and_time = date_time_converter.to_app_format(posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
                     "refund_pmt_status": "STATUS:REFUNDED",
@@ -597,7 +588,6 @@ def test_common_100_102_053():
                     "rrn": str(rrn),
                     "refund_rrn": str(rrn_refunded),
                     "auth_code": auth_code,
-                    "refund_auth_code": refund_auth_code,
                     "date": date_and_time,
                     "refund_date": refund_date_and_time
                 }
@@ -623,8 +613,6 @@ def test_common_100_102_053():
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
-                app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id_refunded}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
@@ -691,7 +679,7 @@ def test_common_100_102_053():
                     "rrn": str(app_rrn_original),
                     "refund_rrn": str(app_rrn_refunded),
                     "auth_code": app_auth_code_original,
-                    "refund_auth_code": app_auth_code_refunded, "date": app_date_and_time,
+                    "date": app_date_and_time,
                     "refund_date": app_date_and_time_refunded
                 }
 
@@ -712,8 +700,8 @@ def test_common_100_102_053():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_val.db_datetime(posting_date)
-                refund_date = date_time_val.db_datetime(posting_date_refunded)
+                date = date_time_converter.db_datetime(posting_date)
+                refund_date = date_time_converter.db_datetime(posting_date_refunded)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED_REFUNDED",
                     "refunded_pmt_status": "REFUNDED",
@@ -732,16 +720,15 @@ def test_common_100_102_053():
                     "original_order_id": order_id,
                     "original_rrn": str(rrn),
                     "refunded_rrn": str(rrn_refunded),
-                    "original_acquirer_code": "HDFC",
-                    "original_issuer_code": "HDFC",
+                    "original_acquirer_code": "YES",
+                    "original_issuer_code": "YES",
                     "original_txn_type": "CHARGE",
                     "original_mid": mid, "original_tid": tid,
                     "original_org_code": org_code,
-                    "refunded_acquirer_code": "HDFC",
+                    "refunded_acquirer_code": "YES",
                     "refunded_txn_type": "REFUND",
                     "refunded_mid": mid, "refunded_tid": tid,
                     "refunded_org_code": org_code,
-                    "refund_auth_code": refund_auth_code,
                     "original_auth_code": auth_code,"date": date, "refunded_date": refund_date
                 }
 
@@ -787,7 +774,6 @@ def test_common_100_102_053():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["postingDate"]
 
                 actual_api_values = {
@@ -817,10 +803,9 @@ def test_common_100_102_053():
                     "refunded_txn_type": txn_type_api_refunded,
                     "refunded_mid": mid_api_refunded, "refunded_tid": tid_api_refunded,
                     "refunded_org_code": org_code_api_refunded,
-                    "refund_auth_code": auth_code_api_refunded,
                     "original_auth_code": auth_code_api_original,
-                    "date": date_time_val.date_and_time_val_against_api(date_api_original),
-                    "refunded_date": date_time_val.date_and_time_val_against_api(date_api_refunded)
+                    "date": date_time_converter.from_api_to_datetime_format(date_api_original),
+                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded)
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
@@ -853,15 +838,15 @@ def test_common_100_102_053():
                     "refunded_upi_txn_status": "REFUNDED",
                     "original_settle_status": "SETTLED",
                     "refunded_settle_status": "SETTLED",
-                    "original_acquirer_code": "HDFC",
-                    "refunded_acquirer_code": "HDFC",
-                    "original_bank_code": "HDFC",
-                    "original_pmt_gateway": "HDFC",
-                    "refunded_pmt_gateway": "HDFC",
+                    "original_acquirer_code": "YES",
+                    "refunded_acquirer_code": "YES",
+                    "original_bank_code": "YES",
+                    "original_pmt_gateway": "ATOS",
+                    "refunded_pmt_gateway": "ATOS",
                     "original_upi_txn_type": "PAY_BQR",
                     "refunded_upi_txn_type": "REFUND",
-                    "original_upi_bank_code": "HDFC",
-                    "refunded_upi_bank_code": "HDFC",
+                    "original_upi_bank_code": "YES",
+                    "refunded_upi_bank_code": "YES",
                     "original_upi_mc_id": upi_mc_id,
                     "refunded_upi_mc_id": upi_mc_id,
                     "original_mid": mid,
@@ -1008,11 +993,10 @@ def test_common_100_102_053():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_val.date_and_time_val_against_charge_slip(posting_date)
-                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time,
-                                   'AUTH CODE': auth_code}
-                receipt_validator.perform_charge_slip_validations(txn_id,
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
+                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_refunded),
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time}
+                receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": username, "password": password},
                                                                   expected_values)
             except Exception as e:
