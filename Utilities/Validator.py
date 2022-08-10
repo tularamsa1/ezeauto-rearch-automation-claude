@@ -250,7 +250,7 @@ def print_validation_result(expected_values: {}, acutal_values: {}, lst_passed_f
                     print(f"Field {field} is not available in the actual values list.")
 
 
-def filter_values(validation_type: str, expected_values: dict, actual_values: dict) -> dict and dict():
+def filter_values(validation_type: str, expected_values: dict, actual_values: dict) -> dict and dict:
     """
     This method is used to filter out the values from the expected and actual values dictionary.
     This takes the expected and actual dictionary as input, reads the configuration and returns the filtered dictionary
@@ -261,22 +261,29 @@ def filter_values(validation_type: str, expected_values: dict, actual_values: di
     if str(ConfigReader.read_config("selective_validation", "bool_enable_selective_validation")).lower() == "true":
         if str(ConfigReader.read_config("selective_validation", "bool_validate_selected_values")).lower() == "true":
             _lst_select_values_ = get_selected_values(validation_type)
-            _lst_select_values_ = [value.strip() for value in _lst_select_values_]
-            for value in list(expected_values):
-                if not value in _lst_select_values_:
-                    del expected_values[value]
-            for value in list(actual_values):
-                if not value in _lst_select_values_:
-                    del actual_values[value]
+            if "__all__" in _lst_select_values_ and len(_lst_select_values_) == 1:
+                pass
+            else:
+                _lst_select_values_ = [value.strip() for value in _lst_select_values_]
+                for value in list(expected_values):
+                    if value not in _lst_select_values_:
+                        del expected_values[value]
+                for value in list(actual_values):
+                    if value not in _lst_select_values_:
+                        del actual_values[value]
         else:
             _lst_ignore_values_ = get_ignored_values(validation_type)
-            _lst_ignore_values_ = [value.strip() for value in _lst_ignore_values_]
-            for value in list(expected_values):
-                if value in _lst_ignore_values_:
-                    del expected_values[value]
-            for value in list(actual_values):
-                if value in _lst_ignore_values_:
-                    del actual_values[value]
+            if "__all__" in _lst_ignore_values_ and len(_lst_ignore_values_)==1:
+                expected_values = {}
+                actual_values = {}
+            else:
+                _lst_ignore_values_ = [value.strip() for value in _lst_ignore_values_]
+                for value in list(expected_values):
+                    if value in _lst_ignore_values_:
+                        del expected_values[value]
+                for value in list(actual_values):
+                    if value in _lst_ignore_values_:
+                        del actual_values[value]
     return expected_values, actual_values
 
 
