@@ -13,7 +13,7 @@ def validateAgainstPortal(expectedPortal, actualPortal):
     """
     lst_passed_fields = []
     lst_failed_fields = []
-    expectedPortal, acutalPortal = filter_values("portal", expectedPortal, actualPortal)
+    expectedPortal, actualPortal = filter_values("portal", expectedPortal, actualPortal)
     if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
         print("=======   PORTAL Validation Started    =======")
         if len(expectedPortal) == len(actualPortal):
@@ -261,6 +261,7 @@ def filter_values(validation_type: str, expected_values: dict, actual_values: di
     if str(ConfigReader.read_config("selective_validation", "bool_enable_selective_validation")).lower() == "true":
         if str(ConfigReader.read_config("selective_validation", "bool_validate_selected_values")).lower() == "true":
             _lst_select_values_ = get_selected_values(validation_type)
+            _lst_select_values_ = [value.strip() for value in _lst_select_values_]
             for value in list(expected_values):
                 if not value in _lst_select_values_:
                     del expected_values[value]
@@ -269,6 +270,7 @@ def filter_values(validation_type: str, expected_values: dict, actual_values: di
                     del actual_values[value]
         else:
             _lst_ignore_values_ = get_ignored_values(validation_type)
+            _lst_ignore_values_ = [value.strip() for value in _lst_ignore_values_]
             for value in list(expected_values):
                 if value in _lst_ignore_values_:
                     del expected_values[value]
