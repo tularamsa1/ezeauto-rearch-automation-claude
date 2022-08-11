@@ -2216,10 +2216,6 @@ def test_common_100_101_033():
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                # api_details = DBProcessor.get_api_details('txnDetails',
-                #                                           request_body={"username": app_username,
-                #                                                         "password": app_password,
-                #                                                         "txnId": new_txn_id})
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})

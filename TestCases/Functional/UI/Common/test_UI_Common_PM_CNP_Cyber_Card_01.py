@@ -205,25 +205,11 @@ def test_common_100_103_001():
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
-            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-                GlobalVariables.time_calc.execution.pause()
-                print(colored("Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            ReportProcessor.capture_ss_when_portal_val_exe_failed()
-            GlobalVariables.EXCEL_TC_Execution = "Fail"
-            # Check with team whether it is required or not?
-            GlobalVariables.Incomplete_ExecutionCount += 1
-            GlobalVariables.time_calc.execution.pause()
-            #Do we need this print statements?
-            print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            logger.exception(f"Execution is completed for the test case : {testcase_id}")
-            pytest.fail("Test case execution failed due to the exception -"+str(e))
-        # -----------------------------------------End of Test Execution--------------------------------------
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))       # -----------------------------------------End of Test Execution--------------------------------------
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -874,11 +860,6 @@ def test_common_100_103_009():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -916,7 +897,6 @@ def test_common_100_103_009():
             #     pass
             # else:
             #     raise Exception("Expiry Messages are not matching.")
-    #
     #         # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
@@ -1389,11 +1369,7 @@ def test_common_100_103_012():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
+
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',request_body={"amount": amount, "externalRefNumber": order_id,

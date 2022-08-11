@@ -42,9 +42,42 @@ class remotePayTxnPage(BasePage):
     btn_remotePayUpiCollectVpaValidation = (By.XPATH, "//b[contains(text(),'Verify')]")
     btn_remotePayUpiCollectProceed = (By.XPATH, "//button[@class='btn button-orange btn-block']")
 
+    btn_netbanking = (By.XPATH, "//mat-panel-title[contains(text(),'Net Banking')]")
+    btn_click_netbanking = (By.TAG_NAME, "select")
+    btn_select_netbanking = (By.XPATH, "//option[@value='470']")
+    btn_proceed_netbanking = (By.XPATH, "//button[contains(text(),'Proceed to pay')]")
+    btn_netbanking_customerId = (By.NAME, "cid")
+    btn_netbanking_customerpwd = (By.NAME, "pwd")
+    btn_netbanking_proceed = (By.NAME, "proceed")
+    btn_netbanking_cancel = (By.NAME, "cancel")
+
 
     def __init__(self, driver):
         super().__init__(driver)
+
+    def remote_pay_netbanking(self):
+        self.perform_click_cnp(self.btn_netbanking)
+
+    def remote_pay_click_and_expand_netbanking(self):
+        self.perform_click_cnp(self.btn_click_netbanking)
+
+    def remote_pay_select_netbanking(self):
+        self.perform_click_cnp(self.btn_select_netbanking)
+
+    def remote_pay_proceed_netbanking(self):
+        self.perform_click_cnp(self.btn_proceed_netbanking)
+
+    def remote_pay_netbanking_customerId(self,value):
+        self.perform_sendkeys(self.btn_netbanking_customerId, value)
+
+    def remote_pay_netbanking_customerpwd(self,value):
+        self.perform_sendkeys(self.btn_netbanking_customerpwd, value)
+
+    def remote_pay_netbanking_proceed(self):
+        self.perform_click_cnp(self.btn_netbanking_proceed)
+
+    def remote_pay_netbanking_cancel(self):
+        self.perform_click_cnp(self.btn_netbanking_cancel)
 
     def clickOnCreditCardToExpand(self):
         # url = ConfigReader.read_config("APIs", "baseUrl") + ConfigReader.read_config("APIs", "portalLogin")
