@@ -491,12 +491,15 @@ def initialize_app_driver(request):
     appium_server_details = ResourceAssigner.getAppiumServerFromDB(test_case_id)
     print(test_case_id + " will be using the device " + device_details['DeviceId'])
     print(test_case_id + " will be running on the appium server port " + appium_server_details['PortNumber'])
-    mpos_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
-        "Applications", "mpos")
-    sa_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
-        "Applications", "SA")
-    lst_applications = [mpos_app, sa_app]
-    json_applications = json.dumps(lst_applications)
+    if str(ConfigReader.read_config("Applications", "install_apps")).lower() == 'true':
+        mpos_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
+            "Applications", "mpos")
+        sa_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
+            "Applications", "SA")
+        lst_applications = [mpos_app, sa_app]
+        json_applications = json.dumps(lst_applications)
+    else:
+        json_applications = ""
     desired_cap = {
         "platformName": "Android",
         "deviceName": device_details['DeviceId'],

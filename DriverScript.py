@@ -1,8 +1,6 @@
 import shutil
 from termcolor import colored
-
 from Utilities import DirectoryCreator
-
 DirectoryCreator.createExecutionDirectories()
 from Utilities import Rerun
 from Utilities import ConfigReader, merchant_creator, sqlite_processor

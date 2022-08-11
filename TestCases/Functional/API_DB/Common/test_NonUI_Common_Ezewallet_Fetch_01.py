@@ -36,7 +36,7 @@ def test_common_200_203_001():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -202,7 +202,7 @@ def test_common_200_203_002():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -371,7 +371,7 @@ def test_common_200_203_003():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -539,7 +539,7 @@ def test_common_200_203_004():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -776,7 +776,7 @@ def test_common_200_203_005():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()

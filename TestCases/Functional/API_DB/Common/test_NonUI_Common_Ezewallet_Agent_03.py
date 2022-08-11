@@ -43,7 +43,7 @@ def test_common_200_202_011():
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+                                                   config_log=False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -226,7 +226,7 @@ def test_common_200_202_012():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -429,7 +429,7 @@ def test_common_200_202_013():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -509,7 +509,7 @@ def test_common_200_202_013():
                 logger.debug(f"Agent Balance before Withdraw : {agent_balance_before}")
                 logger.debug(f"Actual amount for Withdraw  : {agent_balance_before + (original_withdraw_amt+1)}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before)}
+                expectedDBValues = {"agent_balance": (agent_balance_before)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -517,7 +517,7 @@ def test_common_200_202_013():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agent_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": agent_bal_after}
+                actualDBValues = {"agent_balance": agent_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -581,7 +581,7 @@ def test_common_200_202_014():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
