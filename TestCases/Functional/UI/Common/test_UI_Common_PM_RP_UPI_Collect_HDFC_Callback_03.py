@@ -96,12 +96,6 @@ def test_common_100_103_024():
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
 
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
@@ -855,11 +849,7 @@ def test_common_100_103_025():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
+
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
@@ -1822,12 +1812,6 @@ def test_common_100_103_026():
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
 
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
@@ -2261,7 +2245,7 @@ def test_common_100_103_026():
 def test_common_100_103_027():
     """
     Sub Feature Code: UI_Common_PM_2_UPI_Collect_Success_callback_after_expiry_HDFC_AutoRefund_Disabled
-    Sub Feature Description: Performing two  UPI Collect success callback via HDFC after expiry the  when autorefund is enabled
+    Sub Feature Description: Performing two  UPI Collect success callback via HDFC after expiry the  when autorefund is disabled
     100: Payment Method
     103: RemotePay
     025: TC025
@@ -2319,12 +2303,8 @@ def test_common_100_103_027():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
-            amount = random.randint(1, 10)
+
+            amount = random.randint(1, 40)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
@@ -3262,15 +3242,7 @@ def test_common_100_103_028():  # Make sure to add the test case name as same as
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(
-                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
-                        'cyan'))
-
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -3420,12 +3392,15 @@ def test_common_100_103_028():  # Make sure to add the test case name as same as
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response : {response}")
 
+            rrn1 = random.randint(1111110, 9999999)
+            logger.debug(f"generated random rrn number is : {rrn1}")
+
             logger.debug(
-                f"replacing the Txn_id with {original_txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
+                f"replacing the Txn_id with {original_txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn1} in the curl_data")
             api_details = DBProcessor.get_api_details('upi_failed_curl',
                                                       curl_data={'ref_id': txn_ref, 'Txn_id': payment_intent_id,
                                                                  'amount': str(amount) + ".00",
-                                                                 'vpa': vpa, 'rrn': rrn
+                                                                 'vpa': vpa, 'rrn': rrn1
                                                                  })
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
@@ -3437,8 +3412,7 @@ def test_common_100_103_028():  # Make sure to add the test case name as same as
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             api_details = DBProcessor.get_api_details('callBackUpiMerchantRes',
                                                       request_body={'pgMerchantId': str(pg_merchant_id),
                                                                     'meRes': str(data_buffer)})

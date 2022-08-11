@@ -789,11 +789,14 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(
-            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info("Performing preconditions before starting test case execution")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+        # Write the code here to revert the settings that were done as precondition
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         username = app_cred['Username']
@@ -811,33 +814,21 @@ def test_sa_100_101_003():  # Make sure to add the test case name as same as the
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
-
-        api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                "password": portal_password,
-                                                                                "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
-        logger.debug(f"API details  : {api_details} ")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions is : {response}")
+                                                           portal_pw=portal_password, payment_mode='CNP')
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
-        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(
-                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
-                        'cyan'))
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
