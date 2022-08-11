@@ -2,6 +2,7 @@ import json
 from urllib.parse import urlencode
 import requests
 
+from PageFactory import Base_Actions
 from Utilities import ConfigReader, DBProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -45,13 +46,20 @@ def send_request(api_details):
         logger.debug(
             f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
         return json_resp
-    # print("url", type(url))
-    # print("endPoint", endPoint)
-    # print("protocol", protocol)
-    # print("method", method)
-    # print("payload", type(payload))
-    # print("payload", payload)
-    # print("header",type(headers))
+
+    if api_details['ApiName'] == 'apb_hash_generate':
+        router_ip = Base_Actions.get_environment("str_exe_env_ip")
+        query = "select psp_base_url from upi_psp_config where bank_code='APB';"
+        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        psp_base_url = result['psp_base_url'].values[0]
+        logger.debug(f"psp_base_url from the upi_merchant_config table is : {psp_base_url}")
+        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        json_resp = json.loads(resp.text)
+        logger.debug(
+            f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+        return json_resp
 
     resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
     json_resp = json.loads(resp.text)
