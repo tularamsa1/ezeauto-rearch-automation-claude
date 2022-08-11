@@ -36,7 +36,7 @@ def test_common_200_203_006():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -86,8 +86,8 @@ def test_common_200_203_006():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
-                                     "accountLabel": "TOPUP","txnStatus": "SUCCESS", "transferMode": "TRANSFER",
-                                     "fetch_amount": amount, "externalRefId": txn_id,
+                                     "account_label": "TOPUP","txn_status": "SUCCESS", "transfer_mode": "TRANSFER","merchant_id":GlobalConstants.ORG,
+                                     "fetch_amount": amount, "external_ref_id": txn_id,
                                      "agent_id":GlobalConstants.AGENT_USER, "balance":agent_balance_before+original_amount}
                 if card_payment_success == True:
                     time.sleep(3)
@@ -98,6 +98,8 @@ def test_common_200_203_006():
                                                                         })
                     response = APIProcessor.send_request(api_details)
                     fetch_statement_success = response['success']
+                    wallet_txn_id = response['response']['elements'][0]['walletTxnId']
+                    merchant_id = response['response']['elements'][0]['merchantId']
                     txn_status = response['response']['elements'][0]['txnStatus']
                     transfer_mode = response['response']['elements'][0]['transferMode']
                     actual_amount = float(response['response']['elements'][0]['amount'])
@@ -107,8 +109,8 @@ def test_common_200_203_006():
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_statement_success, "cardpay_amount": amount, "status":status,
-                                       "accountLabel": account_label, "txnStatus": txn_status,
-                                       "transferMode": transfer_mode ,"fetch_amount": actual_amount, "externalRefId" : external_ref_Id,
+                                       "account_label": account_label, "txn_status": txn_status,
+                                       "transfer_mode": transfer_mode ,"merchant_id":merchant_id,"fetch_amount": actual_amount, "external_ref_id" : external_ref_Id,
                                        "agent_id":agent_id, "balance":balance_amount}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -137,15 +139,53 @@ def test_common_200_203_006():
                 logger.debug(f"Agent Balance before Top Up : {agent_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before + original_amount)}
+                expectedDBValues = {"clw_txn_amt":original_amount,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"TRANSFER",
+                                    "clw_transfer_status":"SUCCESS","clw_transfer_type":"DIGITAL","clw_leg_amt_cr":original_amount,
+                                    "clw_account_entity_type_cr":"AGENT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_amount,
+                                    "clw_account_entity_type_dt":"MERCHANT","clw_source_type_dt":"DEBIT","agent_balance": (agent_balance_before + original_amount)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + wallet_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
-                bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": bal_after_posting}
+                agent_bal_after = float(result["balance"].iloc[0])
+                actualDBValues = {"clw_txn_amt": clw_txn_amt, "clw_merchant_id": clw_merchant_id,
+                                  "clw_transfer_mode": clw_transfer_mode,
+                                  "clw_transfer_status": clw_transfer_status, "clw_transfer_type": clw_transfer_type,
+                                  "clw_leg_amt_cr": clw_leg_amt_cr,
+                                  "clw_account_entity_type_cr": clw_account_entity_type_cr,
+                                  "clw_source_type_cr": clw_source_type_cr,
+                                  "clw_leg_amt_dt": clw_leg_amt_dt,
+                                  "clw_account_entity_type_dt": clw_account_entity_type_dt,
+                                  "clw_source_type_dt": clw_source_type_dt,
+                                  "agent_balance": agent_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -210,7 +250,7 @@ def test_common_200_203_007():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -264,9 +304,9 @@ def test_common_200_203_007():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "cashpay_amount": original_amount_cashpay, "status":"AUTHORIZED",
-                                     "settlementStatus":"SETTLED","accountLabel": "BILLPAY","clwStatus": "SUCCESS",
-                                     "transaction_status": "SUCCESS", "transferMode": "PAYMENT",
-                                     "fetch_amount": amount, "externalRefId": txn_id,
+                                     "settlement_status":"SETTLED","account_label": "BILLPAY","clw_status": "SUCCESS",
+                                     "transaction_status": "SUCCESS", "transfer_mode": "PAYMENT","merchant_id":GlobalConstants.ORG,
+                                     "fetch_amount": amount, "external_ref_id": txn_id,
                                      "agent_id":GlobalConstants.AGENT_USER, "balance":agent_balance_before - original_amount_cashpay}
                 if cash_payment_success == True:
                     time.sleep(3)
@@ -277,6 +317,8 @@ def test_common_200_203_007():
                                                                         })
                     response = APIProcessor.send_request(api_details)
                     fetch_statment_success = response['success']
+                    wallet_txn_id = response['response']['elements'][0]['walletTxnId']
+                    merchant_id = response['response']['elements'][0]['merchantId']
                     txn_status = response['response']['elements'][0]['txnStatus']
                     transfer_mode = response['response']['elements'][0]['transferMode']
                     actual_amount = float(response['response']['elements'][0]['amount'])
@@ -286,9 +328,9 @@ def test_common_200_203_007():
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_statment_success, "username": username, "cashpay_amount": amount, "status":status,
-                                     "settlementStatus":settlement_status,"accountLabel": account_label,"clwStatus": clw_status,
-                                     "transaction_status": txn_status, "transferMode": transfer_mode,
-                                     "fetch_amount": actual_amount, "externalRefId": external_ref_Id,
+                                     "settlement_status":settlement_status,"account_label": account_label,"clw_status": clw_status,
+                                     "transaction_status": txn_status, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
+                                     "fetch_amount": actual_amount, "external_ref_id": external_ref_Id,
                                      "agent_id":agent_id, "balance":balance_amount}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -315,9 +357,38 @@ def test_common_200_203_007():
                 logger.debug(f"Agent Balance before Cash Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for BILLPAY  : {original_amount_cashpay}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before - original_amount_cashpay,
+                expectedDBValues = {"clw_txn_amt":original_amount_cashpay,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"PAYMENT",
+                                    "clw_transfer_status":"SUCCESS","clw_transfer_type":"DIGITAL","clw_leg_amt_cr":original_amount_cashpay,
+                                    "clw_account_entity_type_cr":"MERCHANT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_amount_cashpay,
+                                    "clw_account_entity_type_dt":"AGENT","clw_source_type_dt":"DEBIT","agent_balance": agent_balance_before - original_amount_cashpay,
                                     "settlement_balance": settlement_bal_before + original_amount_cashpay}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + wallet_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
                 query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -328,8 +399,17 @@ def test_common_200_203_007():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
-                                    "settlement_balance": settlementbal_after_cash_payment}
+                actualDBValues = {"clw_txn_amt": clw_txn_amt, "clw_merchant_id": clw_merchant_id,
+                                  "clw_transfer_mode": clw_transfer_mode,
+                                  "clw_transfer_status": clw_transfer_status, "clw_transfer_type": clw_transfer_type,
+                                  "clw_leg_amt_cr": clw_leg_amt_cr,
+                                  "clw_account_entity_type_cr": clw_account_entity_type_cr,
+                                  "clw_source_type_cr": clw_source_type_cr,
+                                  "clw_leg_amt_dt": clw_leg_amt_dt,
+                                  "clw_account_entity_type_dt": clw_account_entity_type_dt,
+                                  "clw_source_type_dt": clw_source_type_dt,
+                                  "agent_balance": agentbal_after_cash_payment,
+                                  "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -393,7 +473,7 @@ def test_common_200_203_008():
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+                                                   config_log=False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -461,9 +541,9 @@ def test_common_200_203_008():
             try:
                 expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER,
                                      "cashpay_amount": original_amount_refunded, "status": "REFUNDED",
-                                     "settlementStatus": "SETTLED", "accountLabel": "BILLPAY",
-                                     "transaction_status": "SUCCESS", "transferMode": "REFUND",
-                                     "fetch_amount": amount, "externalRefId": GlobalVariables.cash_txn_id,
+                                     "settlement_status": "SETTLED", "account_label": "BILLPAY",
+                                     "transaction_status": "SUCCESS", "transfer_mode": "REFUND","merchant_id":GlobalConstants.ORG,
+                                     "fetch_amount": amount, "external_ref_id": GlobalVariables.cash_txn_id,
                                      "agent_id": GlobalConstants.AGENT_USER,
                                      "balance": agent_balance_before + original_amount_refunded}
                 if refund_payment_success == True:
@@ -475,6 +555,8 @@ def test_common_200_203_008():
                                                                             })
                     response = APIProcessor.send_request(api_details)
                     fetch_statment_success = response['success']
+                    wallet_txn_id = response['response']['elements'][0]['walletTxnId']
+                    merchant_id = response['response']['elements'][0]['merchantId']
                     txn_status = response['response']['elements'][0]['txnStatus']
                     transfer_mode = response['response']['elements'][0]['transferMode']
                     actual_amount = float(response['response']['elements'][0]['amount'])
@@ -485,9 +567,9 @@ def test_common_200_203_008():
 
                     actualAPIValues = {"success": fetch_statment_success, "username": username,
                                        "cashpay_amount": amount, "status": status,
-                                       "settlementStatus": settlement_status, "accountLabel": account_label,
-                                       "transaction_status": txn_status, "transferMode": transfer_mode,
-                                       "fetch_amount": actual_amount, "externalRefId": external_ref_Id,
+                                       "settlement_status": settlement_status, "account_label": account_label,
+                                       "transaction_status": txn_status, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
+                                       "fetch_amount": actual_amount, "external_ref_id": external_ref_Id,
                                        "agent_id": agent_id, "balance": balance_amount}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -512,9 +594,38 @@ def test_common_200_203_008():
                 logger.debug(f"Agent Balance before Refund Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for Refund  : {original_amount_refunded}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before + original_amount_refunded,
+                expectedDBValues = {"clw_txn_amt":original_amount_refunded,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"REFUND",
+                                    "clw_transfer_status":"SUCCESS","clw_transfer_type":"DIGITAL","clw_leg_amt_cr":original_amount_refunded,
+                                    "clw_account_entity_type_cr":"AGENT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_amount_refunded,
+                                    "clw_account_entity_type_dt":"MERCHANT","clw_source_type_dt":"DEBIT","agent_balance": agent_balance_before + original_amount_refunded,
                                     "settlement_balance": settlement_bal_before -  original_amount_refunded}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + wallet_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + wallet_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
                 query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -522,11 +633,20 @@ def test_common_200_203_008():
                 result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                 result_settlement_bal = DBProcessor.getValueFromDB(query_settlement_bal, "closedloop")
                 logger.debug(f"Query result URL: {result_agent_bal}, {result_settlement_bal}")
-                agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
-                settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
+                agentbal_after_refund_payment = float(result_agent_bal["balance"].iloc[0])
+                settlementbal_after_refund_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
-                                  "settlement_balance": settlementbal_after_cash_payment}
+                actualDBValues = {"clw_txn_amt": clw_txn_amt, "clw_merchant_id": clw_merchant_id,
+                                  "clw_transfer_mode": clw_transfer_mode,
+                                  "clw_transfer_status": clw_transfer_status, "clw_transfer_type": clw_transfer_type,
+                                  "clw_leg_amt_cr": clw_leg_amt_cr,
+                                  "clw_account_entity_type_cr": clw_account_entity_type_cr,
+                                  "clw_source_type_cr": clw_source_type_cr,
+                                  "clw_leg_amt_dt": clw_leg_amt_dt,
+                                  "clw_account_entity_type_dt": clw_account_entity_type_dt,
+                                  "clw_source_type_dt": clw_source_type_dt,
+                                  "agent_balance": agentbal_after_refund_payment,
+                                  "settlement_balance": settlementbal_after_refund_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -595,7 +715,7 @@ def test_common_200_203_009():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -647,12 +767,12 @@ def test_common_200_203_009():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": True, "walletTxnId": wallet_txn_id,
-                                     "realCode": "TRANSACTION_SUCCESSFUL", "successCode": "CLOSED_LOOP_000027",
-                                     "transferMode": "WITHDRAW",
-                                     "creditAccBalance": agency_balance_before + original_withdraw_amt,
-                                     "debitAccBalance": agent_balance_before - original_withdraw_amt
-                    , "agentID": GlobalConstants.AGENT_USER, "txn_status": "SUCCESS",
+                expectedAPIValues = {"success": True, "wallet_txn_id": wallet_txn_id,
+                                     "real_code": "TRANSACTION_SUCCESSFUL", "success_code": "CLOSED_LOOP_000027",
+                                     "transfer_mode": "WITHDRAW","merchant_id":GlobalConstants.ORG,
+                                     "credit_acc_balance": agency_balance_before + original_withdraw_amt,
+                                     "debit_acc_balance": agent_balance_before - original_withdraw_amt
+                    , "agent_id": GlobalConstants.AGENT_USER, "txn_status": "SUCCESS",
                                      "amount_withdraw": original_withdraw_amt,
                                      "bal_after_withdraw": agent_balance_before - original_withdraw_amt}
                 if withdraw_pay_success == True:
@@ -664,6 +784,7 @@ def test_common_200_203_009():
                     response = APIProcessor.send_request(api_details)
                     fetch_statment_success = response['success']
                     actual_wallet_txn_id = response['response']['elements'][0]['walletTxnId']
+                    merchant_id = response['response']['elements'][0]['merchantId']
                     txn_status = response['response']['elements'][0]['txnStatus']
                     transfer_mode = response['response']['elements'][0]['transferMode']
                     agent_Id = response['response']['elements'][0]['agentId']
@@ -671,10 +792,10 @@ def test_common_200_203_009():
                     bal_after_withdraw = float(response['response']['elements'][0]['balance'])
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    actualAPIValues = {"success": fetch_statment_success, "walletTxnId": actual_wallet_txn_id,
-                                       "realCode": realcode, "successCode": successcode, "transferMode": transfer_mode,
-                                       "creditAccBalance": credit_acc_bal, "debitAccBalance": debit_acc_bal
-                                        , "agentID": agent_Id, "txn_status": txn_status, "amount_withdraw": amount_withdraw,
+                    actualAPIValues = {"success": fetch_statment_success, "wallet_txn_id": actual_wallet_txn_id,
+                                       "real_code": realcode, "success_code": successcode, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
+                                       "credit_acc_balance": credit_acc_bal, "debit_acc_balance": debit_acc_bal
+                                        , "agent_id": agent_Id, "txn_status": txn_status, "amount_withdraw": amount_withdraw,
                                        "bal_after_withdraw": bal_after_withdraw}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -701,15 +822,53 @@ def test_common_200_203_009():
                 logger.debug(f"Agent Balance before Withdraw : {agent_balance_before}")
                 logger.debug(f"Actual amount for Withdraw  : {original_withdraw_amt}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before - original_withdraw_amt)}
+                expectedDBValues = {"clw_txn_amt":original_withdraw_amt,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"WITHDRAW",
+                                    "clw_transfer_status":"SUCCESS","clw_transfer_type":"MANUAL","clw_leg_amt_cr":original_withdraw_amt,
+                                    "clw_account_entity_type_cr":"MERCHANT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_withdraw_amt,
+                                    "clw_account_entity_type_dt":"AGENT","clw_source_type_dt":"DEBIT","agent_balance": (agent_balance_before - original_withdraw_amt)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + actual_wallet_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + actual_wallet_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + actual_wallet_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agent_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": agent_bal_after}
+                actualDBValues = {"clw_txn_amt": clw_txn_amt, "clw_merchant_id": clw_merchant_id,
+                                  "clw_transfer_mode": clw_transfer_mode,
+                                  "clw_transfer_status": clw_transfer_status, "clw_transfer_type": clw_transfer_type,
+                                  "clw_leg_amt_cr": clw_leg_amt_cr,
+                                  "clw_account_entity_type_cr": clw_account_entity_type_cr,
+                                  "clw_source_type_cr": clw_source_type_cr,
+                                  "clw_leg_amt_dt": clw_leg_amt_dt,
+                                  "clw_account_entity_type_dt": clw_account_entity_type_dt,
+                                  "clw_source_type_dt": clw_source_type_dt,
+                                  "agent_balance": agent_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -779,7 +938,7 @@ def test_common_200_203_010():
         GlobalVariables.setupCompletedSuccessfully = True
 
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = False, config_log= False,closedloop_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -934,6 +1093,7 @@ def test_common_200_203_010():
                 if fetch_statment_success == True:
 
                     topup_txn_status = response['response']['elements'][3]['txnStatus']
+                    topup_clw_txn_id = response['response']['elements'][3]['walletTxnId']
                     topup_transfer_mode = response['response']['elements'][3]['transferMode']
                     topup_amount = float(response['response']['elements'][3]['amount'])
                     external_ref_Id_card = response['response']['elements'][3]['externalRefId']
@@ -941,6 +1101,7 @@ def test_common_200_203_010():
 
                     #
                     cash_txn_status = response['response']['elements'][2]['txnStatus']
+                    cash_clw_txn_id = response['response']['elements'][3]['walletTxnId']
                     cash_transfer_mode = response['response']['elements'][2]['transferMode']
                     cash_agent_Id = response['response']['elements'][2]['agentId']
                     amount_cashpay = float(response['response']['elements'][2]['amount'])
@@ -949,6 +1110,7 @@ def test_common_200_203_010():
 
                     #
                     refund_txn_status = response['response']['elements'][1]['txnStatus']
+                    refund_clw_txn_id = response['response']['elements'][3]['walletTxnId']
                     refund_transfer_mode = response['response']['elements'][1]['transferMode']
                     refund_agent_Id = response['response']['elements'][1]['agentId']
                     refund_amt = float(response['response']['elements'][1]['amount'])
@@ -956,7 +1118,7 @@ def test_common_200_203_010():
                     external_ref_Id_refund = response['response']['elements'][1]['externalRefId']
 
                     #
-                    withdraw_wallet_txnid = response['response']['elements'][0]['walletTxnId']
+                    withdraw_clw_txn_id = response['response']['elements'][0]['walletTxnId']
                     withdraw_txn_status = response['response']['elements'][0]['txnStatus']
                     withdraw_transfer_mode = response['response']['elements'][0]['transferMode']
                     withdraw_agent_Id = response['response']['elements'][0]['agentId']
@@ -972,7 +1134,7 @@ def test_common_200_203_010():
                                      "bal_after_cashpay":bal_after_cashpay, "refund_txn_status":refund_txn_status,"refund_transfer_mode":refund_transfer_mode,
                                     "refund_amount":refund_amt,"refund_agent_id":refund_agent_Id,
                                      "externalRefId":external_ref_Id_refund,"balance_after_refund":bal_after_refund,
-                                    "withdraw_wallet_txn_id":withdraw_wallet_txnid,
+                                    "withdraw_wallet_txn_id":withdraw_clw_txn_id,
                                      "withdraw_txn_status":withdraw_txn_status,"withdraw_transfer_mode": withdraw_transfer_mode, "withdraw_agent_Id": withdraw_agent_Id,
                                      "amount_withdraw" : amount_withdraw,
                                      "bal_after_withdraw" : bal_after_withdraw}
@@ -1004,10 +1166,134 @@ def test_common_200_203_010():
                 logger.debug(f"Actual amount for Refund  : {original_amount_refunded}")
                 logger.debug(f"Actual amount for Withdraw  : {original_withdraw_amt}")
 
-                expectedDBValues = {"Agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay)+original_amount_refunded) - original_withdraw_amt)
-                                    , "Settlement_Account_Balance": (settlement_bal_before + original_amount_cashpay)- original_amount_refunded}
+                expectedDBValues = {"clw_topup_txn_amt":original_amount_card,"clw_topup_merchant_id":GlobalConstants.ORG,"clw_topup_transfer_mode":"TRANSFER",
+                                    "clw_topup_transfer_status":"SUCCESS","clw_topup_transfer_type":"DIGITAL","clw_topup_leg_amt_cr":original_amount_card,
+                                    "clw_topup_account_entity_type_cr":"AGENT","clw_topup_source_type_cr":"CREDIT","clw_topup_leg_amt_dt":original_amount_card,
+                                    "clw_topup_account_entity_type_dt":"MERCHANT","clw_topup_source_type_dt":"DEBIT","clw_cash_txn_amt":original_amount_cashpay,
+                                    "clw_cash_merchant_id":GlobalConstants.ORG,"clw_cash_transfer_mode":"PAYMENT",
+                                    "clw_cash_transfer_status":"SUCCESS","clw_cash_transfer_type":"DIGITAL","clw_cash_leg_amt_cr":original_amount_cashpay,
+                                    "clw_cash_account_entity_type_cr":"MERCHANT","clw_cash_source_type_cr":"CREDIT","clw_cash_leg_amt_dt":original_amount_cashpay,
+                                    "clw_cash_account_entity_type_dt":"AGENT","clw_cash_source_type_dt":"DEBIT","clw_refund_txn_amt":original_amount_refunded,
+                                    "clw_refund_merchant_id":GlobalConstants.ORG,"clw_refund_transfer_mode":"REFUND",
+                                    "clw_refund_transfer_status":"SUCCESS","clw_refund_transfer_type":"DIGITAL","clw_refund_leg_amt_cr":original_amount_refunded,
+                                    "clw_refund_account_entity_type_cr":"AGENT","clw_refund_source_type_cr":"CREDIT","clw_refund_leg_amt_dt":original_amount_refunded,
+                                    "clw_refund_account_entity_type_dt":"MERCHANT","clw_refund_source_type_dt":"DEBIT","clw_withdraw_txn_amt":original_withdraw_amt,
+                                    "clw_withdraw_merchant_id":GlobalConstants.ORG,"clw_withdraw_transfer_mode":"WITHDRAW",
+                                    "clw_withdraw_transfer_status":"SUCCESS","clw_withdraw_transfer_type":"MANUAL","clw_withdraw_leg_amt_cr":original_withdraw_amt,
+                                    "clw_withdraw_account_entity_type_cr":"MERCHANT","clw_withdraw_source_type_cr":"CREDIT","clw_withdraw_leg_amt_dt":original_withdraw_amt,
+                                    "clw_withdraw_account_entity_type_dt":"AGENT","clw_withdraw_source_type_dt":"DEBIT",
+                                    "agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay)+original_amount_refunded) - original_withdraw_amt)
+                                    , "settlement_Account_Balance": (settlement_bal_before + original_amount_cashpay)- original_amount_refunded}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + topup_clw_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_topup_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_topup_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_topup_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_topup_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_topup_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + topup_clw_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_topup_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_topup_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_topup_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + topup_clw_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_topup_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_topup_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_topup_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
+
+                #
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + cash_clw_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_cash_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_cash_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_cash_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_cash_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_cash_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + cash_clw_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_cash_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_cash_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_cash_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + cash_clw_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_cash_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_cash_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_cash_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
+
+                #
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + refund_clw_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_refund_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_refund_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_refund_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_refund_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_refund_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + refund_clw_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_refund_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_refund_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_refund_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + refund_clw_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_refund_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_refund_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_refund_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
+
+                #
+                query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + withdraw_clw_txn_id + "';"
+                result_wallet_txn_db = DBProcessor.getValueFromDB(query_wallet_txn_db, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_db}")
+
+                clw_withdraw_txn_amt = float(result_wallet_txn_db['amount'].iloc[0])
+                clw_withdraw_merchant_id = result_wallet_txn_db['merchant_id'].iloc[0]
+                clw_withdraw_transfer_mode = result_wallet_txn_db['transfer_mode'].iloc[0]
+                clw_withdraw_transfer_status = result_wallet_txn_db['txn_status'].iloc[0]
+                clw_withdraw_transfer_type = result_wallet_txn_db['transfer_type'].iloc[0]
+
+                query_wallet_txn_leg_cr = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + withdraw_clw_txn_id + "' and source_type = 'CREDIT';"
+                result_wallet_txn_leg_cr = DBProcessor.getValueFromDB(query_wallet_txn_leg_cr, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_cr}")
+
+                clw_withdraw_leg_amt_cr = float(result_wallet_txn_leg_cr['amount'].iloc[0])
+                clw_withdraw_account_entity_type_cr = result_wallet_txn_leg_cr['account_entity_type'].iloc[0]
+                clw_withdraw_source_type_cr = result_wallet_txn_leg_cr['source_type'].iloc[0]
+
+                query_wallet_txn_leg_dt = "select amount, account_entity_type, source_type from wallet_txn_leg where wallet_txn_id = '" + withdraw_clw_txn_id + "' and source_type = 'DEBIT';"
+                result_wallet_txn_leg_dt = DBProcessor.getValueFromDB(query_wallet_txn_leg_dt, "closedloop")
+                logger.debug(f"Query result URL: {result_wallet_txn_leg_dt}")
+
+                clw_withdraw_leg_amt_dt = float(result_wallet_txn_leg_dt['amount'].iloc[0])
+                clw_withdraw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
+                clw_withdraw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
+
+                #
                 query_agent_acc = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 logger.debug(f"Query to fetch data from account table : {query_agent_acc}")
                 result_agent_acc = DBProcessor.getValueFromDB(query_agent_acc, "closedloop")
@@ -1019,7 +1305,23 @@ def test_common_200_203_010():
                 result_settle_acc = DBProcessor.getValueFromDB(query_settle_acc, "closedloop")
                 logger.debug(f"Query result URL: {result_settle_acc}")
                 settlement_balance_after = float(result_settle_acc["balance"].iloc[0])
-                actualDBValues = {"Agent_balance": agent_balance_after, "Settlement_Account_Balance": settlement_balance_after}
+                actualDBValues = {"clw_topup_txn_amt":clw_topup_txn_amt,"clw_topup_merchant_id":clw_topup_merchant_id,"clw_topup_transfer_mode":clw_topup_transfer_mode,
+                                    "clw_topup_transfer_status":clw_topup_transfer_status,"clw_topup_transfer_type":clw_topup_transfer_type,"clw_topup_leg_amt_cr":clw_topup_leg_amt_cr,
+                                    "clw_topup_account_entity_type_cr":clw_topup_account_entity_type_cr,"clw_topup_source_type_cr":clw_topup_source_type_cr,"clw_topup_leg_amt_dt":clw_topup_leg_amt_dt,
+                                    "clw_topup_account_entity_type_dt":clw_topup_account_entity_type_dt,"clw_topup_source_type_dt":clw_topup_source_type_dt,"clw_cash_txn_amt":clw_cash_txn_amt,
+                                    "clw_cash_merchant_id":clw_cash_merchant_id,"clw_cash_transfer_mode":clw_cash_transfer_mode,
+                                    "clw_cash_transfer_status":clw_cash_transfer_status,"clw_cash_transfer_type":clw_cash_transfer_type,"clw_cash_leg_amt_cr":clw_cash_leg_amt_cr,
+                                    "clw_cash_account_entity_type_cr":clw_cash_account_entity_type_cr,"clw_cash_source_type_cr":clw_cash_source_type_cr,"clw_cash_leg_amt_dt":clw_cash_leg_amt_dt,
+                                    "clw_cash_account_entity_type_dt":clw_cash_account_entity_type_dt,"clw_cash_source_type_dt":clw_cash_source_type_dt,"clw_refund_txn_amt":clw_refund_txn_amt,
+                                    "clw_refund_merchant_id":clw_refund_merchant_id,"clw_refund_transfer_mode":clw_refund_transfer_mode,
+                                    "clw_refund_transfer_status":clw_refund_transfer_status,"clw_refund_transfer_type":clw_refund_transfer_type,"clw_refund_leg_amt_cr":clw_refund_leg_amt_cr,
+                                    "clw_refund_account_entity_type_cr":clw_refund_account_entity_type_cr,"clw_refund_source_type_cr":clw_refund_source_type_cr,"clw_refund_leg_amt_dt":clw_refund_leg_amt_dt,
+                                    "clw_refund_account_entity_type_dt":clw_refund_account_entity_type_dt,"clw_refund_source_type_dt":clw_refund_source_type_dt,"clw_withdraw_txn_amt":clw_withdraw_txn_amt,
+                                    "clw_withdraw_merchant_id":clw_withdraw_merchant_id,"clw_withdraw_transfer_mode":clw_withdraw_transfer_mode,
+                                    "clw_withdraw_transfer_status":clw_withdraw_transfer_status,"clw_withdraw_transfer_type":clw_withdraw_transfer_type,"clw_withdraw_leg_amt_cr":clw_withdraw_leg_amt_cr,
+                                    "clw_withdraw_account_entity_type_cr":clw_withdraw_account_entity_type_cr,"clw_withdraw_source_type_cr":clw_withdraw_source_type_cr,"clw_withdraw_leg_amt_dt":clw_withdraw_leg_amt_dt,
+                                    "clw_withdraw_account_entity_type_dt":clw_withdraw_account_entity_type_dt,"clw_withdraw_source_type_dt":clw_withdraw_source_type_dt,
+                                  "agent_balance": agent_balance_after, "settlement_Account_Balance": settlement_balance_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
