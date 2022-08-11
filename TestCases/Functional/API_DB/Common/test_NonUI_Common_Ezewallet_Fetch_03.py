@@ -111,7 +111,7 @@ def test_common_200_203_011():
             try:
                 logger.debug(f"Agent Balance before fetch passbook : {agent_balance_before}")
 
-                expectedDBValues = {"Agent balance": agent_balance_before }
+                expectedDBValues = {"agent_balance": agent_balance_before }
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -120,7 +120,7 @@ def test_common_200_203_011():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 bal_after_fetch = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": bal_after_fetch}
+                actualDBValues = {"agent_balance": bal_after_fetch}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -235,9 +235,9 @@ def test_common_200_203_012():
                                      "success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before+original_amount,
                                      "current_bal":agent_balance_before+original_amount,
                                      "mobile_no":GlobalConstants.AGENT_USER, "self_topup_amt":float(GlobalVariables.selftopup_amt),
-                                     "self_topup_count":float(GlobalVariables.selftopup_count)}
+                                     "self_topup_count":GlobalVariables.selftopup_count}
                 if card_payment_success == True:
-                    time.sleep(3)
+                    time.sleep(5)
                     api_details = DBProcessor.get_api_details('Fetch_Passbook_Recon',
                                                           request_body={"username": GlobalConstants.AGENT_USER,
                                                                         "password": GlobalConstants.AGENT_PASSWORD,
@@ -251,7 +251,7 @@ def test_common_200_203_012():
                     current_bal = float(response['response']['currentBal'])
                     mobile_no = response['response']['mblNo']
                     self_topup_amt = float(response['response']['selfTopUpAmt'])
-                    self_topup_count = float(response['response']['selfTopUpCount'])
+                    self_topup_count = response['response']['selfTopUpCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_recon_success, "cardpay_amount": amount, "status":status,
@@ -284,15 +284,23 @@ def test_common_200_203_012():
                 logger.debug(f"Agent Balance before Top Up : {agent_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before + original_amount)}
+                expectedDBValues = {"self_topup_amt":float(GlobalVariables.selftopup_amt),"self_topup_count":GlobalVariables.selftopup_count,
+                                    "agent_balance": (agent_balance_before + original_amount)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'TRANSFER' and clw_txn.transfer_type = 'DIGITAL'and clw_account.entity_id = '"+GlobalConstants.AGENT_USER+"';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                selftopup_amt = float(result_clw["sum"].iloc[0])
+                selftopup_count = result_clw["count"].iloc[0]
+
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": bal_after_posting}
+                actualDBValues = {"self_topup_amt":selftopup_amt,"self_topup_count":selftopup_count,"agent_balance": bal_after_posting}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -349,6 +357,10 @@ def test_common_200_203_013():
         agent_bal_check = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
         balance = DBProcessor.getValueFromDB(agent_bal_check, "closedloop")
         agent_balance_before = float(balance["balance"].iloc[0])
+
+        settlement_bal_check = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+        balance = DBProcessor.getValueFromDB(settlement_bal_check, "closedloop")
+        settlement_bal_before = float(balance["balance"].iloc[0])
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -412,7 +424,7 @@ def test_common_200_203_013():
                                      "success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before - original_amount_cashpay,
                                      "current_bal":agent_balance_before - original_amount_cashpay,
                                      "mobile_no":GlobalConstants.AGENT_USER, "collection_amt":float(GlobalVariables.collection_amt),
-                                     "collection_count":float(GlobalVariables.collection_count)}
+                                     "collection_count":GlobalVariables.collection_count}
                 if cash_payment_success == True:
                     time.sleep(3)
                     api_details = DBProcessor.get_api_details('Fetch_Passbook_Recon',
@@ -428,7 +440,7 @@ def test_common_200_203_013():
                     current_bal = float(response['response']['currentBal'])
                     mobile_no = response['response']['mblNo']
                     collection_amt = float(response['response']['collectionAmt'])
-                    collection_count = float(response['response']['collectionCount'])
+                    collection_count = response['response']['collectionCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_recon_success, "username": username, "cashpay_amount": original_amount_cashpay, "status":status,
@@ -461,16 +473,30 @@ def test_common_200_203_013():
                 logger.debug(f"Agent Balance before Cash payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for Cash payment-BILLPAY : {original_amount_cashpay}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before - original_amount_cashpay)}
+                expectedDBValues = {"collection_amt":float(GlobalVariables.collection_amt),
+                                     "collection_count":GlobalVariables.collection_count,
+                                    "agent_balance": (agent_balance_before - original_amount_cashpay),
+                                    "settlement_balance": settlement_bal_before +  original_amount_cashpay}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
-                logger.debug(f"Query to fetch data from account table : {query}")
-                result = DBProcessor.getValueFromDB(query, "closedloop")
-                logger.debug(f"Query result URL: {result}")
-                bal_after_posting = float(result["balance"].iloc[0])
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'PAYMENT' and clw_txn.transfer_type = 'DIGITAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                collectionamt = float(result_clw["sum"].iloc[0])
+                collectioncount = result_clw["count"].iloc[0]
 
-                actualDBValues = {"Agent balance": bal_after_posting}
+                query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+                logger.debug(f"Query to fetch data from account table : {query_agent_bal}, {query_settlement_bal}")
+                result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
+                result_settlement_bal = DBProcessor.getValueFromDB(query_settlement_bal, "closedloop")
+                logger.debug(f"Query result URL: {result_agent_bal}, {result_settlement_bal}")
+                agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
+                settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
+
+                actualDBValues = {"collection_amt":collectionamt,
+                                  "collection_count":collectioncount,
+                                  "agent_balance": agentbal_after_cash_payment, "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
 
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -611,9 +637,9 @@ def test_common_200_203_014():
                                      "current_bal": agent_balance_before + original_amount_refunded,
                                      "mobile_no": GlobalConstants.AGENT_USER,
                                      "refund_amt": float(GlobalVariables.refund_amt),
-                                     "refund_count": float(GlobalVariables.refund_count),
+                                     "refund_count": GlobalVariables.refund_count,
                                      "collection_amt": float(GlobalVariables.collection_amt),
-                                     "collection_count": float(GlobalVariables.collection_count)}
+                                     "collection_count": GlobalVariables.collection_count}
                 if refund_payment_success == True:
                     time.sleep(3)
                     api_details = DBProcessor.get_api_details('Fetch_Passbook_Recon',
@@ -629,15 +655,16 @@ def test_common_200_203_014():
                     current_bal = float(response['response']['currentBal'])
                     mobile_no = response['response']['mblNo']
                     refund_amt = float(response['response']['refundAmt'])
-                    refund_count = float(response['response']['refundCount'])
+                    refund_count = response['response']['refundCount']
                     collection_amt = float(response['response']['collectionAmt'])
-                    collection_count = float(response['response']['collectionCount'])
+                    collection_count = response['response']['collectionCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_recon_success, "username": username,
                                        "refund_amount": original_amount_refunded, "status": status,
                                        "settlementStatus": settlement_status, "accountLabel": account_label, "real_code": real_code,
-                                       "success_code": success_code,"closing_bal": closing_bal,"current_bal": current_bal,"mobile_no": mobile_no,  "refund_amt": refund_amt,
+                                       "success_code": success_code,"closing_bal": closing_bal,"current_bal": current_bal,
+                                       "mobile_no": mobile_no,  "refund_amt": refund_amt,
                                        "refund_count": refund_count,"collection_amt": collection_amt,
                                        "collection_count": collection_count}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
@@ -663,9 +690,16 @@ def test_common_200_203_014():
                 logger.debug(f"Agent Balance before Refund Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for Refund  : {original_amount_refunded}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before + original_amount_refunded,
+                expectedDBValues = {"refund_amt": float(GlobalVariables.refund_amt),
+                                    "refund_count": GlobalVariables.refund_count,"agent_balance": agent_balance_before + original_amount_refunded,
                                     "settlement_balance": settlement_bal_before -  original_amount_refunded}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'REFUND' and clw_txn.transfer_type = 'DIGITAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                refundamt = float(result_clw["sum"].iloc[0])
+                refundcount = result_clw["count"].iloc[0]
 
                 query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -673,11 +707,12 @@ def test_common_200_203_014():
                 result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                 result_settlement_bal = DBProcessor.getValueFromDB(query_settlement_bal, "closedloop")
                 logger.debug(f"Query result URL: {result_agent_bal}, {result_settlement_bal}")
-                agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
-                settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
+                agentbal_after_refund_payment = float(result_agent_bal["balance"].iloc[0])
+                settlementbal_after_refund_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
-                                  "settlement_balance": settlementbal_after_cash_payment}
+                actualDBValues = {"refund_amt": refundamt,
+                                "refund_count": refundcount,"agent_balance": agentbal_after_refund_payment,
+                                  "settlement_balance": settlementbal_after_refund_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -807,7 +842,7 @@ def test_common_200_203_015():
                                      "success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before - original_withdraw_amt,
                                      "current_bal":agent_balance_before - original_withdraw_amt,
                                      "mobile_no":GlobalConstants.AGENT_USER, "withdraw_amt":float(GlobalVariables.withdraw_amt),
-                                     "withdraw_count":float(GlobalVariables.withdraw_count)}
+                                     "withdraw_count":GlobalVariables.withdraw_count}
                 if withdraw_pay_success == True:
                     time.sleep(3)
                     api_details = DBProcessor.get_api_details('Fetch_Passbook_Recon',
@@ -823,7 +858,7 @@ def test_common_200_203_015():
                     current_bal = float(response['response']['currentBal'])
                     mobile_no = response['response']['mblNo']
                     withdraw_amt = float(response['response']['withdrawAmt'])
-                    withdraw_count = float(response['response']['withdrawCount'])
+                    withdraw_count = response['response']['withdrawCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_recon_success,"realCode": realcode, "successCode": successcode,
@@ -856,8 +891,16 @@ def test_common_200_203_015():
                 logger.debug(f"Agent Balance before withdraw : {agent_balance_before}")
                 logger.debug(f"Actual amount for withdraw  : {original_withdraw_amt}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before - original_withdraw_amt)}
+                expectedDBValues = {"withdraw_amt":float(GlobalVariables.withdraw_amt),
+                                    "withdraw_count":GlobalVariables.withdraw_count,
+                                    "agent_balance": (agent_balance_before - original_withdraw_amt)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'WITHDRAW' and clw_txn.transfer_type = 'MANUAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                withdrawamt = float(result_clw["sum"].iloc[0])
+                withdrawcount = result_clw["count"].iloc[0]
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
@@ -865,7 +908,9 @@ def test_common_200_203_015():
                 logger.debug(f"Query result URL: {result}")
                 bal_after_posting = float(result["balance"].iloc[0])
 
-                actualDBValues = {"Agent balance": bal_after_posting}
+                actualDBValues = {"withdraw_amt":withdrawamt,
+                                    "withdraw_count":withdrawcount,
+                                  "agent_balance": bal_after_posting}
                 logger.debug(f"actualDBValues : {actualDBValues}")
 
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1129,8 +1174,8 @@ def test_common_200_203_016():
                 logger.debug(f"Actual amount for Refund Payment  : {original_amount_refunded}")
                 logger.debug(f"Actual amount for Withdraw  : {original_withdraw_amt}")
 
-                expectedDBValues = {"Agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay) + original_amount_refunded)- original_withdraw_amt)
-                    , "Settlement_Account_Balance": (settlement_bal_before + original_amount_cashpay)-original_amount_refunded}
+                expectedDBValues = {"agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay) + original_amount_refunded)- original_withdraw_amt)
+                    , "settlement_Account_Balance": (settlement_bal_before + original_amount_cashpay)-original_amount_refunded}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_agent_acc = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -1144,8 +1189,8 @@ def test_common_200_203_016():
                 result_settle_acc = DBProcessor.getValueFromDB(query_settle_acc, "closedloop")
                 logger.debug(f"Query result URL: {result_settle_acc}")
                 settlement_balance_after = float(result_settle_acc["balance"].iloc[0])
-                actualDBValues = {"Agent_balance": agent_balance_after,
-                                  "Settlement_Account_Balance": settlement_balance_after}
+                actualDBValues = {"agent_balance": agent_balance_after,
+                                  "settlement_Account_Balance": settlement_balance_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
