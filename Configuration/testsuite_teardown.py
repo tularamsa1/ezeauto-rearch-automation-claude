@@ -82,7 +82,7 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
 
 
 def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_gateway=None):
-    if payment_gateway == "Cybersource":
+    if payment_gateway == "CYBERSOURCE":
         query = "update merchant_pg_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating merchant_pg_config table inactive: {result}")
