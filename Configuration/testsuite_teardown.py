@@ -45,17 +45,14 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
-    if payment_mode == "BQR":
-        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
-        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='" + bank_code + "'"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
-                                                                              "password": portal_pw})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+    api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_un,
+                                                                            "password": portal_pw,
+                                                                            "settingForOrgCode": org_code})
+    api_details["RequestBody"]["settings"]["upiEnabled"] = "true"
+    logger.debug(f"API details  : {api_details} ")
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting preconditions is : {response}")
 
     api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_un,
                                                                             "password": portal_pw,

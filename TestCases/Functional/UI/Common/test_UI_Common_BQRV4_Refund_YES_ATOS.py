@@ -28,7 +28,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_102_062():
     """
     :Description: Verification of a BQRV4 Refund transaction via YES_ATOS
-    :Subfeature code: UI_Common_BQRV4_Refund_via_YES_ATOS_062
+    :Sub feature code: UI_Common_BQRV4_Refund_via_YES_ATOS_062
     :TC naming code description:100->Payment Method, 102->BQR, 062-> TC062
     """
     try:
@@ -56,6 +56,14 @@ def test_common_100_102_062():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = "select mid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
         result = DBProcessor.getValueFromDB(query)
@@ -451,6 +459,14 @@ def test_common_100_102_063():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
         result = DBProcessor.getValueFromDB(query)

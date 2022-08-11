@@ -2,10 +2,10 @@ import random
 import shutil
 import sys
 from datetime import datetime
-
+# REMOVE SPACE
 import pytest
 from termcolor import colored
-
+# REMOVE SPACE
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -472,7 +472,7 @@ def test_common_100_101_050():
     """
     Sub Feature Code: UI_Common_PM_Pure_UPI_Refund_Failed_via_API_AXIS_DIRECT
     Sub Feature Description: Verification of a upi refund failed using api for AXIS_DIRECT
-    TC naming code description:
+    TC naming code description:    #better to have in one line like 100: Payment Method,  101: UPI, 050: TC050
     100: Payment Method
     101: UPI
     050: TC050
@@ -488,8 +488,8 @@ def test_common_100_101_050():
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        username = app_cred['Username']
-        password = app_cred['Password']
+        username = app_cred['Username']   #Change variable name to app_username
+        password = app_cred['Password']   #Change variable name to app_passowrd
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
@@ -505,7 +505,7 @@ def test_common_100_101_050():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code. #REMOVE THIS COMMENT
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
@@ -541,7 +541,7 @@ def test_common_100_101_050():
             logger.debug(f"Order id : {order_id}")
             home_page.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
-            logger.debug(f"Entered order_id is : {order_id}")
+            logger.debug(f"Entered order_id is : {order_id}")  #Duplicte line: Order id already printed in logger above
 
             payment_page = PaymentPage(app_driver)
 
@@ -572,7 +572,7 @@ def test_common_100_101_050():
             logger.debug(f"Response received for transaction details api is : {response}")
             logger.debug(f"response : {response}")
             logger.debug(f"apiMessage : {response['apiMessage']}")
-
+            #BELOW LINE IS TOO LONG
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id='" + txn_id_original + "'"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -917,7 +917,7 @@ def test_common_100_101_050():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_051():
+def test_common_100_101_051():  #FOLLOW COMMENTS GIVEN IN TC50
     """
     Sub Feature Code: UI_Common_PM_Pure_UPI_Refund_Posted_via_API_AXIS_DIRECT
     Sub Feature Description: Verification of a upi refund posted using api for AXIS_DIRECT
