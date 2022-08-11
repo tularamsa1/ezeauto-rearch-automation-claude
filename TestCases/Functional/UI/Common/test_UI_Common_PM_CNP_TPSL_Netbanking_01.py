@@ -36,6 +36,7 @@ def test_common_100_103_038():
     103: RemotePay
     038: TC038
     """
+    expectedMessage = "Your payment is successfully completed! You may close the browser now."
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
@@ -104,6 +105,14 @@ def test_common_100_103_038():
             remote_pay_txn.remote_pay_netbanking_customerpwd("test")
             remote_pay_txn.remote_pay_netbanking_proceed()
             remote_pay_txn.remote_pay_netbanking_proceed()
+
+            successMessage = str(remote_pay_txn.succcessScreenMessage())
+            logger.info(f"Your expected success message is:  {successMessage}")
+            logger.info(f"Your expiryMessage is:  {expectedMessage}")
+            if successMessage == expectedMessage:
+                pass
+            else:
+                raise Exception("Success Message is not matching.")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -177,12 +186,11 @@ def test_common_100_103_038():
                                      "order_id": order_id,
                                      "msg": "PAYMENT SUCCESSFUL",
                                      "customer_name": txn_customer_name,
-                                     "settle_status": txn_settle_status,
+                                     "settle_status": "SETTLED",
                                      "auth_code": txn_auth_code,
                                      "date": date_and_time}
 
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
-                # Add loggers to each steps.
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
@@ -192,8 +200,6 @@ def test_common_100_103_038():
                 home_page.wait_for_home_page_load()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
-                # add prefix as app in variable names.
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
@@ -301,6 +307,7 @@ def test_common_100_103_038():
                 # Add other tables for validation as well.
                 expectedDBValues = {"pmt_status": "AUTHORIZED",
                                     "pmt_state": "SETTLED",
+                                    "pmt_flow": "REMOTEPAY",
                                     "pmt_mode": "CNP",
                                     "txn_amt": amount,
                                     "settle_status": "SETTLED",
