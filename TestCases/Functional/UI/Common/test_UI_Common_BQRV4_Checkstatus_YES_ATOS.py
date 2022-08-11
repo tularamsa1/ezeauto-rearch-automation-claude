@@ -31,7 +31,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_102_061():
     """
     :Description: Verification of a BQRV4 Check Status Success transaction via YES_ATOS
-    :Subfeature code: UI_Common_BQRV4_Checkstatus_Success_YES_ATOS_61
+    :Sub feature code: UI_Common_BQRV4_Checkstatus_Success_YES_ATOS_61
     :TC naming code description: 100->Payment Method, 102->BQR, 061-> TC61
     """
     try:
@@ -56,6 +56,14 @@ def test_common_100_102_061():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -379,17 +387,32 @@ def test_common_100_102_070():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
         api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
-        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='YES'"
+        query = "select * from upi_merchant_config where bank_code = 'YES' AND status = 'ACTIVE' AND org_code = " \
+                "'" + str(org_code) + "'; "
+        logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
+        upi_mc_id = result['id'].values[0]
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
-        logger.debug(f"Fetching mid from database for current merchant:{mid}")
+        logger.debug(f"Fetching mid, tid, upi_mc_id from database for current merchant:{mid}, {tid}, {upi_mc_id}")
+        logger.info(f"Execution is completed for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -416,7 +439,6 @@ def test_common_100_102_070():
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            print("Order id", order_id)
             home_page.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
@@ -460,14 +482,9 @@ def test_common_100_102_070():
             result = DBProcessor.getValueFromDB(query)
             txn_id_new = result["id"].iloc[0]
             posting_date_new = result['posting_date'].values[0]
+            modified_date_new = result['modified_time'].values[0]
             customer_name_new = result['customer_name'].values[0]
             payer_name_new = result['payer_name'].values[0]
-            query = "select * from upi_merchant_config where bank_code = 'YES' AND status = 'ACTIVE' AND org_code = " \
-                    "'" + str(org_code) + "'; "
-            logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -508,7 +525,7 @@ def test_common_100_102_070():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
-                date_and_time_new = date_time_converter.to_app_format(posting_date_new)
+                date_and_time_new = date_time_converter.to_app_format(modified_date_new)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED", "date": date_and_time,

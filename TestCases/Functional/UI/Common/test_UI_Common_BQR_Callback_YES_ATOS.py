@@ -62,7 +62,14 @@ def test_common_100_102_024():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQR')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -378,7 +385,14 @@ def test_common_100_102_025():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQR')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
@@ -689,7 +703,15 @@ def test_common_100_102_032():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQR')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1007,7 +1029,14 @@ def test_common_100_102_033():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQR')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
@@ -1339,8 +1368,8 @@ def test_common_100_102_033():
 @pytest.mark.appVal
 def test_common_100_102_034():
     """
-    :Description: Verification of  a BQR expired Callback when auto refund enabled via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_Expired_Callback_AutoRefund_enabled_HDFC_34
+    :Description: Verification of  a BQR expired Callback when auto refund enabled via YES_ATOS
+    :Sub Feature code: UI_Common_PM_BQR_Expired_Callback_AutoRefund_enabled_YES_ATOS_34
     :TC naming code description: 100->Payment Method
                                 102->BQR
                                 034-> TC34
@@ -1367,7 +1396,14 @@ def test_common_100_102_034():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQR')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1

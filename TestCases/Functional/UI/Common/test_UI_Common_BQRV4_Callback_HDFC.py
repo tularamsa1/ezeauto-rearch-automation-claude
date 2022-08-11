@@ -66,6 +66,14 @@ def test_common_100_102_046():
         logger.debug(f"Fetching mid from database for current merchant:{mid}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -456,6 +464,13 @@ def test_common_100_102_047():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -773,6 +788,13 @@ def test_common_100_102_048():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1988,6 +2010,13 @@ def test_common_100_102_056():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2495,6 +2524,14 @@ def test_common_100_102_057():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+
+        api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_username,
+                                                                               "password": portal_password,
+                                                                               "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiEnabled"] = "false"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
