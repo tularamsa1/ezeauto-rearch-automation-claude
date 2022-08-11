@@ -528,12 +528,11 @@ def test_common_100_103_005():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         # Write the setup code here
-        logger.info("Test Cases Execution Started for the test case : test_common_100_103_005")
         app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_005')
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
-        portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_005')
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -571,11 +570,6 @@ def test_common_100_103_005():
             print(
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
 
             amount = 111
             order_id = datetime.now().strftime('%m%d%H%M%S')
