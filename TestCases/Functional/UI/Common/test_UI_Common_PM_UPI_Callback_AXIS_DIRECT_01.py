@@ -485,7 +485,6 @@ def test_common_100_101_048():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_049():
     """
     Sub Feature Code: UI_Common_PM_UPI_Failed_Via_Pure_UPI_failed_Callback_AXISDIRECT
@@ -2149,7 +2148,6 @@ def test_common_100_101_054():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_055():
     """
     Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_qr_expiry_AutoRefund_Disabled_AXIS_DIRECT
