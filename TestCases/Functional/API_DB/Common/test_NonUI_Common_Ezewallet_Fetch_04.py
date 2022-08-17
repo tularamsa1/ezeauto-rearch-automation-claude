@@ -2,6 +2,7 @@ import random
 import shutil
 import time
 from datetime import datetime, date
+from datetime import timedelta
 import pytest
 import sys
 from termcolor import colored
@@ -17,10 +18,10 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_001():
+def test_common_200_203_006():
     """
-        Sub Feature Code: NonUI_Common_Ezewallet_DigitalTopUp_Agency_Fetch_Passbook_statement
-        Sub Feature Description: API to perform a Digital TopUp of Agency using Card Payment and fetch passbook statement
+        Sub Feature Code: NonUI_Common_Ezewallet_DigitalTopUp_Agency_Fetch_Merchant_statement
+        Sub Feature Description: API to perform a Digital TopUp of Agency using Card Payment and fetch merchant statement
     """
 
     try:
@@ -83,26 +84,38 @@ def test_common_200_203_001():
             try:
                 expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
                                      "account_label": "TOPUP","txn_status": "SUCCESS", "transfer_mode": "ADDFUNDS",
-                                     "fetch_amount": amount, "externalRefId": txn_id}
+                                     "fetch_amount": amount, "externalRefId": txn_id, "balance": agency_balance_before + original_amount,
+                                     "opening_bal": float(agency_balance_before + original_amount) }
                 if card_payment_success == True:
                     time.sleep(3)
-                    api_details = DBProcessor.get_api_details('Fetch_Passbook_Statement',
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
                                                           request_body={"username": GlobalConstants.ADMIN_USER,
                                                                         "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                        "startDate": str(date.today()),
+                                                                        "viewDate": str(date.today()) ,
                                                                         })
                     response = APIProcessor.send_request(api_details)
-                    fetch_statment_success = response['success']
+                    merchant_statment_success = response['success']
                     txn_status = response['response']['elements'][0]['txnStatus']
                     transfer_mode = response['response']['elements'][0]['transferMode']
                     actual_amount = float(response['response']['elements'][0]['amount'])
                     external_ref_Id = response['response']['elements'][0]['externalRefId']
                     wallet_txn_id = response['response']['elements'][0]['walletTxnId']
+                    balance_after_topup = response['response']['elements'][0]['balance']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                    actualAPIValues = {"success": fetch_statment_success, "cardpay_amount": amount, "status":status,
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
+                                                              request_body={"username": GlobalConstants.ADMIN_USER,
+                                                                            "password": GlobalConstants.ADMIN_PASSWORD,
+                                                                            "viewDate": str(date.today()+ timedelta(days=1)),
+                                                                            })
+
+                    response = APIProcessor.send_request(api_details)
+                    opening_bal = float(response['response']['openingBalLedger'])
+
+                    actualAPIValues = {"success": merchant_statment_success, "cardpay_amount": amount, "status":status,
                                        "account_label": account_label, "txn_status": txn_status, "transfer_mode": transfer_mode ,
-                                       "fetch_amount":actual_amount, "externalRefId" : external_ref_Id}
+                                       "fetch_amount":actual_amount, "externalRefId" : external_ref_Id, "balance": balance_after_topup,
+                                       "opening_bal": opening_bal}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -199,17 +212,13 @@ def test_common_200_203_001():
 
 
 
-
-
-
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_002():
+def test_common_200_203_007():
     """
-        Sub Feature Code: NonUI_Common_Ezewallet_TransferAmount_ToAgent_Fetch_passbook_statement
-        Sub Feature Description: API to perform a Transfer of an Amount from Agency Account to Agent Account and fetch passbook statement
+        Sub Feature Code: NonUI_Common_Ezewallet_TransferAmount_ToAgent_Fetch_merchant_statement
+        Sub Feature Description: API to perform a Transfer of an Amount from Agency Account to Agent Account and fetch merchant statement
     """
 
     try:
@@ -283,12 +292,13 @@ def test_common_200_203_002():
                                      "debit_acc_balance": agency_balance_before - original_transfer_amt
                                      , "agent_id" : GlobalConstants.AGENT_USER, "txn_status":"SUCCESS",
                                      "amount_transfered" : original_transfer_amt,
-                                     "bal_after_transfer" : original_transfer_amt + agent_balance_before}
+                                     "bal_after_transfer" : agency_balance_before - original_transfer_amt,
+                                     "opening_bal": float(agency_balance_before - original_transfer_amt)}
                 if transfer_pay_success == True:
-                    api_details = DBProcessor.get_api_details('Fetch_Passbook_Statement',
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
                                                           request_body={"username": GlobalConstants.ADMIN_USER,
                                                                         "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                        "startDate": str(date.today()),
+                                                                        "viewDate": str(date.today()),
                                                                         })
                     response = APIProcessor.send_request(api_details)
                     fetch_statment_success = response['success']
@@ -299,6 +309,13 @@ def test_common_200_203_002():
                     amount_transfered = float(response['response']['elements'][0]['amount'])
                     bal_after_transfer = float(response['response']['elements'][0]['balance'])
 
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
+                                                              request_body={"username": GlobalConstants.ADMIN_USER,
+                                                                            "password": GlobalConstants.ADMIN_PASSWORD,
+                                                                            "viewDate": str(date.today() + timedelta(days=1)),
+                                                                            })
+                    response = APIProcessor.send_request(api_details)
+                    opening_bal = float(response['response']['openingBalLedger'])
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": fetch_statment_success, "wallet_txn_id": actual_wallet_txn_id,
@@ -306,7 +323,8 @@ def test_common_200_203_002():
                                        "transfer_mode": transfer_mode ,"credit_acc_balance":credit_acc_bal,
                                        "debit_acc_balance" : debit_acc_bal
                                        ,"agent_id" : agent_Id, "txn_status": txn_status, "amount_transfered" : amount_transfered,
-                                       "bal_after_transfer": bal_after_transfer}
+                                       "bal_after_transfer": bal_after_transfer,
+                                       "opening_bal": opening_bal}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -425,10 +443,10 @@ def test_common_200_203_002():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_003():
+def test_common_200_203_008():
     """
-        Sub Feature Code: NonUI_Common_Ezewallet_WithdrawAmount_FromAgent_Fetch_passbook_statement
-        Sub Feature Description: API to perform a Withdraw of an Amount from Agent Account to Agency Account and fetch passbook statement
+        Sub Feature Code: NonUI_Common_Ezewallet_WithdrawAmount_FromAgent_Fetch_merchant_statement
+        Sub Feature Description: API to perform a Withdraw of an Amount from Agent Account to Agency Account and fetch merchant statement
     """
 
     try:
@@ -504,12 +522,13 @@ def test_common_200_203_003():
                                      "debit_acc_balance": agent_balance_before - original_withdraw_amt
                                      , "agent_id" : GlobalConstants.AGENT_USER, "txn_status":"SUCCESS",
                                      "amount_withdraw" : original_withdraw_amt,
-                                     "bal_after_withdraw" : agent_balance_before - original_withdraw_amt}
+                                     "bal_after_withdraw" : agency_balance_before + original_withdraw_amt,
+                                     "opening_bal": float(agency_balance_before + original_withdraw_amt)}
                 if withdraw_pay_success == True:
-                    api_details = DBProcessor.get_api_details('Fetch_Passbook_Statement',
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
                                                           request_body={"username": GlobalConstants.ADMIN_USER,
                                                                         "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                        "startDate": str(date.today()),
+                                                                        "viewDate": str(date.today()),
                                                                         })
                     response = APIProcessor.send_request(api_details)
                     fetch_statment_success = response['success']
@@ -520,6 +539,15 @@ def test_common_200_203_003():
                     amount_withdraw = float(response['response']['elements'][0]['amount'])
                     bal_after_withdraw = float(response['response']['elements'][0]['balance'])
 
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
+                                                              request_body={"username": GlobalConstants.ADMIN_USER,
+                                                                            "password": GlobalConstants.ADMIN_PASSWORD,
+                                                                            "viewDate": str(
+                                                                                date.today() + timedelta(days=1)),
+                                                                            })
+                    response = APIProcessor.send_request(api_details)
+                    opening_bal = float(response['response']['openingBalLedger'])
+
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": fetch_statment_success, "wallet_txn_id": actual_wallet_txn_id,
@@ -527,7 +555,8 @@ def test_common_200_203_003():
                                        "transfer_mode": transfer_mode ,"credit_acc_balance":credit_acc_bal,
                                        "debit_acc_balance" : debit_acc_bal
                                        ,"agent_id" : agent_Id, "txn_status": txn_status,
-                                       "amount_withdraw" : amount_withdraw, "bal_after_withdraw": bal_after_withdraw}
+                                       "amount_withdraw" : amount_withdraw, "bal_after_withdraw": bal_after_withdraw,
+                                       "opening_bal": opening_bal}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -643,10 +672,10 @@ def test_common_200_203_003():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_004():
+def test_common_200_203_009():
     """
-        Sub Feature Code: NonUI_Common_Ezewallet_Multiple_transactions_Fetch_passbook_statement_Agency
-        Sub Feature Description: API to perform a Agency Top Up, Transfer, Withdraw and Validate to Agency Balance and fetch passbook statement
+        Sub Feature Code: NonUI_Common_Ezewallet_Multiple_transactions_Fetch_merchant_statement
+        Sub Feature Description: API to perform a Agency Top Up, Transfer, Withdraw and Validate to Agency Balance and fetch merchant statement
     """
 
     try:
@@ -762,15 +791,16 @@ def test_common_200_203_004():
                 expectedAPIValues = {"success": True, "topup_txn_status": "SUCCESS", "topup_transfer_mode":"ADDFUNDS","topup_amount":original_amount,
                                     "external_ref_Id":txn_id, "trans_wallet_txnid":transfer_wallet_txn_id, "transfer_txn_status":"SUCCESS",
                                      "trans_transfer_mode":"TRANSFER", "transfer_agent_Id":GlobalConstants.AGENT_USER, "amount_transfered":original_transfer_amt,
-                                     "bal_after_transfer":(original_transfer_amt + agent_balance_before), "withdraw_wallet_txn_id":withdraw_wallet_txn_id,
+                                     "bal_after_transfer":((agency_balance_before + original_amount) - original_transfer_amt), "withdraw_wallet_txn_id":withdraw_wallet_txn_id,
                                      "withdraw_txn_status":"SUCCESS","withdraw_transfer_mode": "WITHDRAW", "withdraw_agent_Id": GlobalConstants.AGENT_USER,
                                      "amount_withdraw" : original_withdraw_amt,
-                                     "bal_after_withdraw" : (agent_balance_before + original_transfer_amt) - original_withdraw_amt}
+                                     "bal_after_withdraw" : (((agency_balance_before + original_amount)- original_transfer_amt) + original_withdraw_amt),
+                                     "opening_bal": float(((agency_balance_before + original_amount) - original_transfer_amt) + original_withdraw_amt)}
 
-                api_details = DBProcessor.get_api_details('Fetch_Passbook_Statement',
+                api_details = DBProcessor.get_api_details('Merchant_Statement',
                                                           request_body={"username": GlobalConstants.ADMIN_USER,
                                                                         "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                        "startDate": str(date.today()),
+                                                                        "viewDate": str(date.today()),
                                                                         })
                 response = APIProcessor.send_request(api_details)
 
@@ -801,6 +831,15 @@ def test_common_200_203_004():
                     amount_withdraw = float(response['response']['elements'][0]['amount'])
                     bal_after_withdraw = float(response['response']['elements'][0]['balance'])
 
+                    api_details = DBProcessor.get_api_details('Merchant_Statement',
+                                                              request_body={"username": GlobalConstants.ADMIN_USER,
+                                                                            "password": GlobalConstants.ADMIN_PASSWORD,
+                                                                            "viewDate": str(
+                                                                                date.today() + timedelta(days=1)),
+                                                                            })
+                    response = APIProcessor.send_request(api_details)
+                    opening_bal = float(response['response']['openingBalLedger'])
+
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": fetch_statment_success, "topup_txn_status": topup_txn_status, "topup_transfer_mode":topup_transfer_mode,"topup_amount":topup_amount,
@@ -809,7 +848,7 @@ def test_common_200_203_004():
                                      "bal_after_transfer":bal_after_transfer, "withdraw_wallet_txn_id":withdraw_wallet_txn_id,
                                      "withdraw_txn_status":withdraw_txn_status,"withdraw_transfer_mode": withdraw_transfer_mode, "withdraw_agent_Id": withdraw_agent_Id,
                                      "amount_withdraw" : amount_withdraw,
-                                     "bal_after_withdraw" : bal_after_withdraw}
+                                     "bal_after_withdraw" : bal_after_withdraw,"opening_bal":opening_bal}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
@@ -979,10 +1018,10 @@ def test_common_200_203_004():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_005():
+def test_common_200_203_010():
     """
-        Sub Feature Code: NonUI_Common_Ezewallet_fetch_Invalid_Merchant_Passbook_statement
-        Sub Feature Description: API to perform fetch invalid merchant passbook statement
+        Sub Feature Code: NonUI_Common_Ezewallet_fetch_Invalid_Merchant_statement
+        Sub Feature Description: API to perform fetch invalid merchant statement
     """
 
     try:
@@ -1007,10 +1046,10 @@ def test_common_200_203_005():
         try:
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            api_details = DBProcessor.get_api_details('Fetch_Passbook_Statement',
+            api_details = DBProcessor.get_api_details('Merchant_Statement',
                                                       request_body={"username": "7777770000",
                                                                     "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                    "startDate": str(date.today()),
+                                                                    "viewDate": str(date.today()),
                                                                     })
             response = APIProcessor.send_request(api_details)
 
@@ -1072,7 +1111,7 @@ def test_common_200_203_005():
             try:
                 logger.debug(f"Agency Balance before fetch passbook : {agency_balance_before}")
 
-                expectedDBValues = {"Agency balance": agency_balance_before }
+                expectedDBValues = {"agency_balance": agency_balance_before }
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -1081,7 +1120,7 @@ def test_common_200_203_005():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 bal_after_fetch = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": bal_after_fetch}
+                actualDBValues = {"agency_balance": bal_after_fetch}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -1116,12 +1155,3 @@ def test_common_200_203_005():
         GlobalVariables.time_calc.execution.end()
         print(colored("Execution Timer end in finally block of testcase function".center(shutil.get_terminal_size().columns, "="),
             'cyan'))
-
-
-
-
-
-
-
-
-
