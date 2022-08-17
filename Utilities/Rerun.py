@@ -42,6 +42,7 @@ def rerunTestAtTheEnd():
     portalValFail = []
     uiValFail = []
     appValFail = []
+    lst_chargeslip_failed = []
     setOfTest = set()
 
     # Adding Broken status, Added on Apr 11
@@ -54,7 +55,6 @@ def rerunTestAtTheEnd():
                                                                                                       "bool_rerun_exe_val") == "True":
             exeFail.append(testCaseName)
             setOfTest.add(testCaseName)
-            # Added on Apr 11
             setOfRerunTest.add(str(ind))
         if str(df_rerunTestCases['API Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                  "bool_rerun_api_val") == "True":
@@ -82,6 +82,12 @@ def rerunTestAtTheEnd():
             setOfTest.add(testCaseName)
             setOfRerunTest.add(str(ind))
 
+        if str(df_rerunTestCases['ChargeSlip Val'][ind]).lower() == 'fail' and ConfigReader.read_config("Validations",
+                                                                                                "bool_rerun_chargeslip_val") == "True":
+            lst_chargeslip_failed.append(testCaseName)
+            setOfTest.add(testCaseName)
+            setOfRerunTest.add(str(ind))
+
     ls_rerunTestCases = list(setOfTest)
     listToStr = ' '.join([str(elem) for elem in ls_rerunTestCases])
 
@@ -98,6 +104,7 @@ def rerunTestAtTheEnd():
     print("List of portalVal tcs failed", portalValFail)
     print("List of appVal tcs failed", appValFail)
     print("List of uiVal tcs failed", uiValFail)
+    print("List of chargeslip tcs failed", lst_chargeslip_failed)
     print(GlobalVariables.df_testCasesDetail)
 
     if len(listToStr) > 0:
@@ -136,6 +143,9 @@ def isRerunRequiredImmediately(testCaseID):
         isRerunRequired = True
     if str(df_rerunTestCases['UI Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
                                                                                                    "bool_rerun_ui_val") == "True":
+        isRerunRequired = True
+    if str(df_rerunTestCases['ChargeSlip Val'][testCaseID]).lower() == 'fail' and ConfigReader.read_config("Validations",
+                                                                                                   "bool_rerun_chargeslip_val") == "True":
         isRerunRequired = True
     print("Rerun required = " + str(isRerunRequired))
     return isRerunRequired
