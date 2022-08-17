@@ -18,7 +18,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_011():
+def test_common_200_203_016():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_fetch_Invalid_Agent_Passbook_statement
         Sub Feature Description: API to perform fetch invalid Agent passbook statement
@@ -162,7 +162,7 @@ def test_common_200_203_011():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_012():
+def test_common_200_203_017():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_DigitalTopUp_Agent_Fetch_passbook_recon
         Sub Feature Description: API to perform a Digital TopUp of an Agent using Card Payment and fetch Passbook Recon of an Agent
@@ -342,7 +342,7 @@ def test_common_200_203_012():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_013():
+def test_common_200_203_018():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_CashPayment_BILLPAY_Fetch_passbook_recon
         Sub Feature Description: API to perform a cash payment-BILLPAY and fetch Passbook Recon of an Agent
@@ -479,7 +479,7 @@ def test_common_200_203_013():
                                     "settlement_balance": settlement_bal_before +  original_amount_cashpay}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'PAYMENT' and clw_txn.transfer_type = 'DIGITAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'PAYMENT' and clw_txn.transfer_type = 'DIGITAL' and clw_txn.txn_status <> 'AUTHORIZED_REFUNDED' and clw_txn.txn_status = 'SUCCESS'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
                 logger.debug(f"Query result URL: {result_clw}")
                 collectionamt = float(result_clw["sum"].iloc[0])
@@ -539,7 +539,7 @@ def test_common_200_203_013():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_014():
+def test_common_200_203_019():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Refund_Cash_collected_fetch_passbook_recon
         Sub Feature Description: API to perform a Refund txn for the cash collected as a BILLPAY and fetch the passbook recon
@@ -758,7 +758,7 @@ def test_common_200_203_014():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_015():
+def test_common_200_203_020():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Withdraw_FromAgent_Fetch_passbook_recon
         Sub Feature Description: API to perform a withdraw and fetch Passbook Recon of an Agent
@@ -896,7 +896,7 @@ def test_common_200_203_015():
                                     "agent_balance": (agent_balance_before - original_withdraw_amt)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'WITHDRAW' and clw_txn.transfer_type = 'MANUAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'WITHDRAW' and clw_txn.transfer_type = 'MANUAL'and clw_txn.txn_status = 'SUCCESS' and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
                 logger.debug(f"Query result URL: {result_clw}")
                 withdrawamt = float(result_clw["sum"].iloc[0])
@@ -955,7 +955,7 @@ def test_common_200_203_015():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_016():
+def test_common_200_203_021():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Multiple_transactions_Fetch_passbook_recon_Agent
         Sub Feature Description: API to perform a Digital Top up(Card), Cash Payment, Withdraw and fetch Passbook Recon of an Agent
@@ -1174,9 +1174,41 @@ def test_common_200_203_016():
                 logger.debug(f"Actual amount for Refund Payment  : {original_amount_refunded}")
                 logger.debug(f"Actual amount for Withdraw  : {original_withdraw_amt}")
 
-                expectedDBValues = {"agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay) + original_amount_refunded)- original_withdraw_amt)
+                expectedDBValues = {"self_topup_amt":float(GlobalVariables.selftopup_amt),"self_topup_count":GlobalVariables.selftopup_count,
+                                    "collection_amt":float(GlobalVariables.collection_amt),
+                                     "collection_count":GlobalVariables.collection_count,"refund_amt": float(GlobalVariables.refund_amt),
+                                    "refund_count": GlobalVariables.refund_count,"withdraw_amt":float(GlobalVariables.withdraw_amt),
+                                    "withdraw_count":GlobalVariables.withdraw_count,"agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay) + original_amount_refunded)- original_withdraw_amt)
                     , "settlement_Account_Balance": (settlement_bal_before + original_amount_cashpay)-original_amount_refunded}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'TRANSFER' and clw_txn.transfer_type = 'DIGITAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                selftopup_amt = float(result_clw["sum"].iloc[0])
+                selftopup_count = result_clw["count"].iloc[0]
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'PAYMENT' and clw_txn.transfer_type = 'DIGITAL' and clw_txn.txn_status <> 'AUTHORIZED_REFUNDED' and clw_txn.txn_status = 'SUCCESS'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                collectionamt = result_clw["sum"].iloc[0]
+                collectioncount = result_clw["count"].iloc[0]
+                if collectionamt == None:
+                    collectionamt = float(0)
+                else:
+                    collectionamt = collectionamt
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'REFUND' and clw_txn.transfer_type = 'DIGITAL'and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                refundamt = float(result_clw["sum"].iloc[0])
+                refundcount = result_clw["count"].iloc[0]
+
+                query_clw = "select sum(clw_txn.amount) as sum, count(clw_txn.amount) as count from wallet_txn_leg clw_leg inner join wallet_txn clw_txn on clw_leg.wallet_txn_id = clw_txn.wallet_txn_id inner join account clw_account on clw_account.account_id = clw_leg.wallet_account_id where clw_txn.transfer_mode = 'WITHDRAW' and clw_txn.transfer_type = 'MANUAL'and clw_txn.txn_status = 'SUCCESS' and clw_account.entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                result_clw = DBProcessor.getValueFromDB(query_clw, "closedloop")
+                logger.debug(f"Query result URL: {result_clw}")
+                withdrawamt = float(result_clw["sum"].iloc[0])
+                withdrawcount = result_clw["count"].iloc[0]
 
                 query_agent_acc = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
                 logger.debug(f"Query to fetch data from account table : {query_agent_acc}")
@@ -1189,7 +1221,11 @@ def test_common_200_203_016():
                 result_settle_acc = DBProcessor.getValueFromDB(query_settle_acc, "closedloop")
                 logger.debug(f"Query result URL: {result_settle_acc}")
                 settlement_balance_after = float(result_settle_acc["balance"].iloc[0])
-                actualDBValues = {"agent_balance": agent_balance_after,
+                actualDBValues = {"self_topup_amt":selftopup_amt,"self_topup_count":selftopup_count,
+                                  "collection_amt":collectionamt,
+                                     "collection_count":collectioncount,"refund_amt": refundamt,
+                                    "refund_count": refundcount,"withdraw_amt":withdrawamt,
+                                    "withdraw_count":withdrawcount,"agent_balance": agent_balance_after,
                                   "settlement_Account_Balance": settlement_balance_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1231,7 +1267,7 @@ def test_common_200_203_016():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_017():
+def test_common_200_203_022():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_fetch_Invalid_Agent_Passbook_recon
         Sub Feature Description: API to perform fetch Invalid Agent Passbook Recon

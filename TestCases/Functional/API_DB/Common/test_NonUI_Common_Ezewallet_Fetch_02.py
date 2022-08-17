@@ -17,7 +17,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_006():
+def test_common_200_203_011():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_DigitalTopUp_Agent_Fetch_passbook_statement
         Sub Feature Description: API to perform a Digital TopUp of an Agent using Card Payment and fetch Passbook statement of an Agent
@@ -227,7 +227,7 @@ def test_common_200_203_006():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_007():
+def test_common_200_203_012():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Cash_collection_Fetch_passbook_statement
         Sub Feature Description: API to perform a Cash payment as a BILLPAY and fetch passbook statement
@@ -449,7 +449,7 @@ def test_common_200_203_007():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_008():
+def test_common_200_203_013():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Refund_Cash_collected_fetch_passbook_statement
         Sub Feature Description: API to perform a Refund txn for the cash collected as a BILLPAY and fetch the passbook statement
@@ -692,7 +692,7 @@ def test_common_200_203_008():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_009():
+def test_common_200_203_014():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Withdraw_FromAgent_Fetch_passbook_statement
         Sub Feature Description: API to perform a Withdraw transaction from Agent to Agency account and fetch passbook statement
@@ -911,7 +911,7 @@ def test_common_200_203_009():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_200_203_010():
+def test_common_200_203_015():
     """
         Sub Feature Code: NonUI_Common_Ezewallet_Multiple_transactions_Fetch_passbook_statement_Agent
         Sub Feature Description: API to perform an Agent Top Up, Cash Payment-BILLPAY, Refund transaction, Withdraw and fetch passbook statement
@@ -1101,7 +1101,7 @@ def test_common_200_203_010():
 
                     #
                     cash_txn_status = response['response']['elements'][2]['txnStatus']
-                    cash_clw_txn_id = response['response']['elements'][3]['walletTxnId']
+                    cash_clw_txn_id = response['response']['elements'][2]['walletTxnId']
                     cash_transfer_mode = response['response']['elements'][2]['transferMode']
                     cash_agent_Id = response['response']['elements'][2]['agentId']
                     amount_cashpay = float(response['response']['elements'][2]['amount'])
@@ -1110,7 +1110,7 @@ def test_common_200_203_010():
 
                     #
                     refund_txn_status = response['response']['elements'][1]['txnStatus']
-                    refund_clw_txn_id = response['response']['elements'][3]['walletTxnId']
+                    refund_clw_txn_id = response['response']['elements'][1]['walletTxnId']
                     refund_transfer_mode = response['response']['elements'][1]['transferMode']
                     refund_agent_Id = response['response']['elements'][1]['agentId']
                     refund_amt = float(response['response']['elements'][1]['amount'])
@@ -1171,7 +1171,7 @@ def test_common_200_203_010():
                                     "clw_topup_account_entity_type_cr":"AGENT","clw_topup_source_type_cr":"CREDIT","clw_topup_leg_amt_dt":original_amount_card,
                                     "clw_topup_account_entity_type_dt":"MERCHANT","clw_topup_source_type_dt":"DEBIT","clw_cash_txn_amt":original_amount_cashpay,
                                     "clw_cash_merchant_id":GlobalConstants.ORG,"clw_cash_transfer_mode":"PAYMENT",
-                                    "clw_cash_transfer_status":"SUCCESS","clw_cash_transfer_type":"DIGITAL","clw_cash_leg_amt_cr":original_amount_cashpay,
+                                    "clw_cash_transfer_status":"AUTHORIZED_REFUNDED","clw_cash_transfer_type":"DIGITAL","clw_cash_leg_amt_cr":original_amount_cashpay,
                                     "clw_cash_account_entity_type_cr":"MERCHANT","clw_cash_source_type_cr":"CREDIT","clw_cash_leg_amt_dt":original_amount_cashpay,
                                     "clw_cash_account_entity_type_dt":"AGENT","clw_cash_source_type_dt":"DEBIT","clw_refund_txn_amt":original_amount_refunded,
                                     "clw_refund_merchant_id":GlobalConstants.ORG,"clw_refund_transfer_mode":"REFUND",
@@ -1183,7 +1183,7 @@ def test_common_200_203_010():
                                     "clw_withdraw_account_entity_type_cr":"MERCHANT","clw_withdraw_source_type_cr":"CREDIT","clw_withdraw_leg_amt_dt":original_withdraw_amt,
                                     "clw_withdraw_account_entity_type_dt":"AGENT","clw_withdraw_source_type_dt":"DEBIT",
                                     "agent_balance": ((((agent_balance_before + original_amount_card) - original_amount_cashpay)+original_amount_refunded) - original_withdraw_amt)
-                                    , "settlement_Account_Balance": (settlement_bal_before + original_amount_cashpay)- original_amount_refunded}
+                                    , "settlement_account_Balance": (settlement_bal_before + original_amount_cashpay)- original_amount_refunded}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_wallet_txn_db = "select amount, merchant_id, transfer_mode, txn_status, transfer_type from wallet_txn where wallet_txn_id = '" + topup_clw_txn_id + "';"
@@ -1321,7 +1321,7 @@ def test_common_200_203_010():
                                     "clw_withdraw_transfer_status":clw_withdraw_transfer_status,"clw_withdraw_transfer_type":clw_withdraw_transfer_type,"clw_withdraw_leg_amt_cr":clw_withdraw_leg_amt_cr,
                                     "clw_withdraw_account_entity_type_cr":clw_withdraw_account_entity_type_cr,"clw_withdraw_source_type_cr":clw_withdraw_source_type_cr,"clw_withdraw_leg_amt_dt":clw_withdraw_leg_amt_dt,
                                     "clw_withdraw_account_entity_type_dt":clw_withdraw_account_entity_type_dt,"clw_withdraw_source_type_dt":clw_withdraw_source_type_dt,
-                                  "agent_balance": agent_balance_after, "settlement_Account_Balance": settlement_balance_after}
+                                  "agent_balance": agent_balance_after, "settlement_account_Balance": settlement_balance_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 

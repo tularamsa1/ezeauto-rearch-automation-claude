@@ -85,7 +85,7 @@ ssh = ''
 LogCollTime = 0
 list_deselected_testcases=[]
 
-#Ezewallet(Add detail Description)
+#Ezewallet Variables - Used in the fetch Recon scripts to calculate the amount and count of txns that is performed.
 cash_txn_id = 0
 selftopup_amt = 0
 selftopup_count = 0
@@ -97,5 +97,9 @@ refund_amt = 0
 refund_count = 0
 collection_amt = 0
 collection_count = 0
+
+
+#Card Bin info
+HDFC_VISA_DEBIT_BIN = "700001"
 
 
