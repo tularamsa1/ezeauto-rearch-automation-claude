@@ -466,7 +466,7 @@ def test_common_100_101_048():
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_chargeslip_val_result = "Fail"
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
@@ -1506,7 +1506,7 @@ def test_common_100_101_053():
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_chargeslip_val_result = "Fail"
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
@@ -2631,7 +2631,7 @@ def test_common_100_101_056():
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        org_code = result['org_code'].values[0]
+        org_code = result['org_ChargeSlipcode'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
@@ -3196,7 +3196,7 @@ def test_common_100_101_056():
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_chargeslip_val_result = "Fail"
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
