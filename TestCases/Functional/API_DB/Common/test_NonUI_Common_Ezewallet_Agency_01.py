@@ -87,7 +87,7 @@ def test_common_200_201_001():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
-                    time.sleep(3)
+                    time.sleep(4)
                     expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED","settlement_status":"PENDING",
                                         "payment_mode":"CARD", "account_label": "TOPUP", "balance":agency_balance_before+original_amount}
 
