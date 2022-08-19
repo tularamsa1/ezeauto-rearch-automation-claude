@@ -284,13 +284,14 @@ def test_common_100_102_097():
                                        "auth_code_new": auth_code_new, "date_new": date_new
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -304,15 +305,15 @@ def test_common_100_102_097():
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
-                amount_api_new = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -798,13 +799,14 @@ def test_common_100_102_098():
                                        "auth_code_new": auth_code_new, "date_new": date_new
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -818,13 +820,13 @@ def test_common_100_102_098():
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api_new = response["paymentMode"]
@@ -1375,13 +1377,13 @@ def test_common_100_102_099():
                                        "device_serial_new_2": str(device_serial)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1396,15 +1398,15 @@ def test_common_100_102_099():
                 date_api = response["postingDate"]
                 device_serial_api = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
-                amount_api_new = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -1419,13 +1421,13 @@ def test_common_100_102_099():
                 date_api_new = response["postingDate"]
                 device_serial_api_new = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new_2})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new_2][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new_2 = response["status"]
                 amount_api_new_2 = float(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api_new_2 = response["paymentMode"]
@@ -2072,13 +2074,13 @@ def test_common_100_102_100():
                                        "device_serial_new_2": str(device_serial)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -2093,15 +2095,15 @@ def test_common_100_102_100():
                 date_api = response["postingDate"]
                 device_serial_api = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
-                amount_api_new = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -2116,13 +2118,13 @@ def test_common_100_102_100():
                 date_api_new = response["postingDate"]
                 device_serial_api_new = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new_2})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new_2][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new_2 = response["status"]
                 amount_api_new_2 = float(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api_new_2 = response["paymentMode"]
