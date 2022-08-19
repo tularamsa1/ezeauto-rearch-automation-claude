@@ -595,7 +595,7 @@ def test_common_100_103_039():
                                      "order_id": order_id,
                                      "msg": "PAYMENT FAILED",
                                      "customer_name": txn_customer_name,
-                                     "settle_status": txn_settle_status,
+                                     "settle_status": "FAILED",
                                      # "auth_code": txn_auth_code,
                                      "date": date_and_time}
 
@@ -726,7 +726,7 @@ def test_common_100_103_039():
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_gateway": "TPSL",
                                     "payment_mode": "PAY LINK",
-                                    "auth_code": txn_auth_code,
+                                    "auth_code": str(0),
                                     # "acquirer_code":HDFC
                                     # "bank_name" NA
                                     # "payer_name" NA
@@ -1158,7 +1158,7 @@ def test_common_100_103_040():
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_gateway": "TPSL",
                                     "payment_mode": "PAY LINK",
-                                    "auth_code": txn_auth_code,
+                                    # "auth_code": txn_auth_code,
                                     # "acquirer_code":HDFC
                                     # "bank_name" NA
                                     # "payer_name" NA
@@ -1202,7 +1202,7 @@ def test_common_100_103_040():
                                   "settle_status": settle_status_db,
                                   "pmt_gateway": payment_gateway_db,
                                   "payment_mode": payment_mode,
-                                  "auth_code": cnp_txn_auth_code,
+                                  # "auth_code": cnp_txn_auth_code,
                                   "cnpware_rrn": cnp_txn_rrn,
                                   "cnpware_txn_id": app_txn_id,
                                   "cnpware_txn_amt": amount,

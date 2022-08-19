@@ -1047,7 +1047,8 @@ def test_common_100_103_025():
             new_txn_issuer_code_1 = result['issuer_code'].values[0]
             new_txn_org_code_txn_1 = result['org_code'].values[0]
             new_txn_type_1 = result['txn_type'].values[0]
-            new_txn_posting_date_1 = result['posting_date'].values[0]
+            new_txn_modified_time_1 = result['modified_time'].values[0]
+            new_txn_posting_date_api_1 = result['posting_date'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_2 + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -1111,7 +1112,7 @@ def test_common_100_103_025():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(orig_posting_date)
-                new_txn_date_and_time_1 = date_time_converter.to_app_format(new_txn_posting_date_1)
+                new_txn_date_and_time_1 = date_time_converter.to_app_format(new_txn_modified_time_1)
                 new_txn_date_and_time_2 = date_time_converter.to_app_format(new_txn_posting_date_app)
                 expected_app_values = {
                     "pmt_mode_original": "UPI",
@@ -1301,14 +1302,14 @@ def test_common_100_103_025():
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_app_val_result = "Fail"
             logger.info("App Validation Completed successfully for test case")
-        # -----------------------------------------End of App Validation---------------------------------------
+            # -----------------------------------------End of App Validation---------------------------------------
 
-        # -----------------------------------------Start of API Validation------------------------------------
+            # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(orig_posting_date)
-                new_txn_date_1 = date_time_converter.db_datetime(new_txn_posting_date_1)
+                new_txn_date_1 = date_time_converter.db_datetime(new_txn_posting_date_api_1)
                 new_txn_date_2 = date_time_converter.db_datetime(new_txn_posting_date_api)
                 expected_api_values = {"pmt_status": "FAILED",
                                        "txn_amt": amount,
@@ -2490,6 +2491,7 @@ def test_common_100_103_027():
             # new_txn_issuer_code_1 = result['issuer_code'].values[0]
             # new_txn_org_code_txn_1 = result['org_code'].values[0]
             new_txn_type_1 = result['txn_type'].values[0]
+            new_txn_modified_time_app_1 = result['modified_time'].values[0]
             new_txn_posting_date_1 = result['posting_date'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_2 + "';"
@@ -2552,7 +2554,7 @@ def test_common_100_103_027():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(orig_posting_date)
-                new_txn_date_and_time_1 = date_time_converter.to_app_format(new_txn_posting_date_1)
+                new_txn_date_and_time_1 = date_time_converter.to_app_format(new_txn_modified_time_app_1)
                 new_txn_date_and_time_2 = date_time_converter.to_app_format(new_txn_posting_date_app)
                 expected_app_values = {
                     "pmt_mode_original": "UPI",

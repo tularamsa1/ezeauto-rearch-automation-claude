@@ -6,6 +6,9 @@ portalValidation = True
 appValidation = True
 uiValidation = True
 
+#"EVD" denotes "Empty validation done"
+STR_EMPTY_VALIDATION_STATUS = "EVD"
+
 #Column Names in Test Case details excel file
 colName_TestCaseID = "Test Case ID"
 colName_FileName = "File Name"

@@ -1336,7 +1336,7 @@ def test_common_100_103_031():
                     "upi_txn_type_db": "COLLECT",
                     "upi_bank_code_db": "HDFC",
                     "upi_mc_id_db": upi_mc_id,
-                    "intent_status": "ACTIVE"
+                    "intent_status": "EXPIRED"
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
                 query = "select * from upi_txn where txn_id='" + original_txn_id + "'"

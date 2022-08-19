@@ -121,7 +121,6 @@ def test_common_100_101_012():
             txn_id_original = result["id"].iloc[0]
             rrn_original = result['rr_number'].iloc[0]
             logger.debug(f"Fetching Transaction id and rrn from db query : {txn_id_original}, rrn_original : {rrn_original}")
-            logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": username, "password": password,

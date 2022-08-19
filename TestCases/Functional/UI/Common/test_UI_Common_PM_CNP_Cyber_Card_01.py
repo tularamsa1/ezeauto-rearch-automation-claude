@@ -1379,9 +1379,12 @@ def test_common_100_103_012():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             original_txn_id = result['id'].values[0]
-            amount_txn = result['amount'].values[0]
             logger.debug(f"txn id from txn table : {original_txn_id}")
+            amount_txn = result['amount'].values[0]
             logger.debug(f"amount from txn table : {amount_txn}")
+
+
+
 
             #Refund
             api_details = DBProcessor.get_api_details('RemotePayRefund', request_body={"username": app_username, "password":app_password, "amount": amount,
@@ -1397,21 +1400,28 @@ def test_common_100_103_012():
             logger.debug(f"Query to fetch Txn details from the DB after refund: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_after_refund = result['id'].values[0]
-            amount_after_refund = result['amount'].values[0]
-            paymentMode_after_refund = result['payment_mode'].values[0]
-            state_after_refund = result['state'].values[0]
-            status_after_refund = result['status'].values[0]
-            acquirer_code_after_refund = result['acquirer_code'].values[0]
-            payment_gateway_after_refund = result['payment_gateway'].values[0]
-            settlement_status_after_refund = result['settlement_status'].values[0]
             logger.debug(f"txn id from txn table after refund : {txn_id_after_refund}")
+            amount_after_refund = result['amount'].values[0]
             logger.debug(f"amount from txn table after refund: {amount_after_refund}")
+            paymentMode_after_refund = result['payment_mode'].values[0]
             logger.debug(f"paymentMode from txn table after refund: {paymentMode_after_refund}")
+            state_after_refund = result['state'].values[0]
             logger.debug(f"state from txn table after refund: {state_after_refund}")
+            status_after_refund = result['status'].values[0]
             logger.debug(f"status from txn table after refund: {status_after_refund}")
+            acquirer_code_after_refund = result['acquirer_code'].values[0]
             logger.debug(f"acquirer_code from txn table after refund: {acquirer_code_after_refund}")
+            payment_gateway_after_refund = result['payment_gateway'].values[0]
             logger.debug(f"payment_gateway from txn table after refund: {payment_gateway_after_refund}")
+            settlement_status_after_refund = result['settlement_status'].values[0]
             logger.debug(f"settlement_status from txn table after refund: {settlement_status_after_refund}")
+            created_datetime_after_refund = result['created_time'].values[0]
+            logger.debug(f"posting_date from txn table after refund: {created_datetime_after_refund}")
+            # rrn_after_refund = result['rr_number'].values[0]
+            # logger.debug(f"rr_number fro
+            # m txn table after refund: {rrn_after_refund}")
+            refund_auth_code = result['auth_code'].values[0]
+            logger.debug(f"refund_auth_code from txn table after refund: {refund_auth_code}")
 
             query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id_after_refund + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1702,6 +1712,34 @@ def test_common_100_103_012():
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_db_val_result= 'Fail'
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
+
+        # -----------------------------------------Start of chargeslip Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_datetime_after_refund)
+                expected_chargeslip_values = {'PAID BY:': 'UPI',
+                                              'merchant_ref_no': 'Ref # ' + str(order_id),
+                                              'RRN': str(rrn_cnp_txn),
+                                              'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                                              'date': txn_date, 'time': txn_time,
+                                              'AUTH CODE': ""}
+
+                logger.debug(
+                    f"expected_chargeslip_values : {expected_chargeslip_values} for the testcase_id {testcase_id}")
+
+                receipt_validator.perform_charge_slip_validations(txn_id_after_refund,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_chargeslip_values)
+
+            except Exception as e:
+                ReportProcessor.capture_ss_when_chargeslip_val_exe_failed()
+                print("Charge Slip Validation failed due to exception - " + str(e))
+                logger.exception(f"Charge Slip Validation failed due to exception : {e}")
+                msg = msg + "Charge Slip Validation did not complete due to exception.\n"
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_chargeslip_val_result = "Fail"
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),

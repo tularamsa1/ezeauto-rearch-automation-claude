@@ -11,8 +11,7 @@ from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
 from Utilities.execution_log_processor import EzeAutoLogger
 from Utilities import Validator
-from DataProvider import GlobalVariables as global_variables
-
+from DataProvider import GlobalVariables as global_variables, GlobalVariables, GlobalConstants
 
 logger = EzeAutoLogger(__name__)
 
@@ -443,38 +442,42 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
     matching_fields = set()
     unmatching_fields = set()
 
-    if present_details:
-
-        for key in expected_details:
-            if key in present_details:
-                logger.debug(f"{key} found")
-                if expected_details[key] == present_details[key]:
-                    matching_fields.add(key)
-                    logger.debug(f"'{key}' is matching")
-
-                else:
-                    unmatching_fields.add(key)
-                    logger.debug(f"'{key}' is not matching")
-                    check.equal(expected_details[key], present_details[key])
-            else:
-                fields_that_are_not_present.add(key)
-                print(f"The field '{key}' not present")
-                logger.debug(f"The field '{key}' not present")
-
-        Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
-
+    expected_details, present_details = Validator.filter_values("chargeslip", expected_details, present_details)
+    if expected_details == {} and present_details == {}:
+        print("Expected and actual values list is empty.")
+        if not GlobalVariables.str_chargeslip_val_result in ("Fail", "Pass"):
+            GlobalVariables.str_chargeslip_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
+    elif expected_details == "" and present_details == "":
+        print("Expected and actual values list is empty.")
+        if not GlobalVariables.str_chargeslip_val_result in ("Fail", "Pass"):
+            GlobalVariables.str_chargeslip_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
     else:
-        print("No present receipt info found")
-        logger.warning("No present receipt info found")
+        if present_details:
+            for key in expected_details:
+                if key in present_details:
+                    logger.debug(f"{key} found")
+                    if expected_details[key] == present_details[key]:
+                        matching_fields.add(key)
+                        logger.debug(f"'{key}' is matching")
+                    else:
+                        unmatching_fields.add(key)
+                        logger.debug(f"'{key}' is not matching")
+                        check.equal(expected_details[key], present_details[key])
+                else:
+                    fields_that_are_not_present.add(key)
+                    print(f"The field '{key}' not present")
+                    logger.debug(f"The field '{key}' not present")
+            Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
+
+        else:
+            print("No present receipt info found")
+            logger.warning("No present receipt info found")
     print("=======   CHARGE SLIP Validation Completed    =======")
     return {
         "fields_that_are_not_present": fields_that_are_not_present,
         "matching_fields": matching_fields,
         "unmatching_fields": unmatching_fields,
     }
-
-
-
 
 
 def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: dict) -> bool:
@@ -610,7 +613,6 @@ def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_detai
         
     except Exception as e:
         logger.error(f"Unable to fetch receipt url from Error: {e}")
-
-    global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
-
+    if not global_variables.str_chargeslip_val_result == "Fail":
+        global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
     return validation_sucessful

@@ -489,7 +489,7 @@ def test_common_100_101_004():
                 msg = msg + "Charge Slip Validation did not complete due to exception.\n"
                 GlobalVariables.bool_val_exe = False
                 GlobalVariables.str_chargeslip_val_result = "Fail"
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
