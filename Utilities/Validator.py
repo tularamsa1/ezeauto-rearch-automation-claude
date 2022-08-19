@@ -1,4 +1,4 @@
-from DataProvider import GlobalVariables
+from DataProvider import GlobalVariables,GlobalConstants
 from Utilities import ConfigReader
 import pytest_check as check
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -19,12 +19,15 @@ def validateAgainstPortal(expectedPortal, actualPortal):
         if len(expectedPortal) == len(actualPortal):
             if expectedPortal == {} and actualPortal == {}:
                 print("Expected and actual values are empty.")
-                GlobalVariables.str_portal_val_result = "N/A"
+                if not GlobalVariables.str_portal_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_portal_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             elif expectedPortal == "" and actualPortal == "":
                 print("Expected and actual values are empty.")
-                GlobalVariables.str_portal_val_result = "N/A"
+                if not GlobalVariables.str_portal_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_portal_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             else:
-                GlobalVariables.str_portal_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                if not GlobalVariables.str_portal_val_result == "Fail":
+                    GlobalVariables.str_portal_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
                 GlobalVariables.bool_ss_portal_val = "Passed"
                 for key in expectedPortal:
                     if key in actualPortal:
@@ -64,12 +67,15 @@ def validateAgainstAPP(expectedApp, actualApp):
         if len(expectedApp) == len(actualApp):
             if expectedApp == {} and actualApp == {}:
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_app_val_result = "N/A"
+                if not GlobalVariables.str_app_val_result in ("Fail","Pass"):
+                    GlobalVariables.str_app_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             elif expectedApp == "" and actualApp == "":
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_app_val_result = "N/A"
+                if not GlobalVariables.str_app_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_app_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             else:
-                GlobalVariables.str_app_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                if not GlobalVariables.str_app_val_result == "Fail":
+                    GlobalVariables.str_app_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
                 GlobalVariables.bool_ss_app_val = "Passed"
                 for key in expectedApp:
                     if key in actualApp:
@@ -109,12 +115,15 @@ def validationAgainstAPI(expectedAPI, actualAPI):
         if len(expectedAPI) == len(actualAPI):
             if expectedAPI == {} and actualAPI == {}:
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_api_val_result = "N/A"
+                if not GlobalVariables.str_api_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_api_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             elif expectedAPI == "" and actualAPI == "":
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_api_val_result = "N/A"
+                if not GlobalVariables.str_api_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_api_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             else:
-                GlobalVariables.str_api_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                if not GlobalVariables.str_api_val_result == "Fail":
+                    GlobalVariables.str_api_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
                 for key in expectedAPI:
                     if key in actualAPI:
                         if expectedAPI[key] == actualAPI[key]:
@@ -152,12 +161,15 @@ def validateAgainstDB(expectedDB, actualDB):
         if len(expectedDB) == len(actualDB):
             if expectedDB == {} and actualDB == {}:
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_db_val_result = "N/A"
+                if not GlobalVariables.str_db_val_result in ("Fail","Pass"):
+                    GlobalVariables.str_db_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             elif expectedDB == "" and actualDB == "":
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_db_val_result = "N/A"
+                if not GlobalVariables.str_db_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_db_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             else:
-                GlobalVariables.str_db_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                if not GlobalVariables.str_db_val_result == "Fail":
+                    GlobalVariables.str_db_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
                 for key in expectedDB:
                     if key in actualDB:
                         if expectedDB[key] == actualDB[key]:
@@ -195,12 +207,15 @@ def validateAgainstUI(expectedUI, actualUI):
         if len(expectedUI) == len(actualUI):
             if expectedUI == {} and actualUI == {}:
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_ui_val_result = "N/A"
+                if not GlobalVariables.str_ui_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_ui_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             elif expectedUI == "" and actualUI == "":
                 print("Expected and actual values list is empty.")
-                GlobalVariables.str_ui_val_result = "N/A"
+                if not GlobalVariables.str_ui_val_result in ("Fail", "Pass"):
+                    GlobalVariables.str_ui_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
             else:
-                GlobalVariables.str_ui_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                if not GlobalVariables.str_ui_val_result == "Fail":
+                    GlobalVariables.str_ui_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
                 GlobalVariables.bool_ss_app_val = "Passed"
                 for key in expectedUI:
                     if key in actualUI:
