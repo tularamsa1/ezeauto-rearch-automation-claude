@@ -67,7 +67,7 @@ def test_common_100_103_014():
         print("RESULT of updating DB setting inactive", result)
         query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
         result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result) #//logger
+        print("RESULT of updating DB setting active", result)  # //logger
 
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
@@ -82,8 +82,6 @@ def test_common_100_103_014():
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-
-
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -107,15 +105,15 @@ def test_common_100_103_014():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',#Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
-            response = APIProcessor.send_request(api_details)#Check
+            response = APIProcessor.send_request(api_details)  # Check
             if response['success'] == False:
                 raise Exception("Api could not initiate a cnp txn.")
             else:
-                #ui_driver to portal_driver, python convention.
+                # ui_driver to portal_driver, python convention.
                 ui_driver = TestSuiteSetup.initialize_portal_driver()
                 payment_link_url = response['paymentLink']
                 payment_intent_id = response.get('paymentIntentId')
@@ -126,7 +124,7 @@ def test_common_100_103_014():
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
-                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")#Check vineeths method for perform click
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")  # Check vineeths method for perform click
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
                 logger.info("VPA validation completed.")
@@ -137,7 +135,7 @@ def test_common_100_103_014():
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
             pg_merchant_id = result['pgMerchantId'].values[0]
-            vpa = result['vpa'].values[0] #logger id needs to be added
+            vpa = result['vpa'].values[0]  # logger id needs to be added
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
 
@@ -151,7 +149,7 @@ def test_common_100_103_014():
             logger.debug(f"generated random rrn number is : {rrn}")
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1;" #Needs to modify these queries
+                order_id) + "' order by created_time desc limit 1;"  # Needs to modify these queries
             logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             payment_intent_id = result['id'].values[0]
@@ -162,7 +160,8 @@ def test_common_100_103_014():
             result = DBProcessor.getValueFromDB(query)
             txn_ref = result['txn_ref'].values[0]
 
-            logger.debug(f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
+            logger.debug(
+                f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
             api_details = DBProcessor.get_api_details('upi_success_curl',
                                                       curl_data={'ref_id': txn_ref, 'Txn_id': payment_intent_id,
                                                                  'amount': str(amount) + ".00",
@@ -175,7 +174,7 @@ def test_common_100_103_014():
             logger.debug(f"executing the curl_data on the remote server")
             for line in iter(lambda: ssh_stdout.readline(), ''):
                 data_buffer += line
-            logger.debug(f"OUTPUT : {data_buffer}") #add some message in place of output
+            logger.debug(f"OUTPUT : {data_buffer}")  # add some message in place of output
 
             logger.debug(
                 f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
@@ -183,14 +182,11 @@ def test_common_100_103_014():
                                                       request_body={'pgMerchantId': str(pg_merchant_id),
                                                                     'meRes': str(data_buffer)})
             response = APIProcessor.send_request(api_details)
-            print(response)#Remove print
+            print(response)  # Remove print
 
-            query = "select * from txn where id = '" + txn_id + "';" #add loggers
+            query = "select * from txn where id = '" + txn_id + "';"  # add loggers and remove duplicate tables.
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            auth_code = result['auth_code'].values[0]
 
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -200,8 +196,11 @@ def test_common_100_103_014():
             tid = result['tid'].values[0]
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
+            customer_name = result['customer_name'].values[0]
+            payer_name = result['payer_name'].values[0]
+            auth_code = result['auth_code'].values[0]
 
-            GlobalVariables.EXCEL_TC_Execution = "Pass" #add new test skeleton
+            GlobalVariables.EXCEL_TC_Execution = "Pass"  # add new test skeleton
             GlobalVariables.time_calc.execution.pause()
             print(colored(
                 "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
@@ -257,7 +256,7 @@ def test_common_100_103_014():
 
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)#logger
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)  # logger
                 loginPage = LoginPage(app_driver)
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
@@ -281,7 +280,8 @@ def test_common_100_103_014():
                 app_customer_name = txnHistoryPage.fetch_customer_name_text()
                 logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txnHistoryPage.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_payer_name = txnHistoryPage.fetch_payer_name_text()
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_status = app_payment_status.split(':')[1]
@@ -325,7 +325,7 @@ def test_common_100_103_014():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.db_datetime(posting_date) #Replace date with dateand time
+                date_and_time = date_time_converter.db_datetime(posting_date)  # Replace date with dateand time
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": amount,
@@ -347,7 +347,7 @@ def test_common_100_103_014():
                                                           request_body={"username": app_username,
                                                                         "password": app_password,
                                                                         "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details) #Change API details, add loggers
+                logger.debug("API DETAILS:", api_details)  # Change API details, add loggers
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
@@ -2885,5 +2885,3 @@ def test_common_100_103_018():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-
