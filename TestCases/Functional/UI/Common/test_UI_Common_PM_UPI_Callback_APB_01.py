@@ -1,11 +1,9 @@
 import random
-import shutil
 import sys
 import time
 from datetime import datetime
 
 import pytest
-from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
@@ -16,7 +14,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     receipt_validator, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -437,7 +435,7 @@ def test_common_100_101_077():
 
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
@@ -455,7 +453,6 @@ def test_common_100_101_077():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_078():
     """
     Sub Feature Code: UI_Common_PM_UPI_Failed_Via_Pure_UPI_Failed_Callback_APB
@@ -620,7 +617,6 @@ def test_common_100_101_078():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                i=1/0
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
                     "pmt_mode": "UPI",
@@ -1445,7 +1441,7 @@ def test_common_100_101_079():
 
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -2056,7 +2052,7 @@ def test_common_100_101_080():
 
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info("Completed ChargeSlip validation for the test case : test_com_100_101_004")
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

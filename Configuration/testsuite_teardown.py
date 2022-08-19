@@ -80,6 +80,15 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+    query = "update terminal_dependency_config set terminal_dependent_enabled=0 where org_code ='" + org_code + "';"
+    result = DBProcessor.setValueToDB(query)
+    logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
+                                                                          "password": portal_pw})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
 
 def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_gateway=None):
     if payment_gateway == "CYBERSOURCE":

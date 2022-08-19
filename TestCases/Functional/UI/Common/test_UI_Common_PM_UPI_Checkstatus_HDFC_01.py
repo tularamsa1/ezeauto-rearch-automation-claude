@@ -341,7 +341,7 @@ def test_common_100_101_005():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_007():  # Make sure to add the test case name as same as the sub feature code.
+def test_common_100_101_007():
     """
     Sub Feature Code: UI_Common_PM_Initiate_UPI_qr_via_api_Failed_Via_CheckStatus_API_HDFC
     Sub Feature Description: Initiate qr by api and perform checkStatus by api for failed using magic number
