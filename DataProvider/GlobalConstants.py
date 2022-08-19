@@ -6,10 +6,10 @@ portalValidation = True
 appValidation = True
 uiValidation = True
 
-#"EVD" denotes "Empty validation done"
+# "EVD" denotes "Empty validation done"
 STR_EMPTY_VALIDATION_STATUS = "EVD"
 
-#Column Names in Test Case details excel file
+# Column Names in Test Case details excel file
 colName_TestCaseID = "Test Case ID"
 colName_FileName = "File Name"
 colName_Execute = "Execute"
@@ -31,12 +31,15 @@ SQLITE_DB_PATH = os.path.join(DATABASE_DIR, 'ezeauto.db')
 RUNTIME_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'Runtime')
 DATAPROVIDER_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'DataProvider')
 
+# FileNames
+STR_CARD_DETAILS_FILE = "card_details.xlsx"
+
 ADMIN_USER_ROLES = ["ROLE_CLSUPPORT","ROLE_CLADMIN","ROLE_CLAGENT","ROLE_CLAGENT_REFUND","ROLE_CLPROMO","ROLE_ORG_MANAGER","ROLE_CLAGENTPORTAL","ROLE_TAG_ADMIN","ROLE_CLAGENTVOID","ROLE_CLREFUND"]
 AGENT_USER_ROLES = ["ROLE_CLAGENT","ROLE_CLAGENT_REFUND","ROLE_CLAGENTPORTAL","ROLE_CLAGENTVOID"]
 SUPER_USER_ROLES = ["ROLE_SU"]
 
 
-#Ezewallet Merchant and User Creds
+# Ezewallet Merchant and User Creds
 ORG = "EZEWALLETMERCHANT"
 ADMIN_USER = "7777770001"
 ADMIN_PASSWORD = "A123456"
