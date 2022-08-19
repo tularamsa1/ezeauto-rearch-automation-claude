@@ -260,7 +260,7 @@ It takes the list of port numbers as input and kills the servers one by one from
 def killEmulatorsAndAppiumServers():
     try:
         os.system("pkill -9 -f appium")
-        # os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
+        os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
     except Exception as e:
         print(e)
 
