@@ -18,7 +18,6 @@ class remotePayTxnPage(BasePage):
     ddl_debitCardExpiryMonth = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[1]/div[2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[3]/div[1]/select[1]")
     ddl_debitCardExpiryYear = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[1]/div[2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[4]/div[1]/select[1]")
 
-
     btn_proceedToPay = (By.XPATH, "//button[contains(text(),'Proceed to pay')]")
     btn_submitButton = (By.XPATH, "//input[@value='Submit']")
     btn_successMessage = (By.XPATH, "//h3[contains(text(),'Your payment is successfully completed! You may cl')]")
