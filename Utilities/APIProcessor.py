@@ -4,6 +4,7 @@ import requests
 
 from PageFactory import Base_Actions
 from Utilities import ConfigReader, DBProcessor
+from DataProvider import GlobalVariables
 from Utilities.execution_log_processor import EzeAutoLogger
 
 
@@ -62,6 +63,7 @@ def send_request(api_details):
         return json_resp
 
     resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+    update_api_details_to_report_variables(resp)
     json_resp = json.loads(resp.text)
     logger.debug(
         f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
@@ -77,4 +79,20 @@ def sample():
     json_resp = json.loads(resp.text)
     print(json_resp)
 
-# sample()
+def update_api_details_to_report_variables(response: requests.models.Response):
+    """
+    This method is used to set the global variables that print the api details to the excel report
+    :param response: Response
+    """
+    try:
+        api_response_code = response.status_code
+        api_response_time = response.elapsed.total_seconds().__round__(2)
+        api_response_size = ((len(response.content))/1000).__round__(2)
+        logger.debug(f"API response code is {api_response_code}")
+        GlobalVariables.str_api_response_code = api_response_code
+        logger.debug(f"API response time is {api_response_time}")
+        GlobalVariables.str_api_response_time = api_response_time
+        logger.debug(f"API response size is {api_response_size}")
+        GlobalVariables.str_api_response_size = api_response_size
+    except Exception as e:
+        logger.error(f"Unable to update the api details to report due to error {str(e)}")
