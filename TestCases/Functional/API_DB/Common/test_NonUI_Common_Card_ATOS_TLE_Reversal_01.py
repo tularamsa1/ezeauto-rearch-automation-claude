@@ -39,7 +39,17 @@ def test_common_100_104_025():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            api_details = DBProcessor.get_api_details('ATOS_TLE_Card_Sale_EMV_Debit_VISA', request_body={"amount": original_amount, "externalRefNumber" : "UFAZMJK1ON071341J1" + str(random.randint(0,9))})
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_VISA")
+            api_details = DBProcessor.get_api_details('Card_api',
+                                                      request_body={"deviceSerial": card_details['Device Serial'],
+                                                                    "username": card_details['Username'],
+                                                                    "password": card_details['Password'],
+                                                                    "amount": str(original_amount),
+                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                                    "nonce": card_details['Nonce'],
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+
+            #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
@@ -67,7 +77,7 @@ def test_common_100_104_025():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_bin_from_ezetapdevicedata(1)
+            bin_no = card_processor.get_ezetapdevicedata(1)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if reversal_success == True:
@@ -235,7 +245,17 @@ def test_common_100_104_026():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            api_details = DBProcessor.get_api_details('ATOS_TLE_Card_Sale_EMV_Debit_MASTER', request_body={"amount": original_amount, "externalRefNumber" : "UFAZMJK1ON071341J1" + str(random.randint(0,9))})
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_MASTER")
+            api_details = DBProcessor.get_api_details('Card_api',
+                                                      request_body={"deviceSerial": card_details['Device Serial'],
+                                                                    "username": card_details['Username'],
+                                                                    "password": card_details['Password'],
+                                                                    "amount": str(original_amount),
+                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                                    "nonce": card_details['Nonce'],
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+
+            #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
@@ -263,7 +283,7 @@ def test_common_100_104_026():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_bin_from_ezetapdevicedata(2)
+            bin_no = card_processor.get_ezetapdevicedata(2)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if reversal_success == True:
@@ -430,7 +450,17 @@ def test_common_100_104_027():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            api_details = DBProcessor.get_api_details('ATOS_TLE_Card_Sale_EMV_Debit_RUPAY', request_body={"amount": original_amount, "externalRefNumber" : "UFAZMJK1ON071341J1" + str(random.randint(0,9))})
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_RUPAY")
+            api_details = DBProcessor.get_api_details('Card_api',
+                                                      request_body={"deviceSerial": card_details['Device Serial'],
+                                                                    "username": card_details['Username'],
+                                                                    "password": card_details['Password'],
+                                                                    "amount": str(original_amount),
+                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                                    "nonce": card_details['Nonce'],
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+
+            #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
@@ -458,7 +488,7 @@ def test_common_100_104_027():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_bin_from_ezetapdevicedata(3)
+            bin_no = card_processor.get_ezetapdevicedata(3)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if reversal_success == True:
@@ -626,7 +656,17 @@ def test_common_100_104_028():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            api_details = DBProcessor.get_api_details('ATOS_TLE_Card_Sale_EMV_Credit_VISA', request_body={"amount": original_amount, "externalRefNumber" : "UFAZMJK1ON071341J1" + str(random.randint(0,9))})
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_VISA")
+            api_details = DBProcessor.get_api_details('Card_api',
+                                                      request_body={"deviceSerial": card_details['Device Serial'],
+                                                                    "username": card_details['Username'],
+                                                                    "password": card_details['Password'],
+                                                                    "amount": str(original_amount),
+                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                                    "nonce": card_details['Nonce'],
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+
+            #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
@@ -654,7 +694,7 @@ def test_common_100_104_028():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_bin_from_ezetapdevicedata(4)
+            bin_no = card_processor.get_ezetapdevicedata(4)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if reversal_success == True:
@@ -822,7 +862,17 @@ def test_common_100_104_029():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            api_details = DBProcessor.get_api_details('ATOS_TLE_Card_Sale_EMV_Credit_MASTER', request_body={"amount": original_amount, "externalRefNumber" : "UFAZMJK1ON071341J1" + str(random.randint(0,9))})
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_MASTER")
+            api_details = DBProcessor.get_api_details('Card_api',
+                                                      request_body={"deviceSerial": card_details['Device Serial'],
+                                                                    "username": card_details['Username'],
+                                                                    "password": card_details['Password'],
+                                                                    "amount": str(original_amount),
+                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                                    "nonce": card_details['Nonce'],
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+
+            #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
@@ -850,7 +900,7 @@ def test_common_100_104_029():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_bin_from_ezetapdevicedata(5)
+            bin_no = card_processor.get_ezetapdevicedata(5)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if reversal_success == True:
@@ -1017,7 +1067,17 @@ def test_common_100_104_030():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            api_details = DBProcessor.get_api_details('ATOS_TLE_Card_Sale_EMV_Credit_RUPAY', request_body={"amount": original_amount, "externalRefNumber" : "UFAZMJK1ON071341J1" + str(random.randint(0,9))})
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_RUPAY")
+            api_details = DBProcessor.get_api_details('Card_api',
+                                                      request_body={"deviceSerial": card_details['Device Serial'],
+                                                                    "username": card_details['Username'],
+                                                                    "password": card_details['Password'],
+                                                                    "amount": str(original_amount),
+                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                                    "nonce": card_details['Nonce'],
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+
+            #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
@@ -1045,7 +1105,7 @@ def test_common_100_104_030():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_bin_from_ezetapdevicedata(6)
+            bin_no = card_processor.get_ezetapdevicedata(6)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if reversal_success == True:

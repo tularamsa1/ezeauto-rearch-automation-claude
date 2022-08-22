@@ -12,14 +12,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_013():
+def test_common_100_104_049():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Void_EMV_DEBIT_VISA
-        Sub Feature Description: API that performs EMV Void txn having DEBIT VISA card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_HDFC_Card_Void_EMVCTLS_DEBIT_VISA
+        Sub Feature Description: API that performs EMVCTLS Void txn having DEBIT VISA card via HDFC
         TC naming code description:
         100: Payment Method
         104: CARD
-        013: TC013
+        049: TC049
     """
 
     try:
@@ -39,7 +39,7 @@ def test_common_100_104_013():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("HDFC_EMVCTLS_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -53,29 +53,14 @@ def test_common_100_104_013():
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
-                txn_id = response['txnId']
-                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
-
-                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id,
-                                                                        })
-                confirm_response = APIProcessor.send_request(api_details)
-                confirm_success = confirm_response['success']
-            else:
-                logger.error("Card payment Failed")
-
-            if confirm_success == True:
-                txnid = confirm_response['txnId']
+                txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
             else:
-                logger.error("Confirm Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -92,7 +77,7 @@ def test_common_100_104_013():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(1)
+            bin_no = card_processor.get_ezetapdevicedata(7)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if void_success == True:
@@ -100,8 +85,8 @@ def test_common_100_104_013():
                                          "pmt_status":"VOIDED",
                                         "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"HDFC"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(void_response['amount'])
@@ -129,7 +114,7 @@ def test_common_100_104_013():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -147,13 +132,13 @@ def test_common_100_104_013():
                                     "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"ATOS_TLE",
+                                    "txn_type":"CHARGE", "acq_code":"HDFC", "pmt_gateway":"HDFC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "VOIDED",
                                     "mware_pmt_state": "VOIDED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "VISA", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "ATOS_TLE",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "HDFC", "mware_pmt_gateway": "HDFC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"VOIDED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -233,14 +218,14 @@ def test_common_100_104_013():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_014():
+def test_common_100_104_050():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Void_EMV_DEBIT_MASTER
-        Sub Feature Description: API that performs EMV Void txn having DEBIT MASTER card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_HDFC_Card_Void_EMVCTLS_DEBIT_MASTER
+        Sub Feature Description: API that performs EMVCTLS Void txn having DEBIT MASTER card via HDFC
         TC naming code description:
         100: Payment Method
         104: CARD
-        014: TC014
+        050: TC050
     """
 
     try:
@@ -260,7 +245,7 @@ def test_common_100_104_014():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("HDFC_EMVCTLS_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -274,29 +259,14 @@ def test_common_100_104_014():
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
-                txn_id = response['txnId']
-                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
-
-                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id,
-                                                                        })
-                confirm_response = APIProcessor.send_request(api_details)
-                confirm_success = confirm_response['success']
-            else:
-                logger.error("Card payment Failed")
-
-            if confirm_success == True:
-                txnid = confirm_response['txnId']
+                txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
             else:
-                logger.error("Confirm Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -313,7 +283,7 @@ def test_common_100_104_014():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(2)
+            bin_no = card_processor.get_ezetapdevicedata(8)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if void_success == True:
@@ -321,8 +291,8 @@ def test_common_100_104_014():
                                          "pmt_status":"VOIDED",
                                         "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"HDFC"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(void_response['amount'])
@@ -350,7 +320,7 @@ def test_common_100_104_014():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -368,13 +338,13 @@ def test_common_100_104_014():
                                     "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"ATOS_TLE",
+                                    "txn_type":"CHARGE", "acq_code":"HDFC", "pmt_gateway":"HDFC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "VOIDED",
                                     "mware_pmt_state": "VOIDED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "MASTER_CARD", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "ATOS_TLE",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "HDFC", "mware_pmt_gateway": "HDFC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"VOIDED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -454,14 +424,14 @@ def test_common_100_104_014():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_015():
+def test_common_100_104_051():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Void_EMV_DEBIT_RUPAY
-        Sub Feature Description: API that performs EMV Void txn having DEBIT RUPAY card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_HDFC_Card_Void_EMVCTLS_DEBIT_RUPAY
+        Sub Feature Description: API that performs EMVCTLS Void txn having DEBIT RUPAY card via HDFC
         TC naming code description:
         100: Payment Method
         104: CARD
-        015: TC015
+        051: TC051
     """
 
     try:
@@ -481,7 +451,7 @@ def test_common_100_104_015():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("HDFC_EMVCTLS_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -495,29 +465,14 @@ def test_common_100_104_015():
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
-                txn_id = response['txnId']
-                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
-
-                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id,
-                                                                        })
-                confirm_response = APIProcessor.send_request(api_details)
-                confirm_success = confirm_response['success']
-            else:
-                logger.error("Card payment Failed")
-
-            if confirm_success == True:
-                txnid = confirm_response['txnId']
+                txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
             else:
-                logger.error("Confirm Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -534,7 +489,7 @@ def test_common_100_104_015():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(3)
+            bin_no = card_processor.get_ezetapdevicedata(9)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if void_success == True:
@@ -542,8 +497,8 @@ def test_common_100_104_015():
                                          "pmt_status":"VOIDED",
                                         "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"HDFC"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(void_response['amount'])
@@ -571,7 +526,7 @@ def test_common_100_104_015():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -589,13 +544,13 @@ def test_common_100_104_015():
                                     "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"ATOS_TLE",
+                                    "txn_type":"CHARGE", "acq_code":"HDFC", "pmt_gateway":"HDFC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "VOIDED",
                                     "mware_pmt_state": "VOIDED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "RUPAY", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "ATOS_TLE",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "HDFC", "mware_pmt_gateway": "HDFC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"VOIDED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -675,14 +630,14 @@ def test_common_100_104_015():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_016():
+def test_common_100_104_052():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Void_EMV_CREDIT_VISA
-        Sub Feature Description: API that performs EMV Void txn having CREDIT VISA card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_HDFC_Card_Void_EMVCTLS_CREDIT_VISA
+        Sub Feature Description: API that performs EMVCTLS Void txn having CREDIT VISA card via HDFC
         TC naming code description:
         100: Payment Method
         104: CARD
-        016: TC016
+        052: TC052
     """
 
     try:
@@ -702,7 +657,7 @@ def test_common_100_104_016():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("HDFC_EMVCTLS_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -716,29 +671,14 @@ def test_common_100_104_016():
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
-                txn_id = response['txnId']
-                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
-
-                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id,
-                                                                        })
-                confirm_response = APIProcessor.send_request(api_details)
-                confirm_success = confirm_response['success']
-            else:
-                logger.error("Card payment Failed")
-
-            if confirm_success == True:
-                txnid = confirm_response['txnId']
+                txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
             else:
-                logger.error("Confirm Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -755,7 +695,7 @@ def test_common_100_104_016():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(4)
+            bin_no = card_processor.get_ezetapdevicedata(10)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if void_success == True:
@@ -763,8 +703,8 @@ def test_common_100_104_016():
                                          "pmt_status":"VOIDED",
                                         "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"HDFC"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(void_response['amount'])
@@ -792,7 +732,7 @@ def test_common_100_104_016():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -810,13 +750,13 @@ def test_common_100_104_016():
                                     "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"ATOS_TLE",
+                                    "txn_type":"CHARGE", "acq_code":"HDFC", "pmt_gateway":"HDFC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "VOIDED",
                                     "mware_pmt_state": "VOIDED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "VISA", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "ATOS_TLE",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "HDFC", "mware_pmt_gateway": "HDFC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"VOIDED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -896,14 +836,14 @@ def test_common_100_104_016():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_017():
+def test_common_100_104_053():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Void_EMV_CREDIT_MASTER
-        Sub Feature Description: API that performs EMV Void txn having CREDIT MASTER card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_HDFC_Card_Void_EMVCTLS_CREDIT_MASTER
+        Sub Feature Description: API that performs EMVCTLS Void txn having CREDIT MASTER card via HDFC
         TC naming code description:
         100: Payment Method
         104: CARD
-        017: TC017
+        053: TC053
     """
 
     try:
@@ -923,7 +863,7 @@ def test_common_100_104_017():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("HDFC_EMVCTLS_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -937,29 +877,14 @@ def test_common_100_104_017():
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
-                txn_id = response['txnId']
-                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
-
-                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id,
-                                                                        })
-                confirm_response = APIProcessor.send_request(api_details)
-                confirm_success = confirm_response['success']
-            else:
-                logger.error("Card payment Failed")
-
-            if confirm_success == True:
-                txnid = confirm_response['txnId']
+                txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
             else:
-                logger.error("Confirm Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -976,7 +901,7 @@ def test_common_100_104_017():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(5)
+            bin_no = card_processor.get_ezetapdevicedata(11)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if void_success == True:
@@ -984,8 +909,8 @@ def test_common_100_104_017():
                                          "pmt_status":"VOIDED",
                                         "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"HDFC"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(void_response['amount'])
@@ -1013,7 +938,7 @@ def test_common_100_104_017():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1031,13 +956,13 @@ def test_common_100_104_017():
                                     "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"ATOS_TLE",
+                                    "txn_type":"CHARGE", "acq_code":"HDFC", "pmt_gateway":"HDFC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "VOIDED",
                                     "mware_pmt_state": "VOIDED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "MASTER_CARD", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "ATOS_TLE",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "HDFC", "mware_pmt_gateway": "HDFC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"VOIDED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -1117,14 +1042,14 @@ def test_common_100_104_017():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_018():
+def test_common_100_104_054():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Void_EMV_CREDIT_RUPAY
-        Sub Feature Description: API that performs EMV Void txn having CREDIT RUPAY card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_HDFC_Card_Void_EMVCTLS_CREDIT_RUPAY
+        Sub Feature Description: API that performs EMVCTLS Void txn having CREDIT RUPAY card via HDFC
         TC naming code description:
         100: Payment Method
         104: CARD
-        018: TC018
+        054: TC054
     """
 
     try:
@@ -1144,7 +1069,7 @@ def test_common_100_104_018():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("HDFC_EMVCTLS_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -1158,29 +1083,14 @@ def test_common_100_104_018():
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
-                txn_id = response['txnId']
-                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
-
-                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id,
-                                                                        })
-                confirm_response = APIProcessor.send_request(api_details)
-                confirm_success = confirm_response['success']
-            else:
-                logger.error("Card payment Failed")
-
-            if confirm_success == True:
-                txnid = confirm_response['txnId']
+                txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
             else:
-                logger.error("Confirm Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1197,7 +1107,7 @@ def test_common_100_104_018():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(6)
+            bin_no = card_processor.get_ezetapdevicedata(12)
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if void_success == True:
@@ -1205,8 +1115,8 @@ def test_common_100_104_018():
                                          "pmt_status":"VOIDED",
                                         "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"HDFC"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(void_response['amount'])
@@ -1234,7 +1144,7 @@ def test_common_100_104_018():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1252,13 +1162,13 @@ def test_common_100_104_018():
                                     "pmt_state":"VOIDED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"ATOS_TLE",
+                                    "txn_type":"CHARGE", "acq_code":"HDFC", "pmt_gateway":"HDFC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "VOIDED",
                                     "mware_pmt_state": "VOIDED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "RUPAY", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "ATOS_TLE",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "HDFC", "mware_pmt_gateway": "HDFC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"VOIDED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
