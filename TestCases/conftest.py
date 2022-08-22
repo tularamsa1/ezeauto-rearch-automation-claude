@@ -170,34 +170,40 @@ def updatingHighLevelReportAfterEachTCS():
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_val_result
-                print("API VaL: ", GlobalVariables.str_api_val_result)
+                print("API Val: ", GlobalVariables.str_api_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'DB Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_db_val_result
-                print("DB VaL: ", GlobalVariables.str_db_val_result)
+                print("DB Val: ", GlobalVariables.str_db_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Portal Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_portal_val_result
-                print("Portal VaL: ", GlobalVariables.str_portal_val_result)
+                print("Portal Val: ", GlobalVariables.str_portal_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'App Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_app_val_result
-                print("App VaL: ", GlobalVariables.str_app_val_result)
+                print("App Val: ", GlobalVariables.str_app_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
-                print("UI VaL: ", GlobalVariables.str_ui_val_result)
+                print("UI Val: ", GlobalVariables.str_ui_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'ChargeSlip Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_chargeslip_val_result
-                print("ChargeSlip VaL: ", GlobalVariables.str_chargeslip_val_result)
+                print("ChargeSlip Val: ", GlobalVariables.str_chargeslip_val_result)
 
-                # sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Code')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_code
+                print("API Response Code: ", GlobalVariables.str_api_response_code)
 
-                # Added on Apr 11
-                # To add the rerun count after every executed testcases
-                # if bool_rerun_at_the_end & bool_rerun_immediately are enabled, bool_rerun_at_the_end will be considered
-                # if (bool_rerun_at_the_end is TRUE) OR (bool_rerun_at_the_end & bool_rerun_immediately are TRUE)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Time(sec)')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_time
+                print("API Response Time: ", GlobalVariables.str_api_response_time)
+
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Size(kb)')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_size
+                print("API Response Size: ", GlobalVariables.str_api_response_size)
+
                 if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
                         "Validations", "bool_rerun_immediately").lower() == "false") \
                         or (
