@@ -75,7 +75,7 @@ def test_common_100_104_037():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(7)
+            bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
@@ -279,7 +279,7 @@ def test_common_100_104_038():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(8)
+            bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
@@ -482,7 +482,7 @@ def test_common_100_104_039():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(9)
+            bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
@@ -684,7 +684,7 @@ def test_common_100_104_040():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(10)
+            bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
@@ -887,7 +887,7 @@ def test_common_100_104_041():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(11)
+            bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
@@ -1090,7 +1090,7 @@ def test_common_100_104_042():
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
          # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            bin_no = card_processor.get_ezetapdevicedata(12)
+            bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
