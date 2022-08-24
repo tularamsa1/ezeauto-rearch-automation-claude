@@ -41,7 +41,7 @@ def prepareTestCaseDetailsDataFrame(path):
         'OverAll Results',
         'TC Execution', 'API Val', 'DB Val', 'Portal Val', 'App Val', 'UI Val', 'ChargeSlip Val',
         'Execution Time (sec)', 'Validation Time (sec)', 'Log Coll Time (sec)', 'Total Time (sec)',
-        'Rerun Attempts']
+        'Rerun Attempts',  'API Resp Code', 'API Resp Time(sec)', 'API Resp Size(kb)']
 
     df_overall_testcases_list = pd.read_excel(path, index_col=0) \
         [['Test Case ID', 'Sub Feature Code', 'File Name', 'Directory Name', 'Execute']]

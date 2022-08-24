@@ -1268,50 +1268,6 @@ def test_common_100_103_013():
             else:
                 pass
             logger.info("Timeout execution completed.")
-            # time.sleep(6)
-            # maxAttemptMessage = str(remotePayTxn.maxAttemptsMessage())
-            # logger.info(f"Your expected success message is:  {maxAttemptMessage}")
-            # logger.info(f"Your expiryMessage is:  {expectedMessage}")
-            # if maxAttemptMessage == expectedMessage:
-            #     pass
-            # else:
-            #     raise Exception("Expiry Message is not matching.")
-
-            # query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
-            #     org_code) + "';"
-            # logger.debug(f"Query to fetch max Attempts from the DB : {query}")
-            # try:
-            #     result = DBProcessor.getValueFromDB(query)
-            #     print("result: ", result)
-            #     print("type of result: ", type(result))
-            #     org_setting_value = int(result['setting_value'].values[0])
-            #     logger.info(f"max upi attempt for {org_code} is {org_setting_value}")
-            # except Exception as e:
-            #     org_setting_value = None
-            #     print(e)
-            #
-            # query1 = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = 'EZETAP'"
-            # logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
-            # try:
-            #     defaultValue = DBProcessor.getValueFromDB(query1)
-            #     setting_value = int(defaultValue['setting_value'].values[0])
-            #     logger.info(f"max upi attempt is: {setting_value}")
-            # except NameError as e:
-            #     setting_value = None
-            #     print(e)
-            # except IndexError as e:
-            #     setting_value = None
-            #     print(e)
-            # except Exception as e:
-            #     print(e)
-            #
-            # if org_setting_value:
-            #     logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
-            #     time.sleep(3 + (org_setting_value * 60))
-            # else:
-            #     logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
-            #     time.sleep(3 + (setting_value * 60))
-
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")

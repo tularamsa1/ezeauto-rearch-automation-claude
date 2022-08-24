@@ -5,11 +5,10 @@ import time
 from datetime import datetime
 import pytest
 from termcolor import colored
-from Configuration import Configuration, TestSuiteSetup
+from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
@@ -44,9 +43,9 @@ def test_common_100_103_014():
         GlobalVariables.time_calc.setup.resume()
         print(
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -62,19 +61,13 @@ def test_common_100_103_014():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)  # //logger
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
                                                                               "settingForOrgCode": org_code})
@@ -741,28 +734,10 @@ def test_common_100_103_015():
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
-            print(colored(
-                "Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,
-                                                                                  "="), 'cyan'))
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
-            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-                GlobalVariables.time_calc.execution.pause()
-                print(colored(
-                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
-                        shutil.get_terminal_size().columns, "="), 'cyan'))
-            GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            ReportProcessor.capture_ss_when_app_val_exe_failed()
-            GlobalVariables.EXCEL_TC_Execution = "Fail"
-            GlobalVariables.Incomplete_ExecutionCount += 1
-            GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            logger.exception(f"Execution is completed for the test case : {testcase_id}")
+            Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
@@ -770,8 +745,7 @@ def test_common_100_103_015():
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
-                      'cyan'))
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
@@ -853,12 +827,7 @@ def test_common_100_103_015():
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_app_val_exe_failed()
-                print("App Validation failed due to exception - " + str(e))
-                logger.exception(f"App Validation failed due to exception - {e}")
-                msg = msg + "App Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_app_val_result = "Fail"
+                Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
             # -----------------------------------------End of App Validation---------------------------------------
 
@@ -918,11 +887,7 @@ def test_common_100_103_015():
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
-                print("API Validation failed due to exception - " + str(e))
-                logger.exception(f"API Validation failed due to exception : {e} ")
-                msg = msg + "API Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_api_val_result = 'Fail'
+                Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
 
             # -----------------------------------------End of API Validation---------------------------------------
@@ -998,73 +963,33 @@ def test_common_100_103_015():
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
-                print("DB Validation failed due to exception - " + str(e))
-                logger.exception(f"DB Validation failed due to exception :  {e}")
-                msg = msg + "DB Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_db_val_result = 'Fail'
+                Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
             # -----------------------------------------End of DB Validation---------------------------------------
 
             # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                expected_portal_values = {
-                    "pmt_state": "Settled", "pmt_type": "UPI",
-                    "txn_amt": "Rs." + str(amount) + ".00", "username": app_username
-                }
-                logger.debug(f"expected_portal_values : {expected_portal_values}")
-                portal_driver = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(portal_driver)
-                home_page_portal.search_merchant_name(str(org_code))
-                home_page_portal.wait_for_home_page_load()
-
-                logger.debug(f"searching for the org_code : {str(org_code)}")
-                home_page_portal.click_switch_button(str(org_code))
-                home_page_portal.perform_merchant_switched_verfication()
-                home_page_portal.click_transaction_search_menu()
-
-                portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
-                portal_type = portal_values_dict['Type']
-                portal_status = portal_values_dict['Status']
-                portal_amount = portal_values_dict['Total Amount']
-                portal_username = portal_values_dict['Username']
-
-                actual_portal_values = {
-                    "pmt_state": str(portal_status), "pmt_type": portal_type,
-                    "txn_amt": portal_amount, "username": portal_username
-                }
-                logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                actualPortal=actual_portal_values)
+                # --------------------------------------------------------------------------------------------
+                expected_portal_values = {}
+                #
+                # Write the test case Portal validation code block here. Set this to pass if not required.
+                #
+                actual_portal_values = {}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_portal_val_exe_failed()
-                print("Portal Validation failed due to exception - " + str(e))
-                logger.exception(f"Portal Validation failed due to exception : {e}")
-                msg = msg + "Portal Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_portal_val_result = 'Fail'
+                Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-
-            # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
-        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
-                      'cyan'))
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
@@ -1074,7 +999,7 @@ def test_common_100_103_015():
 @pytest.mark.chargeSlipVal
 def test_common_100_103_016():
     """
-    Sub Feature Code: UI_Common_PM_Success_RP_upi collect_Callback_After Expiry_HDFC
+    Sub Feature Code: UI_Common_PM_Success_RP_upi_collect_Callback_After_Expiry_HDFC
     Sub Feature Description:Verification of a Success Remote Pay pure upi collect txn after expiry for HDFC using callback
     Sub Feature Code: UI_Common_PM_UPI_Collect_success_callback_after_expiry_AutoRefund_Disabled_HDFC
     Sub Feature Description: Performing a  UPI Collect success callback via HDFC after  expiry when autorefund is disabled.
@@ -1720,19 +1645,6 @@ def test_common_100_103_017():
                 logger.info("VPA validation completed.")
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
 
-            query = "select * from remotepay_setting where setting_name='maxUpiAttemptInCNP' and org_code = '" + str(
-                org_code) + "';"
-            logger.debug(f"Query to fetch max Attempts from the DB : {query}")
-            try:
-                result = DBProcessor.getValueFromDB(query)
-                print("result: ", result)
-                print("type of result: ", type(result))
-                org_setting_value = int(result['setting_value'].values[0])
-                logger.info(f"max upi attempt for {org_code} is {org_setting_value}")
-            except Exception as e:
-                org_setting_value = None
-                print(e)
-
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
@@ -2007,12 +1919,16 @@ def test_common_100_103_017():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expectedDBValues = {"Payment Status Original": "EXPIRED", "Payment State Original": "EXPIRED",
+                expectedDBValues = {"Payment Status Original": "EXPIRED",
+                                    "Payment State Original": "EXPIRED",
                                     "Payment mode": "UPI",
-                                    "Payment amount": amount, "UPI_Txn_Status Original": "EXPIRED",
-                                    "Payment Status": "EXPIRED", "Payment State": "EXPIRED",
+                                    "Payment amount": amount,
+                                    "UPI_Txn_Status Original": "EXPIRED",
+                                    "Payment Status": "EXPIRED",
+                                    "Payment State": "EXPIRED",
                                     "Payment mode Original": "UPI",
-                                    "Payment amount Original": amount, "UPI_Txn_Status": "EXPIRED"}
+                                    "Payment amount Original": amount,
+                                    "UPI_Txn_Status": "EXPIRED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + original_txn_id + "'"
@@ -2157,7 +2073,7 @@ def test_common_100_103_018():
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    014: TC_018
+    018: TC_018
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

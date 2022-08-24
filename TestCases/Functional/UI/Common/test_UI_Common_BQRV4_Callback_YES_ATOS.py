@@ -496,7 +496,7 @@ def test_common_100_102_069():
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             query = "select * from upi_merchant_config where bank_code = 'YES' AND status = 'ACTIVE' AND org_code = " \
@@ -519,7 +519,7 @@ def test_common_100_102_069():
             result = DBProcessor.getValueFromDB(query)
             txn_id_new = result["id"].iloc[0]
             auth_code_new = result['auth_code'].values[0]
-            posting_date_new = result['posting_date'].values[0]
+            posting_date_new = result['created_time'].values[0]
             customer_name_new = result['customer_name'].values[0]
             payer_name_new = result['payer_name'].values[0]
 
@@ -705,7 +705,7 @@ def test_common_100_102_069():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -726,7 +726,7 @@ def test_common_100_102_069():
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,

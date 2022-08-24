@@ -20,6 +20,7 @@ startLineNumberMiddlewware = ''
 startLineNumberCnpware = ''
 start_line_number_config = ''
 start_line_number_closedloop = ''
+start_line_number_q2 = ''
 
 
 apiLogs = False
@@ -28,6 +29,7 @@ cnpWareLogs = False
 middleWareLogs = False
 config_logs = False
 closedloop_logs = False
+q2_logs = False
 
 # portalSS = False
 
@@ -53,6 +55,9 @@ str_portal_val_result = "N/A"
 str_app_val_result = "N/A"
 str_ui_val_result = "N/A"
 str_chargeslip_val_result = "N/A"
+str_api_response_code = "N/A"
+str_api_response_time = "N/A"
+str_api_response_size = "N/A"
 EXCEL_Execution_Time = 00
 EXCEL_Val_time = 00
 EXCEL_LogCollTime = 00

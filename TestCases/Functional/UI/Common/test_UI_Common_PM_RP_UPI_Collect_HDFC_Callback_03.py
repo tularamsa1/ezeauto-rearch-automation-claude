@@ -28,7 +28,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_100_103_024():
     """
-    Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_before__expiry_HDFC_AutoRefund_Enabled
+    Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_before_expiry_HDFC_AutoRefund_Enabled
     Sub Feature Description: Performing two  UPI Collect success callback via HDFC before expiry the  when autorefund is enabled
     100: Payment Method
     103: RemotePay
@@ -194,6 +194,8 @@ def test_common_100_103_024():
             logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
+            original_auth_code = result['auth_code'].values[0]
+            logger.debug(f"generated auth code is : {original_auth_code}")
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -773,6 +775,26 @@ def test_common_100_103_024():
                 GlobalVariables.str_portal_val_result = 'Fail'
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(original_posting_date)
+                expected_values = {'PAID BY:': 'UPI',
+                                   'merchant_ref_no': 'Ref # ' + str(order_id),
+                                   'RRN': str(original_rrn),
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                                   'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': original_auth_code}
+                logger.debug(f"expected_values : {expected_values}")
+                receipt_validator.perform_charge_slip_validations(original_txn_id,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+                logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+
+
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))
@@ -790,7 +812,7 @@ def test_common_100_103_024():
 @pytest.mark.appVal
 def test_common_100_103_025():
     """
-    Sub Feature Code: UI_Common_PM_2_UPI_Collectsuccess_callback_after__expiry_HDFC_AutoRefund_Enabled
+    Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_after_expiry_HDFC_AutoRefund_Enabled
     Sub Feature Description: Performing two  UPI Collect success callback via HDFC after expiry the  when autorefund is enabled
     100: Payment Method
     103: RemotePay
@@ -2214,9 +2236,12 @@ def test_common_100_103_026():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
-                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                expected_values = {'PAID BY:': 'UPI',
+                                   'merchant_ref_no': 'Ref # ' + str(order_id),
+                                   'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                   'date': txn_date, 'time': txn_time,
+                                   'date': txn_date,
+                                   'time': txn_time,
                                    'AUTH CODE': auth_code}
                 logger.debug(f"expected_values : {expected_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id, {"username": app_username, "password": app_password}, expected_values)
@@ -2437,6 +2462,8 @@ def test_common_100_103_027():
             new_txn_id_1 = result['id'].values[0]
             logger.debug(f"Query result new_txn_id_1 : {new_txn_id_1}")
             original_posting_date = result['posting_date'].values[0]
+            original_auth_code = result['auth_code'].values[0]
+            logger.debug(f"generated auth code is : {original_auth_code}")
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
             callback_2_rrn = random.randint(1111110, 9999999)
             logger.debug(
@@ -2470,40 +2497,24 @@ def test_common_100_103_027():
             query = "select * from txn where id = '" + original_txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # orig_txn_status = result['status'].values[0]
-            # orig_txn_customer_name = result['customer_name'].values[0]
-            # orig_txn_payer_name = result['payer_name'].values[0]
-            # orig_txn_settle_status = result['settlement_status'].values[0]
-            # orig_txn_acquirer_code = result['acquirer_code'].values[0]
-            # orig_txn_issuer_code = result['issuer_code'].values[0]
-            # orig_txn_org_code_txn = result['org_code'].values[0]
             orig_txn_type = result['txn_type'].values[0]
             orig_posting_date = result['posting_date'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_1 + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # new_txn_status_1 = result['status'].values[0]
             new_txn_customer_name_1 = result['customer_name'].values[0]
             new_txn_payer_name_1 = result['payer_name'].values[0]
-            # new_txn_settle_status_1 = result['settlement_status'].values[0]
-            # new_txn_acquirer_code_1 = result['acquirer_code'].values[0]
-            # new_txn_issuer_code_1 = result['issuer_code'].values[0]
-            # new_txn_org_code_txn_1 = result['org_code'].values[0]
             new_txn_type_1 = result['txn_type'].values[0]
             new_txn_modified_time_app_1 = result['modified_time'].values[0]
             new_txn_posting_date_1 = result['posting_date'].values[0]
+            new_txn_modified_time_1 = result['modified_time'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_2 + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # new_txn_status_2 = result['status'].values[0]
             new_txn_customer_name_2 = result['customer_name'].values[0]
             new_txn_payer_name_2 = result['payer_name'].values[0]
-            # new_txn_settle_status_2 = result['settlement_status'].values[0]
-            # new_txn_acquirer_code_2 = result['acquirer_code'].values[0]
-            # new_txn_issuer_code_2 = result['issuer_code'].values[0]
-            # new_txn_org_code_txn_2 = result['org_code'].values[0]
             new_txn_type_2 = result['txn_type'].values[0]
             new_txn_posting_date_app = result['created_time'].values[0]
             new_txn_posting_date_api = result['posting_date'].values[0]
@@ -3168,6 +3179,28 @@ def test_common_100_103_027():
                 GlobalVariables.str_portal_val_result = 'Fail'
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(new_txn_modified_time_1)
+                expected_values = {'PAID BY:': 'UPI',
+                                   'merchant_ref_no': 'Ref # ' + str(order_id),
+                                   'RRN': str(callback_1_rrn),
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                                   'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': original_auth_code}
+                logger.debug(f"expected_values : {expected_values}")
+                receipt_validator.perform_charge_slip_validations(new_txn_id_1,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+                logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation----------------------------------
+
+
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))

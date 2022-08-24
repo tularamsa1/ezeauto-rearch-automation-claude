@@ -528,7 +528,7 @@ def test_common_100_102_063():
             rrn = result['rr_number'].iloc[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             logger.info("Opening Portal to perform refund of the transaction")
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -770,7 +770,7 @@ def test_common_100_102_063():
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
-                date_api_original = response["postingDate"]
+                date_api_original = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password,

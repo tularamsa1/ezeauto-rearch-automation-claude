@@ -142,7 +142,6 @@ def test_common_100_102_052():
             txn_id_refunded = result["id"].iloc[0]
             rrn = result['rr_number'].iloc[0]
             logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
-
             #
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -537,7 +536,7 @@ def test_common_100_102_053():
             rrn = result['rr_number'].iloc[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             logger.info("Opening Portal to perform refund of the transaction")
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -554,7 +553,7 @@ def test_common_100_102_053():
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
             refund_auth_code = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['posting_date'].values[0]
+            posting_date_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn} ")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -783,7 +782,7 @@ def test_common_100_102_053():
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
-                date_api_original = response["postingDate"]
+                date_api_original = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": username, "password": password,
@@ -804,7 +803,7 @@ def test_common_100_102_053():
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
                 auth_code_api_refunded = response["authCode"]
-                date_api_refunded = response["postingDate"]
+                date_api_refunded = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api_original,

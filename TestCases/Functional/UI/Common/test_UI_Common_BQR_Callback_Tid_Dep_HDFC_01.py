@@ -219,12 +219,15 @@ def test_common_100_102_089():
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date, "device_serial": str(device_serial)}
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
                 amount_api = float(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = response["paymentMode"]
@@ -573,14 +576,17 @@ def test_common_100_102_090():
                                        "mid": mid, "tid": tid, "org_code": org_code,
                                        "date": date, "device_serial": str(device_serial)}
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 settlement_status_api = response["settlementStatus"]
@@ -911,14 +917,16 @@ def test_common_100_102_091():
                                        "mid": mid, "tid": tid, "org_code": org_code,
                                        "date": date, "device_serial": str(device_serial)}
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
-                amount_api = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 settlement_status_api = response["settlementStatus"]
@@ -1306,27 +1314,31 @@ def test_common_100_102_095():
             try:
                 date = date_time_converter.db_datetime(posting_date)
                 date_new = date_time_converter.db_datetime(posting_date_new)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": amount,"pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
-                                       "date": date,
-                                       "pmt_status_new": "AUTHORIZED", "txn_amt_new": amount,
+                                       "date": date,"device_serial": str(device_serial),
+                                       "pmt_status_new": "AUTHORIZED", "txn_amt_new": float(amount),
                                        "pmt_mode_new": "BHARATQR","pmt_state_new": "SETTLED",
                                        "rrn_new": str(rrn_new), "settle_status_new": "SETTLED","acquirer_code_new": "HDFC",
                                        "issuer_code_new": "HDFC", "txn_type_new": "CHARGE",
                                        "mid_new": mid, "tid_new": tid, "org_code_new": org_code,
-                                       "auth_code_new": auth_code_new, "date_new": date_new
+                                       "auth_code_new": auth_code_new, "date_new": date_new,
+                                       "device_serial_new": str(device_serial),
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
@@ -1339,15 +1351,18 @@ def test_common_100_102_095():
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
                 date_api = response["postingDate"]
+                device_serial_api = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api_new = response["status"]
-                amount_api_new = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -1360,6 +1375,7 @@ def test_common_100_102_095():
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
                 date_api_new = response["postingDate"]
+                device_serial_api_new = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
@@ -1367,6 +1383,7 @@ def test_common_100_102_095():
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
+                                     "device_serial": str(device_serial_api),
                                      "pmt_status_new": status_api_new, "txn_amt_new": amount_api_new,
                                      "pmt_mode_new": payment_mode_api_new,
                                      "pmt_state_new": state_api_new, "rrn_new": str(rrn_api_new),
@@ -1376,6 +1393,7 @@ def test_common_100_102_095():
                                      "txn_type_new": txn_type_api_new, "tid_new": tid_api_new,
                                      "auth_code_new": auth_code_api_new, "org_code_new": org_code_api_new,
                                      "date_new": date_time_converter.from_api_to_datetime_format(date_api_new),
+                                     "device_serial_new": str(device_serial_api_new)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1392,6 +1410,7 @@ def test_common_100_102_095():
                                       "pmt_state": "SETTLED","acquirer_code" : "HDFC", "bank_name" : "HDFC Bank",
                                       "mid" :mid, "tid" : tid, "pmt_gateway": "HDFC",
                                       "rrn" : str(rrn), "settle_status": "SETTLED",
+                                      "device_serial": str(device_serial),
                                       "bqr_pmt_status": "Transaction Success", "bqr_pmt_state": "SETTLED",
                                       "bqr_txn_amt": amount,
                                       "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
@@ -1404,6 +1423,7 @@ def test_common_100_102_095():
                                       "bank_name_new": "HDFC Bank",
                                       "mid_new": mid, "tid_new": tid, "pmt_gateway_new": "HDFC",
                                       "rrn_new": str(rrn), "settle_status_new": "SETTLED",
+                                      "device_serial_new": str(device_serial),
                                       "bqr_pmt_status_new": "Transaction Success", "bqr_pmt_state_new": "SETTLED",
                                       "bqr_txn_amt_new": amount,
                                       "bqr_txn_type_new": "DYNAMIC_QR", "brq_terminal_info_id_new": terminal_info_id,
@@ -1429,6 +1449,7 @@ def test_common_100_102_095():
                 payment_gateway_db = result["payment_gateway"].iloc[0]
                 rr_number_db = result["rr_number"].iloc[0]
                 settlement_status_db = result["settlement_status"].iloc[0]
+                device_serial_db = result['device_serial'].values[0]
 
                 query = "select * from txn where id='" + txn_id_new + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -1445,6 +1466,7 @@ def test_common_100_102_095():
                 payment_gateway_db_new = result["payment_gateway"].iloc[0]
                 rr_number_db_new = result["rr_number"].iloc[0]
                 settlement_status_db_new = result["settlement_status"].iloc[0]
+                device_serial_db_new = result['device_serial'].values[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -1485,6 +1507,7 @@ def test_common_100_102_095():
                                     "mid" :mid_db, "tid" : tid_db,
                                     "pmt_gateway": payment_gateway_db, "rrn" : rr_number_db,
                                     "settle_status": settlement_status_db,
+                                    "device_serial": str(device_serial_db),
                                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                                     "bqr_txn_amt": bqr_amount_db,
                                     "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
@@ -1499,6 +1522,7 @@ def test_common_100_102_095():
                                     "mid_new": mid_db_new, "tid_new": tid_db_new,
                                     "pmt_gateway_new": payment_gateway_db_new, "rrn_new": rr_number_db_new,
                                     "settle_status_new": settlement_status_db_new,
+                                    "device_serial_new": str(device_serial_db_new),
                                     "bqr_pmt_status_new": bqr_status_db_new, "bqr_pmt_state_new": bqr_state_db_new,
                                     "bqr_txn_amt_new": bqr_amount_db_new,
                                     "bqr_txn_type_new": bqr_txn_type_db_new,
@@ -1824,28 +1848,32 @@ def test_common_100_102_096():
             try:
                 date = date_time_converter.db_datetime(posting_date)
                 date_new = date_time_converter.db_datetime(posting_date_new)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": amount,"pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date,
-                                       "pmt_status_new": "REFUND_PENDING", "txn_amt_new": amount,
+                                       "device_serial": str(device_serial),
+                                       "pmt_status_new": "REFUND_PENDING", "txn_amt_new": float(amount),
                                        "pmt_mode_new": "BHARATQR","pmt_state_new": "REFUND_PENDING",
                                        "rrn_new": str(rrn_new), "settle_status_new": "SETTLED","acquirer_code_new": "HDFC",
                                        "issuer_code_new": "HDFC", "txn_type_new": "CHARGE",
                                        "mid_new": mid, "tid_new": tid, "org_code_new": org_code,
-                                       "auth_code_new": auth_code_new, "date_new": date_new
+                                       "auth_code_new": auth_code_new, "date_new": date_new,
+                                       "device_serial_new": str(device_serial),
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
@@ -1858,16 +1886,18 @@ def test_common_100_102_096():
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
                 date_api = response["postingDate"]
+                device_serial_api = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api_new = response["status"]
-                amount_api_new = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -1880,12 +1910,14 @@ def test_common_100_102_096():
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
                 date_api_new = response["postingDate"]
+                device_serial_api_new = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
                                      "acquirer_code": acquirer_code_api,"issuer_code": issuer_code_api,"mid": mid_api,
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
+                                     "device_serial": str(device_serial_api),
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
                                      "pmt_status_new": status_api_new, "txn_amt_new": amount_api_new,
                                      "pmt_mode_new": payment_mode_api_new,
@@ -1896,6 +1928,7 @@ def test_common_100_102_096():
                                      "txn_type_new": txn_type_api_new, "tid_new": tid_api_new,
                                      "auth_code_new": auth_code_api_new, "org_code_new": org_code_api_new,
                                      "date_new": date_time_converter.from_api_to_datetime_format(date_api_new),
+                                     "device_serial_new": str(device_serial_api_new)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1912,6 +1945,7 @@ def test_common_100_102_096():
                                       "pmt_state": "SETTLED","acquirer_code" : "HDFC", "bank_name" : "HDFC Bank",
                                       "mid" :mid, "tid" : tid, "pmt_gateway": "HDFC",
                                       "rrn" : str(rrn), "settle_status": "SETTLED",
+                                      "device_serial": str(device_serial),
                                       "bqr_pmt_status": "Transaction Success", "bqr_pmt_state": "SETTLED",
                                       "bqr_txn_amt": amount,
                                       "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
@@ -1925,6 +1959,7 @@ def test_common_100_102_096():
                                       "bank_name_new": "HDFC Bank",
                                       "mid_new": mid, "tid_new": tid, "pmt_gateway_new": "HDFC",
                                       "rrn_new": str(rrn), "settle_status_new": "SETTLED",
+                                      "device_serial_new": str(device_serial),
                                       "bqr_pmt_status_new": "Transaction Success", "bqr_pmt_state_new": "REFUND_PENDING",
                                       "bqr_txn_amt_new": amount,
                                       "bqr_txn_type_new": "DYNAMIC_QR", "brq_terminal_info_id_new": terminal_info_id,
@@ -1950,6 +1985,7 @@ def test_common_100_102_096():
                 payment_gateway_db = result["payment_gateway"].iloc[0]
                 rr_number_db = result["rr_number"].iloc[0]
                 settlement_status_db = result["settlement_status"].iloc[0]
+                device_serial_db = result['device_serial'].values[0]
 
                 query = "select * from txn where id='" + txn_id_new + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -1966,6 +2002,7 @@ def test_common_100_102_096():
                 payment_gateway_db_new = result["payment_gateway"].iloc[0]
                 rr_number_db_new = result["rr_number"].iloc[0]
                 settlement_status_db_new = result["settlement_status"].iloc[0]
+                device_serial_db_new = result['device_serial'].values[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -2006,6 +2043,7 @@ def test_common_100_102_096():
                                     "mid" :mid_db, "tid" : tid_db,
                                     "pmt_gateway": payment_gateway_db, "rrn" : rr_number_db,
                                     "settle_status": settlement_status_db,
+                                    "device_serial": str(device_serial_db),
                                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                                     "bqr_txn_amt": bqr_amount_db,
                                     "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
@@ -2020,6 +2058,7 @@ def test_common_100_102_096():
                                     "mid_new": mid_db_new, "tid_new": tid_db_new,
                                     "pmt_gateway_new": payment_gateway_db_new, "rrn_new": rr_number_db_new,
                                     "settle_status_new": settlement_status_db_new,
+                                    "device_serial_new": str(device_serial_db_new),
                                     "bqr_pmt_status_new": bqr_status_db_new, "bqr_pmt_state_new": bqr_state_db_new,
                                     "bqr_txn_amt_new": bqr_amount_db_new,
                                     "bqr_txn_type_new": bqr_txn_type_db_new,

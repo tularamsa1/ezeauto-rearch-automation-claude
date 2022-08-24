@@ -170,34 +170,40 @@ def updatingHighLevelReportAfterEachTCS():
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_val_result
-                print("API VaL: ", GlobalVariables.str_api_val_result)
+                print("API Val: ", GlobalVariables.str_api_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'DB Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_db_val_result
-                print("DB VaL: ", GlobalVariables.str_db_val_result)
+                print("DB Val: ", GlobalVariables.str_db_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Portal Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_portal_val_result
-                print("Portal VaL: ", GlobalVariables.str_portal_val_result)
+                print("Portal Val: ", GlobalVariables.str_portal_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'App Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_app_val_result
-                print("App VaL: ", GlobalVariables.str_app_val_result)
+                print("App Val: ", GlobalVariables.str_app_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'UI Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_ui_val_result
-                print("UI VaL: ", GlobalVariables.str_ui_val_result)
+                print("UI Val: ", GlobalVariables.str_ui_val_result)
 
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'ChargeSlip Val')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_chargeslip_val_result
-                print("ChargeSlip VaL: ", GlobalVariables.str_chargeslip_val_result)
+                print("ChargeSlip Val: ", GlobalVariables.str_chargeslip_val_result)
 
-                # sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.EXCEL_Tot_Time
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Code')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_code
+                print("API Response Code: ", GlobalVariables.str_api_response_code)
 
-                # Added on Apr 11
-                # To add the rerun count after every executed testcases
-                # if bool_rerun_at_the_end & bool_rerun_immediately are enabled, bool_rerun_at_the_end will be considered
-                # if (bool_rerun_at_the_end is TRUE) OR (bool_rerun_at_the_end & bool_rerun_immediately are TRUE)
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Time(sec)')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_time
+                print("API Response Time: ", GlobalVariables.str_api_response_time)
+
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Size(kb)')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_size
+                print("API Response Size: ", GlobalVariables.str_api_response_size)
+
                 if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
                         "Validations", "bool_rerun_immediately").lower() == "false") \
                         or (
@@ -281,6 +287,11 @@ def captureLogs(request):
                 rerun_file = Path(path + "/closedloop.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                q2_logs = LogProcessor.fetch_q2_logs()
+                rerun_file = Path(path + "/q2.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
         if item.rep_call.failed:
             testCaseID = str(item.nodeid).split('/')
@@ -329,6 +340,11 @@ def captureLogs(request):
                 rerun_file = Path(path + "/closedloop.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                q2_logs = LogProcessor.fetch_q2_logs()
+                rerun_file = Path(path + "/q2.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
         if item.rep_call.passed:
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -368,6 +384,11 @@ def captureLogs(request):
                 rerun_file = Path(path + "/closedloop.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                q2_logs = LogProcessor.fetch_q2_logs()
+                rerun_file = Path(path + "/q2.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
         if item.rep_call.failed:
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -406,6 +427,11 @@ def captureLogs(request):
                 closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                 rerun_file = Path(path + "/closedloop.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                q2_logs = LogProcessor.fetch_q2_logs()
+                rerun_file = Path(path + "/q2.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
 
 @pytest.fixture(scope="function")  # Executing once before every testcases
@@ -689,6 +715,11 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/closedloop.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                    q2_logs = LogProcessor.fetch_q2_logs()
+                    rerun_file = Path(path + "/q2.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
 
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
@@ -741,9 +772,14 @@ def log_on_failure(request):
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
                         if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                            config_logs = LogProcessor.fetch_closed_loop_logs()
+                            closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                             rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                            q2_logs = LogProcessor.fetch_q2_logs()
+                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
 
                     i -= 1
@@ -800,9 +836,14 @@ def log_on_failure(request):
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
                         if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                            config_logs = LogProcessor.fetch_closed_loop_logs()
+                            closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                             rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                            q2_logs = LogProcessor.fetch_q2_logs()
+                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
                     i -= 1
                     j += 1
@@ -846,6 +887,11 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/closedloop.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                    q2_logs = LogProcessor.fetch_q2_logs()
+                    rerun_file = Path(path + "/q2.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True":
                 path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
@@ -885,6 +931,11 @@ def log_on_failure(request):
                     closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                     rerun_file = Path(path + "/closedloop.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                    q2_logs = LogProcessor.fetch_q2_logs()
+                    rerun_file = Path(path + "/q2.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
         if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
@@ -1021,6 +1072,11 @@ def log_on_success(request):
                     rerun_file = Path(path + "/closedloop.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                    q2_logs = LogProcessor.fetch_q2_logs()
+                    rerun_file = Path(path + "/q2.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                       "bool_rerun_at_the_end").lower() == "true":
@@ -1072,9 +1128,14 @@ def log_on_success(request):
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
                         if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                            config_logs = LogProcessor.fetch_closed_loop_logs()
+                            closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                             rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                            q2_logs = LogProcessor.fetch_q2_logs()
+                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
                     i -= 1
                     j += 1
@@ -1130,9 +1191,14 @@ def log_on_success(request):
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
                         if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                            config_logs = LogProcessor.fetch_closed_loop_logs()
+                            closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                             rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                            q2_logs = LogProcessor.fetch_q2_logs()
+                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
                     i -= 1
                     j += 1
@@ -1176,6 +1242,11 @@ def log_on_success(request):
                     rerun_file = Path(path + "/closedloop.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
+                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                    q2_logs = LogProcessor.fetch_q2_logs()
+                    rerun_file = Path(path + "/q2.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True":
                 path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -1215,6 +1286,11 @@ def log_on_success(request):
                     closedloop_logs = LogProcessor.fetch_closed_loop_logs()
                     rerun_file = Path(path + "/closedloop.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                    q2_logs = LogProcessor.fetch_q2_logs()
+                    rerun_file = Path(path + "/q2.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
         if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",

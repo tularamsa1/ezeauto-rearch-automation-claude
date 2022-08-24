@@ -6,10 +6,10 @@ portalValidation = True
 appValidation = True
 uiValidation = True
 
-#"EVD" denotes "Empty validation done"
+# "EVD" denotes "Empty validation done"
 STR_EMPTY_VALIDATION_STATUS = "EVD"
 
-#Column Names in Test Case details excel file
+# Column Names in Test Case details excel file
 colName_TestCaseID = "Test Case ID"
 colName_FileName = "File Name"
 colName_Execute = "Execute"
@@ -31,12 +31,20 @@ SQLITE_DB_PATH = os.path.join(DATABASE_DIR, 'ezeauto.db')
 RUNTIME_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'Runtime')
 DATAPROVIDER_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'DataProvider')
 
+# FileNames
+STR_CARD_DETAILS_FILE = "card_details.xlsx"
+
+#ezetap device data info
+DEVICE_DATA_TAGS = {"TXN_TYPE": "FE01", "CLEAR_PAN": "FE02", "CLEAR_EXPIRY": "FE03", "ENC_TRACK2": "FE04", "CLEAR_EMV_DATA": "FE05", "PIN_BLOCK": "1F01", "NAME": "FE06", "SERVICE_CODE": "FE08", "ENC_PAN": "FE09", "ENC_EXP": "FE0A", "TRACK1": "FE07", "AID_TAG": "9F06", "TC_TAG": "9F26", "APP_TYPE": "50", "TVR_TAG": "95", "TSI_TAG": "9B", "Unknown1":"FE0D", "Unknown2":"FE0C"}
+TWO_DIGIT_TAGS = ["50", "95", "9B",]
+TAGS_WITH_LENGTH_IN_HEX = ["FE05", "FE09", "FE0D", "FE06", "FE04", "FE0C"]
+
 ADMIN_USER_ROLES = ["ROLE_CLSUPPORT","ROLE_CLADMIN","ROLE_CLAGENT","ROLE_CLAGENT_REFUND","ROLE_CLPROMO","ROLE_ORG_MANAGER","ROLE_CLAGENTPORTAL","ROLE_TAG_ADMIN","ROLE_CLAGENTVOID","ROLE_CLREFUND"]
 AGENT_USER_ROLES = ["ROLE_CLAGENT","ROLE_CLAGENT_REFUND","ROLE_CLAGENTPORTAL","ROLE_CLAGENTVOID"]
 SUPER_USER_ROLES = ["ROLE_SU"]
 
 
-#Ezewallet Merchant and User Creds
+# Ezewallet Merchant and User Creds
 ORG = "EZEWALLETMERCHANT"
 ADMIN_USER = "7777770001"
 ADMIN_PASSWORD = "A123456"
