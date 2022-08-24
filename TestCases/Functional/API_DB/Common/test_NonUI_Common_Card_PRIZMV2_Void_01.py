@@ -129,7 +129,7 @@ def test_common_100_104_073():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -350,7 +350,7 @@ def test_common_100_104_074():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -571,7 +571,7 @@ def test_common_100_104_075():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -792,7 +792,7 @@ def test_common_100_104_076():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1013,7 +1013,7 @@ def test_common_100_104_077():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1234,7 +1234,7 @@ def test_common_100_104_078():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)

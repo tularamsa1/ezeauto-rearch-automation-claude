@@ -12,14 +12,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_085():
+def test_common_100_104_115():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_DEBIT_VISA
-        Sub Feature Description:API that performs EMV Reversal txn having DEBIT VISA card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Reversal_EMV_DEBIT_VISA
+        Sub Feature Description:API that performs EMV Reversal txn having DEBIT VISA card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        085: TC085
+        115: TC115
     """
 
     try:
@@ -39,7 +39,7 @@ def test_common_100_104_085():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -86,7 +86,7 @@ def test_common_100_104_085():
                                         "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(reversal_response['amount'])
@@ -132,13 +132,13 @@ def test_common_100_104_085():
                                     "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "REVERSED",
                                     "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "VISA", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -218,14 +218,14 @@ def test_common_100_104_085():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_086():
+def test_common_100_104_116():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_DEBIT_MASTER
-        Sub Feature Description:API that performs EMV Reversal txn having DEBIT MASTER card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Reversal_EMV_DEBIT_MASTER
+        Sub Feature Description:API that performs EMV Reversal txn having DEBIT MASTER card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        086: TC086
+        116: TC116
     """
 
     try:
@@ -245,7 +245,7 @@ def test_common_100_104_086():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -292,7 +292,7 @@ def test_common_100_104_086():
                                         "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(reversal_response['amount'])
@@ -338,13 +338,13 @@ def test_common_100_104_086():
                                     "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "REVERSED",
                                     "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "MASTER_CARD", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -423,14 +423,14 @@ def test_common_100_104_086():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_087():
+def test_common_100_104_117():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_DEBIT_RUPAY
-        Sub Feature Description:API that performs EMV Reversal txn having DEBIT RUPAY card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Reversal_EMV_DEBIT_RUPAY
+        Sub Feature Description:API that performs EMV Reversal txn having DEBIT RUPAY card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        087: TC087
+        117: TC117
     """
 
     try:
@@ -450,7 +450,7 @@ def test_common_100_104_087():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -497,7 +497,7 @@ def test_common_100_104_087():
                                         "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(reversal_response['amount'])
@@ -543,13 +543,13 @@ def test_common_100_104_087():
                                     "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "REVERSED",
                                     "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "RUPAY", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -629,14 +629,14 @@ def test_common_100_104_087():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_088():
+def test_common_100_104_118():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_CREDIT_VISA
-        Sub Feature Description:API that performs EMV Reversal txn having CREDIT VISA card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Reversal_EMV_CREDIT_VISA
+        Sub Feature Description:API that performs EMV Reversal txn having CREDIT VISA card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        088: TC088
+        118: TC118
     """
 
     try:
@@ -656,7 +656,7 @@ def test_common_100_104_088():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -703,7 +703,7 @@ def test_common_100_104_088():
                                         "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(reversal_response['amount'])
@@ -749,13 +749,13 @@ def test_common_100_104_088():
                                     "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "REVERSED",
                                     "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "VISA", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -835,14 +835,14 @@ def test_common_100_104_088():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_089():
+def test_common_100_104_119():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_CREDIT_MASTER
-        Sub Feature Description:API that performs EMV Reversal txn having CREDIT MASTER card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Reversal_EMV_CREDIT_MASTER
+        Sub Feature Description:API that performs EMV Reversal txn having CREDIT MASTER card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        089: TC089
+        119: TC119
     """
 
     try:
@@ -862,7 +862,7 @@ def test_common_100_104_089():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -909,7 +909,7 @@ def test_common_100_104_089():
                                         "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(reversal_response['amount'])
@@ -955,13 +955,13 @@ def test_common_100_104_089():
                                     "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "REVERSED",
                                     "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "MASTER_CARD", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -1040,14 +1040,14 @@ def test_common_100_104_089():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_090():
+def test_common_100_104_120():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_CREDIT_RUPAY
-        Sub Feature Description:API that performs EMV Reversal txn having CREDIT RUPAY card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Reversal_EMV_CREDIT_RUPAY
+        Sub Feature Description:API that performs EMV Reversal txn having CREDIT RUPAY card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        090: TC090
+        120: TC120
     """
 
     try:
@@ -1067,7 +1067,7 @@ def test_common_100_104_090():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -1114,7 +1114,7 @@ def test_common_100_104_090():
                                         "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(reversal_response['amount'])
@@ -1160,13 +1160,13 @@ def test_common_100_104_090():
                                     "pmt_state":"REVERSED", "settle_status": "SETTLED",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
                                     "mware_pmt_status": "REVERSED",
                                     "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "RUPAY", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
                                     "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 

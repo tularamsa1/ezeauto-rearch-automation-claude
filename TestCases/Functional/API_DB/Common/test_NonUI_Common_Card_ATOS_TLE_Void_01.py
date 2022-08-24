@@ -57,8 +57,8 @@ def test_common_100_104_013():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -129,7 +129,7 @@ def test_common_100_104_013():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -278,8 +278,8 @@ def test_common_100_104_014():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -350,7 +350,7 @@ def test_common_100_104_014():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -499,8 +499,8 @@ def test_common_100_104_015():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -571,7 +571,7 @@ def test_common_100_104_015():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -720,8 +720,8 @@ def test_common_100_104_016():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -792,7 +792,7 @@ def test_common_100_104_016():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -941,8 +941,8 @@ def test_common_100_104_017():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -1013,7 +1013,7 @@ def test_common_100_104_017():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1162,8 +1162,8 @@ def test_common_100_104_018():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -1234,7 +1234,7 @@ def test_common_100_104_018():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Void is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)

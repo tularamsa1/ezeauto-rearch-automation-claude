@@ -1,7 +1,6 @@
 from Utilities import DBProcessor
 from DataProvider import GlobalConstants
 
-# Rename func DBReset
 def db_reset():
     delete_wallet_txn_leg = "delete from wallet_txn_leg where wallet_txn_id in (select wallet_txn_id from wallet_txn where merchant_id = '" + GlobalConstants.ORG + "');"
     delete_wallet_txn = "delete from wallet_txn where merchant_id = '" + GlobalConstants.ORG + "';"

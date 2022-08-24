@@ -60,7 +60,7 @@ def test_common_100_104_055():
                 reversal_response = APIProcessor.send_request(api_details)
                 reversal_success = reversal_response['success']
             else:
-                logger.error("Reversal of Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -114,7 +114,7 @@ def test_common_100_104_055():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Reversal is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -266,7 +266,7 @@ def test_common_100_104_056():
                 reversal_response = APIProcessor.send_request(api_details)
                 reversal_success = reversal_response['success']
             else:
-                logger.error("Reversal of Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -320,7 +320,7 @@ def test_common_100_104_056():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Reversal is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -471,7 +471,7 @@ def test_common_100_104_057():
                 reversal_response = APIProcessor.send_request(api_details)
                 reversal_success = reversal_response['success']
             else:
-                logger.error("Reversal of Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -525,7 +525,7 @@ def test_common_100_104_057():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Reversal is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -677,7 +677,7 @@ def test_common_100_104_058():
                 reversal_response = APIProcessor.send_request(api_details)
                 reversal_success = reversal_response['success']
             else:
-                logger.error("Reversal of Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -731,7 +731,7 @@ def test_common_100_104_058():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Reversal is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -883,7 +883,7 @@ def test_common_100_104_059():
                 reversal_response = APIProcessor.send_request(api_details)
                 reversal_success = reversal_response['success']
             else:
-                logger.error("Reversal of Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -937,7 +937,7 @@ def test_common_100_104_059():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Reversal is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1088,7 +1088,7 @@ def test_common_100_104_060():
                 reversal_response = APIProcessor.send_request(api_details)
                 reversal_success = reversal_response['success']
             else:
-                logger.error("Reversal of Card payment Failed")
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1142,7 +1142,7 @@ def test_common_100_104_060():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("confirm card Payment is not successfull")
+                    logger.error("Reversal is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)

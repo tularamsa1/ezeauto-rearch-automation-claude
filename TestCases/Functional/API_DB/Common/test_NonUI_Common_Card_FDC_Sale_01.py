@@ -3,8 +3,9 @@ import random
 import sys
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
+from Utilities import card_processor
 
 logger = EzeAutoLogger(__name__)
 
@@ -12,14 +13,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_085():
+def test_common_100_104_091():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_DEBIT_VISA
-        Sub Feature Description:API that performs EMV Reversal txn having DEBIT VISA card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Sale_EMV_DEBIT_VISA
+        Sub Feature Description: API that performs EMV Sale txn using DEBIT VISA card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        085: TC085
+        091: TC091
     """
 
     try:
@@ -39,28 +40,35 @@ def test_common_100_104_085():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                                    "username":card_details['Username'],
+                                                                    "password":card_details['Password'],
                                                                     "amount": str(original_amount),
-                                                                    "ezetapDeviceData": card_details['Ezetap Device Data'],
-                                                                    "nonce": card_details['Nonce'],
-                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
+                                                                    "nonce":card_details['Nonce'],
+                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
 
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
-                api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
-                                                          request_body={"txnId": txn_id,
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
+
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username":confirm_data["Username"],
+                                                                        "password":confirm_data["Password"],
+                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "txnId": txn_id ,
                                                                         })
-                reversal_response = APIProcessor.send_request(api_details)
-                reversal_success = reversal_response['success']
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
             else:
                 logger.error("Card payment Failed")
+
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -80,30 +88,30 @@ def test_common_100_104_085():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if reversal_success == True:
+                if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                         "pmt_status":"REVERSED",
-                                        "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                         "pmt_status":"AUTHORIZED",
+                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    amount = float(reversal_response['amount'])
-                    txnid = reversal_response['txnId']
-                    payment_mode = reversal_response['paymentMode']
-                    payment_status = reversal_response['status']
-                    payment_state = reversal_response['states'][0]
-                    settlement_status = reversal_response['settlementStatus']
-                    payment_card_bin = reversal_response['paymentCardBin']
-                    payment_card_brand = reversal_response['paymentCardBrand']
-                    payment_card_type = reversal_response['paymentCardType']
-                    card_txn_type = reversal_response['cardTxnTypeDesc']
-                    txn_type = reversal_response['txnType']
-                    acq_code = reversal_response['acquirerCode']
+                    amount = float(confirm_response['amount'])
+                    txnid = confirm_response['txnId']
+                    payment_mode = confirm_response['paymentMode']
+                    payment_status = confirm_response['status']
+                    payment_state = confirm_response['states'][0]
+                    settlement_status = confirm_response['settlementStatus']
+                    payment_card_bin = confirm_response['paymentCardBin']
+                    payment_card_brand = confirm_response['paymentCardBrand']
+                    payment_card_type = confirm_response['paymentCardType']
+                    card_txn_type = confirm_response['cardTxnTypeDesc']
+                    txn_type = confirm_response['txnType']
+                    acq_code = confirm_response['acquirerCode']
                     logger.info(f"API Result: Fetch Response of Card Payment: {card_payment_success}, {amount}, {payment_mode}, {payment_status},{settlement_status},{payment_mode}, {payment_state}, {settlement_status},{payment_card_bin},{payment_card_brand}, {payment_card_type}, {card_txn_type},{txn_type}")
 
-                    actualAPIValues = {"success": reversal_success,"txn_amt": amount, "pmt_mode":payment_mode,
+                    actualAPIValues = {"success": confirm_success,"txn_amt": amount, "pmt_mode":payment_mode,
                                        "pmt_status":payment_status,
                                         "pmt_state":payment_state, "settle_status":settlement_status,
                                        "pmt_card_bin":payment_card_bin,
@@ -114,7 +122,7 @@ def test_common_100_104_085():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Reversal is not successfull")
+                    logger.error("confirm card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -128,18 +136,18 @@ def test_common_100_104_085():
             try:
 
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                    "pmt_status":"REVERSED",
-                                    "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                    "pmt_status":"AUTHORIZED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
-                                    "mware_pmt_status": "REVERSED",
-                                    "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
+                                    "mware_pmt_status": "AUTHORIZED",
+                                    "mware_pmt_state": "AUTHORIZED", "mware_settle_status": "PENDING",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "VISA", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
-                                    "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
+                                    "txn_amt_req": float(original_amount), "pmt_status_req":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -214,18 +222,17 @@ def test_common_100_104_085():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_086():
+def test_common_100_104_092():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_DEBIT_MASTER
-        Sub Feature Description:API that performs EMV Reversal txn having DEBIT MASTER card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Sale_EMV_DEBIT_MASTER
+        Sub Feature Description: API that performs EMV Sale txn using DEBIT MASTER card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        086: TC086
+        092: TC092
     """
 
     try:
@@ -245,7 +252,7 @@ def test_common_100_104_086():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -260,13 +267,20 @@ def test_common_100_104_086():
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
-                api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
-                                                          request_body={"txnId": txn_id,
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
+
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
+                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
-                reversal_response = APIProcessor.send_request(api_details)
-                reversal_success = reversal_response['success']
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
             else:
                 logger.error("Card payment Failed")
+
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -286,30 +300,30 @@ def test_common_100_104_086():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if reversal_success == True:
+                if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                         "pmt_status":"REVERSED",
-                                        "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                         "pmt_status":"AUTHORIZED",
+                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    amount = float(reversal_response['amount'])
-                    txnid = reversal_response['txnId']
-                    payment_mode = reversal_response['paymentMode']
-                    payment_status = reversal_response['status']
-                    payment_state = reversal_response['states'][0]
-                    settlement_status = reversal_response['settlementStatus']
-                    payment_card_bin = reversal_response['paymentCardBin']
-                    payment_card_brand = reversal_response['paymentCardBrand']
-                    payment_card_type = reversal_response['paymentCardType']
-                    card_txn_type = reversal_response['cardTxnTypeDesc']
-                    txn_type = reversal_response['txnType']
-                    acq_code = reversal_response['acquirerCode']
+                    amount = float(confirm_response['amount'])
+                    txnid = confirm_response['txnId']
+                    payment_mode = confirm_response['paymentMode']
+                    payment_status = confirm_response['status']
+                    payment_state = confirm_response['states'][0]
+                    settlement_status = confirm_response['settlementStatus']
+                    payment_card_bin = confirm_response['paymentCardBin']
+                    payment_card_brand = confirm_response['paymentCardBrand']
+                    payment_card_type = confirm_response['paymentCardType']
+                    card_txn_type = confirm_response['cardTxnTypeDesc']
+                    txn_type = confirm_response['txnType']
+                    acq_code = confirm_response['acquirerCode']
                     logger.info(f"API Result: Fetch Response of Card Payment: {card_payment_success}, {amount}, {payment_mode}, {payment_status},{settlement_status},{payment_mode}, {payment_state}, {settlement_status},{payment_card_bin},{payment_card_brand}, {payment_card_type}, {card_txn_type},{txn_type}")
 
-                    actualAPIValues = {"success": reversal_success,"txn_amt": amount, "pmt_mode":payment_mode,
+                    actualAPIValues = {"success": confirm_success,"txn_amt": amount, "pmt_mode":payment_mode,
                                        "pmt_status":payment_status,
                                         "pmt_state":payment_state, "settle_status":settlement_status,
                                        "pmt_card_bin":payment_card_bin,
@@ -320,7 +334,7 @@ def test_common_100_104_086():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Reversal is not successfull")
+                    logger.error("confirm card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -334,18 +348,18 @@ def test_common_100_104_086():
             try:
 
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                    "pmt_status":"REVERSED",
-                                    "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                    "pmt_status":"AUTHORIZED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
-                                    "mware_pmt_status": "REVERSED",
-                                    "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
+                                    "mware_pmt_status": "AUTHORIZED",
+                                    "mware_pmt_state": "AUTHORIZED", "mware_settle_status": "PENDING",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "MASTER_CARD", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
-                                    "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
+                                    "txn_amt_req": float(original_amount), "pmt_status_req":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -420,17 +434,18 @@ def test_common_100_104_086():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_087():
+def test_common_100_104_093():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_DEBIT_RUPAY
-        Sub Feature Description:API that performs EMV Reversal txn having DEBIT RUPAY card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Sale_EMV_DEBIT_RUPAY
+        Sub Feature Description: API that performs EMV Sale txn using DEBIT RUPAY card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        087: TC087
+        093: TC093
     """
 
     try:
@@ -450,7 +465,7 @@ def test_common_100_104_087():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -465,13 +480,20 @@ def test_common_100_104_087():
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
-                api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
-                                                          request_body={"txnId": txn_id,
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
+
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
+                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
-                reversal_response = APIProcessor.send_request(api_details)
-                reversal_success = reversal_response['success']
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
             else:
                 logger.error("Card payment Failed")
+
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -491,30 +513,30 @@ def test_common_100_104_087():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if reversal_success == True:
+                if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                         "pmt_status":"REVERSED",
-                                        "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                         "pmt_status":"AUTHORIZED",
+                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    amount = float(reversal_response['amount'])
-                    txnid = reversal_response['txnId']
-                    payment_mode = reversal_response['paymentMode']
-                    payment_status = reversal_response['status']
-                    payment_state = reversal_response['states'][0]
-                    settlement_status = reversal_response['settlementStatus']
-                    payment_card_bin = reversal_response['paymentCardBin']
-                    payment_card_brand = reversal_response['paymentCardBrand']
-                    payment_card_type = reversal_response['paymentCardType']
-                    card_txn_type = reversal_response['cardTxnTypeDesc']
-                    txn_type = reversal_response['txnType']
-                    acq_code = reversal_response['acquirerCode']
+                    amount = float(confirm_response['amount'])
+                    txnid = confirm_response['txnId']
+                    payment_mode = confirm_response['paymentMode']
+                    payment_status = confirm_response['status']
+                    payment_state = confirm_response['states'][0]
+                    settlement_status = confirm_response['settlementStatus']
+                    payment_card_bin = confirm_response['paymentCardBin']
+                    payment_card_brand = confirm_response['paymentCardBrand']
+                    payment_card_type = confirm_response['paymentCardType']
+                    card_txn_type = confirm_response['cardTxnTypeDesc']
+                    txn_type = confirm_response['txnType']
+                    acq_code = confirm_response['acquirerCode']
                     logger.info(f"API Result: Fetch Response of Card Payment: {card_payment_success}, {amount}, {payment_mode}, {payment_status},{settlement_status},{payment_mode}, {payment_state}, {settlement_status},{payment_card_bin},{payment_card_brand}, {payment_card_type}, {card_txn_type},{txn_type}")
 
-                    actualAPIValues = {"success": reversal_success,"txn_amt": amount, "pmt_mode":payment_mode,
+                    actualAPIValues = {"success": confirm_success,"txn_amt": amount, "pmt_mode":payment_mode,
                                        "pmt_status":payment_status,
                                         "pmt_state":payment_state, "settle_status":settlement_status,
                                        "pmt_card_bin":payment_card_bin,
@@ -525,7 +547,7 @@ def test_common_100_104_087():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Reversal is not successfull")
+                    logger.error("confirm card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -539,18 +561,18 @@ def test_common_100_104_087():
             try:
 
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                    "pmt_status":"REVERSED",
-                                    "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                    "pmt_status":"AUTHORIZED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
-                                    "mware_pmt_status": "REVERSED",
-                                    "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
+                                    "mware_pmt_status": "AUTHORIZED",
+                                    "mware_pmt_state": "AUTHORIZED", "mware_settle_status": "PENDING",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "RUPAY", "mware_pmt_card_type": "DEBIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
-                                    "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
+                                    "txn_amt_req": float(original_amount), "pmt_status_req":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -626,17 +648,18 @@ def test_common_100_104_087():
 
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_088():
+def test_common_100_104_094():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_CREDIT_VISA
-        Sub Feature Description:API that performs EMV Reversal txn having CREDIT VISA card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Sale_EMV_CREDIT_VISA
+        Sub Feature Description: API that performs EMV Sale txn using CREDIT VISA card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        088: TC088
+        094: TC094
     """
 
     try:
@@ -656,7 +679,7 @@ def test_common_100_104_088():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -671,13 +694,20 @@ def test_common_100_104_088():
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
-                api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
-                                                          request_body={"txnId": txn_id,
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
+
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
+                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
-                reversal_response = APIProcessor.send_request(api_details)
-                reversal_success = reversal_response['success']
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
             else:
                 logger.error("Card payment Failed")
+
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -697,30 +727,30 @@ def test_common_100_104_088():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if reversal_success == True:
+                if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                         "pmt_status":"REVERSED",
-                                        "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                         "pmt_status":"AUTHORIZED",
+                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    amount = float(reversal_response['amount'])
-                    txnid = reversal_response['txnId']
-                    payment_mode = reversal_response['paymentMode']
-                    payment_status = reversal_response['status']
-                    payment_state = reversal_response['states'][0]
-                    settlement_status = reversal_response['settlementStatus']
-                    payment_card_bin = reversal_response['paymentCardBin']
-                    payment_card_brand = reversal_response['paymentCardBrand']
-                    payment_card_type = reversal_response['paymentCardType']
-                    card_txn_type = reversal_response['cardTxnTypeDesc']
-                    txn_type = reversal_response['txnType']
-                    acq_code = reversal_response['acquirerCode']
+                    amount = float(confirm_response['amount'])
+                    txnid = confirm_response['txnId']
+                    payment_mode = confirm_response['paymentMode']
+                    payment_status = confirm_response['status']
+                    payment_state = confirm_response['states'][0]
+                    settlement_status = confirm_response['settlementStatus']
+                    payment_card_bin = confirm_response['paymentCardBin']
+                    payment_card_brand = confirm_response['paymentCardBrand']
+                    payment_card_type = confirm_response['paymentCardType']
+                    card_txn_type = confirm_response['cardTxnTypeDesc']
+                    txn_type = confirm_response['txnType']
+                    acq_code = confirm_response['acquirerCode']
                     logger.info(f"API Result: Fetch Response of Card Payment: {card_payment_success}, {amount}, {payment_mode}, {payment_status},{settlement_status},{payment_mode}, {payment_state}, {settlement_status},{payment_card_bin},{payment_card_brand}, {payment_card_type}, {card_txn_type},{txn_type}")
 
-                    actualAPIValues = {"success": reversal_success,"txn_amt": amount, "pmt_mode":payment_mode,
+                    actualAPIValues = {"success": confirm_success,"txn_amt": amount, "pmt_mode":payment_mode,
                                        "pmt_status":payment_status,
                                         "pmt_state":payment_state, "settle_status":settlement_status,
                                        "pmt_card_bin":payment_card_bin,
@@ -731,7 +761,7 @@ def test_common_100_104_088():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Reversal is not successfull")
+                    logger.error("confirm card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -745,18 +775,18 @@ def test_common_100_104_088():
             try:
 
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                    "pmt_status":"REVERSED",
-                                    "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                    "pmt_status":"AUTHORIZED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
-                                    "mware_pmt_status": "REVERSED",
-                                    "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
+                                    "mware_pmt_status": "AUTHORIZED",
+                                    "mware_pmt_state": "AUTHORIZED", "mware_settle_status": "PENDING",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "VISA", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
-                                    "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
+                                    "txn_amt_req": float(original_amount), "pmt_status_req":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -835,14 +865,14 @@ def test_common_100_104_088():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_089():
+def test_common_100_104_095():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_CREDIT_MASTER
-        Sub Feature Description:API that performs EMV Reversal txn having CREDIT MASTER card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Sale_EMV_CREDIT_MASTER
+        Sub Feature Description: API that performs EMV Sale txn using CREDIT MASTER card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        089: TC089
+        095: TC095
     """
 
     try:
@@ -862,7 +892,7 @@ def test_common_100_104_089():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -877,13 +907,20 @@ def test_common_100_104_089():
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
-                api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
-                                                          request_body={"txnId": txn_id,
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
+
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
+                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
-                reversal_response = APIProcessor.send_request(api_details)
-                reversal_success = reversal_response['success']
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
             else:
                 logger.error("Card payment Failed")
+
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -903,30 +940,30 @@ def test_common_100_104_089():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if reversal_success == True:
+                if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                         "pmt_status":"REVERSED",
-                                        "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                         "pmt_status":"AUTHORIZED",
+                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    amount = float(reversal_response['amount'])
-                    txnid = reversal_response['txnId']
-                    payment_mode = reversal_response['paymentMode']
-                    payment_status = reversal_response['status']
-                    payment_state = reversal_response['states'][0]
-                    settlement_status = reversal_response['settlementStatus']
-                    payment_card_bin = reversal_response['paymentCardBin']
-                    payment_card_brand = reversal_response['paymentCardBrand']
-                    payment_card_type = reversal_response['paymentCardType']
-                    card_txn_type = reversal_response['cardTxnTypeDesc']
-                    txn_type = reversal_response['txnType']
-                    acq_code = reversal_response['acquirerCode']
+                    amount = float(confirm_response['amount'])
+                    txnid = confirm_response['txnId']
+                    payment_mode = confirm_response['paymentMode']
+                    payment_status = confirm_response['status']
+                    payment_state = confirm_response['states'][0]
+                    settlement_status = confirm_response['settlementStatus']
+                    payment_card_bin = confirm_response['paymentCardBin']
+                    payment_card_brand = confirm_response['paymentCardBrand']
+                    payment_card_type = confirm_response['paymentCardType']
+                    card_txn_type = confirm_response['cardTxnTypeDesc']
+                    txn_type = confirm_response['txnType']
+                    acq_code = confirm_response['acquirerCode']
                     logger.info(f"API Result: Fetch Response of Card Payment: {card_payment_success}, {amount}, {payment_mode}, {payment_status},{settlement_status},{payment_mode}, {payment_state}, {settlement_status},{payment_card_bin},{payment_card_brand}, {payment_card_type}, {card_txn_type},{txn_type}")
 
-                    actualAPIValues = {"success": reversal_success,"txn_amt": amount, "pmt_mode":payment_mode,
+                    actualAPIValues = {"success": confirm_success,"txn_amt": amount, "pmt_mode":payment_mode,
                                        "pmt_status":payment_status,
                                         "pmt_state":payment_state, "settle_status":settlement_status,
                                        "pmt_card_bin":payment_card_bin,
@@ -937,7 +974,7 @@ def test_common_100_104_089():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Reversal is not successfull")
+                    logger.error("confirm card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -951,18 +988,18 @@ def test_common_100_104_089():
             try:
 
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                    "pmt_status":"REVERSED",
-                                    "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                    "pmt_status":"AUTHORIZED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
-                                    "mware_pmt_status": "REVERSED",
-                                    "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
+                                    "mware_pmt_status": "AUTHORIZED",
+                                    "mware_pmt_state": "AUTHORIZED", "mware_settle_status": "PENDING",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "MASTER_CARD", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
-                                    "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
+                                    "txn_amt_req": float(original_amount), "pmt_status_req":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1037,17 +1074,18 @@ def test_common_100_104_089():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_090():
+def test_common_100_104_096():
     """
-        Sub Feature Code: NonUI_Common_PRIZMV2_Card_Reversal_EMV_CREDIT_RUPAY
-        Sub Feature Description:API that performs EMV Reversal txn having CREDIT RUPAY card via PRIZMV2
+        Sub Feature Code: NonUI_Common_FDC_Card_Sale_EMV_CREDIT_RUPAY
+        Sub Feature Description: API that performs EMV Sale txn using CREDIT RUPAY card via FDC
         TC naming code description:
         100: Payment Method
         104: CARD
-        090: TC090
+        096: TC096
     """
 
     try:
@@ -1067,7 +1105,7 @@ def test_common_100_104_090():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMV_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("FDC_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": card_details['Device Serial'],
                                                                     "username": card_details['Username'],
@@ -1082,13 +1120,20 @@ def test_common_100_104_090():
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
-                api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
-                                                          request_body={"txnId": txn_id,
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
+
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
+                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
-                reversal_response = APIProcessor.send_request(api_details)
-                reversal_success = reversal_response['success']
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
             else:
                 logger.error("Card payment Failed")
+
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1108,30 +1153,30 @@ def test_common_100_104_090():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if reversal_success == True:
+                if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                         "pmt_status":"REVERSED",
-                                        "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                         "pmt_status":"AUTHORIZED",
+                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"AXIS"}
+                                         "txn_type":"CHARGE", "acq_code":"ICICI"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    amount = float(reversal_response['amount'])
-                    txnid = reversal_response['txnId']
-                    payment_mode = reversal_response['paymentMode']
-                    payment_status = reversal_response['status']
-                    payment_state = reversal_response['states'][0]
-                    settlement_status = reversal_response['settlementStatus']
-                    payment_card_bin = reversal_response['paymentCardBin']
-                    payment_card_brand = reversal_response['paymentCardBrand']
-                    payment_card_type = reversal_response['paymentCardType']
-                    card_txn_type = reversal_response['cardTxnTypeDesc']
-                    txn_type = reversal_response['txnType']
-                    acq_code = reversal_response['acquirerCode']
+                    amount = float(confirm_response['amount'])
+                    txnid = confirm_response['txnId']
+                    payment_mode = confirm_response['paymentMode']
+                    payment_status = confirm_response['status']
+                    payment_state = confirm_response['states'][0]
+                    settlement_status = confirm_response['settlementStatus']
+                    payment_card_bin = confirm_response['paymentCardBin']
+                    payment_card_brand = confirm_response['paymentCardBrand']
+                    payment_card_type = confirm_response['paymentCardType']
+                    card_txn_type = confirm_response['cardTxnTypeDesc']
+                    txn_type = confirm_response['txnType']
+                    acq_code = confirm_response['acquirerCode']
                     logger.info(f"API Result: Fetch Response of Card Payment: {card_payment_success}, {amount}, {payment_mode}, {payment_status},{settlement_status},{payment_mode}, {payment_state}, {settlement_status},{payment_card_bin},{payment_card_brand}, {payment_card_type}, {card_txn_type},{txn_type}")
 
-                    actualAPIValues = {"success": reversal_success,"txn_amt": amount, "pmt_mode":payment_mode,
+                    actualAPIValues = {"success": confirm_success,"txn_amt": amount, "pmt_mode":payment_mode,
                                        "pmt_status":payment_status,
                                         "pmt_state":payment_state, "settle_status":settlement_status,
                                        "pmt_card_bin":payment_card_bin,
@@ -1142,7 +1187,7 @@ def test_common_100_104_090():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Reversal is not successfull")
+                    logger.error("confirm card Payment is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1156,18 +1201,18 @@ def test_common_100_104_090():
             try:
 
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
-                                    "pmt_status":"REVERSED",
-                                    "pmt_state":"REVERSED", "settle_status": "SETTLED",
+                                    "pmt_status":"AUTHORIZED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
-                                    "txn_type":"CHARGE", "acq_code":"AXIS", "pmt_gateway":"PRIZM_V2",
+                                    "txn_type":"CHARGE", "acq_code":"ICICI", "pmt_gateway":"FDC",
                                     "mware_txn_amt": float(original_amount), "mware_pmt_mode": "CARD",
-                                    "mware_pmt_status": "REVERSED",
-                                    "mware_pmt_state": "REVERSED", "mware_settle_status": "SETTLED",
+                                    "mware_pmt_status": "AUTHORIZED",
+                                    "mware_pmt_state": "AUTHORIZED", "mware_settle_status": "PENDING",
                                     "mware_pmt_card_bin": bin_no,
                                     "mware_pmt_card_brand": "RUPAY", "mware_pmt_card_type": "CREDIT",
-                                    "mware_txn_type": "CHARGE", "mware_acq_code": "AXIS", "mware_pmt_gateway": "PRIZM_V2",
-                                    "txn_amt_req": float(original_amount), "pmt_status_req":"REVERSED"}
+                                    "mware_txn_type": "CHARGE", "mware_acq_code": "ICICI", "mware_pmt_gateway": "FDC",
+                                    "txn_amt_req": float(original_amount), "pmt_status_req":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"

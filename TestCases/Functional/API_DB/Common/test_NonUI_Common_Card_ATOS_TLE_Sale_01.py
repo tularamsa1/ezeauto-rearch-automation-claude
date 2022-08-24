@@ -58,8 +58,8 @@ def test_common_100_104_001():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":card_details["Username"],
-                                                                        "password":card_details["Password"],
+                                                          request_body={"username":confirm_data["Username"],
+                                                                        "password":confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id ,
                                                                         })
@@ -272,8 +272,8 @@ def test_common_100_104_002():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -485,8 +485,8 @@ def test_common_100_104_003():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -697,8 +697,8 @@ def test_common_100_104_004():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -910,8 +910,8 @@ def test_common_100_104_005():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -1123,8 +1123,8 @@ def test_common_100_104_006():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": card_details["Username"],
-                                                                        "password": card_details["Password"],
+                                                          request_body={"username": confirm_data["Username"],
+                                                                        "password": confirm_data["Password"],
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
