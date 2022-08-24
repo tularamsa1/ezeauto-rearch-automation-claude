@@ -28,7 +28,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_100_103_019():  # Make sure to add the test case name as same as the sub feature code.
     """
-    Sub Feature Code: UI_Common_PM_RM_failed_callback_after_RM_collect_expiry_HDFC_AutoRefund_Disabled
+    Sub Feature Code: UI_Common_PM_RM_failed_callback_after_RP_collect_expiry_HDFC_AutoRefund_Disabled
     Sub Feature Description: Performing a upi collect failed callback via HDFC after expiry when auto refund is disabled
     100: Payment Method
     103: RemotePay
@@ -90,12 +90,6 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
             print(
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
 
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -576,8 +570,8 @@ def test_common_100_103_020():
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_Pure_UPI_Callback_HDFC
     Sub Feature Description: Verification of a Remote Pay successful pure upi txn via HDFC using callback
-    Sub Feature Code: UI_Common_PM_UPI_Collect_success_callback_before_expiry_AutoRefund_Enabled_HDFC
-    Sub Feature Description: Performing a  UPI Collect success callback via HDFC before expiry when auto refund is enabled
+    Sub Feature Code: UI_Common_PM_UPI_Collect_success_callback_before_expiry_AutoRefund_Disabled_HDFC
+    Sub Feature Description: Performing a  UPI Collect success callback via HDFC before expiry when auto refund is Disabled
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -2090,7 +2084,7 @@ def test_common_100_103_021():
 @pytest.mark.appVal
 def test_common_100_103_022():
     """
-    Sub Feature Code: UI_Common_PM_UPI_Collect_Expired__Two_Callback_AutoRefundEnabled_HDFC
+    Sub Feature Code: UI_Common_PM_UPI_Collect_Expired_Two_Callback_AutoRefundEnabled_HDFC
     Sub Feature Description: Verification of a two upi callback after expiry via HDFC when auto refund is enalbed.
     100: Payment Method
     103: RemotePay
@@ -3056,10 +3050,11 @@ def test_common_100_103_022():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_103_023():
     """
-    Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_before__expiry_HDFC_AutoRefund_Disabled
-    Sub Feature Description: Verification of a two  UPI Collect success callback via HDFC beofre expiry the  when autorefund is disabled
+    Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_before_expiry_HDFC_AutoRefund_Disabled
+    Sub Feature Description: Verification of a two  UPI Collect success callback via HDFC before expiry the  when autorefund is disabled
     100: Payment Method
     103: RemotePay
     022: TC022
@@ -3125,12 +3120,6 @@ def test_common_100_103_023():
             print(
                 colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
                         'cyan'))
-
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
 
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')

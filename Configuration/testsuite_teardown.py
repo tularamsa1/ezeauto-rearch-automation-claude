@@ -103,6 +103,7 @@ def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_p
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
+
     if payment_gateway == "TPSL":
         query = "update merchant_pg_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
@@ -115,3 +116,8 @@ def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_p
                                                                               "password": portal_pw})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
+                                                                          "password": portal_pw})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting precondition DB refresh is : {response}")
