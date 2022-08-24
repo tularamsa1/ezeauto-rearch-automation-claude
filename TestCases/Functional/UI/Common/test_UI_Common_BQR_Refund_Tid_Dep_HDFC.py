@@ -318,7 +318,8 @@ def test_common_100_102_101():
                     "refunded_txn_type": "REFUND",
                     "refunded_mid": mid, "refunded_tid": tid,
                     "refunded_org_code": org_code,
-                    "original_auth_code": auth_code,"date": date, "refunded_date": refund_date
+                    "original_auth_code": auth_code,"date": date, "refunded_date": refund_date,
+                    "device_serial": str(device_serial)
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -345,6 +346,7 @@ def test_common_100_102_101():
                 auth_code_api_original = response["authCode"]
                 date_api_original = response["postingDate"]
                 order_id_original= response["orderNumber"]
+                device_serial_api = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
@@ -391,7 +393,8 @@ def test_common_100_102_101():
                     "refunded_org_code": org_code_api_refunded,
                     "original_auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
-                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded)
+                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded),
+                    "device_serial": str(device_serial_api)
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
@@ -903,7 +906,8 @@ def test_common_100_102_103():
                     "refunded_txn_type": "REFUND",
                     #"refunded_mid": mid, "refunded_tid": tid,
                     "refunded_org_code": org_code,
-                    "original_auth_code": auth_code,"date": date, "refunded_date": refund_date
+                    "original_auth_code": auth_code,"date": date, "refunded_date": refund_date,
+                    "device_serial": str(device_serial)
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -930,6 +934,7 @@ def test_common_100_102_103():
                 auth_code_api_original = response["authCode"]
                 date_api_original = response["postingDate"]
                 order_id_original= response["orderNumber"]
+                device_serial_api = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
@@ -976,7 +981,8 @@ def test_common_100_102_103():
                     "refunded_org_code": org_code_api_refunded,
                     "original_auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
-                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded)
+                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded),
+                    "device_serial": str(device_serial_api)
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
@@ -1488,7 +1494,8 @@ def test_common_100_102_104():
                     "refunded_txn_type": "REFUND",
                     #"refunded_mid": mid, "refunded_tid": tid,
                     "refunded_org_code": org_code,
-                    "original_auth_code": auth_code,"date": date, "refunded_date": refund_date
+                    "original_auth_code": auth_code,"date": date, "refunded_date": refund_date,
+                    "device_serial": str(device_serial)
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -1516,6 +1523,7 @@ def test_common_100_102_104():
                 auth_code_api_original = response["authCode"]
                 date_api_original = response["postingDate"]
                 order_id_original= response["orderNumber"]
+                device_serial_api = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
@@ -1563,7 +1571,8 @@ def test_common_100_102_104():
                     "refunded_org_code": org_code_api_refunded,
                     "original_auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
-                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded)
+                    "refunded_date": date_time_converter.from_api_to_datetime_format(date_api_refunded),
+                    "device_serial": str(device_serial_api)
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")

@@ -121,8 +121,7 @@ def test_common_100_102_061():
             response = APIProcessor.send_request(api_details)
             print("Response received:", response)
             logger.debug(f"Response received for checkstatus of transaction is : {response}")
-            app_driver.reset()
-            logger.info("Restarting MPOSX app after perfroming checkstatus of the transaction")
+
             logger.info(f"Execution is completed for the test case : {testcase_id}")
             #
             # ------------------------------------------------------------------------------------------------
@@ -166,6 +165,8 @@ def test_common_100_102_061():
                 logger.info("Starting App Validation for the test case")
                 # --------------------------------------------------------------------------------------------
                 expectedAppValues = {"Payment Status": "STATUS:AUTHORIZED", "Payment mode": "UPI", "Payment Txn ID": txn_id, "Payment Amt": str(amount)}
+                app_driver.reset()
+                logger.info("Restarting MPOSX app after perfroming checkstatus of the transaction")
                 login_page = LoginPage(app_driver)
                 logger.debug(f"Loging in again with user name : {username}")
                 login_page.perform_login(username, password)
@@ -476,13 +477,12 @@ def test_common_100_102_070():
             query = "select * from txn where org_code='"+org_code+"' and id='"+txn_id+"'"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             query = "select * from txn where org_code='"+org_code+"' and id LIKE '"+datetime.utcnow().strftime('%y%m%d')+"%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_new = result["id"].iloc[0]
-            posting_date_new = result['posting_date'].values[0]
-            modified_date_new = result['modified_time'].values[0]
+            posting_date_new = result['created_time'].values[0]
             customer_name_new = result['customer_name'].values[0]
             payer_name_new = result['payer_name'].values[0]
             # ------------------------------------------------------------------------------------------------
@@ -525,7 +525,7 @@ def test_common_100_102_070():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
-                date_and_time_new = date_time_converter.to_app_format(modified_date_new)
+                date_and_time_new = date_time_converter.to_app_format(posting_date_new)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED", "date": date_and_time,
@@ -649,7 +649,7 @@ def test_common_100_102_070():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -670,7 +670,7 @@ def test_common_100_102_070():
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api,"settle_status": settlement_status_api,
