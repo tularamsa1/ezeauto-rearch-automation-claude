@@ -472,6 +472,9 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
         else:
             print("No present receipt info found")
             logger.warning("No present receipt info found")
+            GlobalVariables.str_chargeslip_val_result = "Fail"
+            check.equal("Charge slip expected", "Chargeslip unavailable", "Unable to read the contents of chargeslip "
+                                                                          "page. Receipt may not have loaded.")
     print("=======   CHARGE SLIP Validation Completed    =======")
     return {
         "fields_that_are_not_present": fields_that_are_not_present,
@@ -608,9 +611,14 @@ def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_detai
                     logger.debug(valid_receipt_url)
                     print(valid_receipt_url)
                     validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
+                else:
+                    check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
             else:
                 logger.warning("Receipt URL value is empty. therefore unable to continue.")
-        
+                check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
+        else:
+            logger.warning("Receipt url is not available.")
+            check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
     except Exception as e:
         logger.error(f"Unable to fetch receipt url from Error: {e}")
     if not global_variables.str_chargeslip_val_result == "Fail":
