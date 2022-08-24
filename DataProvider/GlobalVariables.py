@@ -20,6 +20,7 @@ startLineNumberMiddlewware = ''
 startLineNumberCnpware = ''
 start_line_number_config = ''
 start_line_number_closedloop = ''
+start_line_number_q2 = ''
 
 
 apiLogs = False
@@ -28,6 +29,7 @@ cnpWareLogs = False
 middleWareLogs = False
 config_logs = False
 closedloop_logs = False
+q2_logs = False
 
 # portalSS = False
 

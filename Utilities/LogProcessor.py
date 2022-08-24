@@ -75,6 +75,17 @@ def fetch_closed_loop_logs():
         data_buffer += line
     return data_buffer
 
+def fetch_q2_logs():
+    data_buffer = ''
+    start_line_no = GlobalVariables.start_line_number_q2
+    logfile_name = Base_Actions.pathToLogFile("q2_logfile")
+    end_line_no = get_no_of_log_lines(logfile_name)
+    command = "awk " + "'NR>=" + start_line_no + " && " + "NR<=" + end_line_no + " { print }' " + logfile_name
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
+    return data_buffer
+
 
 # To fetch config apps logs
 def fetch_config_logs():
@@ -156,6 +167,8 @@ def startLineNoOfServerLogFile():
             GlobalVariables.startLineNumberCnpware = get_no_of_log_lines(Base_Actions.pathToLogFile('cnpware'))
         if Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
             GlobalVariables.start_line_number_closedloop = get_no_of_log_lines(Base_Actions.pathToLogFile('closedloop_logfile'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+            GlobalVariables.start_line_number_q2 = get_no_of_log_lines(Base_Actions.pathToLogFile('q2_logfile'))
         #========================================================================================
         # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
         if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
