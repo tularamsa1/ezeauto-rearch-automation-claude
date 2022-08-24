@@ -1018,7 +1018,7 @@ def test_common_100_101_079():
             issuer_code = result['issuer_code'].values[0]
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and orig_txn_id='" + str(original_txn_id) + "';"
@@ -1030,7 +1030,7 @@ def test_common_100_101_079():
             new_txn_org_code = result['org_code'].values[0]
             new_txn_type = result['txn_type'].values[0]
             new_external_ref = result['external_ref'].values[0]
-            new_posting_date = result['posting_date'].values[0]
+            new_posting_date = result['modified_time'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
@@ -1097,7 +1097,7 @@ def test_common_100_101_079():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_and_time_api = response["postingDate"]
+                date_and_time_api = response["createdTime"]
                 txn_rrn_api = response["rrNumber"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -1118,7 +1118,7 @@ def test_common_100_101_079():
                 new_txn_mid_api = response["mid"]
                 new_txn_tid_api = response["tid"]
                 new_txn_txn_type_api = response["txnType"]
-                new_txn_date_and_time_api = response["postingDate"]
+                new_txn_date_and_time_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
                                      "pmt_mode": payment_mode_api,
@@ -1621,7 +1621,7 @@ def test_common_100_101_080():
             issuer_code = result['issuer_code'].values[0]
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and orig_txn_id='" + str(original_txn_id) + "';"
@@ -1633,7 +1633,7 @@ def test_common_100_101_080():
             new_txn_org_code = result['org_code'].values[0]
             new_txn_type = result['txn_type'].values[0]
             new_external_ref = result['external_ref'].values[0]
-            new_posting_date = result['posting_date'].values[0]
+            new_posting_date = result['created_time'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
@@ -1704,7 +1704,7 @@ def test_common_100_101_080():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        date_and_time_api = elements["postingDate"]
+                        date_and_time_api = elements["createdTime"]
                         txn_rrn_api = elements["rrNumber"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1729,7 +1729,7 @@ def test_common_100_101_080():
                         new_txn_mid_api = elements["mid"]
                         new_txn_tid_api = elements["tid"]
                         new_txn_txn_type_api = elements["txnType"]
-                        new_txn_date_and_time_api = elements["postingDate"]
+                        new_txn_date_and_time_api = elements["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
                                      "pmt_mode": payment_mode_api,
