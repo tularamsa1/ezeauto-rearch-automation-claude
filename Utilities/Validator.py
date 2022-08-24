@@ -44,7 +44,9 @@ def validateAgainstPortal(expectedPortal, actualPortal):
                         GlobalVariables.str_portal_val_result = "Fail"
                 print_validation_result(expectedPortal, actualPortal, lst_passed_fields, lst_failed_fields)
         else:
-            print("Number of keys in actual and expected dictionaries are different.")
+            print("Number of keys in actual and expected dictionaries are different in Portal validation.")
+            check.equal(len(expectedPortal), len(actualPortal), "Number of keys in actual and expected dictionaries "
+                                                                "are different in Portal validation.")
             print("Expected dict: ", expectedPortal)
             print("Actual dict: ", actualPortal)
             GlobalVariables.str_portal_val_result = "Fail"
@@ -92,7 +94,9 @@ def validateAgainstAPP(expectedApp, actualApp):
                         GlobalVariables.str_app_val_result = "Fail"
                 print_validation_result(expectedApp, actualApp, lst_passed_fields, lst_failed_fields)
         else:
-            print("Number of keys in actual and expected dictionaries are different.")
+            print("Number of keys in actual and expected dictionaries are different in APP validation.")
+            check.equal(len(expectedApp), len(actualApp), "Number of keys in actual and expected dictionaries "
+                                                                "are different in App validation.")
             print("Expected dict: ", expectedApp)
             print("Actual dict: ", actualApp)
             GlobalVariables.str_app_val_result = "Fail"
@@ -138,7 +142,9 @@ def validationAgainstAPI(expectedAPI, actualAPI):
                         GlobalVariables.str_api_val_result = "Fail"
                 print_validation_result(expectedAPI, actualAPI, lst_passed_fields, lst_failed_fields)
         else:
-            print("Number of keys in actual and expected dictionaries are different.")
+            print("Number of keys in actual and expected dictionaries are different in API validation.")
+            check.equal(len(expectedAPI), len(actualAPI), "Number of keys in actual and expected dictionaries "
+                                                          "are different in API validation.")
             print("Expected dict: ", expectedAPI)
             print("Actual dict: ", actualAPI)
             GlobalVariables.str_api_val_result = "Fail"
@@ -184,7 +190,9 @@ def validateAgainstDB(expectedDB, actualDB):
                         GlobalVariables.str_db_val_result = "Fail"
                 print_validation_result(expectedDB, actualDB, lst_passed_fields, lst_failed_fields)
         else:
-            print("Number of keys in actual and expected dictionaries are different.")
+            print("Number of keys in actual and expected dictionaries are different in DB validation.")
+            check.equal(len(expectedDB), len(actualDB), "Number of keys in actual and expected dictionaries "
+                                                          "are different in DB validation.")
             print("Expected dict: ", expectedDB)
             print("Actual dict: ", actualDB)
             GlobalVariables.str_db_val_result = "Fail"
@@ -232,7 +240,9 @@ def validateAgainstUI(expectedUI, actualUI):
                         GlobalVariables.str_ui_val_result = "Fail"
                 print_validation_result(expectedUI, actualUI, lst_passed_fields, lst_failed_fields)
         else:
-            print("Number of keys in actual and expected dictionaries are different.")
+            print("Number of keys in actual and expected dictionaries are different in UI validation.")
+            check.equal(len(expectedUI), len(actualUI), "Number of keys in actual and expected dictionaries "
+                                                        "are different in UI validation.")
             print("Expected dict: ", expectedUI)
             print("Actual dict: ", actualUI)
             GlobalVariables.str_ui_val_result = "Fail"

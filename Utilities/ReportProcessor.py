@@ -220,6 +220,9 @@ def revert_excel_global_variables():
     GlobalVariables.str_app_val_result = "N/A"
     GlobalVariables.str_ui_val_result = "N/A"
     GlobalVariables.str_chargeslip_val_result = "N/A"
+    GlobalVariables.str_api_response_code = "N/A"
+    GlobalVariables.str_api_response_time = "N/A"
+    GlobalVariables.str_api_response_size = "N/A"
     # GlobalVariables.apiLogs = False
     # GlobalVariables.portalLogs = False
     # GlobalVariables.cnpWareLogs = False
@@ -280,6 +283,9 @@ def setStylesForExcel():
     sheet.column_dimensions['Q'].width = 22 # Log Coll Time (sec)
     sheet.column_dimensions['R'].width = 18 # Total Time (sec)
     sheet.column_dimensions['S'].width = 18 # Rerun Attempts
+    sheet.column_dimensions['T'].width = 20  # API resp code
+    sheet.column_dimensions['U'].width = 20  # API resp time
+    sheet.column_dimensions['V'].width = 20  # API resp size
 
     # Set background color and font style
     fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')
