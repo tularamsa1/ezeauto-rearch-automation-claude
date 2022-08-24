@@ -777,7 +777,7 @@ def test_sa_100_102_073():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(modified_date_new)
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time,
                                    'AUTH CODE': auth_code_new}

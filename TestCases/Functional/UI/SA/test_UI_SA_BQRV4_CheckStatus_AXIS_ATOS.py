@@ -66,18 +66,15 @@ def test_sa_100_102_078():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='AXIS'"
+        query = "select * from upi_merchant_config where org_code='" + org_code + "' " \
+                                                             "and status = 'ACTIVE' and bank_code='AXIS'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
-        logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
-        query = "select * from upi_merchant_config where bank_code = 'AXIS' AND status = 'ACTIVE' AND org_code = " \
-                "'" + str(org_code) + "'; "
-        logger.debug(f"Query to fetch upi_mc_id and vpa from upi_merchant_config : {query}")
-        result = DBProcessor.getValueFromDB(query)
         vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
-        logger.debug(f"Fetching vpa, upi_mc_id from database for current merchant:{vpa}, {upi_mc_id}")
+        logger.debug(f"Fetching mid, tid, vpa, upi_mc_id from database for current merchant:{mid},{tid}"
+                     f"{vpa}, {upi_mc_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -389,18 +386,15 @@ def test_sa_100_102_079():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        query = "select mid, tid from terminal_info where org_code='" + org_code + "' and acquirer_code='AXIS'"
+        query = "select * from upi_merchant_config where org_code='" + org_code + "' " \
+                                                             "and status = 'ACTIVE' and bank_code='AXIS'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
-        logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
-        query = "select * from upi_merchant_config where bank_code = 'AXIS' AND status = 'ACTIVE' AND org_code = " \
-                "'" + str(org_code) + "'; "
-        logger.debug(f"Query to fetch upi_mc_id and vpa from upi_merchant_config : {query}")
-        result = DBProcessor.getValueFromDB(query)
         vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
-        logger.debug(f"Fetching vpa, upi_mc_id from database for current merchant:{vpa}, {upi_mc_id}")
+        logger.debug(f"Fetching mid, tid, vpa, upi_mc_id from database for current merchant:{mid},{tid}"
+                     f"{vpa}, {upi_mc_id}")
 
         api_details = DBProcessor.get_api_details('QRExpiryTime',request_body={"username": portal_username, "password": portal_password, "settingForOrgCode":org_code})
         api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
@@ -761,7 +755,7 @@ def test_sa_100_102_079():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(modified_date_new)
                 expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time,
                                    'AUTH CODE': auth_code_new}

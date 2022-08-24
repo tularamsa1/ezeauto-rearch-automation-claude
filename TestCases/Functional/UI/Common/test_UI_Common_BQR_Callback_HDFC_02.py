@@ -124,14 +124,16 @@ def test_common_100_102_011():
                 f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
+                                                      request_body={"PRIMARY_ID": txn_id,
+                                                                    "TXN_ID": txn_id,"TXN_AMOUNT": str(amount),
                                                                     "AUTH_CODE": auth_code, "RRN": rrn,
                                                                     "MERCHANT_PAN": bqr_m_pan})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
             query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to auth code from database : {query}")
+            logger.debug(f"Query to fetch auth code, rrn, posting date from database : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Result of query is :{result}")
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
             posting_date = result['posting_date'].values[0]
@@ -629,12 +631,14 @@ def test_common_100_102_086():
             txn_id = result["id"].iloc[0]
             auth_code = "AE" + txn_id.split('E')[1]
             rrn = "RE" + txn_id.split('E')[1]
-            txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
+            txn_id_new = 'T'+ txn_id[1:]
+            #txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
+                                                      request_body={"PRIMARY_ID": txn_id,  "TXN_ID": txn_id,
+                                                                    "TXN_AMOUNT": str(amount),
                                                                     "AUTH_CODE": auth_code, "RRN": rrn,
                                                                     "MERCHANT_PAN": bqr_m_pan})
             response = APIProcessor.send_request(api_details)
@@ -653,7 +657,7 @@ def test_common_100_102_086():
                                                                     "AUTH_CODE": auth_code, "RRN": rrn,
                                                                     "MERCHANT_PAN": bqr_m_pan, "TXN_ID": txn_id_new})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"Fetching API Response for call back : {response}")
+            logger.debug(f"Fetching API Response for 2nd call back : {response}")
             query = "select * from txn where org_code='"+org_code+"' and external_ref='"+order_id+"' " \
                                                                     "order by created_time desc limit 1"
             logger.debug(f"Query to auth code from database : {query}")
@@ -1154,11 +1158,9 @@ def test_common_100_102_087():
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
-            auth_code_new = "AE" + txn_id.split('E')[1]
-            rrn_new = "RE" + txn_id.split('E')[1]
-            txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
-            auth_code = "Ahy78"
-            rrn = "Rhy78"
+            auth_code = "AE" + txn_id.split('E')[1]
+            rrn = "RE" + txn_id.split('E')[1]
+            #txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
@@ -1180,7 +1182,7 @@ def test_common_100_102_087():
             logger.debug(f"Fetching posting date for {txn_id} : {posting_date} ")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' " \
-                                                                                                          "order by created_time desc limit 1"
+                                                        "order by created_time desc limit 1"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_new = result["id"].iloc[0]
@@ -1193,8 +1195,9 @@ def test_common_100_102_087():
 
             auth_code_new_2 = "AE" + txn_id.split('E')[1]
             rrn_new_2 = "RE" + txn_id.split('E')[1]
+            txn_id_new_2 = 'T' + txn_id[1:]
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": txn_id, "TXN_ID": txn_id,
+                                                      request_body={"PRIMARY_ID": txn_id, "TXN_ID": txn_id_new_2,
                                                                     "TXN_AMOUNT": str(amount),
                                                                     "AUTH_CODE": auth_code_new_2, "RRN": rrn_new_2,
                                                                     "MERCHANT_PAN": bqr_m_pan})
@@ -1511,7 +1514,7 @@ def test_common_100_102_087():
                                       "bqr_bank_code_new": "HDFC",
                                       "bqr_merchant_config_id_new": bqr_mc_id, "bqr_txn_primary_id_new": txn_id_new,
                                       "bqr_merchant_pan_new": bqr_m_pan,
-                                      "bqr_rrn_new": str(rrn), "bqr_org_code_new": org_code,
+                                      "bqr_rrn_new": str(rrn_new), "bqr_org_code_new": org_code,
                                       "txn_amt_new_2": amount, "pmt_mode_new_2": "BHARATQR",
                                       "pmt_status_new_2": "REFUND_PENDING",
                                       "pmt_state_new_2": "REFUND_PENDING", "acquirer_code_new_2": "HDFC",
@@ -1842,11 +1845,9 @@ def test_common_100_102_088():
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
-            auth_code_new = "AE" + txn_id.split('E')[1]
-            rrn_new = "RE" + txn_id.split('E')[1]
-            txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
-            auth_code = "Ahy78"
-            rrn = "Rhy78"
+            auth_code = "AE" + txn_id.split('E')[1]
+            rrn = "RE" + txn_id.split('E')[1]
+            #txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
@@ -1881,8 +1882,9 @@ def test_common_100_102_088():
 
             auth_code_new_2 = "AE" + txn_id.split('E')[1]
             rrn_new_2 = "RE" + txn_id.split('E')[1]
+            txn_id_new_2 = 'T' + txn_id[1:]
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": txn_id, "TXN_ID": txn_id,
+                                                      request_body={"PRIMARY_ID": txn_id, "TXN_ID": txn_id_new_2,
                                                                     "TXN_AMOUNT": str(amount),
                                                                     "AUTH_CODE": auth_code_new_2, "RRN": rrn_new_2,
                                                                     "MERCHANT_PAN": bqr_m_pan})
