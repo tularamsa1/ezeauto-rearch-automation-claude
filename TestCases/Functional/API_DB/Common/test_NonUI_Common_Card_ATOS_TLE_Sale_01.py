@@ -30,7 +30,7 @@ def test_common_100_104_001():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
