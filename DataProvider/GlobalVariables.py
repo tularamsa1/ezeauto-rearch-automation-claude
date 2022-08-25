@@ -104,7 +104,10 @@ collection_amt = 0
 collection_count = 0
 
 
-#Card Bin info
-HDFC_VISA_DEBIT_BIN = "700001"
+
+
+
+
+
 
 
