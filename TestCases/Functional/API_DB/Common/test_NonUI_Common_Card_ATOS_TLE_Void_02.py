@@ -29,7 +29,7 @@ def test_common_100_104_019():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -235,7 +235,7 @@ def test_common_100_104_020():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -441,7 +441,7 @@ def test_common_100_104_021():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -647,7 +647,7 @@ def test_common_100_104_022():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -853,7 +853,7 @@ def test_common_100_104_023():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
@@ -1059,7 +1059,7 @@ def test_common_100_104_024():
 
         GlobalVariables.setupCompletedSuccessfully = True
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
