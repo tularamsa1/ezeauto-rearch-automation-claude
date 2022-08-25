@@ -1,6 +1,7 @@
 import os
+import subprocess
 from subprocess import Popen, PIPE
-
+from DataProvider import GlobalVariables
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -90,3 +91,133 @@ def start_emulator(avd_name):
     return os.system(cmd)
 
 
+def get_device_model(deviceID:str) -> str:
+    '''
+    This method is used to get the model name of the device
+
+    :param deviceID:str
+    :returns: str
+    '''
+    device_model = None
+    try:
+        if check_if_emulator(deviceID):
+            device_model = 'emulator'
+        else:
+            adb_command = f"adb -s {deviceID} shell getprop | grep 'ro.product.model'"
+            adb_output = subprocess.check_output(adb_command, shell=True)
+            adb_output = str(adb_output,'utf-8')
+            device_model = adb_output.split(':')[1].strip().replace('[', "").replace(']', "")
+    except Exception as e:
+        logger.error(f"Unable to get the device model name due to error {str(e)}")
+    return device_model
+
+
+def check_if_emulator(device_id:str)-> bool:
+    '''
+    This method is used to get the check if the device is a real device or emulator
+
+    :param device_id:str
+    :returns: str
+    '''
+    is_emulator = None
+    try:
+        adb_command = f"adb -s {device_id} shell getprop | grep 'ro.build.characteristics'"
+        adb_output = subprocess.check_output(adb_command, shell= True)
+        adb_output = str(adb_output, 'utf-8')
+        result = adb_output.split(':')[1].strip().replace('[', "").replace(']', "")
+        if result == 'emulator':
+            logger.info(f"{device_id} is an emulator.")
+            is_emulator = True
+        else:
+            logger.info(f"{device_id} is not an emulator.")
+            is_emulator = False
+    except Exception as e:
+        logger.error(f"Unable to check the property of device due to error {str(e)}. Hence checking the name.")
+        if device_id.__contains__("emulator"):
+            is_emulator =True
+        else:
+            is_emulator = False
+    return is_emulator
+
+def get_firmware_version(device_id:str) -> str:
+    '''
+    This method is used to get the firmware version of the device
+
+    :param device_id:str
+    :returns: str
+    '''
+    firmware_version = None
+    try:
+        if not check_if_emulator(device_id):
+            adb_command = f"adb -s {device_id} shell getprop | grep 'ro.custom.build.version'"
+            adb_output = subprocess.check_output(adb_command, shell=True)
+            adb_output = str(adb_output,'utf-8')
+            firmware_version = adb_output.split(':')[1].strip().replace('[', "").replace(']', "")
+            if firmware_version == "":
+                try:
+                    adb_command = f"adb -s {device_id} shell getprop | grep 'ro.product.version'"
+                    adb_output = subprocess.check_output(adb_command, shell=True)
+                    adb_output = str(adb_output, 'utf-8')
+                    firmware_version = adb_output.split(':')[1].strip().replace('[', "").replace(']', "")
+                except Exception as e:
+                    logger.error(f"Unable to get the device model name due to error {str(e)}")
+    except Exception as e:
+        logger.error(f"Unable to get the device model name due to error {str(e)}")
+        if str(e).__contains__("returned non-zero exit status"):
+            try:
+                adb_command = f"adb -s {device_id} shell getprop | grep 'ro.product.version'"
+                adb_output = subprocess.check_output(adb_command, shell=True)
+                adb_output = str(adb_output, 'utf-8')
+                firmware_version = adb_output.split(':')[1].strip().replace('[', "").replace(']', "")
+            except Exception as e:
+                logger.error(f"Unable to get the device model name due to error {str(e)}")
+    return firmware_version
+
+def get_mpos_version(device_id:str) -> str:
+    """
+    This method is used to get the MPOS version installed in the device.
+    :param device_id:str
+    :returns: str
+    """
+    mpos_version = None
+    try:
+        adb_command = f"adb -s {device_id} shell dumpsys package com.ezetap.basicapp | grep versionName"
+        adb_output = subprocess.check_output(adb_command, shell=True)
+        adb_output = str(adb_output, 'utf-8').strip()
+        mpos_version=adb_output.replace("versionName=","")
+    except Exception as e:
+        logger.error(f"Unable to get the mpos version due to error {str(e)}")
+    return mpos_version
+
+def get_sa_version(device_id:str) -> str:
+    """
+    This method is used to get the SA version installed in the device.
+    :param device_id:str
+    :returns: str
+    """
+    sa_version = None
+    try:
+        adb_command = f"adb -s {device_id} shell dumpsys package com.ezetap.service.demo | grep versionName"
+        adb_output = subprocess.check_output(adb_command, shell=True)
+        adb_output = str(adb_output, 'utf-8').strip()
+        sa_version=adb_output.replace("versionName=","")
+    except Exception as e:
+        logger.error(f"Unable to get the sa version due to error {str(e)}")
+    return sa_version
+
+def set_report_variables():
+    """
+    This method is used to set the values for variables that print device and app details in the report.
+    """
+    device_model = get_device_model(GlobalVariables.str_device_id)
+    firmware_version = get_firmware_version(GlobalVariables.str_device_id)
+    mpos_version = get_mpos_version(GlobalVariables.str_device_id)
+    sa_version = get_sa_version(GlobalVariables.str_device_id)
+    if device_model:
+        GlobalVariables.str_device_model = device_model
+    if firmware_version:
+        GlobalVariables.str_firmware_version = firmware_version
+    if mpos_version:
+        GlobalVariables.str_MPOS_version = mpos_version
+    if sa_version:
+        GlobalVariables.str_SA_version = sa_version
