@@ -551,12 +551,14 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
 
 def get_json_response_of_txn_details(txn_id, username, password):
     env_base_url = get_config("APIs", "baseurl")
-    url = f"{env_base_url}/api/2.0/txn/details"
-    payload = json.dumps({"username": username, "password": password, "txnId": txn_id})
+    url = f"{env_base_url}/api/2.0/txn/list"
+    payload = json.dumps({"username": username, "password": password})
     headers = {'Content-Type': 'application/json'}
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code == 200:
         json_response = response.json()
+        json_response = [x for x in json_response["txns"] if x["txnId"] == txn_id][0]
+
     elif response.status_code == 500:
         raise TransactionAPIJsonResponseError(
             f"Unable to fetch txn details due to Interal Server Error \

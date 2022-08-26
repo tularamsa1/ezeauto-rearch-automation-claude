@@ -538,14 +538,12 @@ def test_common_100_102_053():
             payer_name = result['payer_name'].values[0]
             posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
-            logger.info("Opening Portal to perform refund of the transaction")
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": username, "password": password,
                                                                     "amount": amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for transaction details api is : {response}")
-            print(response)
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
