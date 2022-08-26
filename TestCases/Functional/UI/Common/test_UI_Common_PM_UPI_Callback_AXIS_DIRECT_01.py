@@ -1680,7 +1680,7 @@ def test_common_100_101_054():
             issuer_code = result['issuer_code'].values[0]
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            orig_posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and orig_txn_id='" + str(original_txn_id) + "';"
@@ -1692,7 +1692,7 @@ def test_common_100_101_054():
             new_txn_org_code = result['org_code'].values[0]
             new_txn_type = result['txn_type'].values[0]
             new_external_ref = result['external_ref'].values[0]
-            new_txn_posting_date = result['posting_date'].values[0]
+            created_time_2 = result['created_time'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
@@ -1740,8 +1740,8 @@ def test_common_100_101_054():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(orig_posting_date)
-                new_txn_date_and_time = date_time_converter.to_app_format(new_txn_posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
+                new_txn_date_and_time = date_time_converter.to_app_format(created_time_2)
                 expected_app_values = {
                     "payment_mode": "UPI",
                     "payment_status": "EXPIRED",
@@ -1866,8 +1866,8 @@ def test_common_100_101_054():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(orig_posting_date)
-                new_txn_date = date_time_converter.db_datetime(new_txn_posting_date)
+                date = date_time_converter.db_datetime(created_time)
+                new_txn_date = date_time_converter.db_datetime(created_time_2)
                 expected_api_values = {"pmt_status": "EXPIRED",
                                        "txn_amt": amount, "pmt_mode": "UPI",
                                        "pmt_state": "EXPIRED",
@@ -1905,7 +1905,7 @@ def test_common_100_101_054():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -1925,7 +1925,7 @@ def test_common_100_101_054():
                 new_txn_mid_api = response["mid"]
                 new_txn_tid_api = response["tid"]
                 new_txn_txn_type_api = response["txnType"]
-                new_txn_date_api = response["postingDate"]
+                new_txn_date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
                                      "pmt_mode": payment_mode_api,

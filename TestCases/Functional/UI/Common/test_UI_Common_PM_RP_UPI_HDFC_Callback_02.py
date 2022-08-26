@@ -1269,7 +1269,7 @@ def test_common_100_103_063():
                     "settlement_status": "FAILED",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "upi_txn_type_db": "COLLECT",
+                    "upi_txn_type_db": "REMOTE_PAY_UPI_INTENT",
                     "upi_bank_code_db": "HDFC",
                     "upi_mc_id_db": upi_mc_id,
 
@@ -1282,7 +1282,7 @@ def test_common_100_103_063():
                     "new_acquirer_code_1": "HDFC",
                     "new_bank_code_1": "HDFC",
                     "new_payment_gateway_1": "HDFC",
-                    "new_upi_txn_type_db_1": "COLLECT",
+                    "new_upi_txn_type_db_1": "REMOTE_PAY_UPI_INTENT",
                     "new_upi_bank_code_db_1": "HDFC",
                     "new_upi_mc_id_db_1": upi_mc_id,
 
@@ -1295,7 +1295,7 @@ def test_common_100_103_063():
                     "new_acquirer_code_2": "HDFC",
                     "new_bank_code_2": "HDFC",
                     "new_payment_gateway_2": "HDFC",
-                    "new_upi_txn_type_db_2": "COLLECT",
+                    "new_upi_txn_type_db_2": "REMOTE_PAY_UPI_INTENT",
                     "new_upi_bank_code_db_2": "HDFC",
                     "new_upi_mc_id_db_2": upi_mc_id,
                     "mid": mid,
@@ -1464,8 +1464,8 @@ def test_common_100_103_063():
 @pytest.mark.appVal
 def test_common_100_103_064():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Success_Callback_After_Expiry_AutoRefundEnabled_HDFC
-    Sub Feature Description: Verification of a two upi callback after expiry via HDFC when auto refund is enalbed.
+    Sub Feature Code: UI_Common_PM_RP_UPI_Expired_Callback_AutoRefundEnabled_HDFC
+    Sub Feature Description: Verification of a one upi  expired callback via HDFC when auto refund is enalbed.
     100: Payment Method
     103: RemotePay
     064: TC064

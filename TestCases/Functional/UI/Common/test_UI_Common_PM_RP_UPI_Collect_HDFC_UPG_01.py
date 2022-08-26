@@ -1003,8 +1003,8 @@ def test_common_100_103_035():
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "false"
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
@@ -1429,8 +1429,8 @@ def test_common_100_103_036():
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "false"
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")

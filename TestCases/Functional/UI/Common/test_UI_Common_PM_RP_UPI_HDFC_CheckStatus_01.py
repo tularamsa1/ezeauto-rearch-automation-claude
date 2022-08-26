@@ -96,13 +96,13 @@ def test_common_100_103_003():
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
-            # ui_driver = TestSuiteSetup.initialize_portal_driver()
-            app_driver = TestSuiteSetup.initialize_firefox_driver()
+            ui_driver = TestSuiteSetup.initialize_portal_driver()
+            # app_driver = TestSuiteSetup.initialize_firefox_driver()
             paymentLinkUrl = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
-            app_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(app_driver)
+            ui_driver.get(paymentLinkUrl)
+            remotePayUpiTxn = remotePayTxnPage(ui_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()

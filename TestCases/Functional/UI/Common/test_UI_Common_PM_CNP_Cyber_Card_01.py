@@ -81,11 +81,7 @@ def test_common_100_103_001():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
+
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
@@ -174,9 +170,9 @@ def test_common_100_103_001():
             logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
             logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_gateway}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             cnpware_txn_rrn_number = result['rr_number'].values[0]
             cnpware_txn_acquirer_code = result['acquirer_code'].values[0]
@@ -1423,9 +1419,9 @@ def test_common_100_103_012():
             refund_auth_code = result['auth_code'].values[0]
             logger.debug(f"refund_auth_code from txn table after refund: {refund_auth_code}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id_after_refund + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_id_after_refund + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             txn_id_after_refund_cnpware = result['txn_id'].values[0]
             amount_after_refund = result['amount'].values[0]
             paymentMode_after_refund = result['payment_mode'].values[0]
@@ -1486,9 +1482,9 @@ def test_common_100_103_012():
             logger.debug(f"payment_gateway from txn table : {original_payment_gateway_after_refund}")
             logger.debug(f"settlement_status from txn table : {original_settlement_status_after_refund}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='"+original_txn_id+"';"
+            query = "select * from cnpware_txn where txn_id='"+original_txn_id+"';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             original_txn_id_cnpware = result['txn_id'].values[0]
             original_amount_cnpware = result['amount'].values[0]
             original_paymentMode_cnpware = result['payment_mode'].values[0]
