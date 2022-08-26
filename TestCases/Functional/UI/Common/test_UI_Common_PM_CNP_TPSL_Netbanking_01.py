@@ -147,9 +147,9 @@ def test_common_100_103_038():
             cnp_payment_flow = result['payment_flow'].values[0]
             logger.debug(f"Query result, cnp_payment_flow : {cnp_payment_flow}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
@@ -556,9 +556,9 @@ def test_common_100_103_039():
             cnp_payment_flow = result['payment_flow'].values[0]
             logger.debug(f"Query result, cnp_payment_flow : {cnp_payment_flow}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
@@ -989,9 +989,9 @@ def test_common_100_103_040():
             cnp_payment_flow = result['payment_flow'].values[0]
             logger.debug(f"Query result, cnp_payment_flow : {cnp_payment_flow}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]

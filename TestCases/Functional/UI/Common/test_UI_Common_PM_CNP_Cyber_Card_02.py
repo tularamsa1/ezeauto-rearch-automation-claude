@@ -90,30 +90,33 @@ def test_common_100_103_007():
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
-            paymentLinkUrl = response['paymentLink']
+            payment_link_url = response['paymentLink']
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             logger.info("Initiating a Remote pay Link")
-            ui_driver.get(paymentLinkUrl)
+            ui_driver.get(payment_link_url)
             logger.info("Remote pay Link initiation completed and opening in a browser")
-            remotePayTxn = remotePayTxnPage(ui_driver)
-            remotePayTxn.clickOnDebitCardToExpand()
+            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn.clickOnDebitCardToExpand()
             logger.info("Enter Debit card details")
-            remotePayTxn.enterNameOnTheCard("Sandeep")
-            remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")
-            remotePayTxn.enterDebitCardExpiryMonth("12")
-            remotePayTxn.enterDebitCardExpiryYear("2050")
-            remotePayTxn.enterCreditCardCvv("111")
-            remotePayTxn.clickOnProceedToPay()
-            remotePayTxn.clickOnSubmitButton()
-            # successMessage = str(remotePayTxn.succcessScreenMessage())
-            # logger.info(f"Your success Message is:  {successMessage}")
-            # if successMessage == expectedSuccessMessage:
+            remote_pay_txn.enterNameOnTheCard("Sandeep")
+            remote_pay_txn.enterCreditCardNumber("4000 0000 0000 0002")
+            remote_pay_txn.enterDebitCardExpiryMonth("12")
+            remote_pay_txn.enterDebitCardExpiryYear("2050")
+            remote_pay_txn.enterCreditCardCvv("111")
+            remote_pay_txn.clickOnProceedToPay()
+            remote_pay_txn.clickOnSubmitButton()
+
+            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn.waitForExpiryElement()
+            # expiryMessage = str(remotePayTxn.expiryMessage())
+            # logger.info(f"Your expiryMessage is:  {expiryMessage}")
+            # logger.info(f"Your expiryMessage is:  {expectedExpiryMessage}")
+            # if expiryMessage == (expectedExpiryMessage):
             #     pass
             # else:
-            #     logger.info(successMessage != expectedSuccessMessage)
-            #     raise Exception("Success Messages are not mactching")
+            #     raise Exception("Expiry Messages are not matching.")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -203,9 +206,9 @@ def test_common_100_103_007():
             # logger.debug(f"Query result, cnp_txn_amount : {cnp_txn_amount}")
             logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_gateway}")
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_txn_id + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             cnpware_txn_rrn_number = result['rr_number'].values[0]
             cnpware_txn_acquirer_code = result['acquirer_code'].values[0]
@@ -1294,9 +1297,9 @@ def test_common_100_103_013():
             logger.debug(f"Query result, cnp_payment_flow : {cnp_payment_flow}")
 
 
-            query = "select * from cnpware_demo.cnpware_txn where txn_id='" + txn_id + "';"
+            query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_payment_gateway = result['payment_gateway'].values[0]
             logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
             cnpware_payment_flow = result['payment_flow'].values[0]
