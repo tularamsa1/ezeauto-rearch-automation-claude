@@ -1462,7 +1462,7 @@ def test_common_100_103_059():
 @pytest.mark.appVal
 def test_common_100_103_060():
     """
-    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after__expiry_HDFC_AutoRefund_Disabled
+    Sub Feature Code: UI_Common_PM_UPI_failed_callback_after_expiry_HDFC_AutoRefund_Disabled
     Sub Feature Description: Performing a UPI  failed callback via HDFC after expiry the when auto refund is disabled
     100: Payment Method
     103: RemotePay

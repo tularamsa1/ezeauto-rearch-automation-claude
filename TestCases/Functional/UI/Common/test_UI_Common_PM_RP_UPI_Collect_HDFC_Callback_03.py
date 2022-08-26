@@ -29,7 +29,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_024():
     """
     Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_before_expiry_HDFC_AutoRefund_Enabled
-    Sub Feature Description: Performing two  UPI Collect success callback via HDFC before expiry the  when autorefund is enabled
+    Sub Feature Description: Performing two UPI Collect success callback via HDFC before expiry the when autorefund is enabled
     100: Payment Method
     103: RemotePay
     024: TC024
@@ -813,7 +813,7 @@ def test_common_100_103_024():
 def test_common_100_103_025():
     """
     Sub Feature Code: UI_Common_PM_2_UPI_Collect_success_callback_after_expiry_HDFC_AutoRefund_Enabled
-    Sub Feature Description: Performing two  UPI Collect success callback via HDFC after expiry the  when autorefund is enabled
+    Sub Feature Description: Performing two  UPI Collect success callback via HDFC after expiry the when autorefund is enabled
     100: Payment Method
     103: RemotePay
     025: TC025
@@ -1069,8 +1069,8 @@ def test_common_100_103_025():
             new_txn_issuer_code_1 = result['issuer_code'].values[0]
             new_txn_org_code_txn_1 = result['org_code'].values[0]
             new_txn_type_1 = result['txn_type'].values[0]
-            new_txn_modified_time_1 = result['modified_time'].values[0]
-            new_txn_posting_date_api_1 = result['posting_date'].values[0]
+            txn_created_time_1 = result['created_time'].values[0]
+            txn_created_time_api_1 = result['created_time'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_2 + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -1083,8 +1083,9 @@ def test_common_100_103_025():
             new_txn_issuer_code_2 = result['issuer_code'].values[0]
             new_txn_org_code_txn_2 = result['org_code'].values[0]
             new_txn_type_2 = result['txn_type'].values[0]
-            new_txn_posting_date_app = result['created_time'].values[0]
-            new_txn_posting_date_api = result['posting_date'].values[0]
+            txn_created_time_app_2 = result['created_time'].values[0]
+            txn_created_time_api_2 = result['created_time'].values[0]
+            auth_code_2 = result['auth_code'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
@@ -1134,8 +1135,8 @@ def test_common_100_103_025():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(orig_posting_date)
-                new_txn_date_and_time_1 = date_time_converter.to_app_format(new_txn_modified_time_1)
-                new_txn_date_and_time_2 = date_time_converter.to_app_format(new_txn_posting_date_app)
+                new_txn_date_and_time_1 = date_time_converter.to_app_format(txn_created_time_1)
+                new_txn_date_and_time_2 = date_time_converter.to_app_format(txn_created_time_app_2)
                 expected_app_values = {
                     "pmt_mode_original": "UPI",
                     "pmt_status_original": "FAILED",
@@ -1331,8 +1332,8 @@ def test_common_100_103_025():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(orig_posting_date)
-                new_txn_date_1 = date_time_converter.db_datetime(new_txn_posting_date_api_1)
-                new_txn_date_2 = date_time_converter.db_datetime(new_txn_posting_date_api)
+                new_txn_date_1 = date_time_converter.db_datetime(txn_created_time_api_1)
+                new_txn_date_2 = date_time_converter.db_datetime(txn_created_time_api_2)
                 expected_api_values = {"pmt_status": "FAILED",
                                        "txn_amt": amount,
                                        "pmt_mode": "UPI",
@@ -1390,7 +1391,7 @@ def test_common_100_103_025():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -1410,7 +1411,7 @@ def test_common_100_103_025():
                 new_txn_mid_api_1 = response["mid"]
                 new_txn_tid_api_1 = response["tid"]
                 new_txn_txn_type_api_1 = response["txnType"]
-                new_txn_date_api_1 = response["postingDate"]
+                new_txn_date_api_1 = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
@@ -1430,7 +1431,7 @@ def test_common_100_103_025():
                 new_txn_mid_api_2 = response["mid"]
                 new_txn_tid_api_2 = response["tid"]
                 new_txn_type_api_2 = response["txnType"]
-                new_txn_date_api_2 = response["postingDate"]
+                new_txn_date_api_2 = response["createdTime"]
                 #
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
                                      "pmt_mode": payment_mode_api,
@@ -1748,6 +1749,26 @@ def test_common_100_103_025():
                 GlobalVariables.str_portal_val_result = 'Fail'
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time_app_2)
+                expected_values = {'PAID BY:': 'UPI',
+                                   'merchant_ref_no': 'Ref # ' + str(order_id),
+                                   'RRN': str(callback_2_rrn),
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                                   'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': auth_code_2}
+                logger.debug(f"expected_values : {expected_values}")
+                receipt_validator.perform_charge_slip_validations(new_txn_id_2,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))
