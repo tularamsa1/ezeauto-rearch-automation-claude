@@ -104,7 +104,7 @@ def test_common_100_101_101():
             result = DBProcessor.getValueFromDB(query)
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             query = "select * from upi_txn where txn_id='" + txn_id + "'"
             logger.debug(f"Query to fetch data from upi_txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -128,7 +128,7 @@ def test_common_100_101_101():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "PENDING",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -160,7 +160,7 @@ def test_common_100_101_101():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = elements["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
                 order_id_api = response["orderNumber"]
                 qr_code_uri_api = response["qrCodeUri"]

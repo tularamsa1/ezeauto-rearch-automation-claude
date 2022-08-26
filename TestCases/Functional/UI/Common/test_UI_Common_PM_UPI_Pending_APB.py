@@ -1,10 +1,8 @@
 import random
-import shutil
 import sys
 from datetime import datetime
 
 import pytest
-from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
@@ -367,8 +365,7 @@ def test_common_100_101_070():
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
-        print(
-            colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
     # -------------------------------------------End of Validation---------------------------------------------

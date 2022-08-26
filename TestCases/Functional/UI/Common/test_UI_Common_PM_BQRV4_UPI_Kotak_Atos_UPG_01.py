@@ -1,4 +1,5 @@
 import random
+import string
 import sys
 from datetime import datetime
 
@@ -108,14 +109,15 @@ def test_common_100_101_127():
             txn_secondary_id = "AGU00079TID"+str(random.randint(11111, 99999))+"E"
             auth_code = "AE" + str(random.randint(111111111, 999999999))
             rrn = "RE" + str(random.randint(111111111, 999999999))
-
+            customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
             api_details = DBProcessor.get_api_details('callbackUpiKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
                 "txn_amount": str(amount),
                 "settlement_amount": str(amount),
                 "auth_code": auth_code, "ref_no": rrn,
-                "merchant_vpa": vpa
+                "merchant_vpa": vpa,
+                "customer_vpa": customer_vpa,
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -359,7 +361,7 @@ def test_common_100_101_127():
                     "ipr_txn_amt": amount,
                     "ipr_mid": mid,
                     "ipr_tid": tid,
-                    "ipr_vpa": vpa,
+                    "ipr_vpa": customer_vpa,
                     "ipr_config_id": upi_mc_id,
                     "ipr_pg_merchant_id": pg_merchant_id,
                 }
@@ -625,13 +627,15 @@ def test_common_100_101_128():
             auth_code = "AE" + str(random.randint(110000000, 110099999))
             rrn = "RE" + str(random.randint(110000000, 110099999))
             amount = amount+1
+            customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
             api_details = DBProcessor.get_api_details('callbackUpiKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
                 "txn_amount": str(amount),
                 "settlement_amount": str(amount),
                 "auth_code": auth_code, "ref_no": rrn,
-                "merchant_vpa": vpa
+                "merchant_vpa": vpa,
+                "customer_vpa": customer_vpa,
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -879,7 +883,7 @@ def test_common_100_101_128():
                     "ipr_txn_amt": amount,
                     "ipr_mid": mid,
                     "ipr_tid": tid,
-                    "ipr_vpa": vpa,
+                    "ipr_vpa": customer_vpa,
                     "ipr_config_id": upi_mc_id,
                     "ipr_pg_merchant_id": pg_merchant_id,
                     "ipr_error_msg": "Actual ="+str(amount) + " Expected ="+str(amount-1) + ".00",

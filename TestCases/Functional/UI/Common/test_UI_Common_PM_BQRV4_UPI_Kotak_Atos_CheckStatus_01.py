@@ -196,7 +196,7 @@ def test_common_100_101_122():
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
-
+                login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
@@ -345,8 +345,8 @@ def test_common_100_101_122():
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    "bqr_merchant_pan": merchant_pan,
-                    "bqr_rrn": rrn,
+                    # "bqr_merchant_pan": merchant_pan,
+                    # "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
                 }
@@ -414,8 +414,8 @@ def test_common_100_101_122():
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    "bqr_merchant_pan": bqr_merchant_pan_db,
-                    "bqr_rrn": bqr_rrn_db,
+                    # "bqr_merchant_pan": bqr_merchant_pan_db,
+                    # "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
                 }
@@ -673,7 +673,7 @@ def test_common_100_101_123():
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
-
+                login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
@@ -822,8 +822,8 @@ def test_common_100_101_123():
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    "bqr_merchant_pan": merchant_pan,
-                    "bqr_rrn": rrn,
+                    # "bqr_merchant_pan": merchant_pan,
+                    # "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
                 }
@@ -891,8 +891,8 @@ def test_common_100_101_123():
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    "bqr_merchant_pan": bqr_merchant_pan_db,
-                    "bqr_rrn": bqr_rrn_db,
+                    # "bqr_merchant_pan": bqr_merchant_pan_db,
+                    # "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
                 }
