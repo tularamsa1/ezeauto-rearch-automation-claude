@@ -2531,7 +2531,7 @@ def test_common_100_101_119():
     TC naming code description:
     100: Payment Method
     101: UPI
-    115: TC115
+    119: TC119
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

@@ -1999,8 +1999,8 @@ def test_common_100_101_112():
                     "partial_refund_txn_amt_1": str(partial_refunded_amount),
                     "partial_refund_txn_amt_2": str(full_refund_amount),
                     "upi_txn_status": "AUTHORIZED_REFUNDED",
-                    "partial_refund_upi_txn_status_1": "AUTHORIZED_REFUNDED",
-                    "partial_refund_upi_txn_status_2": "AUTHORIZED_REFUNDED",
+                    "partial_refund_upi_txn_status_1": "REFUNDED",
+                    "partial_refund_upi_txn_status_2": "REFUNDED",
                     "acquirer_code": "HDFC",
                     "partial_refund_acquirer_code_1": "HDFC",
                     "partial_refund_acquirer_code_2": "HDFC",
@@ -2077,7 +2077,7 @@ def test_common_100_101_112():
                 # partial_refund_device_serial_db_1 = result['device_serial'].values[0]
                 partial_refund_order_id_db_1 = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + partial_refund_txn_id_1 + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -2104,7 +2104,7 @@ def test_common_100_101_112():
                 partial_refund_device_serial_db_2 = result['device_serial'].values[0]
                 partial_refund_order_id_db_2 = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + partial_refund_txn_id_2 + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
