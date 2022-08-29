@@ -1030,8 +1030,7 @@ def test_common_100_101_053():
             logger.debug(f"generated random rrn number is : {rrn}")
             ref_id = '211115084892E01' + str(rrn)
 
-            logger.debug(
-                f"replacing the Txn_id with {original_txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
+            logger.debug(f"replacing the Txn_id with {original_txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
             api_details = DBProcessor.get_api_details('axis_direct_upi_success_curl',
                                                       curl_data={'merchantTransactionId': original_txn_id,
                                                                  'transactionAmount': amount,

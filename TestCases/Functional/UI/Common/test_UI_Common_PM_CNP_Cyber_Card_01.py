@@ -505,6 +505,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
@@ -569,16 +570,16 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             remote_pay_txn.enterCreditCardCvv("111")
             remote_pay_txn.clickOnProceedToPay()
 
-            # remote_pay_txn.wait_for_failed_message()
-            # failed_message = str(remote_pay_txn.failedScreenMessage())
-            # logger.info(f"Your failed Message is:  {failed_message}")
+            remote_pay_txn.wait_for_failed_message()
+            failed_message = str(remote_pay_txn.failedScreenMessage())
+            logger.info(f"Your failed Message is:  {failed_message}")
 
-            # if failed_message == expected_failed_message:
-            #     pass
-            # else:
-            #     logger.info(f"expected failed message is: {failed_message}")
-            #     logger.info(f"actual failed message is: {expected_failed_message}")
-            #     raise Exception(f"failed Messages are not mactching")
+            if failed_message == expected_failed_message:
+                pass
+            else:
+                logger.info(f"expected failed message is: {failed_message}")
+                logger.info(f"actual failed message is: {expected_failed_message}")
+                raise Exception(f"failed Messages are not mactching")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1352,18 +1353,20 @@ def test_common_100_103_012():
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
-            ui_driver.get(paymentLinkUrl)
-            remotePayTxn = remotePayTxnPage(ui_driver)
-            remotePayTxn.clickOnCreditCardToExpand()
-            remotePayTxn.enterNameOnTheCard("Sandeep")
-            remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")
-            remotePayTxn.enterCreditCardExpiryMonth("12")
-            remotePayTxn.enterCreditCardExpiryYear("2050")
-            remotePayTxn.enterCreditCardCvv("111")
-            remotePayTxn.clickOnProceedToPay()
-            remotePayTxn.clickOnSubmitButton()
-            successMessage = str(remotePayTxn.succcessScreenMessage())
+            portal_driver = TestSuiteSetup.initialize_portal_driver()
+            portal_driver.get(paymentLinkUrl)
+            remote_pay_txn = remotePayTxnPage(portal_driver)
+            remote_pay_txn.clickOnCreditCardToExpand()
+            remote_pay_txn.enterNameOnTheCard("Sandeep")
+            remote_pay_txn.enterCreditCardNumber("4000 0000 0000 0002")
+            remote_pay_txn.enterCreditCardExpiryMonth("12")
+            remote_pay_txn.enterCreditCardExpiryYear("2050")
+            remote_pay_txn.enterCreditCardCvv("111")
+            remote_pay_txn.clickOnProceedToPay()
+            remote_pay_txn.clickOnSubmitButton()
+
+            remote_pay_txn.wait_for_success_message()
+            successMessage = str(remote_pay_txn.succcessScreenMessage())
             logger.info(f"Your expected success message is:  {successMessage}")
             logger.info(f"Your expiryMessage is:  {expectedMessage}")
             if successMessage == expectedMessage:
@@ -1714,7 +1717,7 @@ def test_common_100_103_012():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_datetime_after_refund)
-                expected_chargeslip_values = {'PAID BY:': 'UPI',
+                expected_chargeslip_values = {"payment_option":"REFUND",
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
                                               'RRN': str(rrn_cnp_txn),
                                               'BASE AMOUNT:': "Rs." + str(amount) + ".00",

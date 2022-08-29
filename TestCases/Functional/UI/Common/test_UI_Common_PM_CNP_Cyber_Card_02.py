@@ -107,16 +107,14 @@ def test_common_100_103_007():
             remote_pay_txn.enterCreditCardCvv("111")
             remote_pay_txn.clickOnProceedToPay()
             remote_pay_txn.clickOnSubmitButton()
-
-            remote_pay_txn = remotePayTxnPage(ui_driver)
-            remote_pay_txn.waitForExpiryElement()
-            # expiryMessage = str(remotePayTxn.expiryMessage())
-            # logger.info(f"Your expiryMessage is:  {expiryMessage}")
-            # logger.info(f"Your expiryMessage is:  {expectedExpiryMessage}")
-            # if expiryMessage == (expectedExpiryMessage):
-            #     pass
-            # else:
-            #     raise Exception("Expiry Messages are not matching.")
+            remote_pay_txn.wait_for_success_message()
+            success_message = str(remote_pay_txn.succcessScreenMessage())
+            logger.info(f"Your success message is:  {success_message}")
+            logger.info(f"Your expected success message is:  {expectedSuccessMessage}")
+            if success_message == expectedSuccessMessage:
+                pass
+            else:
+                raise Exception("Success messages are not matching.")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -210,25 +208,23 @@ def test_common_100_103_007():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             DBProcessor.getValueFromDB(query,"cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
+            logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_rrn_number = result['rr_number'].values[0]
+            logger.debug(f"Query result, cnpware_txn_rrn_number : {cnpware_txn_rrn_number}")
             cnpware_txn_acquirer_code = result['acquirer_code'].values[0]
+            logger.debug(f"Query result, cnpware_txn_acquirer_code : {cnpware_txn_acquirer_code}")
             cnpware_txn_card_type = result['payment_card_type'].values[0]
+            logger.debug(f"Query result, cnpware_txn_card_type : {cnpware_txn_card_type}")
             cnpware_txn_external_ref = result['external_ref'].values[0]
+            logger.debug(f"Query result, cnpware_txn_external_ref : {cnpware_txn_external_ref}")
             cnpware_txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, cnpware_txn_auth_code : {cnpware_txn_auth_code}")
             cnpware_txn_state = result['state'].values[0]
-            cnpware_txn_amount = result['amount'].values[0]
+            logger.debug(f"Query result, cnpware_txn_state : {cnpware_txn_state}")
             cnpware_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
             cnpware_payment_flow = result['payment_flow'].values[0]
 
-            logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
-            logger.debug(f"Query result, cnpware_txn_rrn_number : {cnpware_txn_rrn_number}")
-            logger.debug(f"Query result, cnpware_txn_acquirer_code : {cnpware_txn_acquirer_code}")
-            logger.debug(f"Query result, cnpware_txn_card_type : {cnpware_txn_card_type}")
-            logger.debug(f"Query result, cnpware_txn_external_ref : {cnpware_txn_external_ref}")
-            logger.debug(f"Query result, cnpware_txn_auth_code : {cnpware_txn_auth_code}")
-            logger.debug(f"Query result, cnpware_txn_state : {cnpware_txn_state}")
-            logger.debug(f"Query result, cnpware_txn_amount : {cnpware_txn_amount}")
-            logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             ReportProcessor.get_TC_Exe_Time()  # Used for identifying the end time of test case execution.
