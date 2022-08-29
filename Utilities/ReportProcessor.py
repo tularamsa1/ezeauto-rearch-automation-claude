@@ -285,7 +285,7 @@ def setStylesForExcel():
     sheet.column_dimensions['U'].width = 20  # API resp time
     sheet.column_dimensions['V'].width = 20  # API resp size
     sheet.column_dimensions['W'].width = 20  # Device Model
-    sheet.column_dimensions['X'].width = 20  # Firmware version
+    sheet.column_dimensions['X'].width = 30  # Firmware version
     sheet.column_dimensions['Y'].width = 20  # MPOS version
     sheet.column_dimensions['Z'].width = 20  # SA version
 
