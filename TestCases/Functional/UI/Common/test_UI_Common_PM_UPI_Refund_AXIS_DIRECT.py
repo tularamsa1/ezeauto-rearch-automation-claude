@@ -2,10 +2,10 @@ import random
 import shutil
 import sys
 from datetime import datetime
-# REMOVE SPACE
+
 import pytest
 from termcolor import colored
-# REMOVE SPACE
+
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage

@@ -60,7 +60,7 @@ def test_common_100_101_122():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -535,7 +535,7 @@ def test_common_100_101_123():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------

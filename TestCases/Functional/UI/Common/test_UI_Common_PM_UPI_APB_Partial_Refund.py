@@ -691,7 +691,7 @@ def test_common_100_101_140():
 def test_common_100_101_141():
     """
     Sub Feature Code: UI_Common_PM_UPI_two_times_successful_partial_refund_via_api_APB
-    Sub Feature Description: Verification of two times partial refund for upi txn via api for Tid Dep APB
+    Sub Feature Description: Verification of two times partial refund for upi txn via api for APB
     TC naming code description:
     100: Payment Method
     101: UPI
