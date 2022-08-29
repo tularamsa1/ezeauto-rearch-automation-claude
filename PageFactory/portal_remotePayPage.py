@@ -28,7 +28,7 @@ class remotePayTxnPage(BasePage):
     txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Remote payment link has expired, Use a different m')]")
     txt_maxAttempts = (By.XPATH,"//h3[contains(text(),'Maximum number of attempts for this url exceeded. ')]")
 
-    txt_failedMessage = (By.XPATH,"// h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
+    txt_failedMessage = (By.XPATH,"//h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
     btn_remotePayUpi = (By.XPATH,"//mat-panel-title[contains(text(),'UPI')]")
     btn_remotePayLaunchUpi = (By.XPATH,"//button[contains(text(),'Launch a UPI app ')]")
     btn_remotePayCancelUpi = (By.XPATH,"//button[@data-target='#confirmCancel']")
@@ -105,6 +105,9 @@ class remotePayTxnPage(BasePage):
 
     def clickOnSubmitButton(self):
         self.perform_click_cnp(self.btn_submitButton)
+
+    def wait_for_success_message(self):
+        self.wait_for_visibility_of_Element(self.btn_successMessage)
 
     def succcessScreenMessage(self):
         return self.fetch_text(self.btn_successMessage)
