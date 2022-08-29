@@ -13,8 +13,7 @@ from selenium import webdriver
 from appium import webdriver as app_webdriver
 from datetime import datetime
 import chromedriver_autoinstaller
-import DataProvider.GlobalConstants
-from Utilities import ReportProcessor, ResourceAssigner
+from Utilities import ResourceAssigner, android_utilities
 from PageFactory import Base_Actions
 from Configuration import TestSuiteSetup
 from Utilities import ConfigReader, DirectoryCreator, LogProcessor, Rerun
@@ -22,7 +21,6 @@ from pathlib import Path
 import openpyxl
 import pytest
 from termcolor import colored
-
 from DataProvider import GlobalVariables
 from Utilities import ExcelProcessor
 from Utilities.ReportProcessor import revert_excel_global_variables, setStylesForExcel, \
@@ -203,6 +201,22 @@ def updatingHighLevelReportAfterEachTCS():
                 columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'API Resp Size(kb)')
                 sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_api_response_size
                 print("API Response Size: ", GlobalVariables.str_api_response_size)
+
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Device Model')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_device_model
+                print("Device Model: ", GlobalVariables.str_device_model)
+
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Firmware Version')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_firmware_version
+                print("Firmware Version: ", GlobalVariables.str_firmware_version)
+
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'MPOS Version')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_MPOS_version
+                print("MPOS Version: ", GlobalVariables.str_MPOS_version)
+
+                columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'SA Version')
+                sheet.cell(row=rowNumber, column=columnNumber).value = GlobalVariables.str_SA_version
+                print("SA Version: ", GlobalVariables.str_SA_version)
 
                 if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and ConfigReader.read_config(
                         "Validations", "bool_rerun_immediately").lower() == "false") \
@@ -472,8 +486,7 @@ def method_setup(request):
         print(colored("Teardown Timer started in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         print("Function teardown level")
-        # Write data to dataframe
-        # write_TC_Details_To_Dataframe()
+        android_utilities.set_report_variables()
 
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
