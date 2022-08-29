@@ -156,7 +156,7 @@ def getValueFromDB(query:str, db_name: str = None):
     """
     This method is used to run a query and fetch the results from the specified db.
     Only following values should be passed for the db_name:
-    1. information schema
+    1. information_schema
     2. acquirer
     3. auth
     4. closedloop
@@ -176,7 +176,7 @@ def getValueFromDB(query:str, db_name: str = None):
 
     :param query:str db_name: str
     """
-    dev11_db_names = {"information schema": "information_schema", "acquirer":"acquirer_demo",\
+    dev11_db_names = {"information_schema": "information_schema", "acquirer":"acquirer_demo",\
                       "auth": "auth_demo", "closedloop": "closedloop_demo", "cnpware": "cnpware_demo", \
                       "config": "config_apps", "ea": "ea", "elm": "elm", "eze_upi": "eze_upi", \
                       "ezetap_demo": "ezetap_demo", "khata": "khata", "mware": "mware_demo", \
@@ -298,3 +298,10 @@ def get_api_details_list_from_excel() ->list:
     else:
         logger.warning("There are no entries in the api_details.xlsx file")
     return api_list
+
+def get_db_name_from_excel(db_name:str) -> str:
+    """
+    This method is used to get the name of the db in the specific environment.
+    :param db_name:str
+    :return: str
+    """
