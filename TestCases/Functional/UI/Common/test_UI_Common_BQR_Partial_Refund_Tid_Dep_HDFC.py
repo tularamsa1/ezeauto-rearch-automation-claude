@@ -128,7 +128,7 @@ def test_common_100_102_102():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
@@ -150,7 +150,7 @@ def test_common_100_102_102():
             txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['posting_date'].values[0]
+            posting_date_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
                  f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
 
@@ -345,7 +345,7 @@ def test_common_100_102_102():
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
-                date_api_original = response["postingDate"]
+                date_api_original = response["createdTime"]
                 order_id_original= response["orderNumber"]
                 device_serial_api = response["deviceSerial"]
 
@@ -365,7 +365,7 @@ def test_common_100_102_102():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                date_api_refunded = response["postingDate"]
+                date_api_refunded = response["createdTime"]
                 order_id_refunded = response["orderNumber"]
 
                 actual_api_values = {
@@ -933,7 +933,7 @@ def test_common_100_102_107():
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
-                date_api_original = response["postingDate"]
+                date_api_original = response["createdTime"]
                 order_id_original= response["orderNumber"]
                 device_serial_api = response["deviceSerial"]
 
@@ -953,7 +953,7 @@ def test_common_100_102_107():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                date_api_refunded = response["postingDate"]
+                date_api_refunded = response["createdTime"]
                 order_id_refunded = response["orderNumber"]
 
                 actual_api_values = {
@@ -1171,7 +1171,8 @@ def test_common_100_102_107():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN':"" ,
-                                   'BASE AMOUNT:': "Rs." + str(refund_amount),  'date': txn_date,'time': txn_time}
+                                   'BASE AMOUNT:': "Rs." + "{:.2f}".format(refund_amount),
+                                   'date': txn_date,'time': txn_time}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_values)
