@@ -128,7 +128,7 @@ def test_common_100_102_101():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
@@ -149,7 +149,7 @@ def test_common_100_102_101():
             txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['posting_date'].values[0]
+            posting_date_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
                  f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
 
@@ -173,7 +173,7 @@ def test_common_100_102_101():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_refunded)
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
                     "refund_pmt_status": "STATUS:REFUNDED",
@@ -344,7 +344,7 @@ def test_common_100_102_101():
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
-                date_api_original = response["postingDate"]
+                date_api_original = response["createdTime"]
                 order_id_original= response["orderNumber"]
                 device_serial_api = response["deviceSerial"]
 
@@ -365,7 +365,7 @@ def test_common_100_102_101():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                date_api_refunded = response["postingDate"]
+                date_api_refunded = response["createdTime"]
                 order_id_refunded = response["orderNumber"]
 
                 actual_api_values = {
