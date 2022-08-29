@@ -41,7 +41,8 @@ def prepareTestCaseDetailsDataFrame(path):
         'OverAll Results',
         'TC Execution', 'API Val', 'DB Val', 'Portal Val', 'App Val', 'UI Val', 'ChargeSlip Val',
         'Execution Time (sec)', 'Validation Time (sec)', 'Log Coll Time (sec)', 'Total Time (sec)',
-        'Rerun Attempts',  'API Resp Code', 'API Resp Time(sec)', 'API Resp Size(kb)']
+        'Rerun Attempts',  'API Resp Code', 'API Resp Time(sec)', 'API Resp Size(kb)', 'Device Model',
+        'Firmware Version', 'MPOS Version', 'SA Version']
 
     df_overall_testcases_list = pd.read_excel(path, index_col=0) \
         [['Test Case ID', 'Sub Feature Code', 'File Name', 'Directory Name', 'Execute']]
@@ -488,6 +489,7 @@ def initialize_app_driver(request):
     function_start_time = datetime.datetime.now()
     test_case_id = request
     device_details = ResourceAssigner.getDeviceFromDB(test_case_id)
+    GlobalVariables.str_device_id = device_details['DeviceId']
     appium_server_details = ResourceAssigner.getAppiumServerFromDB(test_case_id)
     print(test_case_id + " will be using the device " + device_details['DeviceId'])
     print(test_case_id + " will be running on the appium server port " + appium_server_details['PortNumber'])

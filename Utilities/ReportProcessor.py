@@ -207,10 +207,8 @@ def createStatusTable():
 def revert_excel_global_variables():
     GlobalVariables.EXCEL_TC_Exe_Starting_Time = 00
     GlobalVariables.EXCEL_TC_Exe_completed_time = 00
-
     GlobalVariables.EXCEL_TC_Val_Starting_Time = 00
     GlobalVariables.EXCEL_TC_Val_completed_time = 00
-
     GlobalVariables.EXCEL_TC_LogColl_Starting_Time = 00
     GlobalVariables.EXCEL_TC_LogColl_completed_time = 00
     GlobalVariables.EXCEL_TC_Execution = "Skip"
@@ -223,10 +221,10 @@ def revert_excel_global_variables():
     GlobalVariables.str_api_response_code = "N/A"
     GlobalVariables.str_api_response_time = "N/A"
     GlobalVariables.str_api_response_size = "N/A"
-    # GlobalVariables.apiLogs = False
-    # GlobalVariables.portalLogs = False
-    # GlobalVariables.cnpWareLogs = False
-    # GlobalVariables.middleWareLogs = False
+    GlobalVariables.str_device_model = "N/A"
+    GlobalVariables.str_firmware_version = "N/A"
+    GlobalVariables.str_MPOS_version = "N/A"
+    GlobalVariables.str_SA_version = "N/A"
 
 
 def setStylesForExcel():
@@ -286,6 +284,10 @@ def setStylesForExcel():
     sheet.column_dimensions['T'].width = 20  # API resp code
     sheet.column_dimensions['U'].width = 20  # API resp time
     sheet.column_dimensions['V'].width = 20  # API resp size
+    sheet.column_dimensions['W'].width = 20  # Device Model
+    sheet.column_dimensions['X'].width = 30  # Firmware version
+    sheet.column_dimensions['Y'].width = 20  # MPOS version
+    sheet.column_dimensions['Z'].width = 20  # SA version
 
     # Set background color and font style
     fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')

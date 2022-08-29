@@ -1102,13 +1102,13 @@ def test_common_100_103_016():
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
-            logger.debug(f"Query to fetch max Attempts from the DB : {query}")
+            logger.debug(f"Query to fetch txn timeout from the DB : {query}")
             try:
                 result = DBProcessor.getValueFromDB(query)
                 print("result: ", result)
                 print("type of result: ", type(result))
                 org_setting_value = int(result['setting_value'].values[0])
-                logger.info(f"max upi attempt for {org_code} is {org_setting_value}")
+                logger.info(f"txn timeout for {org_code} is {org_setting_value}")
             except Exception as e:
                 org_setting_value = None
                 print(e)
@@ -1118,7 +1118,7 @@ def test_common_100_103_016():
             try:
                 defaultValue = DBProcessor.getValueFromDB(query1)
                 setting_value = int(defaultValue['setting_value'].values[0])
-                logger.info(f"max upi attempt is: {setting_value}")
+                logger.info(f"txn timeout attempt is: {setting_value}")
             except NameError as e:
                 setting_value = None
                 print(e)
@@ -1157,16 +1157,7 @@ def test_common_100_103_016():
             logger.debug(f"Query result, Txn_id_expired and rrn_expired : {original_txn_id} and {original_rrn}")
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
-            # ref_id = '211115084892E01' + str(rrn)
-            # status = result['status'].values[0]
             created_time = result['created_time'].values[0]
-            # settlement_status = result['settlement_status'].values[0]
-            # mid = result['mid'].values[0]
-            # tid = result['tid'].values[0]
-            # acquirer_code = result['acquirer_code'].values[0]
-            # issuer_code = result['issuer_code'].values[0]
-            # org_code_txn = result['org_code'].values[0]
-            # txn_type = result['txn_type'].values[0]
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -1217,6 +1208,7 @@ def test_common_100_103_016():
             result = DBProcessor.getValueFromDB(query)
             new_txn_id = result['id'].values[0]
             auth_code = result['auth_code'].values[0]
+            new_created_time = result['created_time'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1527,7 +1519,7 @@ def test_common_100_103_016():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(new_created_time)
                 expected_values = {'PAID BY:': 'UPI',
                                    'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'RRN': str(rrn),

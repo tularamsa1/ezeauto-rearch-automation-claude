@@ -61,7 +61,7 @@ def test_sa_100_101_120():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -335,8 +335,8 @@ def test_sa_100_101_120():
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    "bqr_merchant_pan": merchant_pan,
-                    "bqr_rrn": rrn,
+                    # "bqr_merchant_pan": merchant_pan,
+                    # "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
                 }
@@ -378,8 +378,8 @@ def test_sa_100_101_120():
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                bqr_rrn_db = result["rrn"].iloc[0]
+                # bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
+                # bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
 
                 actual_db_values = {
@@ -404,8 +404,8 @@ def test_sa_100_101_120():
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    "bqr_merchant_pan": bqr_merchant_pan_db,
-                    "bqr_rrn": bqr_rrn_db,
+                    # "bqr_merchant_pan": bqr_merchant_pan_db,
+                    # "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
                 }
@@ -526,7 +526,7 @@ def test_sa_100_101_121():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -801,8 +801,8 @@ def test_sa_100_101_121():
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    "bqr_merchant_pan": merchant_pan,
-                    "bqr_rrn": rrn,
+                    # "bqr_merchant_pan": merchant_pan,
+                    # "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
                 }
@@ -844,8 +844,8 @@ def test_sa_100_101_121():
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                bqr_rrn_db = result["rrn"].iloc[0]
+                # bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
+                # bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
 
                 actual_db_values = {
@@ -870,8 +870,8 @@ def test_sa_100_101_121():
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    "bqr_merchant_pan": bqr_merchant_pan_db,
-                    "bqr_rrn": bqr_rrn_db,
+                    # "bqr_merchant_pan": bqr_merchant_pan_db,
+                    # "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
                 }

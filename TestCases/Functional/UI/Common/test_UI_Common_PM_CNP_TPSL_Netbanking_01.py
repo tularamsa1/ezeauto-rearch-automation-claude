@@ -863,6 +863,7 @@ def test_common_100_103_040():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
