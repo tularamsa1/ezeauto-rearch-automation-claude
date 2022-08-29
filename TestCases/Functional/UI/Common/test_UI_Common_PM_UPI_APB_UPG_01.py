@@ -1085,7 +1085,7 @@ def test_common_100_101_115():
             result = DBProcessor.getValueFromDB(query)
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            posting_date = result['posting_date'].values[0]
+            txn_created_time = result['created_time'].values[0]
             external_ref = result['external_ref'].values[0]
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1101,8 +1101,8 @@ def test_common_100_101_115():
             result = DBProcessor.getValueFromDB(query)
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"query result, refund_txn_type : {refund_txn_type} ")
-            refund_posting_date = result['posting_date'].values[0]
-            logger.debug(f"query result, refund_posting_date : {refund_posting_date} ")
+            txn_created_time_2 = result['created_time'].values[0]
+            logger.debug(f"query result, refund_posting_date : {txn_created_time_2} ")
             refund_external_ref = result['external_ref'].values[0]
             logger.debug(f"query result, refund_external_ref : {refund_external_ref} ")
 
@@ -1135,8 +1135,8 @@ def test_common_100_101_115():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                refund_date_and_time = date_time_converter.to_app_format(refund_posting_date)
+                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                refund_date_and_time = date_time_converter.to_app_format(txn_created_time_2)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_AUTHORIZED",
@@ -1245,8 +1245,8 @@ def test_common_100_101_115():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                refund_date = date_time_converter.db_datetime(refund_posting_date)
+                date = date_time_converter.db_datetime(txn_created_time)
+                refund_date = date_time_converter.db_datetime(txn_created_time_2)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -1292,7 +1292,7 @@ def test_common_100_101_115():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        date_api = elements["postingDate"]
+                        date_api = elements["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1315,7 +1315,7 @@ def test_common_100_101_115():
                         # refund_mid_api = elements["mid"]
                         # refund_tid_api = elements["tid"]
                         refund_txn_type_api = elements["txnType"]
-                        refund_date_api = elements["postingDate"]
+                        refund_date_api = elements["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1377,8 +1377,8 @@ def test_common_100_101_115():
                     "refund_upi_txn_type": "REFUND",
                     "refund_upi_bank_code": "APB",
                     "refund_upi_mc_id": upi_mc_id,
-                    "refund_mid": mid,
-                    "refund_tid": tid,
+                    # "refund_mid": mid,
+                    # "refund_tid": tid,
                     "ipr_pmt_mode": "UPI",
                     "ipr_bank_code": "AIRP",
                     "ipr_org_code": org_code,
@@ -1445,8 +1445,8 @@ def test_common_100_101_115():
                 refund_acquirer_code_db = result["acquirer_code"].iloc[0]
                 # refund_bank_code_db = result["bank_code"].iloc[0]
                 refund_settlement_status_db = result["settlement_status"].iloc[0]
-                refund_tid_db = result['tid'].values[0]
-                refund_mid_db = result['mid'].values[0]
+                # refund_tid_db = result['tid'].values[0]
+                # refund_mid_db = result['mid'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + refund_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -1495,8 +1495,8 @@ def test_common_100_101_115():
                     "refund_upi_txn_type": refund_upi_txn_type_db,
                     "refund_upi_bank_code": refund_upi_bank_code_db,
                     "refund_upi_mc_id": refund_upi_mc_id_db,
-                    "refund_mid": refund_mid_db,
-                    "refund_tid": refund_tid_db,
+                    # "refund_mid": refund_mid_db,
+                    # "refund_tid": refund_tid_db,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -2649,7 +2649,7 @@ def test_common_100_101_119():
             result = DBProcessor.getValueFromDB(query)
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            posting_date = result['posting_date'].values[0]
+            txn_created_time = result['created_time'].values[0]
             external_ref = result['external_ref'].values[0]
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -2702,8 +2702,8 @@ def test_common_100_101_119():
             result = DBProcessor.getValueFromDB(query)
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"query result, refund_txn_type : {refund_txn_type} ")
-            refund_posting_date = result['posting_date'].values[0]
-            logger.debug(f"query result, refund_posting_date : {refund_posting_date} ")
+            txn_created_time_2 = result['created_time'].values[0]
+            logger.debug(f"query result, refund_posting_date : {txn_created_time_2} ")
             refund_external_ref = result['external_ref'].values[0]
             logger.debug(f"query result, refund_external_ref : {refund_external_ref} ")
 
@@ -2736,8 +2736,8 @@ def test_common_100_101_119():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                refund_date_and_time = date_time_converter.to_app_format(refund_posting_date)
+                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                refund_date_and_time = date_time_converter.to_app_format(txn_created_time_2)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_AUTH_REFUNDED",
@@ -2846,8 +2846,8 @@ def test_common_100_101_119():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                refund_date = date_time_converter.db_datetime(refund_posting_date)
+                date = date_time_converter.db_datetime(txn_created_time)
+                refund_date = date_time_converter.db_datetime(txn_created_time_2)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTH_REFUNDED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -2893,7 +2893,7 @@ def test_common_100_101_119():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        date_api = elements["postingDate"]
+                        date_api = elements["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -2916,7 +2916,7 @@ def test_common_100_101_119():
                         # refund_mid_api = elements["mid"]
                         # refund_tid_api = elements["tid"]
                         refund_txn_type_api = elements["txnType"]
-                        refund_date_api = elements["postingDate"]
+                        refund_date_api = elements["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -2978,8 +2978,8 @@ def test_common_100_101_119():
                     "refund_upi_txn_type": "REFUND",
                     "refund_upi_bank_code": "APB",
                     "refund_upi_mc_id": upi_mc_id,
-                    "refund_mid": mid,
-                    "refund_tid": tid,
+                    # "refund_mid": mid,
+                    # "refund_tid": tid,
                     "ipr_pmt_mode": "UPI",
                     "ipr_bank_code": "AIRP",
                     "ipr_org_code": org_code,
@@ -3096,8 +3096,8 @@ def test_common_100_101_119():
                     "refund_upi_txn_type": refund_upi_txn_type_db,
                     "refund_upi_bank_code": refund_upi_bank_code_db,
                     "refund_upi_mc_id": refund_upi_mc_id_db,
-                    "refund_mid": refund_mid_db,
-                    "refund_tid": refund_tid_db,
+                    # "refund_mid": refund_mid_db,
+                    # "refund_tid": refund_tid_db,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")

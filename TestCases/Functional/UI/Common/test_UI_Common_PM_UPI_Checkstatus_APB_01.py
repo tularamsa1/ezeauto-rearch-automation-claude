@@ -1164,7 +1164,7 @@ def test_common_100_101_076():
 def test_common_100_101_133():
     """
     Sub Feature Code: UI_Common_PM_UPI_APB_Amount_Mismatch_Upon_Check_Status
-    Sub Feature Description: Verification of check status for upi pending txn via APB
+    Sub Feature Description: Verification of amount mismatch upon check status for upi txn via APB
     TC naming code description:
     100: Payment Method
     101: UPI

@@ -429,8 +429,8 @@ def test_common_100_101_100():
 @pytest.mark.appVal
 def test_common_100_101_136():
     """
-    Sub Feature Code: UI_Common_PM_UPI_Pure_UPI_Pending_Via_HDFC_TID_Dep
-    Sub Feature Description: Verification of check status for upi pending txn via HDFC Tid Dep
+    Sub Feature Code: UI_Common_PM_UPI_HDFC_Amount_Mismatch_Upon_Check_Status_Tid_Dep
+    Sub Feature Description: Verification of auto check status for amount mismatch txn via HDFC Tid Dep
     TC naming code description:
     100: Payment Method
     101: UPI

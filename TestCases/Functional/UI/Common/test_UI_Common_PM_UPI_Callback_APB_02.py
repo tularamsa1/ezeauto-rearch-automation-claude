@@ -2910,7 +2910,7 @@ def test_common_100_101_087():
             orig_txn_issuer_code = result['issuer_code'].values[0]
             orig_txn_org_code_txn = result['org_code'].values[0]
             orig_txn_type = result['txn_type'].values[0]
-            orig_posting_date = result['posting_date'].values[0]
+            txn_created_time = result['created_time'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -2923,7 +2923,7 @@ def test_common_100_101_087():
             new_txn_issuer_code = result['issuer_code'].values[0]
             new_txn_org_code_txn = result['org_code'].values[0]
             new_txn_type = result['txn_type'].values[0]
-            new_txn_posting_date = result['modified_time'].values[0]
+            txn_created_time_2 = result['created_time'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
@@ -2952,8 +2952,8 @@ def test_common_100_101_087():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(orig_posting_date)
-                new_txn_date_and_time = date_time_converter.to_app_format(new_txn_posting_date)
+                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                new_txn_date_and_time = date_time_converter.to_app_format(txn_created_time_2)
                 expected_app_values = {
                     "payment_mode": "UPI",
                     "payment_status": "AUTHORIZED",
@@ -3088,8 +3088,8 @@ def test_common_100_101_087():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(orig_posting_date)
-                new_txn_date = date_time_converter.db_datetime(new_txn_posting_date)
+                date = date_time_converter.db_datetime(txn_created_time)
+                new_txn_date = date_time_converter.db_datetime(txn_created_time_2)
                 expected_api_values = {"pmt_status": "AUTHORIZED",
                                        "txn_amt": amount, "pmt_mode": "UPI",
                                        "pmt_state": "SETTLED",
@@ -3133,7 +3133,7 @@ def test_common_100_101_087():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        date_api = elements["postingDate"]
+                        date_api = elements["createdTime"]
                         rrn_api = elements["rrNumber"]
                         order_id_api = elements["orderNumber"]
 
@@ -3356,8 +3356,8 @@ def test_common_100_101_087():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                new_txn_date_1, new_txn_time_1 = date_time_converter.to_chargeslip_format(orig_posting_date)
-                new_txn_date, new_txn_time_2 = date_time_converter.to_chargeslip_format(new_txn_posting_date)
+                new_txn_date_1, new_txn_time_1 = date_time_converter.to_chargeslip_format(txn_created_time)
+                new_txn_date, new_txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
                 expected_charge_slip_values_1 = {
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(callback_1_rrn), 'date': new_txn_date_1, 'time': new_txn_time_1,

@@ -1043,7 +1043,7 @@ def test_sa_100_101_044():
             app_driver.reset()
             logger.info("waiting for the time till qr get expired...")
             time.sleep(60)
-
+            login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
