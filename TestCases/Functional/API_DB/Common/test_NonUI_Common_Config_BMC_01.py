@@ -225,12 +225,12 @@ def test_common_300_304_002():
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"data": {"ExName": "???? ???????", "ExFatherName": ".", "ExConnectionNo": "2000019368", "ExZone": "???? ???. 7", "ExColony": "?? ?? ???", "ExWard": "32 - ????? ??? ?????", "ExAddress": "- 228 ?????? ???? ??.??. ???", "ExWaterBillDetails": {"item": [{"FiscalYear": "2019", "Amount": "2484.0"}, {"FiscalYear": "2020", "Amount": "2484.0"}, {"FiscalYear": "2021", "Amount": "2484.0"}, {"FiscalYear": "2022", "Amount": "2520.0"}]}}, "success": True, "txnRef": "220713E1657715913502", "tax": {"totalTax": 9972, "currentTax": 2520, "Arrears": 7452}}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"data": {"ExName": "???? ???????", "ExFatherName": ".", "ExConnectionNo": "2000019368", "ExZone": "???? ???. 7", "ExColony": "?? ?? ???", "ExWard": "32 - ????? ??? ?????", "ExAddress": "- 228 ?????? ???? ??.??. ???", "ExWaterBillDetails": {"item": [{"FiscalYear": "2019", "Amount": "2484.0"}, {"FiscalYear": "2020", "Amount": "2484.0"}, {"FiscalYear": "2021", "Amount": "2484.0"}, {"FiscalYear": "2022", "Amount": "2520.0"}]}}, "success": True, "txnRef": "220713E1657715913502", "tax": {"totalTax": 9972, "currentTax": 2520, "Arrears": 7452}}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
@@ -367,12 +367,12 @@ def test_common_300_304_003():
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"data": {"ExName": "???? ???????", "ExDemandDetails": {"item": [{"FiscalYear": "2022", "Amount": "720.0"}, {"FiscalYear": "2022", "Amount": "3666.0"}]}, "ExPropertyid": "1000097140", "ExFatherName": "???.???? ??????", "ExZone": "???? ???. 18", "ExCircle": "?????????? ???. 4", "ExColony": " ?????? ??????? ????? ???", "ExWard": "82 - ????? ???", "ExAddress": "??-402, ?????? ?????,?????"}, "success": True, "txnRef": "220713E1657715913659", "tax": {"totalTax": 4386, "currentTax": 4386, "Arrears": 0}}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"data": {"ExName": "???? ???????", "ExDemandDetails": {"item": [{"FiscalYear": "2022", "Amount": "720.0"}, {"FiscalYear": "2022", "Amount": "3666.0"}]}, "ExPropertyid": "1000097140", "ExFatherName": "???.???? ??????", "ExZone": "???? ???. 18", "ExCircle": "?????????? ???. 4", "ExColony": " ?????? ??????? ????? ???", "ExWard": "82 - ????? ???", "ExAddress": "??-402, ?????? ?????,?????"}, "success": True, "txnRef": "220713E1657715913659", "tax": {"totalTax": 4386, "currentTax": 4386, "Arrears": 0}}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
