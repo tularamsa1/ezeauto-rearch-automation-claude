@@ -262,14 +262,14 @@ def setStylesForExcel():
 
 
     # Set width for all cells
-    sheet.column_dimensions['A'].width = 70 # Test Case ID
-    sheet.column_dimensions['B'].width = 70 # Sub Feature Code
-    sheet.column_dimensions['C'].width = 15 # File Name
+    sheet.column_dimensions['A'].width = 35 # Test Case ID
+    sheet.column_dimensions['B'].width = 80 # Sub Feature Code
+    sheet.column_dimensions['C'].width = 80 # File Name
     sheet.column_dimensions['D'].width = 18 # Directory Name
     sheet.column_dimensions['E'].width = 18 # Category
     sheet.column_dimensions['F'].width = 18 # Sub-Category
-    sheet.column_dimensions['G'].width = 18 # OverAll Results
-    sheet.column_dimensions['H'].width = 18 # TC Execution
+    sheet.column_dimensions['G'].width = 15 # OverAll Results
+    sheet.column_dimensions['H'].width = 15 # TC Execution
     sheet.column_dimensions['I'].width = 15 # API Val
     sheet.column_dimensions['J'].width = 15 # DB Val
     sheet.column_dimensions['K'].width = 15 # Portal Val
@@ -284,10 +284,10 @@ def setStylesForExcel():
     sheet.column_dimensions['T'].width = 20  # API resp code
     sheet.column_dimensions['U'].width = 20  # API resp time
     sheet.column_dimensions['V'].width = 20  # API resp size
-    sheet.column_dimensions['W'].width = 20  # Device Model
+    sheet.column_dimensions['W'].width = 15  # Device Model
     sheet.column_dimensions['X'].width = 30  # Firmware version
-    sheet.column_dimensions['Y'].width = 20  # MPOS version
-    sheet.column_dimensions['Z'].width = 20  # SA version
+    sheet.column_dimensions['Y'].width = 15  # MPOS version
+    sheet.column_dimensions['Z'].width = 15  # SA version
 
     # Set background color and font style
     fill_pattern = PatternFill(patternType='solid', fgColor='87CEEB')
