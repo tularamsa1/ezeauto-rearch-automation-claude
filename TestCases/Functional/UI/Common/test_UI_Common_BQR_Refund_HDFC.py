@@ -363,7 +363,7 @@ def test_common_100_102_014():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
-                                  'RRN': rrn,
+                                  'RRN': "",
                                   'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": username, "password": password},
@@ -743,7 +743,7 @@ def test_common_100_102_015(): #Make sure to add the test case name as same as t
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 expectedValues = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
-                                  'RRN': rrn,
+                                  'RRN': "",
                                   'BASE AMOUNT:': 'Rs.' + str(amount) + '.00'}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": username, "password": password},
@@ -1818,7 +1818,7 @@ def test_common_100_102_084():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
-                expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(txn_id),
+                expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": app_username, "password": app_password},
