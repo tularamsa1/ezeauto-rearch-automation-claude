@@ -12,7 +12,7 @@ def db_reset():
     print("==========Data setting on ClosedLoop DB "+GlobalConstants.ORG+"===============")
     try:
         for li in querylist:
-            DBProcessor.setValueToDB(li, "closedloop_demo")
+            DBProcessor.setValueToDB(li, "closedloop")
         print("==========Data setting is successfull=========")
     except:
         print("=========Data Setting failed=======")
