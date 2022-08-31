@@ -923,7 +923,7 @@ def test_common_100_102_006():
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "EXPIRED", "Payment mode": "BHARATQR","Acquirer Code":"HDFC",
                                     "Payment amount": "{:.2f}".format(amount), "State": "EXPIRED", "State Bharatqr": "EXPIRED",
-                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
+                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Expired"}
                 #
                 query = "select status,amount,payment_mode,acquirer_code,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, acquirer_code,payment mode and state from DB : {query}")
