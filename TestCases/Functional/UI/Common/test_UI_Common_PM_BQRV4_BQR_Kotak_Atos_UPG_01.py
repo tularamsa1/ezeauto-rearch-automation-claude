@@ -26,14 +26,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_127():
+def test_common_100_101_149():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_UPI_UPG_AUTHORIZED_KOTAK_ATOS
-    Sub Feature Description: Verification of a upg authorized txn using BQRV4 UPI Success Callback via Kotak_ATOS
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_UPG_AUTHORIZED_KOTAK_ATOS
+    Sub Feature Description: Verification of a upg authorized txn using BQRV4 BQR Success Callback via Kotak_ATOS
     TC naming code description:
     100: Payment Method
     101: UPI
-    127: TC127
+    149: TC149
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -99,24 +99,27 @@ def test_common_100_101_127():
             merchant_config_id = result['id'].values[0]
             logger.debug(
                 f"Fetching merchant_config_id from the bharatqr_merchant_config table : merchant_config_id : {merchant_config_id}")
-            # merchant_pan = result['merchant_pan'].values[0]
-            # logger.debug(
-            #     f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+            visa_merchant_id_primary = result['visa_merchant_id_primary'].values[0]
+            logger.debug(
+                f"Fetching visa_merchant_id_primary from the bharatqr_merchant_config table : merchant_config_id : {visa_merchant_id_primary}")
+            merchant_pan = result['merchant_pan'].values[0]
+            logger.debug(
+                f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
 
-            amount = random.randint(301, 400)
+            amount = random.randint(401, 999)
             provider_ref_id = "A220823E010"+str(random.randint(1111111, 9999999))
             txn_secondary_id = "AGU00079TID"+str(random.randint(11111, 99999))+"E"
             auth_code = "AE" + str(random.randint(111111111, 999999999))
             rrn = "RE" + str(random.randint(111111111, 999999999))
             customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
-            api_details = DBProcessor.get_api_details('callbackUpiKotakAtos', request_body={
+            api_details = DBProcessor.get_api_details('callbackBQRKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
                 "txn_amount": str(amount),
                 "settlement_amount": str(amount),
                 "auth_code": auth_code, "ref_no": rrn,
-                "merchant_vpa": vpa,
-                "customer_vpa": customer_vpa,
+                "mpan": visa_merchant_id_primary,
+                # "customer_vpa": customer_vpa,
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -126,6 +129,7 @@ def test_common_100_101_127():
             ipr_txn_id = result['txn_id'].iloc[0]
             logger.debug(f"txn_id from invalid_pg_request table is : {ipr_txn_id}")
             ipr_payment_mode = result["payment_mode"].iloc[0]
+            ipr_auth_code = result["auth_code"].iloc[0]
             ipr_bank_code = result["bank_code"].iloc[0]
             ipr_org_code = result["org_code"].iloc[0]
             ipr_amount = result["amount"].iloc[0]
@@ -133,7 +137,7 @@ def test_common_100_101_127():
             ipr_mid = result["mid"].iloc[0]
             ipr_tid = result["tid"].iloc[0]
             ipr_config_id = result["config_id"].iloc[0]
-            ipr_vpa = result["vpa"].iloc[0]
+            # ipr_vpa = result["vpa"].iloc[0]
             ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
             ipr_error_message = result["error_message"].iloc[0]
             logger.debug(f"ipr_error_message from invalid_pg_request : {ipr_error_message}")
@@ -176,7 +180,7 @@ def test_common_100_101_127():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                    "pmt_mode": "UPI",
+                    "pmt_mode": "BHARAT QR",
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": str(amount),
                     "settle_status": "SETTLED",
@@ -186,7 +190,7 @@ def test_common_100_101_127():
                     # "payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    # "auth_code": auth_code,
+                    "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -209,8 +213,8 @@ def test_common_100_101_127():
                 logger.info(f"Fetching status from txn history for the txn : {ipr_txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {ipr_txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
+                app_auth_code = txn_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {ipr_txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {ipr_txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -218,12 +222,12 @@ def test_common_100_101_127():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {ipr_txn_id}, {app_amount}")
                 # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                # logger.info(f"Fetching txn customer name from txn history for the txn : {ipr_txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
                 # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                # logger.info(f"Fetching txn payer name from txn history for the txn : {ipr_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -243,7 +247,7 @@ def test_common_100_101_127():
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
+                    "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -261,14 +265,14 @@ def test_common_100_101_127():
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
+                    "txn_amt": amount, "pmt_mode": "BHARATQR",
                     "pmt_state": "UPG_AUTHORIZED", "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "KOTAK",
                     "issuer_code": "KOTAK",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
+                    "auth_code": auth_code,
                     "date": date,
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
@@ -295,7 +299,7 @@ def test_common_100_101_127():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        # auth_code_api = elements["authCode"]
+                        auth_code_api = elements["authCode"]
                         date_api = elements["createdTime"]
                         # customer_name_api = elements["customerName"]
                         # payer_name_api = elements["payerName"]
@@ -309,7 +313,7 @@ def test_common_100_101_127():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
+                    "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     # "customer_name": customer_name_api,
                     # "payer_name": payer_name_api,
@@ -329,40 +333,41 @@ def test_common_100_101_127():
                 expected_db_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "pmt_state": "UPG_AUTHORIZED",
-                    "pmt_mode": "UPI",
+                    "pmt_mode": "BHARATQR",
                     "txn_amt": amount,
-                    "upi_txn_status": "UPG_AUTHORIZED",
+                    # "upi_txn_status": "UPG_AUTHORIZED",
                     "settle_status": "SETTLED",
                     "acquirer_code": "KOTAK",
                     "bank_code": "KOTAK",
                     "pmt_gateway": "KOTAK_ATOS",
-                    "upi_txn_type": "UNKNOWN",
-                    "upi_bank_code": "KOTAK_WL",
-                    "upi_mc_id": upi_mc_id,
+                    # "upi_txn_type": "UNKNOWN",
+                    # "upi_bank_code": "KOTAK_WL",
+                    # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    # "bqr_pmt_status_code": "SUCCESS",
-                    # "bqr_pmt_state": "SETTLED",
-                    # "bqr_txn_amt": amount,
-                    # "bqr_txn_type": "DYNAMIC_QR",
-                    # "bqr_terminal_info_id": terminal_info_id,
-                    # "bqr_merchant_config_id": merchant_config_id,
-                    # "bqr_txn_primary_id": txn_id,
-                    # "bqr_merchant_pan": merchant_pan,
-                    # "bqr_rrn": rrn,
-                    # "bqr_org_code": org_code,
-                    # "bqr_bank_code": "KOTAK",
-                    "ipr_pmt_mode": "UPI",
+                    "bqr_pmt_status_code": "SUCCESS",
+                    "bqr_pmt_state": "UPG_AUTHORIZED",
+                    "bqr_txn_amt": amount,
+                    "bqr_txn_type": "UNKNOWN",
+                    "bqr_terminal_info_id": terminal_info_id,
+                    "bqr_merchant_config_id": merchant_config_id,
+                    "bqr_txn_primary_id": ipr_txn_id,
+                    "bqr_merchant_pan": visa_merchant_id_primary,
+                    "bqr_rrn": rrn,
+                    "bqr_org_code": org_code,
+                    "bqr_bank_code": "KOTAK",
+                    "ipr_pmt_mode": "BHARATQR",
                     "ipr_bank_code": "KOTAK",
                     "ipr_org_code": org_code,
-                    # "ipr_auth_code": auth_code,
+                    "ipr_auth_code": auth_code,
                     "ipr_rrn": str(rrn),
                     "ipr_txn_amt": amount,
                     "ipr_mid": mid,
                     "ipr_tid": tid,
-                    "ipr_vpa": customer_vpa,
-                    "ipr_config_id": upi_mc_id,
+                    # "ipr_vpa": customer_vpa,
+                    "ipr_config_id": merchant_config_id,
                     "ipr_pg_merchant_id": pg_merchant_id,
+                    "ipr_error_msg": "Bharat QR PgTxnRef Tampered "+ str(provider_ref_id),
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -381,69 +386,69 @@ def test_common_100_101_127():
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
-                upi_txn_type_db = result["txn_type"].iloc[0]
-                upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                # query = "select * from bharatqr_txn where id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
+                # query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
+                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 # result = DBProcessor.getValueFromDB(query)
                 # logger.debug(f"Query result : {result}")
-                # bqr_status_code_db = result["status_code"].iloc[0]
-                # bqr_state_db = result["state"].iloc[0]
-                # bqr_txn_amt_db = result["txn_amount"].iloc[0]
-                # bqr_txn_type_db = result["txn_type"].iloc[0]
-                # bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                # bqr_bank_code_db = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                # bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                # bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                # bqr_rrn_db = result["rrn"].iloc[0]
-                # bqr_org_code_db = result["org_code"].iloc[0]
+                # upi_status_db = result["status"].iloc[0]
+                # upi_txn_type_db = result["txn_type"].iloc[0]
+                # upi_bank_code_db = result["bank_code"].iloc[0]
+                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                query = "select * from bharatqr_txn where id='" + ipr_txn_id + "'"
+                logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                bqr_status_code_db = result["status_code"].iloc[0]
+                bqr_state_db = result["state"].iloc[0]
+                bqr_txn_amt_db = result["txn_amount"].iloc[0]
+                bqr_txn_type_db = result["txn_type"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_bank_code_db = result["bank_code"].iloc[0]
+                bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
+                bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
+                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
+                bqr_rrn_db = result["rrn"].iloc[0]
+                bqr_org_code_db = result["org_code"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    "upi_txn_status": upi_status_db,
+                    # "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    "upi_txn_type": upi_txn_type_db,
-                    "upi_bank_code": upi_bank_code_db,
-                    "upi_mc_id": upi_mc_id_db,
+                    # "upi_txn_type": upi_txn_type_db,
+                    # "upi_bank_code": upi_bank_code_db,
+                    # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    # "bqr_pmt_status_code": bqr_status_code_db,
-                    # "bqr_pmt_state": bqr_state_db,
-                    # "bqr_txn_amt": bqr_txn_amt_db,
-                    # "bqr_txn_type": bqr_txn_type_db,
-                    # "bqr_terminal_info_id": bqr_terminal_info_id_db,
-                    # "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                    # "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
-                    # "bqr_rrn": bqr_rrn_db,
-                    # "bqr_org_code": bqr_org_code_db,
-                    # "bqr_bank_code": bqr_bank_code_db,
+                    "bqr_pmt_status_code": bqr_status_code_db,
+                    "bqr_pmt_state": bqr_state_db,
+                    "bqr_txn_amt": bqr_txn_amt_db,
+                    "bqr_txn_type": bqr_txn_type_db,
+                    "bqr_terminal_info_id": bqr_terminal_info_id_db,
+                    "bqr_merchant_config_id": bqr_merchant_config_id_db,
+                    "bqr_txn_primary_id": bqr_transaction_primary_id_db,
+                    "bqr_merchant_pan": bqr_merchant_pan_db,
+                    "bqr_rrn": bqr_rrn_db,
+                    "bqr_org_code": bqr_org_code_db,
+                    "bqr_bank_code": bqr_bank_code_db,
                     "ipr_pmt_mode": ipr_payment_mode,
                     "ipr_bank_code": ipr_bank_code,
                     "ipr_org_code": ipr_org_code,
-                    # "ipr_auth_code": ipr_auth_code,
+                    "ipr_auth_code": ipr_auth_code,
                     "ipr_rrn": str(ipr_rrn),
                     "ipr_txn_amt": ipr_amount,
                     "ipr_mid": ipr_mid,
                     "ipr_tid": ipr_tid,
-                    "ipr_vpa": ipr_vpa,
+                    # "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
                     "ipr_pg_merchant_id": ipr_pg_merchant_id,
-                    # "ipr_error_msg": ipr_error_message,
+                    "ipr_error_msg": ipr_error_message,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
@@ -509,14 +514,14 @@ def test_common_100_101_127():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_128():
+def test_common_100_101_150():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_UPI_amount_mismatch_Via_BQRV4_UPI_Success_Callback_KOTAK_ATOS
-    Sub Feature Description: Performing a amount mismatch using pure bqrv4 upi success callback via KOTAK_ATOS
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_amount_mismatch_Via_BQRV4_BQR_Success_Callback_KOTAK_ATOS
+    Sub Feature Description: Performing a amount mismatch using BQRV4 bqr success callback via KOTAK_ATOS
     TC naming code description:
     100: Payment Method
     101: UPI
-    128: TC128
+    150: TC150
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -582,9 +587,13 @@ def test_common_100_101_128():
             merchant_config_id = result['id'].values[0]
             logger.debug(
                 f"Fetching merchant_config_id from the bharatqr_merchant_config table : merchant_config_id : {merchant_config_id}")
-            # merchant_pan = result['merchant_pan'].values[0]
-            # logger.debug(
-            #     f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+            merchant_pan = result['merchant_pan'].values[0]
+            logger.debug(
+                f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+            visa_merchant_id_primary = result['visa_merchant_id_primary'].values[0]
+            logger.debug(
+                f"Fetching visa_merchant_id_primary from the bharatqr_merchant_config table : merchant_config_id : {visa_merchant_id_primary}")
+
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
@@ -626,14 +635,13 @@ def test_common_100_101_128():
             rrn = "RE" + str(random.randint(110000000, 110099999))
             amount = amount+1
             customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
-            api_details = DBProcessor.get_api_details('callbackUpiKotakAtos', request_body={
+            api_details = DBProcessor.get_api_details('callbackBQRKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
                 "txn_amount": str(amount),
                 "settlement_amount": str(amount),
                 "auth_code": auth_code, "ref_no": rrn,
-                "merchant_vpa": vpa,
-                "customer_vpa": customer_vpa,
+                "mpan": visa_merchant_id_primary
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -644,6 +652,7 @@ def test_common_100_101_128():
             ipr_txn_id = result['txn_id'].iloc[0]
             logger.debug(f"txn_id from invalid_pg_request table is : {ipr_txn_id}")
             ipr_payment_mode = result["payment_mode"].iloc[0]
+            ipr_auth_code = result["auth_code"].iloc[0]
             ipr_bank_code = result["bank_code"].iloc[0]
             ipr_org_code = result["org_code"].iloc[0]
             ipr_amount = result["amount"].iloc[0]
@@ -702,7 +711,7 @@ def test_common_100_101_128():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                    "pmt_mode": "UPI",
+                    "pmt_mode": "BHARAT QR",
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": str(amount),
                     "settle_status": "SETTLED",
@@ -712,7 +721,7 @@ def test_common_100_101_128():
                     # "payer_name": payer_name,
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    # "auth_code": auth_code,
+                    "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -730,8 +739,8 @@ def test_common_100_101_128():
                 logger.info(f"Fetching status from txn history for the txn : {ipr_txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {ipr_txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {ipr_txn_id}, {app_auth_code}")
+                app_auth_code = txn_history_page.fetch_auth_code_text()
+                logger.info(f"Fetching AUTH CODE from txn history for the txn : {ipr_txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {ipr_txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -764,7 +773,7 @@ def test_common_100_101_128():
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
+                    "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -782,14 +791,14 @@ def test_common_100_101_128():
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
+                    "txn_amt": amount, "pmt_mode": "BHARATQR",
                     "pmt_state": "UPG_AUTHORIZED", "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "KOTAK",
                     "issuer_code": "KOTAK",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
+                    "auth_code": auth_code,
                     "date": date,
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
@@ -816,7 +825,7 @@ def test_common_100_101_128():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        # auth_code_api = elements["authCode"]
+                        auth_code_api = elements["authCode"]
                         date_api = elements["createdTime"]
                         # customer_name_api = elements["customerName"]
                         # payer_name_api = elements["payerName"]
@@ -830,7 +839,7 @@ def test_common_100_101_128():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
+                    "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     # "customer_name": customer_name_api,
                     # "payer_name": payer_name_api,
@@ -850,39 +859,39 @@ def test_common_100_101_128():
                 expected_db_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "pmt_state": "UPG_AUTHORIZED",
-                    "pmt_mode": "UPI",
+                    "pmt_mode": "BHARATQR",
                     "txn_amt": amount,
-                    "upi_txn_status": "UPG_AUTHORIZED",
+                    # "upi_txn_status": "UPG_AUTHORIZED",
                     "settle_status": "SETTLED",
                     "acquirer_code": "KOTAK",
                     "bank_code": "KOTAK",
                     "pmt_gateway": "KOTAK_ATOS",
-                    "upi_txn_type": "UNKNOWN",
-                    "upi_bank_code": "KOTAK_WL",
-                    "upi_mc_id": upi_mc_id,
+                    # "upi_txn_type": "UNKNOWN",
+                    # "upi_bank_code": "KOTAK_WL",
+                    # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    # "bqr_pmt_status_code": "SUCCESS",
-                    # "bqr_pmt_state": "SETTLED",
-                    # "bqr_txn_amt": amount,
-                    # "bqr_txn_type": "DYNAMIC_QR",
-                    # "bqr_terminal_info_id": terminal_info_id,
-                    # "bqr_merchant_config_id": merchant_config_id,
-                    # "bqr_txn_primary_id": txn_id,
-                    # "bqr_merchant_pan": merchant_pan,
-                    # "bqr_rrn": rrn,
-                    # "bqr_org_code": org_code,
-                    # "bqr_bank_code": "KOTAK",
-                    "ipr_pmt_mode": "UPI",
+                    "bqr_pmt_status_code": "SUCCESS",
+                    "bqr_pmt_state": "UPG_AUTHORIZED",
+                    "bqr_txn_amt": amount,
+                    "bqr_txn_type": "UNKNOWN",
+                    "bqr_terminal_info_id": terminal_info_id,
+                    "bqr_merchant_config_id": merchant_config_id,
+                    "bqr_txn_primary_id": ipr_txn_id,
+                    "bqr_merchant_pan": visa_merchant_id_primary,
+                    "bqr_rrn": rrn,
+                    "bqr_org_code": org_code,
+                    "bqr_bank_code": "KOTAK",
+                    "ipr_pmt_mode": "BHARATQR",
                     "ipr_bank_code": "KOTAK",
                     "ipr_org_code": org_code,
-                    # "ipr_auth_code": auth_code,
+                    "ipr_auth_code": auth_code,
                     "ipr_rrn": str(rrn),
                     "ipr_txn_amt": amount,
                     "ipr_mid": mid,
                     "ipr_tid": tid,
-                    "ipr_vpa": customer_vpa,
-                    "ipr_config_id": upi_mc_id,
+                    # "ipr_vpa": customer_vpa,
+                    "ipr_config_id": merchant_config_id,
                     "ipr_pg_merchant_id": pg_merchant_id,
                     "ipr_error_msg": "Actual ="+str(amount) + " Expected ="+str(amount-1) + ".00",
                 }
@@ -903,66 +912,66 @@ def test_common_100_101_128():
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
-                upi_txn_type_db = result["txn_type"].iloc[0]
-                upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                # query = "select * from bharatqr_txn where id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
+                # query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
+                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 # result = DBProcessor.getValueFromDB(query)
                 # logger.debug(f"Query result : {result}")
-                # bqr_status_code_db = result["status_code"].iloc[0]
-                # bqr_state_db = result["state"].iloc[0]
-                # bqr_txn_amt_db = result["txn_amount"].iloc[0]
-                # bqr_txn_type_db = result["txn_type"].iloc[0]
-                # bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                # bqr_bank_code_db = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                # bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                # bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                # bqr_rrn_db = result["rrn"].iloc[0]
-                # bqr_org_code_db = result["org_code"].iloc[0]
+                # upi_status_db = result["status"].iloc[0]
+                # upi_txn_type_db = result["txn_type"].iloc[0]
+                # upi_bank_code_db = result["bank_code"].iloc[0]
+                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                query = "select * from bharatqr_txn where id='" + ipr_txn_id + "'"
+                logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                bqr_status_code_db = result["status_code"].iloc[0]
+                bqr_state_db = result["state"].iloc[0]
+                bqr_txn_amt_db = result["txn_amount"].iloc[0]
+                bqr_txn_type_db = result["txn_type"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_bank_code_db = result["bank_code"].iloc[0]
+                bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
+                bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
+                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
+                bqr_rrn_db = result["rrn"].iloc[0]
+                bqr_org_code_db = result["org_code"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    "upi_txn_status": upi_status_db,
+                    # "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    "upi_txn_type": upi_txn_type_db,
-                    "upi_bank_code": upi_bank_code_db,
-                    "upi_mc_id": upi_mc_id_db,
+                    # "upi_txn_type": upi_txn_type_db,
+                    # "upi_bank_code": upi_bank_code_db,
+                    # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    # "bqr_pmt_status_code": bqr_status_code_db,
-                    # "bqr_pmt_state": bqr_state_db,
-                    # "bqr_txn_amt": bqr_txn_amt_db,
-                    # "bqr_txn_type": bqr_txn_type_db,
-                    # "bqr_terminal_info_id": bqr_terminal_info_id_db,
-                    # "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                    # "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
-                    # "bqr_rrn": bqr_rrn_db,
-                    # "bqr_org_code": bqr_org_code_db,
-                    # "bqr_bank_code": bqr_bank_code_db,
+                    "bqr_pmt_status_code": bqr_status_code_db,
+                    "bqr_pmt_state": bqr_state_db,
+                    "bqr_txn_amt": bqr_txn_amt_db,
+                    "bqr_txn_type": bqr_txn_type_db,
+                    "bqr_terminal_info_id": bqr_terminal_info_id_db,
+                    "bqr_merchant_config_id": bqr_merchant_config_id_db,
+                    "bqr_txn_primary_id": bqr_transaction_primary_id_db,
+                    "bqr_merchant_pan": bqr_merchant_pan_db,
+                    "bqr_rrn": bqr_rrn_db,
+                    "bqr_org_code": bqr_org_code_db,
+                    "bqr_bank_code": bqr_bank_code_db,
                     "ipr_pmt_mode": ipr_payment_mode,
                     "ipr_bank_code": ipr_bank_code,
                     "ipr_org_code": ipr_org_code,
-                    # "ipr_auth_code": ipr_auth_code,
+                    "ipr_auth_code": ipr_auth_code,
                     "ipr_rrn": str(ipr_rrn),
                     "ipr_txn_amt": ipr_amount,
                     "ipr_mid": ipr_mid,
                     "ipr_tid": ipr_tid,
-                    "ipr_vpa": ipr_vpa,
+                    # "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
                     "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "ipr_error_msg": ipr_error_message,
