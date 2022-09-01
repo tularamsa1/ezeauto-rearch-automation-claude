@@ -501,10 +501,13 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         # Write the setup code here
 
-        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        app_username = app_cred['Username']
-        app_password = app_cred['Password']
+        # app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        # logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        # app_username = app_cred['Username']
+        # app_password = app_cred['Password']
+
+        app_username = "8548594594"
+        app_password = "A123456"
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
