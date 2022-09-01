@@ -2309,7 +2309,6 @@ def test_common_100_103_018():
             logger.debug(f"Query to fetch transaction details from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
-
             new_txn_customer_name = result['customer_name'].values[0]
             logger.debug(f"generated new customer_name is : {new_txn_customer_name}")
             new_txn_payer_name = result['payer_name'].values[0]

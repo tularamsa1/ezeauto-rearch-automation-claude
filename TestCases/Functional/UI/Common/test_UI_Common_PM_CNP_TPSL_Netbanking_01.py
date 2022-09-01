@@ -502,7 +502,7 @@ def test_common_100_103_039():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = random.randint(1, 10)
+            amount = 11
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
@@ -518,10 +518,6 @@ def test_common_100_103_039():
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
             remote_pay_txn.remote_pay_proceed_netbanking()
-            remote_pay_txn.remote_pay_netbanking_customerId("test")
-            remote_pay_txn.remote_pay_netbanking_customerpwd("test")
-            remote_pay_txn.remote_pay_netbanking_proceed()
-            remote_pay_txn.remote_pay_netbanking_cancel()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"

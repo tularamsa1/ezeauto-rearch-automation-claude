@@ -89,6 +89,10 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
+    query = "update remotepay_setting set setting_value=2 where setting_name='cnpTxnTimeoutDuration' and  org_code='" + org_code + "';"
+    result = DBProcessor.setValueToDB(query)
+    logger.info(f"RESULT of updating remotepay_setting table: {result}")
+
 
 def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_gateway=None):
     if payment_gateway == "CYBERSOURCE":
@@ -116,6 +120,34 @@ def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_p
                                                                               "password": portal_pw})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+    if payment_gateway == "UPI":
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating upi_merchant_config table inactive: {result}")
+        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='" + bank_code + "'"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
+                                                                              "password": portal_pw})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+    query = "update remotepay_setting set setting_value=2 where setting_name='cnpTxnTimeoutDuration' and  org_code='" + org_code + "';"
+    result = DBProcessor.setValueToDB(query)
+    logger.info(f"RESULT of updating remotepay_setting table: {result}")
+
+    api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_un,
+                                                                          "password": portal_pw,
+                                                                          "settingForOrgCode": org_code})
+    api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "false"
+    logger.debug(f"API details  : {api_details}")
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+
+    query = "update terminal_dependency_config set terminal_dependent_enabled=0 where org_code ='" + org_code + "';"
+    result = DBProcessor.setValueToDB(query)
+    logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
     api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
                                                                           "password": portal_pw})
