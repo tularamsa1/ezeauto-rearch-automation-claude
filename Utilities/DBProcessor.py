@@ -341,3 +341,4 @@ def get_db_credentials_from_excel() -> dict:
         return dict_credentials
     else:
         return None
+
