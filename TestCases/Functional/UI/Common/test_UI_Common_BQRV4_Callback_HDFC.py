@@ -848,8 +848,8 @@ def test_common_100_102_048():
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
             ref_id = '211115084892E01' + str(rrn)
-            logger.debug(
-                f"replacing the Txn_id with {txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
+            logger.debug(f"replacing the Txn_id with {txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with "
+                         f"{rrn} in the curl_data")
             api_details = DBProcessor.get_api_details('upi_expired_curl', curl_data={'ref_id': ref_id, 'Txn_id': txn_id,
                                                                                   'amount': str(amount) + ".00",
                                                                                      'vpa': vpa, 'rrn': rrn
@@ -910,8 +910,8 @@ def test_common_100_102_048():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                expected_app_values = {"Payment Status": "EXPIRED", "Payment mode": "UPI", "Amount": str(amount),
-                                       "Txn_id": txn_id, "rrn": str(rrn)}
+                expected_app_values = {"Payment Status": "PENDING", "Payment mode": "BHARAT QR", "Amount": str(amount),
+                                       "Txn_id": txn_id}
                 logger.debug(f"expected_app_values: {expected_app_values}")
                 logger.info("resetting the com.ezetap.basicapp")
                 app_driver.reset()
@@ -931,11 +931,9 @@ def test_common_100_102_048():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                app_rrn = txn_history_page.fetch_RRN_text()
-                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
 
                 actual_app_values = {"Payment Status": payment_status.split(':')[1], "Payment mode": payment_mode,
-                                     "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id, "rrn": str(app_rrn)}
+                                     "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -954,28 +952,26 @@ def test_common_100_102_048():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values = {"Payment Status": "EXPIRED", "Amount": amount, "Payment Mode": "UPI",
-                                       "Payment State": "EXPIRED",
-                                       "rrn": str(rrn)}
+                expected_api_values = {"Payment Status": "PENDING", "Amount": amount, "Payment Mode": "BHARATQR",
+                                       "Payment State": "PENDING"}
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password,
-                                                                        "txnId": txn_id})
-                logger.debug(f"API DETAILS : {api_details}")
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": username, "password": password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction details api is : {response}")
-                logger.debug(f"response : {response}")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api = response["status"]
                 amount_api = int(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
-                rrn_api = response["rrNumber"]
 
                 actual_api_values = {"Payment Status": status_api, "Amount": amount_api,
                                      "Payment Mode": payment_mode_api,
-                                     "Payment State": state_api, "rrn": str(rrn_api)}
+                                     "Payment State": state_api}
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -992,8 +988,8 @@ def test_common_100_102_048():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"Payment Status": "EXPIRED", "Payment State": "EXPIRED", "Payment mode": "UPI",
-                                      "Payment amount": amount, "UPI_Txn_Status": "EXPIRED"}
+                expected_db_values = {"Payment Status": "PENDING", "Payment State": "PENDING", "Payment mode": "BHARATQR",
+                                      "Payment amount": amount}
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
@@ -1005,14 +1001,9 @@ def test_common_100_102_048():
                 amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
 
-                query = "select status from upi_txn where txn_id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
                 actual_db_values = {"Payment Status": status_db, "Payment State": state_db,
                                     "Payment mode": payment_mode_db,
-                                    "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
+                                    "Payment amount": amount_db}
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
