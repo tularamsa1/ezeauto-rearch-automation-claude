@@ -43,3 +43,12 @@ def to_chargeslip_format(posting_date_db):
     date_from_db = now_asia.split(",")[0]
     time_from_db = now_asia.split(",")[1].lstrip()
     return date_from_db, time_from_db
+
+def bump_datetime(date_from_db):
+    format1 = "%Y-%m-%dT%H:%M:%S.%f"
+    date_format = "%H:%M:%S"
+    dt_str = date_from_db
+    dt_str1 = datetime.strptime(str(dt_str), '%Y-%m-%dT%H:%M:%S.%f000').strftime("%Y-%m-%dT%H:%M:%S.%f")
+    dt_utc = datetime.strptime(dt_str1, format1)
+    orignal_date = dt_utc.strftime(date_format)
+    return orignal_date

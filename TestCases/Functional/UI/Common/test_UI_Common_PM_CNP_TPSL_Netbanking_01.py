@@ -452,8 +452,9 @@ def test_common_100_103_039():
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    038: TC038
+    039: TC039
     """
+    expected_failed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact support@ezetap.com for further clarifications."
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
@@ -518,6 +519,18 @@ def test_common_100_103_039():
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
             remote_pay_txn.remote_pay_proceed_netbanking()
+            time.sleep(30)
+
+            remote_pay_txn.wait_for_failed_message()
+            failed_message = str(remote_pay_txn.failedScreenMessage())
+            logger.info(f"Your failed Message is:  {failed_message}")
+
+            if failed_message == expected_failed_message:
+                pass
+            else:
+                logger.info(f"actual failed message is: {failed_message}")
+                logger.info(f"expected failed message is: {expected_failed_message}")
+                raise Exception(f"failed Messages are not mactching")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -552,16 +565,6 @@ def test_common_100_103_039():
             cnp_payment_flow = result['payment_flow'].values[0]
             logger.debug(f"Query result, cnp_payment_flow : {cnp_payment_flow}")
 
-            query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query,"cnpware")
-            cnpware_txn_txn_type = result['txn_type'].values[0]
-            logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
-            cnpware_txn_payment_mode = result['payment_mode'].values[0]
-            logger.debug(f"Query result, cnpware_txn_payment_mode : {cnpware_txn_payment_mode}")
-            cnpware_txn_state = result['state'].values[0]
-            cnpware_payment_gateway = result['payment_gateway'].values[0]
-            cnpware_payment_flow = result['payment_flow'].values[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -722,7 +725,7 @@ def test_common_100_103_039():
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_gateway": "TPSL",
                                     "payment_mode": "PAY LINK",
-                                    "auth_code": str(0),
+                                    "auth_code": "None",
                                     # "acquirer_code":HDFC
                                     # "bank_name" NA
                                     # "payer_name" NA
@@ -737,7 +740,6 @@ def test_common_100_103_039():
                                     "cnp_pmt_gateway": "TPSL",
                                     "cnpware_pmt_gateway": "TPSL",
                                     "cnpware_pmt_flow": "REMOTEPAY",
-                                    # "pmt_intent_status": "COMPLETED" NA
                                     }
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -757,7 +759,17 @@ def test_common_100_103_039():
                 query = "select * from payment_intent where id='" + payment_intent_id + "'"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                payment_intent_status = result["status"].iloc[0]
+
+                query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
+                logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+                result = DBProcessor.getValueFromDB(query, "cnpware")
+                cnpware_txn_txn_type = result['txn_type'].values[0]
+                logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
+                cnpware_txn_payment_mode = result['payment_mode'].values[0]
+                logger.debug(f"Query result, cnpware_txn_payment_mode : {cnpware_txn_payment_mode}")
+                cnpware_txn_state = result['state'].values[0]
+                cnpware_payment_gateway = result['payment_gateway'].values[0]
+                cnpware_payment_flow = result['payment_flow'].values[0]
 
                 actualDBValues = {"pmt_status": pmt_status_db,
                                   "pmt_state": pmt_state_db,
@@ -776,7 +788,6 @@ def test_common_100_103_039():
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
-                                  # "pmt_intent_status": payment_intent_status
                                   }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -845,7 +856,7 @@ def test_common_100_103_040():
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    038: TC038
+    040: TC040
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -952,6 +963,7 @@ def test_common_100_103_040():
                 time.sleep(3 + (setting_value * 60))
 
             remote_pay_txn.remote_pay_netbanking_proceed()
+            time.sleep(30)
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
