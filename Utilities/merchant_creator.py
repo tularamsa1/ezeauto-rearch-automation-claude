@@ -1,6 +1,5 @@
 import requests
 import json
-import pandas
 import sqlite3
 from Utilities import DBProcessor, ConfigReader
 from DataProvider import GlobalConstants
@@ -182,6 +181,7 @@ def generate_merchant_creation_api_body() -> list:
                         merchant_creation_api = json.loads(get_api_from_db("createMerchant")["RequestBody"])
                         merchant_creation_api["username"] = ConfigReader.read_config("SuperUserCredentials", "username")
                         merchant_creation_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
+                        merchant_creation_api["acquisitions"] = generate_acquisitions_for_merchant_creation(merchant[0])
                         # for replacing the merchant details in the api
                         merchant_creation_api["merchantCode"] = merchant_creation_api["name"] = merchant_creation_api["reportingOrgCode"] = merchant[0]
                         cursor.execute("SELECT * from users where MerchantCode = '"+merchant[0]+"';")
@@ -195,7 +195,7 @@ def generate_merchant_creation_api_body() -> list:
                                 merchant_creation_api["users"][count]["name"] = user[0]
                                 merchant_creation_api["users"][count]["userToken"] = user[2]
                                 merchant_creation_api["users"][count]["userPassword"] = user[3]
-                                merchant_creation_api["users"][count]["mobileNumber"] = user[4]
+                                merchant_creation_api["users"][count]["mobileNumber"] = str(user[4])
                                 if str(user[5]).lower() == "admin":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.ADMIN_USER_ROLES
                                 elif str(user[5]).lower() == "app":
@@ -278,6 +278,42 @@ def generate_users_creation_api_body(merchant_code:str) -> list:
     return lst_user_creation_api_body
 
 
+def generate_acquisitions_for_merchant_creation(merchant_id: str) -> list:
+    """
+    This method is used to generate the dictionary with acquisitions that can be added to the merchant creation api
+    :param merchant_id str
+    :return: list
+    """
+    lst_acquisitions_detail = []
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("select * from api_details where ApiName = 'createMerchant';")
+        api_request_body = json.loads(cursor.fetchone()[6])
+        try:
+            acquisition_details = api_request_body['acquisitions'][0]
+        except Exception as e:
+            logger.error(f"Create merchant api request body is incorrect.")
+            lst_acquisitions_detail = None
+            return lst_acquisitions_detail
+        try:
+            cursor.execute("select * from acquisitions;")
+            acquisitions = cursor.fetchall()
+            for i in range(0, len(acquisitions)):
+                acquisition_details['acquirerCode'] = acquisitions[i][0]
+                acquisition_details['paymentGateway'] = acquisitions[i][1]
+                acquisition_details['terminals'] = generate_terminal_details_for_merchant_creation(merchant_id, acquisitions[i][0], acquisitions[i][1])
+                lst_acquisitions_detail.append(acquisition_details.copy())
+            return lst_acquisitions_detail
+        except Exception as e:
+            logger.error(f"Unable to get the acquisition details from db due to error {str(e)}")
+            lst_acquisitions_detail = None
+            return lst_acquisitions_detail
+    except Exception as e:
+        logger.error(f"Unable to connect to the db due to error {str(e)}")
+        lst_acquisitions_detail = None
+        return lst_acquisitions_detail
+
 def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gateway: str) -> str:
     """
     This method is used to get the device serial number associated with the acquisition of merchant
@@ -320,4 +356,157 @@ def get_merchant_id_of_user(user_id: str) -> str:
 
 
 
+def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_code: str, payment_gateway: str) -> list:
+    """
+    This method is used to generate the dictionary with terminal details that can be added to the merchant creation api
+    body. This method also add the new device into the device table.
+    :param merchant_id str
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: list
+    """
+    lst_terminals_detail = []
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("select * from api_details where ApiName = 'createMerchant';")
+        api_request_body = json.loads(cursor.fetchone()[6])
+        try:
+            acquisition_details = api_request_body['acquisitions'][0]
+            terminal_details = acquisition_details['terminals'][0]
+        except Exception as e:
+            logger.error(f"Create merchant api request body is incorrect.")
+            lst_terminals_detail = None
+            return lst_terminals_detail
+        terminal_details_unique_value_fields = generate_terminal_details(merchant_id)
+        try:
+            cursor.execute(f"SELECT * FROM acquisitions where AcquirerCode = '{acquirer_code}' and PaymentGateway = '{payment_gateway}';")
+            acquisitions = cursor.fetchall()[0]
+            number_of_terminals = int(acquisitions[2])
+            tid_number_increment = 0
+            device_number_increment = 0
+            for i in range(0, number_of_terminals):
+                terminal_details['acquirerCode'] = acquirer_code
+                terminal_details['paymentGateway'] = payment_gateway
+                terminal_details['mid'] = terminal_details_unique_value_fields['mid']
+                terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2])+"a"+str(tid_number_increment)
+                while check_if_tid_exists(terminal_details['tid']):
+                    tid_number_increment += 1
+                    terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
+                        tid_number_increment)
+                terminal_details['hsmName'] = acquisitions[3]
+                #Following logic is to perform the factory device registration
+                logger.info("Trying to perform factory device registration...")
+                terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'][:-2] + "a" + str(
+                    device_number_increment)
+                condition = check_if_device_serial_exists(terminal_details['deviceSerial'])
+                if condition:
+                    while condition:
+                        device_number_increment += 1
+                        terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'][
+                                                           :-2] + "a" + str(device_number_increment)
+                        condition = check_if_device_serial_exists(terminal_details['deviceSerial'])
+                        if condition == False:
+                            try:
+                                DBProcessor.setValueToDB(
+                                    f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0007',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                                logger.info(f"Device {terminal_details['deviceSerial']} added to environment.")
+                            except Exception as e:
+                                logger.error(f"Unable to insert device details into db due to error {str(e)}")
+                            break
+                else:
+                    try:
+                        DBProcessor.setValueToDB(
+                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0007',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                        logger.info(f"Device {terminal_details['deviceSerial']} added to environment.")
+                    except Exception as e:
+                        logger.error(f"Unable to insert device details into db due to error {str(e)}")
 
+                # condition = False
+                # while condition == False:
+                #     terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'][:-2]+"a"+str(device_number_increment)
+                #     try:
+                #         result = DBProcessor.setValueToDB(f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0007',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                #         if int(result[0]) > 0:
+                #             condition = True
+                #             logger.info(f"Device {terminal_details['deviceSerial']} has been added to the environment.")
+                #         else:
+                #             logger.info(f"Device {terminal_details['deviceSerial']} is already available in "
+                #                         f"environment. Trying with different name..")
+                #             condition = False
+                #             device_number_increment += 1
+                #     except Exception as e:
+                #         if str(e).__contains__("Duplicate entry"):
+                #             condition = False
+                #             device_number_increment += 1
+                #         else:
+                #             condition = True
+                lst_terminals_detail.append(terminal_details.copy())
+            return lst_terminals_detail
+        except Exception as e:
+            logger.error(f"Unable to get the acquisition details from acquisition db due to error {str(e)}")
+            lst_terminals_detail = None
+            return lst_terminals_detail
+    except Exception as e:
+        logger.error(f"Unable to connect to sqlite db due to error {str(e)}")
+        lst_terminals_detail = None
+        return lst_terminals_detail
+
+def generate_terminal_details(merchant_id: str) -> dict:
+    """
+    This method is used to generate the mid, tid and device id that is unique
+    :param merchant_id str
+    :returns: dict
+    """
+    terminal_details = {}
+    username = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT Username from users where MerchantCode = '{merchant_id}' limit 1;")
+        username = cursor.fetchone()[0]
+    except Exception as e:
+        logger.error(f"Unable to get the merchant details due to error {str(e)}")
+    if username:
+        terminal_details['mid'] = "MIDIS"+username
+        terminal_details['tid'] = username[-8:]
+        terminal_details['device_id'] = "D"+username
+    else:
+        terminal_details = None
+    return terminal_details
+
+def check_if_tid_exists(tid:str) -> bool:
+    """
+    This method is used to check if the tid exists in the environment
+    :param tid str
+    :return: bool
+    """
+    try:
+        result = DBProcessor.getValueFromDB(f"Select * from terminal_info where tid = '{tid}';")
+        if len(result) > 0:
+            logger.info(f"TID {tid} already exists in the environment.")
+            return True
+        else:
+            logger.info(f"TID {tid} is not available in the environment.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if tid exists in the environment, due to error {str(e)}")
+        return None
+
+def check_if_device_serial_exists(device_serial: str) -> bool:
+    """
+    This method is used to check if the device serial already exists in the environment
+    :param device_serial str
+    :return: bool
+    """
+    try:
+        result = DBProcessor.getValueFromDB(f"Select * from device where device_serial = '{device_serial}';")
+        if len(result) > 0:
+            logger.info(f"Device {device_serial} already exists in the environment.")
+            return True
+        else:
+            logger.info(f"Device {device_serial} is not available in the environment.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if device serial exists in the environment, due to error {str(e)}")
+        return None

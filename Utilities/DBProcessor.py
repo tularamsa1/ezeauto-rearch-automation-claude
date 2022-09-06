@@ -1,4 +1,3 @@
-# import mysql
 import pandas
 import pandas as pd
 import pymysql

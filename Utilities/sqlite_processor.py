@@ -28,6 +28,7 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM appium_servers_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM api_details;")
+        cursor.execute("DELETE FROM acquisitions")
         conn.commit()
         logger.info("All the assigner tables cleared successfully.")
     except Exception as e:
@@ -201,3 +202,18 @@ def check_merchant_exists_in_automation_db(merchant):
     cursor.close()
     conn.close()
     return exists
+
+def update_acquisitions_to_db():
+    """
+    This method is used to read the acquisition details from excel and update the db.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        acquisition_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name= "AcquisitionDetails")
+        for i in range(0,len(acquisition_details)):
+            cursor.execute(f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName)VALUES("{acquisition_details.iloc[i]['Acquirer Code']}","{acquisition_details.iloc[i]['Payment Gateway']}",{acquisition_details.iloc[i]['Number of Terminals']},"{acquisition_details.iloc[i]['HSM Name']}");""")
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Unable to update the acquisition details to sqlite db due to error {str(e)}")

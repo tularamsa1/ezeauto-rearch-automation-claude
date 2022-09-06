@@ -452,6 +452,7 @@ def prepareDevicesAndDB():
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
         sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
         sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
+        sqlite_processor.update_acquisitions_to_db()
         merchant_creator.create_merchants_with_users()
         sqlite_processor.update_app_users_to_db()
         sqlite_processor.update_portal_users_to_db()

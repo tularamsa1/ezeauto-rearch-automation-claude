@@ -12,6 +12,7 @@ from Utilities import ReportProcessor
 logger = EzeAutoLogger(__name__)
 
 try:
+
     if TestSuiteSetup.prepareDevicesAndDB():
         TestSuiteSetup.prepare_Consolidated_List_Of_TestcasesFile()
         if ConfigReader.read_config("Validations",
