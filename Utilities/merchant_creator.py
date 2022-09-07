@@ -305,6 +305,8 @@ def get_merchant_id_of_user(user_id: str) -> str:
     :return: str
     """
     merchant_id = None
+    conn = ""
+    cursor = ""
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
@@ -312,6 +314,8 @@ def get_merchant_id_of_user(user_id: str) -> str:
         merchant_id = cursor.fetchone()[1]
     except Exception as e:
         logger.error(f"Unable to get the merchant id due to error {str(e)}")
+    cursor.close()
+    conn.close()
     return merchant_id
 
 
