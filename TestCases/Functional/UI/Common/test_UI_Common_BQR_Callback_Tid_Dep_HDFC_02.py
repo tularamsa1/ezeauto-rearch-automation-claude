@@ -1188,7 +1188,7 @@ def test_common_100_102_099():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching posting date for {txn_id} : {posting_date} ")
 
             query = "select * from txn where org_code='"+org_code+"' and external_ref='"+order_id+"' " \
@@ -1198,8 +1198,7 @@ def test_common_100_102_099():
             txn_id_new = result["id"].iloc[0]
             auth_code_new = result['auth_code'].values[0]
             rrn_new = result['rr_number'].iloc[0]
-            posting_date_new = result['posting_date'].values[0]
-            modified_date_new = result['modified_time'].values[0]
+            posting_date_new = result['created_time'].values[0]
             logger.debug(f"Fetching new txn_id, auth_code, rrn, posting_date, customer name and payer name"
                 f" from database for current merchant:{txn_id_new}, {auth_code_new}, {rrn_new}, {posting_date_new}")
 
@@ -1220,8 +1219,7 @@ def test_common_100_102_099():
             txn_id_new_2 = result["id"].iloc[0]
             auth_code_new_2 = result['auth_code'].values[0]
             rrn_new_2 = result['rr_number'].iloc[0]
-            posting_date_new_2 = result['posting_date'].values[0]
-            modified_date_new_2 = result['modified_time'].values[0]
+            posting_date_new_2 = result['created_time'].values[0]
             logger.debug(f"Fetching new txn_id, auth_code, rrn, posting_date, customer name and payer name"
             f"from database for current merchant:{txn_id_new_2}, {auth_code_new_2}, {rrn_new_2}, {posting_date_new_2}")
             # ------------------------------------------------------------------------------------------------
@@ -1243,8 +1241,8 @@ def test_common_100_102_099():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
-                date_and_time_new = date_time_converter.to_app_format(modified_date_new)
-                date_and_time_new_2 = date_time_converter.to_app_format(modified_date_new_2)
+                date_and_time_new = date_time_converter.to_app_format(posting_date_new)
+                date_and_time_new_2 = date_time_converter.to_app_format(posting_date_new_2)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED",
@@ -1413,7 +1411,7 @@ def test_common_100_102_099():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1436,7 +1434,7 @@ def test_common_100_102_099():
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
                 device_serial_api_new = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1459,7 +1457,7 @@ def test_common_100_102_099():
                 tid_api_new_2 = response["tid"]
                 txn_type_api_new_2 = response["txnType"]
                 auth_code_api_new_2 = response["authCode"]
-                date_api_new_2 = response["postingDate"]
+                date_api_new_2 = response["createdTime"]
                 device_serial_api_new_2 = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
@@ -1721,7 +1719,7 @@ def test_common_100_102_099():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(modified_date_new)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_new)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_new),
                                    'BASE AMOUNT:': "Rs." + str(amount) ,  'date': txn_date,'time': txn_time,
                                    'AUTH CODE': auth_code_new}
@@ -2478,7 +2476,8 @@ def test_common_100_102_141():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='HDFC';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
+                "org_code ='" + org_code + "' and acquirer_code='HDFC' and payment_gateway='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 

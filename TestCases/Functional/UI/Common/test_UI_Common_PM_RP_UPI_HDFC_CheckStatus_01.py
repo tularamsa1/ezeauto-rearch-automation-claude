@@ -775,7 +775,7 @@ def test_common_100_103_006():
 @pytest.mark.appVal
 def test_common_100_103_047():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI Pending_HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Pending_HDFC
     Sub Feature Description: Verification of a check status for upi pending txn via HDFC
     TC naming code description:
     100: Payment Method
@@ -1139,10 +1139,10 @@ def test_common_100_103_047():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_103_048():
+def test_common_100_103_088():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_failed_check_status_HDFC
-    Sub Feature Description: Verification of a check status for upi failed txn via HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Amount_Mismatch_HDFC
+    Sub Feature Description: Verification of a Remote Pay upi for amount mismatch.
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -1153,9 +1153,9 @@ def test_common_100_103_048():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -1172,13 +1172,16 @@ def test_common_100_103_048():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_gateway='UPI')
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         query = "update remotepay_setting set setting_value= '1' where setting_name='cnpTxnTimeoutDuration' and org_code='" + org_code + "';"
         logger.debug(f"Query to update remote pay settings is : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Result for remote pay setting is: {result}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1213,8 +1216,6 @@ def test_common_100_103_048():
                 remotePayUpiTxn.clickOnRemotePayUPI()
                 logger.info("Opening UPI intent to start the txn.")
                 remotePayUpiTxn.clickOnRemotePayLaunchUPI()
-                # remotePayUpiTxn.clickOnRemotePayCancelUPI()
-                # remotePayUpiTxn.clickOnRemotePayProceed()
                 logger.info("UPI flow completed")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
@@ -1534,3 +1535,4 @@ def test_common_100_103_048():
         result = DBProcessor.setValueToDB(query)
         logger.info(f"In finally, remote pay setting is: {result}")
         Configuration.executeFinallyBlock(testcase_id)
+

@@ -3,7 +3,6 @@ import shutil
 import sys
 from datetime import datetime
 from time import sleep
-
 import pytest
 from termcolor import colored
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -885,7 +884,7 @@ def test_common_100_102_062():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'AXIS', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'YES', portal_username, portal_password, 'BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -901,13 +900,21 @@ def test_common_100_102_062():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        query = "select * from upi_merchant_config where org_code='" + org_code + "' " \
-                                                             "and status = 'ACTIVE' and bank_code='AXIS'"
-        logger.debug(f"Query to fetch upi_mc_id and vpa from upi_merchant_config : {query}")
+        query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
+                                                        "status = 'ACTIVE' and bank_code='YES'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
-        logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
+        terminal_info_id = result["terminal_info_id"].iloc[0]
+        bqr_mc_id = result["id"].iloc[0]
+        bqr_m_pan = result["merchant_pan"].iloc[0]
+        logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
+                     f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
+        query = "select * from upi_merchant_config where org_code='" + org_code + "' " \
+                                                             "and status = 'ACTIVE' and bank_code='YES'"
+        logger.debug(f"Query to fetch upi_mc_id and vpa from upi_merchant_config : {query}")
+        result = DBProcessor.getValueFromDB(query)
         vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching vpa, upi_mc_id from database for current merchant:{vpa}, {upi_mc_id}")
@@ -968,6 +975,7 @@ def test_common_100_102_062():
             logger.debug(f"Response received for checkstatus of transaction is : {response}")
             app_driver.reset()
             logger.info("Restarting MPOSX app after perfroming checkstatus of the transaction")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1061,16 +1069,18 @@ def test_common_100_102_062():
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt_2": float(amount_2),"pmt_mode": "UPI",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
-                                       "acquirer_code": "AXIS", "issuer_code": "AXIS","txn_type": "CHARGE",
+                                       "acquirer_code": "YES", "issuer_code": "YES","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date, 'txn_amt': float(amount)}
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1084,7 +1094,7 @@ def test_common_100_102_062():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 amt_original_api = float(response["amountOriginal"])
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt_2": amount_api,"pmt_mode": payment_mode_api,
@@ -1106,10 +1116,19 @@ def test_common_100_102_062():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {"txn_amt_2": float(amount_2),"pmt_mode": "UPI","pmt_status": "AUTHORIZED",
-                                      "pmt_state": "SETTLED","acquirer_code" : "AXIS", "bank_name" : "Axis Bank",
+                                      "pmt_state": "SETTLED","acquirer_code" : "YES", "bank_name" : "Yes Bank",
                                       "payer_name": payer_name, "mid" :mid, "tid" : tid, "pmt_gateway": "ATOS",
-                                      "rrn" : str(rrn), "settle_status": "SETTLED","upi_pmt_status": "AUTHORIZED",
-                                      "upi_txn_type": "PAY_BQR", "upi_mc_id": upi_mc_id, "upi_bank_code": "AXIS",
+                                      "rrn" : str(rrn), "settle_status": "SETTLED",
+                                      "bqr_pmt_status": "INITIATED BY UPI",
+                                      "bqr_pmt_state": "SETTLED",
+                                      "bqr_txn_amt": float(amount),
+                                      "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                                      "bqr_bank_code": "YES",
+                                      "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
+                                      # "bqr_merchant_pan": bqr_m_pan, "bqr_rrn": str(rrn),
+                                      "bqr_org_code": org_code,
+                                      "upi_pmt_status": "AUTHORIZED",
+                                      "upi_txn_type": "PAY_BQR", "upi_mc_id": upi_mc_id, "upi_bank_code": "YES",
                                       "txn_amt": float(amount)}
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -1131,6 +1150,22 @@ def test_common_100_102_062():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 amount_original_db = float(result["amount_original"].iloc[0])
 
+                query = "select * from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                bqr_status_db = result["status_desc"].iloc[0]
+                bqr_state_db = result["state"].iloc[0]
+                bqr_amount_db = float(result["txn_amount"].iloc[0])
+                bqr_txn_type_db = result["txn_type"].iloc[0]
+                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_bank_code_db = result["bank_code"].iloc[0]
+                bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
+                bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
+                #bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
+                #bqr_rrn_db = result['rrn'].values[0]
+                bqr_org_code_db = result['org_code'].values[0]
+
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1144,7 +1179,16 @@ def test_common_100_102_062():
                                     "acquirer_code" : acquirer_code_db, "bank_name" : bank_name_db,
                                     "payer_name": payer_name_db, "mid" :mid_db, "tid" : tid_db,
                                     "pmt_gateway": payment_gateway_db, "rrn" : rr_number_db,
-                                    "settle_status": settlement_status_db,"upi_pmt_status": upi_status_db,
+                                    "settle_status": settlement_status_db,
+                                    "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
+                                    "bqr_txn_amt": bqr_amount_db,
+                                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                                    "bqr_bank_code": bqr_bank_code_db,
+                                    "bqr_merchant_config_id": bqr_merchant_config_id_db,
+                                    "bqr_txn_primary_id": bqr_txn_primary_id_db,
+                                    # "bqr_merchant_pan": bqr_merchant_pan_db,"bqr_rrn": bqr_rrn_db,
+                                    "bqr_org_code": bqr_org_code_db,
+                                    "upi_pmt_status": upi_status_db,
                                     "upi_txn_type": upi_txn_type_db, "upi_mc_id": upi_mc_id_db,
                                     "upi_bank_code": upi_bank_code_db,
                                     "txn_amt": amount_original_db}

@@ -61,7 +61,8 @@ def test_common_100_102_110():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='HDFC';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
+                "org_code ='" + org_code + "' and acquirer_code='HDFC' and payment_gateway='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -546,8 +547,8 @@ def test_common_100_102_111():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" \
-                + org_code + "' and payment_mode ='UPI' and payment_gateway='HDFC';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
+                "org_code ='" + org_code + "' and acquirer_code='HDFC' and payment_gateway='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -1004,7 +1005,8 @@ def test_common_100_102_142():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='HDFC';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
+                "org_code ='" + org_code + "' and acquirer_code='HDFC' and payment_gateway='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -1129,13 +1131,13 @@ def test_common_100_102_142():
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
-                    "pmt_mode": "UPI",
-                    "pmt_status": "STATUS:EXPIRED",
+                    "pmt_mode": "BHARAT QR",
+                    "pmt_status": "STATUS:PENDING",
                     "txn_amt": str(amount),
-                    "settle_status": "EXPIRED",
+                    "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT EXPIRED",
+                    "payment_msg": "PAYMENT PENDING",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1194,10 +1196,10 @@ def test_common_100_102_142():
             try:
                 date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
-                    "pmt_status": "EXPIRED",
-                    "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "EXPIRED",
-                    "settle_status": "SETTLED",
+                    "pmt_status": "PENDING",
+                    "txn_amt": float(amount), "pmt_mode": "BHARATQR",
+                    "pmt_state": "PENDING",
+                    "settle_status": "PENDING",
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
                     "order_id": order_id,
@@ -1257,22 +1259,18 @@ def test_common_100_102_142():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "pmt_status": "EXPIRED",
-                    "pmt_state": "EXPIRED",
-                    "pmt_mode": "UPI",
+                    "pmt_status": "PENDING",
+                    "pmt_state": "PENDING",
+                    "pmt_mode": "BHARATQR",
                     "txn_amt": float(amount),
-                    "settle_status": "SETTLED",
+                    "settle_status": "PENDING",
                     "order_id": order_id,
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
                     "payment_gateway": "HDFC",
-                    "upi_txn_status": "EXPIRED",
-                    "upi_txn_type": "PAY_BQR",
-                    "upi_bank_code": "HDFC",
-                    "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    "bqr_pmt_status": "EXPIRED", "bqr_pmt_state": "EXPIRED",
+                    "bqr_pmt_state": "PENDING",
                     "bqr_txn_amt": float(amount),
                     "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
@@ -1299,20 +1297,10 @@ def test_common_100_102_142():
                 device_serial_db = result['device_serial'].values[0]
                 order_id_db = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
-                upi_txn_type_db = result["txn_type"].iloc[0]
-                upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                bqr_status_db = result["status_code"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
@@ -1327,18 +1315,14 @@ def test_common_100_102_142():
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "order_id": order_id_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "payment_gateway": payment_gateway_db,
-                    "upi_txn_type": upi_txn_type_db,
-                    "upi_bank_code": upi_bank_code_db,
-                    "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
+                    "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
                     "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
@@ -1452,7 +1436,8 @@ def test_common_100_102_113():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='HDFC';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
+                "org_code ='" + org_code + "' and acquirer_code='HDFC' and payment_gateway='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -2018,7 +2003,8 @@ def test_common_100_102_114():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='HDFC';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
+                "org_code ='" + org_code + "' and acquirer_code='HDFC' and payment_gateway='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 

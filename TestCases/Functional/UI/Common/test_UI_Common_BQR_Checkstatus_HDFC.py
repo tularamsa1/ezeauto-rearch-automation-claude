@@ -769,7 +769,7 @@ def test_common_100_102_006():
             homePage.check_home_page_logo()
             homePage.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
-            amount = random.choice([i for i in range(51, 100) if i != 55])
+            amount = random.choice([i for i in range(55, 100) if i != 55])
             order_id = datetime.now().strftime('%m%d%H%M%S')
             homePage.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
@@ -887,12 +887,13 @@ def test_common_100_102_006():
                 logger.info(f"Starting API Validation for the test case : {testcase_id}")
                 # --------------------------------------------------------------------------------------------
                 expectedAPIValues = {"Payment Status":"EXPIRED","Amount": amount, "Payment Mode": "BHARATQR","Acquirer Code":"HDFC"}
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": username, "password": password, "txnId": txn_id})
-                print("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": username, "password": password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = response["amount"]
                 payment_mode_api=response["paymentMode"]
@@ -923,7 +924,7 @@ def test_common_100_102_006():
                 # --------------------------------------------------------------------------------------------
                 expectedDBValues = {"Payment Status": "EXPIRED", "Payment mode": "BHARATQR","Acquirer Code":"HDFC",
                                     "Payment amount": "{:.2f}".format(amount), "State": "EXPIRED", "State Bharatqr": "EXPIRED",
-                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Expired"}
+                                    "Amount Bharatqr": amount, "Status Bharatqr": "Transaction Pending"}
                 #
                 query = "select status,amount,payment_mode,acquirer_code,state from txn where id='" + txn_id + "'"
                 logger.debug(f"DB query to fetch status, amount, acquirer_code,payment mode and state from DB : {query}")

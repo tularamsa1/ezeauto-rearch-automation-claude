@@ -132,7 +132,7 @@ def test_common_100_102_126():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"Query result, Txn_id_expired and rrn_expired : {txn_id} and {rrn}")
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
 
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
@@ -167,7 +167,7 @@ def test_common_100_102_126():
             customer_name_new = result['customer_name'].values[0]
             payer_name_new = result['payer_name'].values[0]
             auth_code_new = result['auth_code'].values[0]
-            modified_date_new = result['modified_time'].values[0]
+            modified_date_new = result['created_time'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -336,7 +336,7 @@ def test_common_100_102_126():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
@@ -358,7 +358,7 @@ def test_common_100_102_126():
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
                 order_id_api_new = response["orderNumber"]
 
 
