@@ -393,9 +393,6 @@ def get_merchant_id_of_user(user_id: str) -> str:
     return merchant_id
 
 
-print(get_merchant_id_of_user("User1"))
-
-
 
 def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_code: str, payment_gateway: str) -> list:
     """
