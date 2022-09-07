@@ -298,4 +298,25 @@ def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gatew
     return device_serial
 
 
+def get_merchant_id_of_user(user_id: str) -> str:
+    """
+    This method is used to get the merchant id associated with the user id
+    :param user_id str
+    :return: str
+    """
+    merchant_id = None
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select * from users where Name = '{user_id}';")
+        merchant_id = cursor.fetchone()[1]
+    except Exception as e:
+        logger.error(f"Unable to get the merchant id due to error {str(e)}")
+    return merchant_id
+
+
+print(get_merchant_id_of_user("User1"))
+
+
+
 
