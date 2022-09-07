@@ -278,5 +278,24 @@ def generate_users_creation_api_body(merchant_code:str) -> list:
     return lst_user_creation_api_body
 
 
+def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gateway: str) -> str:
+    """
+    This method is used to get the device serial number associated with the acquisition of merchant
+    :param org_code str
+    :param acquisition str
+    :param payment_gateway str
+    :return: str
+    """
+    device_serial = None
+    try:
+        result = DBProcessor.getValueFromDB(f"SELECT device_serial FROM terminal_info WHERE org_code = '{org_code}' and acquirer_code = '{acquisition}' and payment_gateway = '{payment_gateway}';")
+        if len(result) > 0:
+            device_serial = result['device_serial'][0]
+        else:
+            logger.warn(f"Device serial info not available for the acquisition '{acquisition}' of merchant '{org_code}'.")
+    except Exception as e:
+        logger.error(f"Unable to get the device serial from db due to error {str(e)}")
+    return device_serial
+
 
 
