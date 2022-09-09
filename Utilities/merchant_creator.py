@@ -356,6 +356,26 @@ def get_merchant_id_of_user(user_id: str) -> str:
 
 
 
+def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gateway: str) -> str:
+    """
+    This method is used to get the device serial number associated with the acquisition of merchant
+    :param org_code str
+    :param acquisition str
+    :param payment_gateway str
+    :return: str
+    """
+    device_serial = None
+    try:
+        result = DBProcessor.getValueFromDB(f"SELECT device_serial FROM terminal_info WHERE org_code = '{org_code}' and acquirer_code = '{acquisition}' and payment_gateway = '{payment_gateway}';")
+        if len(result) > 0:
+            device_serial = result['device_serial'][0]
+        else:
+            logger.warn(f"Device serial info not available for the acquisition '{acquisition}' of merchant '{org_code}'.")
+    except Exception as e:
+        logger.error(f"Unable to get the device serial from db due to error {str(e)}")
+    return device_serial
+
+
 def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_code: str, payment_gateway: str) -> list:
     """
     This method is used to generate the dictionary with terminal details that can be added to the merchant creation api
@@ -452,6 +472,7 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
         lst_terminals_detail = None
         return lst_terminals_detail
 
+
 def generate_terminal_details(merchant_id: str) -> dict:
     """
     This method is used to generate the mid, tid and device id that is unique
@@ -475,6 +496,7 @@ def generate_terminal_details(merchant_id: str) -> dict:
         terminal_details = None
     return terminal_details
 
+
 def check_if_tid_exists(tid:str) -> bool:
     """
     This method is used to check if the tid exists in the environment
@@ -492,6 +514,7 @@ def check_if_tid_exists(tid:str) -> bool:
     except Exception as e:
         logger.error(f"Unable to check if tid exists in the environment, due to error {str(e)}")
         return None
+
 
 def check_if_device_serial_exists(device_serial: str) -> bool:
     """
