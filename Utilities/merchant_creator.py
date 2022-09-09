@@ -7,8 +7,9 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 
 logger = EzeAutoLogger(__name__)
-dbPath = ConfigReader.read_config_paths("System", "automation_suite_path")+"/Database/ezeauto.db"
-excel_path = ConfigReader.read_config_paths("System", "automation_suite_path")+"/DataProvider/merchant_user_creation.xlsx"
+dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/Database/ezeauto.db"
+excel_path = ConfigReader.read_config_paths("System",
+                                            "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 
 
 def create_merchants_with_users():
@@ -20,7 +21,7 @@ def create_merchants_with_users():
     api_details = get_api_from_db("createMerchant")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    url = ConfigReader.read_config("APIs", "baseurl")+api_details["EndPoint"]
+    url = ConfigReader.read_config("APIs", "baseurl") + api_details["EndPoint"]
     headers = json.loads(api_details["Header"])
     global user_name
     lst_merchant_creation_body = generate_merchant_creation_api_body()
@@ -35,12 +36,16 @@ def create_merchants_with_users():
             if result["success"]:
                 logger.info(f"Merchant {user_name} with users created successfully.")
                 try:
-                    cursor.execute("update merchants set CreationStatus = 'Created', Availability = 'Available' where MerchantCode = '" + user_name + "'")
-                    cursor.execute("update users set CreationStatus = 'Created', Availability = 'Available' where MerchantCode = '" + user_name + "'")
+                    cursor.execute(
+                        "update merchants set CreationStatus = 'Created', Availability = 'Available' where MerchantCode = '" + user_name + "'")
+                    cursor.execute(
+                        "update users set CreationStatus = 'Created', Availability = 'Available' where MerchantCode = '" + user_name + "'")
                     conn.commit()
                 except Exception as e:
-                    print(f"Unable to update the ezeauto db on the merchant {user_name} creation due to error " + str(e))
-                    logger.warning(f"Unable to update the ezeauto db on the merchant {user_name} creation due to error " + str(e))
+                    print(
+                        f"Unable to update the ezeauto db on the merchant {user_name} creation due to error " + str(e))
+                    logger.warning(
+                        f"Unable to update the ezeauto db on the merchant {user_name} creation due to error " + str(e))
             else:
                 logger.warning(f"Merchant {user_name} creation failed")
 
@@ -95,7 +100,7 @@ def create_users_for_merchant(merchant_code):
     conn.close()
 
 
-def get_api_from_db(api_name:str) -> dict:
+def get_api_from_db(api_name: str) -> dict:
     """
     This method is used to get the api details from the api_details table of database.
 
@@ -131,8 +136,8 @@ def check_if_merchant_exists(merchant_code: str) -> bool:
 
     df_query_result = DBProcessor.getValueFromDB("select * from org_employee where org_code ='" + merchant_code + "';")
     if df_query_result.empty:
-        print("Merchant "+merchant_code+" does not exist in this environment")
-        logger.info("Merchant "+merchant_code+" does not exist in this environment")
+        print("Merchant " + merchant_code + " does not exist in this environment")
+        logger.info("Merchant " + merchant_code + " does not exist in this environment")
         return False
     else:
         print("Merchant " + merchant_code + " already exists in this environment")
@@ -149,8 +154,8 @@ def check_if_user_exists(name: str) -> bool:
 
     df_query_result = DBProcessor.getValueFromDB("select * from org_employee where name ='" + name + "';")
     if df_query_result.empty:
-        print("User "+name+" does not exist in this environment")
-        logger.info("User "+name+" does not exist in this environment")
+        print("User " + name + " does not exist in this environment")
+        logger.info("User " + name + " does not exist in this environment")
         return False
     else:
         print("User " + name + " already exists in this environment")
@@ -183,14 +188,16 @@ def generate_merchant_creation_api_body() -> list:
                         merchant_creation_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
                         merchant_creation_api["acquisitions"] = generate_acquisitions_for_merchant_creation(merchant[0])
                         # for replacing the merchant details in the api
-                        merchant_creation_api["merchantCode"] = merchant_creation_api["name"] = merchant_creation_api["reportingOrgCode"] = merchant[0]
-                        cursor.execute("SELECT * from users where MerchantCode = '"+merchant[0]+"';")
+                        merchant_creation_api["merchantCode"] = merchant_creation_api["name"] = merchant_creation_api[
+                            "reportingOrgCode"] = merchant[0]
+                        cursor.execute("SELECT * from users where MerchantCode = '" + merchant[0] + "';")
                         users = cursor.fetchall()
                         if users:
                             count = 0
                             for user in users:
                                 if count > 0:
-                                    merchant_creation_api["users"].append(json.loads(get_api_from_db("createMerchant")["RequestBody"])["users"][0])
+                                    merchant_creation_api["users"].append(
+                                        json.loads(get_api_from_db("createMerchant")["RequestBody"])["users"][0])
                                     merchant_creation_api["users"].append(merchant_creation_api["users"][0])
                                 merchant_creation_api["users"][count]["name"] = user[0]
                                 merchant_creation_api["users"][count]["userToken"] = user[2]
@@ -205,11 +212,13 @@ def generate_merchant_creation_api_body() -> list:
                         else:
                             logger.warning("This merchant does not have any associated user.")
                     except Exception as e:
-                        print("Unable to generate api for merchant "+merchant[0]+"due to error "+str(e))
-                        logger.error(("Unable to generate api for merchant "+merchant[0]+"due to error "+str(e)))
+                        print("Unable to generate api for merchant " + merchant[0] + "due to error " + str(e))
+                        logger.error(("Unable to generate api for merchant " + merchant[0] + "due to error " + str(e)))
                 else:
                     create_users_for_merchant(merchant[0])
-                    cursor.execute("update merchants set CreationStatus = 'Existed', Availability = 'Available' where MerchantCode ='"+merchant[0]+"';")
+                    cursor.execute(
+                        "update merchants set CreationStatus = 'Existed', Availability = 'Available' where MerchantCode ='" +
+                        merchant[0] + "';")
                     conn.commit()
             cursor.close()
             conn.close()
@@ -219,12 +228,12 @@ def generate_merchant_creation_api_body() -> list:
             cursor.close()
             conn.close()
     except Exception as e:
-        print("Unable to fetch merchant creation details from the ezeauto.db due to error "+str(e))
-        logger.fatal("Unable to fetch merchant creation details from the ezeauto.db due to error "+str(e))
+        print("Unable to fetch merchant creation details from the ezeauto.db due to error " + str(e))
+        logger.fatal("Unable to fetch merchant creation details from the ezeauto.db due to error " + str(e))
     return lst_merchant_creation_api_body
 
 
-def generate_users_creation_api_body(merchant_code:str) -> list:
+def generate_users_creation_api_body(merchant_code: str) -> list:
     """
     This method is used to generate the request body of the user creation API.
     This reads the users table and gets the list of users for a specific merchant and prepares the API.
@@ -258,12 +267,14 @@ def generate_users_creation_api_body(merchant_code:str) -> list:
                         user_creation_api["mobileNumber"] = user[4]
                         lst_user_creation_api_body.append(user_creation_api)
                     except Exception as e:
-                        print("Unable to generate api for user "+user[0]+"due to error "+str(e))
-                        logger.error(("Unable to generate api for user "+user[0]+"due to error "+str(e)))
+                        print("Unable to generate api for user " + user[0] + "due to error " + str(e))
+                        logger.error(("Unable to generate api for user " + user[0] + "due to error " + str(e)))
                 else:
                     logger.info(f"User {user[0]} already exists in the system.")
                     print(f"User {user[0]} already exists in the system.")
-                    cursor.execute("update users set CreationStatus = 'Existed', Availability = 'Available'  where name ='"+user[0]+"';")
+                    cursor.execute(
+                        "update users set CreationStatus = 'Existed', Availability = 'Available'  where name ='" + user[
+                            0] + "';")
                     conn.commit()
             cursor.close()
             conn.close()
@@ -273,8 +284,8 @@ def generate_users_creation_api_body(merchant_code:str) -> list:
             cursor.close()
             conn.close()
     except Exception as e:
-        print("Unable to fetch user creation details from the ezeauto.db due to error "+str(e))
-        logger.fatal("Unable to fetch user creation details from the ezeauto.db due to error "+str(e))
+        print("Unable to fetch user creation details from the ezeauto.db due to error " + str(e))
+        logger.fatal("Unable to fetch user creation details from the ezeauto.db due to error " + str(e))
     return lst_user_creation_api_body
 
 
@@ -302,7 +313,9 @@ def generate_acquisitions_for_merchant_creation(merchant_id: str) -> list:
             for i in range(0, len(acquisitions)):
                 acquisition_details['acquirerCode'] = acquisitions[i][0]
                 acquisition_details['paymentGateway'] = acquisitions[i][1]
-                acquisition_details['terminals'] = generate_terminal_details_for_merchant_creation(merchant_id, acquisitions[i][0], acquisitions[i][1])
+                acquisition_details['terminals'] = generate_terminal_details_for_merchant_creation(merchant_id,
+                                                                                                   acquisitions[i][0],
+                                                                                                   acquisitions[i][1])
                 lst_acquisitions_detail.append(acquisition_details.copy())
             return lst_acquisitions_detail
         except Exception as e:
@@ -313,85 +326,6 @@ def generate_acquisitions_for_merchant_creation(merchant_id: str) -> list:
         logger.error(f"Unable to connect to the db due to error {str(e)}")
         lst_acquisitions_detail = None
         return lst_acquisitions_detail
-
-def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gateway: str) -> str:
-    """
-    This method is used to get the device serial number associated with the acquisition of merchant
-    :param org_code str
-    :param acquisition str
-    :param payment_gateway str
-    :return: str
-    """
-    device_serial = None
-    try:
-        result = DBProcessor.getValueFromDB(f"SELECT device_serial FROM terminal_info WHERE org_code = '{org_code}' and acquirer_code = '{acquisition}' and payment_gateway = '{payment_gateway}';")
-        if len(result) > 0:
-            device_serial = result['device_serial'][0]
-        else:
-            logger.warn(f"Device serial info not available for the acquisition '{acquisition}' of merchant '{org_code}'.")
-    except Exception as e:
-        logger.error(f"Unable to get the device serial from db due to error {str(e)}")
-    return device_serial
-
-
-def get_merchant_id_of_user(user_id: str) -> str:
-    """
-    This method is used to get the merchant id associated with the user id
-    :param user_id str
-    :return: str
-    """
-    merchant_id = None
-    conn = ""
-    cursor = ""
-    try:
-        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute(f"select * from users where Name = '{user_id}';")
-        merchant_id = cursor.fetchone()[1]
-    except Exception as e:
-        logger.error(f"Unable to get the merchant id due to error {str(e)}")
-    cursor.close()
-    conn.close()
-    return merchant_id
-
-
-
-def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gateway: str) -> str:
-    """
-    This method is used to get the device serial number associated with the acquisition of merchant
-    :param org_code str
-    :param acquisition str
-    :param payment_gateway str
-    :return: str
-    """
-    device_serial = None
-    try:
-        result = DBProcessor.getValueFromDB(f"SELECT device_serial FROM terminal_info WHERE org_code = '{org_code}' and acquirer_code = '{acquisition}' and payment_gateway = '{payment_gateway}';")
-        if len(result) > 0:
-            device_serial = result['device_serial'][0]
-        else:
-            logger.warn(f"Device serial info not available for the acquisition '{acquisition}' of merchant '{org_code}'.")
-    except Exception as e:
-        logger.error(f"Unable to get the device serial from db due to error {str(e)}")
-    return device_serial
-
-
-def get_merchant_id_of_user(user_id: str) -> str:
-    """
-    This method is used to get the merchant id associated with the user id
-    :param user_id str
-    :return: str
-    """
-    merchant_id = None
-    try:
-        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute(f"select * from users where Name = '{user_id}';")
-        merchant_id = cursor.fetchone()[1]
-    except Exception as e:
-        logger.error(f"Unable to get the merchant id due to error {str(e)}")
-    return merchant_id
-
 
 
 def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_code: str, payment_gateway: str) -> list:
@@ -418,7 +352,8 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
             return lst_terminals_detail
         terminal_details_unique_value_fields = generate_terminal_details(merchant_id)
         try:
-            cursor.execute(f"SELECT * FROM acquisitions where AcquirerCode = '{acquirer_code}' and PaymentGateway = '{payment_gateway}';")
+            cursor.execute(
+                f"SELECT * FROM acquisitions where AcquirerCode = '{acquirer_code}' and PaymentGateway = '{payment_gateway}';")
             acquisitions = cursor.fetchall()[0]
             number_of_terminals = int(acquisitions[2])
             tid_number_increment = 0
@@ -427,13 +362,15 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 terminal_details['acquirerCode'] = acquirer_code
                 terminal_details['paymentGateway'] = payment_gateway
                 terminal_details['mid'] = terminal_details_unique_value_fields['mid']
-                terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2])+"a"+str(tid_number_increment)
+                terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
+                    tid_number_increment)
                 while check_if_tid_exists(terminal_details['tid']):
                     tid_number_increment += 1
                     terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
                         tid_number_increment)
+                    trim_extra_digits_of_tid(tid=terminal_details['tid'], max_length=8)
                 terminal_details['hsmName'] = acquisitions[3]
-                #Following logic is to perform the factory device registration
+                # Following logic is to perform the factory device registration
                 logger.info("Trying to perform factory device registration...")
                 terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'][:-2] + "a" + str(
                     device_number_increment)
@@ -441,8 +378,8 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 if condition:
                     while condition:
                         device_number_increment += 1
-                        terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'][
-                                                           :-2] + "a" + str(device_number_increment)
+                        terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'] + str(
+                            device_number_increment)
                         condition = check_if_device_serial_exists(terminal_details['deviceSerial'])
                         if condition == False:
                             try:
@@ -487,15 +424,15 @@ def generate_terminal_details(merchant_id: str) -> dict:
     except Exception as e:
         logger.error(f"Unable to get the merchant details due to error {str(e)}")
     if username:
-        terminal_details['mid'] = "MIDIS"+username
+        terminal_details['mid'] = "MIDIS" + username
         terminal_details['tid'] = username[-8:]
-        terminal_details['device_id'] = "D"+username
+        terminal_details['device_id'] = "D" + username
     else:
         terminal_details = None
     return terminal_details
 
 
-def check_if_tid_exists(tid:str) -> bool:
+def check_if_tid_exists(tid: str) -> bool:
     """
     This method is used to check if the tid exists in the environment
     :param tid str
@@ -531,3 +468,63 @@ def check_if_device_serial_exists(device_serial: str) -> bool:
     except Exception as e:
         logger.error(f"Unable to check if device serial exists in the environment, due to error {str(e)}")
         return None
+
+
+def get_device_serial_of_merchant(org_code: str, acquisition: str, payment_gateway: str) -> str:
+    """
+    This method is used to get the device serial number associated with the acquisition of merchant
+    :param org_code str
+    :param acquisition str
+    :param payment_gateway str
+    :return: str
+    """
+    device_serial = None
+    try:
+        result = DBProcessor.getValueFromDB(
+            f"SELECT device_serial FROM terminal_info WHERE org_code = '{org_code}' and acquirer_code = '{acquisition}' and payment_gateway = '{payment_gateway}';")
+        if len(result) > 0:
+            device_serial = result['device_serial'][0]
+        else:
+            logger.warn(
+                f"Device serial info not available for the acquisition '{acquisition}' of merchant '{org_code}'.")
+    except Exception as e:
+        logger.error(f"Unable to get the device serial from db due to error {str(e)}")
+    return device_serial
+
+
+def get_merchant_id_of_user(user_id: str) -> str:
+    """
+    This method is used to get the merchant id associated with the user id
+    :param user_id str
+    :return: str
+    """
+    merchant_id = None
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select * from users where Name = '{user_id}';")
+        merchant_id = cursor.fetchone()[1]
+    except Exception as e:
+        logger.error(f"Unable to get the merchant id due to error {str(e)}")
+    cursor.close()
+    conn.close()
+    return merchant_id
+
+
+def trim_extra_digits_of_tid(tid: str, max_length: int) -> str:
+    """
+    This method is used to trim the tid to the required length
+    :param tid str
+    :param max_length int
+    :return: str
+    """
+    if len(tid) > max_length:
+        length_to_remove = len(tid) - max_length
+        trim_position = -abs(length_to_remove + 3)
+        while len(tid) > max_length:
+            tid = tid[:trim_position] + tid[trim_position + 1:]
+        return tid
+    else:
+        return tid
