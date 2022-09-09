@@ -372,7 +372,7 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 terminal_details['hsmName'] = acquisitions[3]
                 # Following logic is to perform the factory device registration
                 logger.info("Trying to perform factory device registration...")
-                terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'][:-2] + "a" + str(
+                terminal_details['deviceSerial'] = terminal_details_unique_value_fields['device_id'] + str(
                     device_number_increment)
                 condition = check_if_device_serial_exists(terminal_details['deviceSerial'])
                 if condition:
