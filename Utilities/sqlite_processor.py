@@ -234,6 +234,8 @@ def update_terminal_details_of_merchant(merchant_code: str):
     conn = ""
     cursor = ""
     try:
+        result = DBProcessor.getValueFromDB(f"SELECT name from org where org_code = '{merchant_code}';")
+        merchant_name = result['name'][0]
         result = DBProcessor.getValueFromDB(f"SELECT tid, device_serial, acquirer_code, payment_gateway, "
                                             f"acq_category_code, mid from terminal_info "
                                             f"where org_code = '{merchant_code}';")
@@ -243,10 +245,10 @@ def update_terminal_details_of_merchant(merchant_code: str):
             for i in range(0, len(result)):
                 try:
                     cursor.execute(f"INSERT INTO terminal_details(TID, DeviceSerial, AcquirerCode, PaymentGateway,"
-                                   f" CategoryCode, MID, MerchantCode)VALUES('{result['tid'][i]}', "
+                                   f" CategoryCode, MID, MerchantCode, MerchantName)VALUES('{result['tid'][i]}', "
                                    f"'{result['device_serial'][i]}', '{result['acquirer_code'][i]}', "
                                    f"'{result['payment_gateway'][i]}', '{result['acq_category_code'][i]}', "
-                                   f"'{result['mid'][i]}', '{merchant_code}');")
+                                   f"'{result['mid'][i]}', '{merchant_code}', '{merchant_name}');")
                     logger.debug(f"Details of tid {result['tid'][i]} added to the terminal details table.")
                 except sqlite3.IntegrityError as e:
                     logger.error(f"Unable to add tid {result['tid'][i]} entry for {merchant_code} due to error {str(e)}")
