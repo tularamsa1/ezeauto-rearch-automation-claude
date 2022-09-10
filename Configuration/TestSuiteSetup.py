@@ -456,6 +456,7 @@ def prepareDevicesAndDB():
         merchant_creator.create_merchants_with_users()
         sqlite_processor.update_app_users_to_db()
         sqlite_processor.update_portal_users_to_db()
+        sqlite_processor.update_terminal_details_of_all_merchants()
     return True
 
 
