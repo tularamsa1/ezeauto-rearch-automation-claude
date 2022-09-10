@@ -10,6 +10,8 @@ logger = EzeAutoLogger(__name__)
 dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/Database/ezeauto.db"
 excel_path = ConfigReader.read_config_paths("System",
                                             "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
+lst_unavailable_tid = []
+lst_unavailable_device_serial = []
 
 
 def create_merchants_with_users():
@@ -368,7 +370,7 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                     tid_number_increment += 1
                     terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
                         tid_number_increment)
-                    trim_extra_digits_of_tid(tid=terminal_details['tid'], max_length=8)
+                    terminal_details['tid'] = trim_extra_digits_of_tid(tid=terminal_details['tid'], max_length=8)
                 terminal_details['hsmName'] = acquisitions[3]
                 # Following logic is to perform the factory device registration
                 logger.info("Trying to perform factory device registration...")
@@ -439,13 +441,18 @@ def check_if_tid_exists(tid: str) -> bool:
     :return: bool
     """
     try:
-        result = DBProcessor.getValueFromDB(f"Select * from terminal_info where tid = '{tid}';")
-        if len(result) > 0:
-            logger.info(f"TID {tid} already exists in the environment.")
+        if tid in lst_unavailable_tid:
+            logger.debug(f"TID {tid} is already assigned.")
             return True
         else:
-            logger.info(f"TID {tid} is not available in the environment.")
-            return False
+            lst_unavailable_tid.append(tid)
+            result = DBProcessor.getValueFromDB(f"Select * from terminal_info where tid = '{tid}';")
+            if len(result) > 0:
+                logger.debug(f"TID {tid} already exists in the environment.")
+                return True
+            else:
+                logger.debug(f"TID {tid} is not available in the environment.")
+                return False
     except Exception as e:
         logger.error(f"Unable to check if tid exists in the environment, due to error {str(e)}")
         return None
@@ -458,13 +465,18 @@ def check_if_device_serial_exists(device_serial: str) -> bool:
     :return: bool
     """
     try:
-        result = DBProcessor.getValueFromDB(f"Select * from device where device_serial = '{device_serial}';")
-        if len(result) > 0:
-            logger.info(f"Device {device_serial} already exists in the environment.")
+        if device_serial in lst_unavailable_device_serial:
+            logger.debug(f"Device serial {device_serial} is already assigned.")
             return True
         else:
-            logger.info(f"Device {device_serial} is not available in the environment.")
-            return False
+            lst_unavailable_device_serial.append(device_serial)
+            result = DBProcessor.getValueFromDB(f"Select * from device where device_serial = '{device_serial}';")
+            if len(result) > 0:
+                logger.debug(f"Device {device_serial} already exists in the environment.")
+                return True
+            else:
+                logger.debug(f"Device {device_serial} is not available in the environment.")
+                return False
     except Exception as e:
         logger.error(f"Unable to check if device serial exists in the environment, due to error {str(e)}")
         return None

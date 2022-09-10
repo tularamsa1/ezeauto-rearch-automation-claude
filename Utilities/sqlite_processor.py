@@ -1,12 +1,12 @@
 import sqlite3
 import pandas
 from DataProvider import GlobalConstants
-from Utilities import ConfigReader
+from Utilities import ConfigReader, DBProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
-
 logger = EzeAutoLogger(__name__)
-merchant_user_creation_excel_path = ConfigReader.read_config_paths("System", "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
+merchant_user_creation_excel_path = ConfigReader.read_config_paths("System",
+                                                                   "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 
 
 def clearAssignerTables():
@@ -28,11 +28,12 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM appium_servers_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM api_details;")
-        cursor.execute("DELETE FROM acquisitions")
+        cursor.execute("DELETE FROM acquisitions;")
+        cursor.execute("DELETE FROM terminal_details;")
         conn.commit()
         logger.info("All the assigner tables cleared successfully.")
     except Exception as e:
-        print("Unable to clear the user tables due to error : "+str(e))
+        print("Unable to clear the user tables due to error : " + str(e))
     cursor.close()
     conn.close()
 
@@ -65,13 +66,15 @@ def update_users_to_db(users_list: list):
         for user in users_list:
             if check_merchant_exists_in_automation_db(user["MerchantCode"]):
                 try:
-                    cursor.execute(f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\");")
+                    cursor.execute(
+                        f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\");")
                     conn.commit()
                     logger.info(f"User {user['Name']} successfully added to the users db.")
                 except Exception as e:
                     logger.error(f"Unable to add the user {user['Name']} into db due to error {e}")
             else:
-                logger.info(f"User {user['Name']} creation skipped since associated merchant is not available in merchants db.")
+                logger.info(
+                    f"User {user['Name']} creation skipped since associated merchant is not available in merchants db.")
     except Exception as e:
         logger.error(f"Unable to connect to the db due to error {e}")
     cursor.close()
@@ -89,7 +92,8 @@ def update_app_users_to_db():
         if app_users:
             for app_user in app_users:
                 try:
-                    cursor.execute(f"INSERT INTO app_users(Username, Password, Status)VALUES('{app_user[2]}','{app_user[3]}', 'Available')")
+                    cursor.execute(
+                        f"INSERT INTO app_users(Username, Password, Status)VALUES('{app_user[2]}','{app_user[3]}', 'Available')")
                     conn.commit()
                     logger.info(f"App user {app_user[0]} added to the db successfully.")
                 except Exception as e:
@@ -137,7 +141,7 @@ def update_portal_users_to_db():
 def get_merchants_list_from_excel() -> list:
     merchants_list = []
     merchant_creation_excel_data = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="UserDetails")
-    if len(merchant_creation_excel_data)>0:
+    if len(merchant_creation_excel_data) > 0:
         for i in range(0, len(merchant_creation_excel_data)):
             merchant_name = ""
             if str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() == "portal":
@@ -173,7 +177,8 @@ def get_users_list_from_excel() -> list:
                 user_details["Type"] = (merchant_creation_excel_data.loc[i]).to_dict()["Type"]
                 users_list.append(user_details)
             else:
-                logger.error(f"Type of user {(merchant_creation_excel_data.loc[i]).to_dict()['Name']} is defined wrongly. So its not added to user creation list.")
+                logger.error(
+                    f"Type of user {(merchant_creation_excel_data.loc[i]).to_dict()['Name']} is defined wrongly. So its not added to user creation list.")
     else:
         logger.warning("Unable to pull users list since no data available in the merchant creation excel file.")
     return users_list
@@ -203,6 +208,7 @@ def check_merchant_exists_in_automation_db(merchant):
     conn.close()
     return exists
 
+
 def update_acquisitions_to_db():
     """
     This method is used to read the acquisition details from excel and update the db.
@@ -210,10 +216,62 @@ def update_acquisitions_to_db():
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        acquisition_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name= "AcquisitionDetails")
-        for i in range(0,len(acquisition_details)):
-            cursor.execute(f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName)VALUES("{acquisition_details.iloc[i]['Acquirer Code']}","{acquisition_details.iloc[i]['Payment Gateway']}",{acquisition_details.iloc[i]['Number of Terminals']},"{acquisition_details.iloc[i]['HSM Name']}");""")
+        acquisition_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="AcquisitionDetails")
+        for i in range(0, len(acquisition_details)):
+            cursor.execute(
+                f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName)VALUES("{acquisition_details.iloc[i]['Acquirer Code']}","{acquisition_details.iloc[i]['Payment Gateway']}",{acquisition_details.iloc[i]['Number of Terminals']},"{acquisition_details.iloc[i]['HSM Name']}");""")
         conn.commit()
         conn.close()
     except Exception as e:
         logger.error(f"Unable to update the acquisition details to sqlite db due to error {str(e)}")
+
+
+def update_terminal_details_of_merchant(merchant_code: str):
+    """
+    This method is used to update the terminal-details table in the db.
+    :param merchant_code str
+    """
+    conn = ""
+    cursor = ""
+    try:
+        result = DBProcessor.getValueFromDB(f"SELECT tid, device_serial, acquirer_code, payment_gateway, "
+                                            f"acq_category_code, mid from terminal_info "
+                                            f"where org_code = '{merchant_code}';")
+        if len(result) > 0:
+            conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+            cursor = conn.cursor()
+            for i in range(0, len(result)):
+                try:
+                    cursor.execute(f"INSERT INTO terminal_details(TID, DeviceSerial, AcquirerCode, PaymentGateway,"
+                                   f" CategoryCode, MID, MerchantCode)VALUES('{result['tid'][i]}', "
+                                   f"'{result['device_serial'][i]}', '{result['acquirer_code'][i]}', "
+                                   f"'{result['payment_gateway'][i]}', '{result['acq_category_code'][i]}', "
+                                   f"'{result['mid'][i]}', '{merchant_code}');")
+                    logger.debug(f"Details of tid {result['tid'][i]} added to the terminal details table.")
+                except sqlite3.IntegrityError as e:
+                    logger.error(f"Unable to add tid {result['tid'][i]} entry for {merchant_code} due to error {str(e)}")
+            conn.commit()
+            cursor.close()
+            conn.close()
+        else:
+            logger.warning("Merchant does not have any terminals configured.")
+    except Exception as e:
+        logger.error(f"Unable to update the terminal details into the ezeauto db due to error {str(e)}")
+
+
+def update_terminal_details_of_all_merchants():
+    """
+    This method is used to update the terminal details of all merchants into the db.
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"Select MerchantCode from merchants where CreationStatus in ('Created','Existed') and "
+                       "Availability = 'Available';")
+        merchants = cursor.fetchall()
+        for merchant in merchants:
+            update_terminal_details_of_merchant(merchant[0])
+    except Exception as e:
+        logger.error(f"Unable to connect to db due to error {str(e)}")
