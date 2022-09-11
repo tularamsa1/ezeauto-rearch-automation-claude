@@ -256,9 +256,13 @@ def test_common_100_103_007():
             try:
                 # --------------------------------------------------------------------------------------------
                 date_and_time = date_time_converter.to_app_format(txn_posting_date)
-                expectedAppValues = {"pmt_mode": "PAY LINK", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),
-                                     "txn_id": txn_txn_id, "rrn": cnp_txn_rrn,
-                                     "order_id": order_id, "msg": "PAYMENT SUCCESSFUL",
+                expectedAppValues = {"pmt_mode": "PAY LINK",
+                                     "pmt_status": "AUTHORIZED",
+                                     "txn_amt": str(amount),
+                                     "txn_id": txn_txn_id,
+                                     "rrn": cnp_txn_rrn,
+                                     "order_id": order_id,
+                                     "msg": "PAYMENT SUCCESSFUL",
                                      "customer_name": txn_customer_name,
                                      "settle_status": txn_settle_status,
                                      "auth_code": txn_auth_code,

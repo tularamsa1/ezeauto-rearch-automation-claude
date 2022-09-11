@@ -43,14 +43,15 @@ def test_common_100_103_004():
         print(
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        logger.info("Execution Started for the test case : test_common_100_103_004")
-        app_cred = ResourceAssigner.getAppUserCredentials('test_common_100_103_004')
+        # add Reset block
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
-        portal_cred = ResourceAssigner.getPortalUserCredentials('test_common_100_103_004')
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -61,16 +62,12 @@ def test_common_100_103_004():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
-        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # ---------------------------------------------------------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)

@@ -29,14 +29,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_056():
+def test_common_100_103_106():
     """
-    Sub Feature Code: UI_Common_PM_RP_Upi_two_times_sucessful_partial_refund
-    Sub Feature Description: Verification of a remote pay two times partial refund for upi collect txn
+    Sub Feature Code: UI_Common_PM_RP_Upi_two_times_sucessful_partial_refund_AXIS_DIRECT
+    Sub Feature Description: Verification of a remote pay upi successful partial refund when refunded two times via Axis Direct.
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    056: TC056
+    106: TC106
     """
 
     try:
@@ -45,7 +45,6 @@ def test_common_100_103_056():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -62,16 +61,18 @@ def test_common_100_103_056():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+
+        # ---------------------------------------------------------------------------------------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
-        # ---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
-
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
         GlobalVariables.time_calc.setup.end()
@@ -125,7 +126,7 @@ def test_common_100_103_056():
 
 
             query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             original_upi_mc_id = result['id'].values[0]
@@ -175,8 +176,8 @@ def test_common_100_103_056():
             logger.debug(f"Fetching fully_refunded_auth_code from db query : {fully_refunded_auth_code} ")
             fully_refunded_txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching fully_refunded_txn_type from db query : {fully_refunded_txn_type} ")
-            fully_refunded_rrn = result['rr_number'].iloc[0]
-            logger.debug(f"Fetching fully_refunded_rrn from db query : {fully_refunded_rrn} ")
+            # fully_refunded_rrn = result['rr_number'].iloc[0]
+            # logger.debug(f"Fetching fully_refunded_rrn from db query : {fully_refunded_rrn} ")
             fully_refunded_posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching fully_refunded_posting_date from db query: {fully_refunded_posting_date} ")
 
@@ -219,9 +220,9 @@ def test_common_100_103_056():
                     "pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "rrn": str(original_rrn),
-                    "refund_rrn": str(partially_refunded_rrn),
-                    "auth_code": original_auth_code,
-                    "refund_auth_code": partially_refunded_auth_code,
+                    # "refund_rrn": str(partially_refunded_rrn),
+                    # "auth_code": original_auth_code,
+                    # "refund_auth_code": partially_refunded_auth_code,
                     "date": date_and_time,
                     "original_date": original_date_and_time,
 
@@ -233,8 +234,8 @@ def test_common_100_103_056():
                     "full_refund_customer_name": original_customer_name,
                     "full_refund_payer_name": original_payer_name,
                     "full_refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "full_refund_rrn": str(fully_refunded_rrn),
-                    "full_refund_auth_code": fully_refunded_auth_code
+                    # "full_refund_rrn": str(fully_refunded_rrn),
+                    # "full_refund_auth_code": fully_refunded_auth_code
                 }
 
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
@@ -250,14 +251,14 @@ def test_common_100_103_056():
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(partially_refunded_txn_id)
 
-                app_rrn_refunded = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
+                # app_rrn_refunded = transactions_history_page.fetch_RRN_text()
+                # logger.debug(f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {partially_refunded_txn_id}, {app_date_and_time}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
-                app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {partially_refunded_txn_id}, {app_auth_code_refunded}")
+                # app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {partially_refunded_txn_id}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
                 app_txn_id_refunded = transactions_history_page.fetch_txn_id_text()
@@ -275,8 +276,8 @@ def test_common_100_103_056():
                 transactions_history_page.click_on_transaction_by_txn_id(original_txn_id)
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {original_txn_id}, {app_rrn_original}")
-                app_auth_code_original = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {original_txn_id}, {app_auth_code_original}")
+                # app_auth_code_original = transactions_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {original_txn_id}, {app_auth_code_original}")
                 app_payment_status_original = transactions_history_page.fetch_txn_status_text()
                 logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
                 app_payment_mode_original = transactions_history_page.fetch_txn_type_text()
@@ -295,10 +296,10 @@ def test_common_100_103_056():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(fully_refunded_txn_id)
-                fully_refunded_app_rrn = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
-                fully_refunded_app_auth_code = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
+                # fully_refunded_app_rrn = transactions_history_page.fetch_RRN_text()
+                # logger.debug(f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
+                # fully_refunded_app_auth_code = transactions_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
                 fully_refunded_app_payment_status = transactions_history_page.fetch_txn_status_text()
                 logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {fully_refunded_app_payment_status}")
                 fully_refunded_app_payment_mode = transactions_history_page.fetch_txn_type_text()
@@ -333,9 +334,9 @@ def test_common_100_103_056():
                     "pmt_msg": payment_msg_original,
                     "refund_pmt_msg": payment_msg_refunded,
                     "rrn": str(app_rrn_original),
-                    "refund_rrn": str(app_rrn_refunded),
-                    "auth_code": app_auth_code_original,
-                    "refund_auth_code": app_auth_code_refunded,
+                    # "refund_rrn": str(app_rrn_refunded),
+                    # "auth_code": app_auth_code_original,
+                    # "refund_auth_code": app_auth_code_refunded,
                     "date": app_date_and_time,
                     "original_date": app_original_date_and_time,
 
@@ -347,8 +348,8 @@ def test_common_100_103_056():
                     "full_refund_customer_name": fully_refunded_customer_name,
                     "full_refund_payer_name": original_payer_name,
                     "full_refund_pmt_msg": fully_refunded_payment_msg,
-                    "full_refund_rrn": str(fully_refunded_app_rrn),
-                    "full_refund_auth_code": fully_refunded_app_auth_code
+                    # "full_refund_rrn": str(fully_refunded_app_rrn),
+                    # "full_refund_auth_code": fully_refunded_app_auth_code
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
@@ -384,21 +385,21 @@ def test_common_100_103_056():
                     "refunded_payer_name": original_payer_name,
                     "original_order_id": order_id,
                     "original_rrn": str(original_rrn),
-                    "refunded_rrn": str(partially_refunded_rrn),
-                    "original_acquirer_code": "HDFC",
-                    "original_issuer_code": "HDFC",
+                    # "refunded_rrn": str(partially_refunded_rrn),
+                    "original_acquirer_code": "AXIS",
+                    "original_issuer_code": "AXIS",
                     "original_txn_type": original_txn_type,
                     "original_mid": original_mid,
                     "original_tid": original_tid,
                     "original_org_code": original_org_code_txn,
-                    "refunded_acquirer_code": "HDFC",
+                    "refunded_acquirer_code": "AXIS",
                     # "issuer_code_refunded": "HDFC",
                     "refunded_txn_type": partially_refunded_txn_type,
                     "refunded_mid": original_mid,
                     "refunded_tid": original_tid,
                     "refunded_org_code": original_org_code_txn,
-                    "refund_auth_code": partially_refunded_auth_code,
-                    "original_auth_code": original_auth_code,
+                    # "refund_auth_code": partially_refunded_auth_code,
+                    # "original_auth_code": original_auth_code,
                     "date": refunded_date_time,
                     "original_date_time": original_date_time,
 
@@ -409,13 +410,13 @@ def test_common_100_103_056():
                     "fully_refunded_amt": str(full_refund_amount),
                     "fully_refunded_customer_name": original_customer_name,
                     "fully_refunded_payer_name": original_payer_name,
-                    "fully_refunded_rrn": str(fully_refunded_rrn),
-                    "fully_refunded_acquirer_code": "HDFC",
+                    # "fully_refunded_rrn": str(fully_refunded_rrn),
+                    "fully_refunded_acquirer_code": "AXIS",
                     "fully_refunded_txn_type": fully_refunded_txn_type,
                     "fully_refunded_mid": original_mid,
                     "fully_refunded_tid": original_tid,
                     "fully_refunded_org_code": original_org_code_txn,
-                    "fully_refund_auth_code": fully_refunded_auth_code,
+                    # "fully_refund_auth_code": fully_refunded_auth_code,
 
                 }
 
@@ -441,7 +442,7 @@ def test_common_100_103_056():
                 mid_api_original = response["mid"]
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
-                auth_code_api_original = response["authCode"]
+                # auth_code_api_original = response["authCode"]
                 date_api_original = response["postingDate"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -455,7 +456,7 @@ def test_common_100_103_056():
                 status_api_refunded = response["status"]
                 amount_api_refunded = int(response["amount"])
                 payment_mode_api_refunded = response["paymentMode"]
-                rrn_api_refunded = response["rrNumber"]
+                # rrn_api_refunded = response["rrNumber"]
                 state_api_refunded = response["states"][0]
                 settlement_status_api_refunded = response["settlementStatus"]
                 # issuer_code_api_refunded = response["issuerCode"]
@@ -464,7 +465,7 @@ def test_common_100_103_056():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                auth_code_api_refunded = response["authCode"]
+                # auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -477,7 +478,7 @@ def test_common_100_103_056():
                 api_status_full_refund = response["status"]
                 api_amount_full_refund = int(response["amount"])
                 api_payment_mode_full_refund = response["paymentMode"]
-                api_rrn__full_refund = response["rrNumber"]
+                # api_rrn__full_refund = response["rrNumber"]
                 api_state_full_refund = response["states"][0]
                 api_settlement_status_full_refund = response["settlementStatus"]
                 # issuer_code_api_refunded = response["issuerCode"]
@@ -486,7 +487,7 @@ def test_common_100_103_056():
                 api_mid_full_refund = response["mid"]
                 api_tid_full_refund = response["tid"]
                 api_txn_type_full_refund = response["txnType"]
-                api_auth_code_full_refund = response["authCode"]
+                # api_auth_code_full_refund = response["authCode"]
                 api_date_full_refund = response["postingDate"]
                 api_customer_name_full_refund = response["customerName"]
                 api_payer_name_full_refund = response["payerName"]
@@ -508,7 +509,7 @@ def test_common_100_103_056():
                     "refunded_payer_name": original_payer_name,
                     "original_order_id": order_id,
                     "original_rrn": str(rrn_api_original),
-                    "refunded_rrn": str(rrn_api_refunded),
+                    # "refunded_rrn": str(rrn_api_refunded),
                     "original_acquirer_code": acquirer_code_api_original,
                     "original_issuer_code": issuer_code_api_original,
                     "original_txn_type": txn_type_api_original,
@@ -519,8 +520,8 @@ def test_common_100_103_056():
                     "refunded_txn_type": txn_type_api_refunded,
                     "refunded_mid": mid_api_refunded, "refunded_tid": tid_api_refunded,
                     "refunded_org_code": org_code_api_refunded,
-                    "refund_auth_code": auth_code_api_refunded,
-                    "original_auth_code": auth_code_api_original,
+                    # "refund_auth_code": auth_code_api_refunded,
+                    # "original_auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_refunded),
                     "original_date_time": date_time_converter.from_api_to_datetime_format(date_api_original),
 
@@ -531,13 +532,13 @@ def test_common_100_103_056():
                     "fully_refunded_amt": str(full_refund_amount),
                     "fully_refunded_customer_name": api_customer_name_full_refund,
                     "fully_refunded_payer_name": api_payer_name_full_refund,
-                    "fully_refunded_rrn": str(fully_refunded_rrn),
+                    # "fully_refunded_rrn": str(fully_refunded_rrn),
                     "fully_refunded_acquirer_code": api_acquirer_code_full_refund,
                     "fully_refunded_txn_type": api_txn_type_full_refund,
                     "fully_refunded_mid": api_mid_full_refund,
                     "fully_refunded_tid": api_tid_full_refund,
                     "fully_refunded_org_code": api_org_code_full_refund,
-                    "fully_refund_auth_code": api_auth_code_full_refund,
+                    # "fully_refund_auth_code": api_auth_code_full_refund,
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
@@ -566,16 +567,16 @@ def test_common_100_103_056():
                     "refunded_upi_txn_status": "REFUNDED",
                     "original_settle_status": "SETTLED",
                     "refunded_settle_status": "SETTLED",
-                    "original_acquirer_code": "HDFC",
-                    "refunded_acquirer_code": "HDFC",
-                    "original_bank_code": "HDFC",
-                    "bank_code_refunded": "HDFC",
+                    "original_acquirer_code": "AXIS",
+                    "refunded_acquirer_code": "AXIS",
+                    "original_bank_code": "AXIS",
+                    "bank_code_refunded": "AXIS_DIRECT",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
                     "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                     "refunded_upi_txn_type": "REFUND",
-                    "original_upi_bank_code": "HDFC",
-                    "refunded_upi_bank_code": "HDFC",
+                    "original_upi_bank_code": "AXIS_DIRECT",
+                    "refunded_upi_bank_code": "AXIS_DIRECT",
                     "original_upi_mc_id": original_upi_mc_id,
                     "refunded_upi_mc_id": original_upi_mc_id,
                     "original_mid": original_mid,
@@ -589,9 +590,9 @@ def test_common_100_103_056():
                     "fully_refunded_amt": full_refund_amount,
                     "fully_refunded_upi_txn_status": "REFUND",
                     "fully_refunded_settle_status": "SETTLED",
-                    "fully_refunded_acquirer_code": "HDFC",
+                    "fully_refunded_acquirer_code": "AXIS",
                     "fully_refunded_upi_txn_type": "REFUND",
-                    "fully_refunded_upi_bank_code": "HDFC",
+                    "fully_refunded_upi_bank_code": "AXIS_DIRECT",
                     "fully_refunded_upi_mc_id": original_upi_mc_id,
                     "fully_refund_mid": original_mid,
                     "fully_refund_tid": original_tid,
@@ -731,10 +732,12 @@ def test_common_100_103_056():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                expected_portal_values = {"refunded_pmt_state": "Refunded", "original_pmt_mode": "UPI",
+                expected_portal_values = {"refunded_pmt_state": "Refunded",
+                                          "original_pmt_mode": "UPI",
                                           "original_pmt_amt": str(amount),
                                           "original_pmt_state": "Authorized Refunded",
-                                          "Amount Original": str(partial_refunded_amount), "refunded_pmt_mode": "UPI"}
+                                          "Amount Original": str(partial_refunded_amount),
+                                          "refunded_pmt_mode": "UPI"}
 
                 logger.debug(f"expected_portal_values : {expected_portal_values} for the testcase_id {testcase_id}")
 
@@ -797,11 +800,12 @@ def test_common_100_103_056():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(partially_refunded_posting_date)
                 expected_chargeslip_values = {'PAID BY:': 'UPI',
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
-                                              'RRN': str(fully_refunded_rrn),
+                                              # 'RRN': str(fully_refunded_rrn),
                                               'BASE AMOUNT:': "Rs." + str(full_refund_amount) + ".00",
                                               'date': txn_date,
                                               'time': txn_time,
-                                              'AUTH CODE': fully_refunded_auth_code}
+                                              # 'AUTH CODE': fully_refunded_auth_code
+                                              }
 
                 logger.debug(
                     f"expected_chargeslip_values : {expected_chargeslip_values} for the testcase_id {testcase_id}")
@@ -812,8 +816,8 @@ def test_common_100_103_056():
 
 
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
@@ -831,14 +835,14 @@ def test_common_100_103_056():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_075():
+def test_common_100_103_107():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Refund_Decimal_via_API_HDFC
-    Sub Feature Description: Verification of a upi refund with decimal value using api for HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Refund_Decimal_via_API_AxisDirect
+    Sub Feature Description: Verification of a upi refund with decimal value using api for AxisDirect
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    075: TC075
+    107: TC107
     """
 
     try:
@@ -847,7 +851,6 @@ def test_common_100_103_075():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -864,12 +867,14 @@ def test_common_100_103_075():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
         # ---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -927,7 +932,7 @@ def test_common_100_103_075():
 
 
             query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             original_upi_mc_id = result['id'].values[0]
@@ -1020,10 +1025,10 @@ def test_common_100_103_075():
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "rrn": str(original_rrn),
-                    "refund_rrn": str(partially_refunded_rrn),
-                    "auth_code": original_auth_code,
-                    "refund_auth_code": partially_refunded_auth_code,
+                    # "rrn": str(original_rrn),
+                    # "refund_rrn": str(partially_refunded_rrn),
+                    # "auth_code": original_auth_code,
+                    # "refund_auth_code": partially_refunded_auth_code,
                     "date": date_and_time,
                     "original_date": original_date_and_time,
 
@@ -1035,8 +1040,8 @@ def test_common_100_103_075():
                     "full_refund_customer_name": original_customer_name,
                     "full_refund_payer_name": original_payer_name,
                     "full_refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "full_refund_rrn": str(fully_refunded_rrn),
-                    "full_refund_auth_code": fully_refunded_auth_code
+                    # "full_refund_rrn": str(fully_refunded_rrn),
+                    # "full_refund_auth_code": fully_refunded_auth_code
                 }
 
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
@@ -1052,14 +1057,14 @@ def test_common_100_103_075():
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(partially_refunded_txn_id)
 
-                app_rrn_refunded = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
+                # app_rrn_refunded = transactions_history_page.fetch_RRN_text()
+                # logger.debug(f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {partially_refunded_txn_id}, {app_date_and_time}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
-                app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {partially_refunded_txn_id}, {app_auth_code_refunded}")
+                # app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {partially_refunded_txn_id}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
                 app_txn_id_refunded = transactions_history_page.fetch_txn_id_text()
@@ -1073,10 +1078,10 @@ def test_common_100_103_075():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(original_txn_id)
-                app_rrn_original = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {original_txn_id}, {app_rrn_original}")
-                app_auth_code_original = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {original_txn_id}, {app_auth_code_original}")
+                # app_rrn_original = transactions_history_page.fetch_RRN_text()
+                # logger.debug(f"Fetching txn_id from txn history for the txn : {original_txn_id}, {app_rrn_original}")
+                # app_auth_code_original = transactions_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {original_txn_id}, {app_auth_code_original}")
                 app_payment_status_original = transactions_history_page.fetch_txn_status_text()
                 logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
                 app_payment_mode_original = transactions_history_page.fetch_txn_type_text()
@@ -1096,10 +1101,10 @@ def test_common_100_103_075():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(fully_refunded_txn_id)
-                fully_refunded_app_rrn = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
-                fully_refunded_app_auth_code = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
+                # fully_refunded_app_rrn = transactions_history_page.fetch_RRN_text()
+                # logger.debug(f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
+                # fully_refunded_app_auth_code = transactions_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
                 fully_refunded_app_payment_status = transactions_history_page.fetch_txn_status_text()
                 logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {fully_refunded_app_payment_status}")
                 fully_refunded_app_payment_mode = transactions_history_page.fetch_txn_type_text()
@@ -1133,10 +1138,10 @@ def test_common_100_103_075():
                     "order_id": order_id,
                     "pmt_msg": payment_msg_original,
                     "refund_pmt_msg": payment_msg_refunded,
-                    "rrn": str(app_rrn_original),
-                    "refund_rrn": str(app_rrn_refunded),
-                    "auth_code": app_auth_code_original,
-                    "refund_auth_code": app_auth_code_refunded,
+                    # "rrn": str(app_rrn_original),
+                    # "refund_rrn": str(app_rrn_refunded),
+                    # "auth_code": app_auth_code_original,
+                    # "refund_auth_code": app_auth_code_refunded,
                     "date": app_date_and_time,
                     "original_date": app_original_date_and_time,
 
@@ -1148,8 +1153,8 @@ def test_common_100_103_075():
                     "full_refund_customer_name": fully_refunded_customer_name,
                     "full_refund_payer_name": original_payer_name,
                     "full_refund_pmt_msg": fully_refunded_payment_msg,
-                    "full_refund_rrn": str(fully_refunded_app_rrn),
-                    "full_refund_auth_code": fully_refunded_app_auth_code
+                    # "full_refund_rrn": str(fully_refunded_app_rrn),
+                    # "full_refund_auth_code": fully_refunded_app_auth_code
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
@@ -1184,22 +1189,22 @@ def test_common_100_103_075():
                     "original_payer_name": original_payer_name,
                     "refunded_payer_name": original_payer_name,
                     "original_order_id": order_id,
-                    "original_rrn": str(original_rrn),
-                    "refunded_rrn": str(partially_refunded_rrn),
-                    "original_acquirer_code": "HDFC",
-                    "original_issuer_code": "HDFC",
+                    # "original_rrn": str(original_rrn),
+                    # "refunded_rrn": str(partially_refunded_rrn),
+                    "original_acquirer_code": "AXIS",
+                    "original_issuer_code": "AXIS",
                     "original_txn_type": original_txn_type,
                     "original_mid": original_mid,
                     "original_tid": original_tid,
                     "original_org_code": original_org_code_txn,
-                    "refunded_acquirer_code": "HDFC",
+                    "refunded_acquirer_code": "AXIS",
                     # "issuer_code_refunded": "HDFC",
                     "refunded_txn_type": partially_refunded_txn_type,
                     "refunded_mid": original_mid,
                     "refunded_tid": original_tid,
                     "refunded_org_code": original_org_code_txn,
-                    "refund_auth_code": partially_refunded_auth_code,
-                    "original_auth_code": original_auth_code,
+                    # "refund_auth_code": partially_refunded_auth_code,
+                    # "original_auth_code": original_auth_code,
                     "date": refunded_date_time,
                     "original_date_time": original_date_time,
 
@@ -1210,13 +1215,13 @@ def test_common_100_103_075():
                     "fully_refunded_amt": float(full_refund_amount),
                     "fully_refunded_customer_name": original_customer_name,
                     "fully_refunded_payer_name": original_payer_name,
-                    "fully_refunded_rrn": str(fully_refunded_rrn),
-                    "fully_refunded_acquirer_code": "HDFC",
+                    # "fully_refunded_rrn": str(fully_refunded_rrn),
+                    "fully_refunded_acquirer_code": "AXIS",
                     "fully_refunded_txn_type": fully_refunded_txn_type,
                     "fully_refunded_mid": original_mid,
                     "fully_refunded_tid": original_tid,
                     "fully_refunded_org_code": original_org_code_txn,
-                    "fully_refund_auth_code": fully_refunded_auth_code,
+                    # "fully_refund_auth_code": fully_refunded_auth_code,
 
                 }
 
@@ -1233,7 +1238,7 @@ def test_common_100_103_075():
                 status_api_original = response["status"]
                 amount_api_original = int(response["amount"])
                 payment_mode_api_original = response["paymentMode"]
-                rrn_api_original = response["rrNumber"]
+                # rrn_api_original = response["rrNumber"]
                 state_api_original = response["states"][0]
                 settlement_status_api_original = response["settlementStatus"]
                 issuer_code_api_original = response["issuerCode"]
@@ -1242,7 +1247,7 @@ def test_common_100_103_075():
                 mid_api_original = response["mid"]
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
-                auth_code_api_original = response["authCode"]
+                # auth_code_api_original = response["authCode"]
                 date_api_original = response["postingDate"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -1256,7 +1261,7 @@ def test_common_100_103_075():
                 status_api_refunded = response["status"]
                 amount_api_refunded = float(response["amount"])
                 payment_mode_api_refunded = response["paymentMode"]
-                rrn_api_refunded = response["rrNumber"]
+                # rrn_api_refunded = response["rrNumber"]
                 state_api_refunded = response["states"][0]
                 settlement_status_api_refunded = response["settlementStatus"]
                 # issuer_code_api_refunded = response["issuerCode"]
@@ -1265,7 +1270,7 @@ def test_common_100_103_075():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                auth_code_api_refunded = response["authCode"]
+                # auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -1287,7 +1292,7 @@ def test_common_100_103_075():
                 api_mid_full_refund = response["mid"]
                 api_tid_full_refund = response["tid"]
                 api_txn_type_full_refund = response["txnType"]
-                api_auth_code_full_refund = response["authCode"]
+                # api_auth_code_full_refund = response["authCode"]
                 api_date_full_refund = response["postingDate"]
                 api_customer_name_full_refund = response["customerName"]
                 api_payer_name_full_refund = response["payerName"]
@@ -1308,8 +1313,8 @@ def test_common_100_103_075():
                     "original_payer_name": original_payer_name,
                     "refunded_payer_name": original_payer_name,
                     "original_order_id": order_id,
-                    "original_rrn": str(rrn_api_original),
-                    "refunded_rrn": str(rrn_api_refunded),
+                    # "original_rrn": str(rrn_api_original),
+                    # "refunded_rrn": str(rrn_api_refunded),
                     "original_acquirer_code": acquirer_code_api_original,
                     "original_issuer_code": issuer_code_api_original,
                     "original_txn_type": txn_type_api_original,
@@ -1320,8 +1325,8 @@ def test_common_100_103_075():
                     "refunded_txn_type": txn_type_api_refunded,
                     "refunded_mid": mid_api_refunded, "refunded_tid": tid_api_refunded,
                     "refunded_org_code": org_code_api_refunded,
-                    "refund_auth_code": auth_code_api_refunded,
-                    "original_auth_code": auth_code_api_original,
+                    # "refund_auth_code": auth_code_api_refunded,
+                    # "original_auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_refunded),
                     "original_date_time": date_time_converter.from_api_to_datetime_format(date_api_original),
 
@@ -1338,15 +1343,15 @@ def test_common_100_103_075():
                     "fully_refunded_mid": api_mid_full_refund,
                     "fully_refunded_tid": api_tid_full_refund,
                     "fully_refunded_org_code": api_org_code_full_refund,
-                    "fully_refund_auth_code": api_auth_code_full_refund,
+                    # "fully_refund_auth_code": api_auth_code_full_refund,
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of API Validation---------------------------------------
 
@@ -1367,16 +1372,16 @@ def test_common_100_103_075():
                     "refunded_upi_txn_status": "REFUNDED",
                     "original_settle_status": "SETTLED",
                     "refunded_settle_status": "SETTLED",
-                    "original_acquirer_code": "HDFC",
-                    "refunded_acquirer_code": "HDFC",
-                    "original_bank_code": "HDFC",
-                    "bank_code_refunded": "HDFC",
+                    "original_acquirer_code": "AXIS",
+                    "refunded_acquirer_code": "AXIS",
+                    "original_bank_code": "AXIS",
+                    "bank_code_refunded": "AXIS_DIRECT",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
                     "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                     "refunded_upi_txn_type": "REFUND",
-                    "original_upi_bank_code": "HDFC",
-                    "refunded_upi_bank_code": "HDFC",
+                    "original_upi_bank_code": "AXIS_DIRECT",
+                    "refunded_upi_bank_code": "AXIS_DIRECT",
                     "original_upi_mc_id": original_upi_mc_id,
                     "refunded_upi_mc_id": original_upi_mc_id,
                     "original_mid": original_mid,
@@ -1390,9 +1395,9 @@ def test_common_100_103_075():
                     "fully_refunded_amt": float(full_refund_amount),
                     "fully_refunded_upi_txn_status": "REFUND",
                     "fully_refunded_settle_status": "SETTLED",
-                    "fully_refunded_acquirer_code": "HDFC",
+                    "fully_refunded_acquirer_code": "AXIS",
                     "fully_refunded_upi_txn_type": "REFUND",
-                    "fully_refunded_upi_bank_code": "HDFC",
+                    "fully_refunded_upi_bank_code": "AXIS_DIRECT",
                     "fully_refunded_upi_mc_id": original_upi_mc_id,
                     "fully_refund_mid": original_mid,
                     "fully_refund_tid": original_tid,
@@ -1523,8 +1528,8 @@ def test_common_100_103_075():
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of DB Validation---------------------------------------
 
@@ -1586,8 +1591,8 @@ def test_common_100_103_075():
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of Portal Validation---------------------------------------
 
@@ -1598,11 +1603,12 @@ def test_common_100_103_075():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(partially_refunded_posting_date)
                 expected_chargeslip_values = {'PAID BY:': 'UPI',
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
-                                              'RRN': str(fully_refunded_rrn),
+                                              # 'RRN': str(fully_refunded_rrn),
                                               'BASE AMOUNT:': "Rs." + str(full_refund_amount) + "0",
                                               'date': txn_date,
                                               'time': txn_time,
-                                              'AUTH CODE': fully_refunded_auth_code}
+                                              # 'AUTH CODE': fully_refunded_auth_code
+                                              }
 
                 logger.debug(
                     f"expected_chargeslip_values : {expected_chargeslip_values} for the testcase_id {testcase_id}")
@@ -1613,8 +1619,8 @@ def test_common_100_103_075():
 
 
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
