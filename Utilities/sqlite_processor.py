@@ -217,9 +217,11 @@ def update_acquisitions_to_db():
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
         acquisition_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="AcquisitionDetails")
+        acquisition_details.fillna('N/A', inplace=True)
         for i in range(0, len(acquisition_details)):
             cursor.execute(
-                f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName)VALUES("{acquisition_details.iloc[i]['Acquirer Code']}","{acquisition_details.iloc[i]['Payment Gateway']}",{acquisition_details.iloc[i]['Number of Terminals']},"{acquisition_details.iloc[i]['HSM Name']}");""")
+                f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName, BankCode, BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, KeyForUpi)values("{acquisition_details.iloc[i]['Acquirer Code']}", "{acquisition_details.iloc[i]['Payment Gateway']}", "{acquisition_details.iloc[i]['Number of Terminals']}", "{acquisition_details.iloc[i]['HSM Name']}", "{acquisition_details.iloc[i]['Bank Code']}", "{acquisition_details.iloc[i]['BQR Bank Code']}", "{acquisition_details.iloc[i]['UPI(psp) Bank Code']}", "{acquisition_details.iloc[i]['BQR Terminal Dependant']}", "{acquisition_details.iloc[i]['UPI Terminal Dependant']}", "{acquisition_details.iloc[i]['Key for UPI']}");""")
+
         conn.commit()
         conn.close()
     except Exception as e:

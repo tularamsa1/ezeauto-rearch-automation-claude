@@ -16,8 +16,8 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator,Ezewallet_Setup
-from Utilities import ResourceAssigner, ConfigReader, sqlite_processor,merchant_creator,DBProcessor
+from Utilities import DirectoryCreator, Ezewallet_Setup
+from Utilities import sqlite_processor,merchant_creator,DBProcessor
 from Utilities import ResourceAssigner, ConfigReader
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator

@@ -341,3 +341,16 @@ def get_db_credentials_from_excel() -> dict:
     else:
         return None
 
+
+def set_value_to_db_query_passed(query_result: str) -> bool:
+    """
+    This method is to validate if the set value to db query was successful.
+    This is validated by checking if at least one row was updated.
+    :param query_result str
+    :return: bool
+    """
+    rows_affected = int(query_result[0:query_result.index(",record(s) affected")])
+    if rows_affected > 0:
+        return True
+    else:
+        return False
