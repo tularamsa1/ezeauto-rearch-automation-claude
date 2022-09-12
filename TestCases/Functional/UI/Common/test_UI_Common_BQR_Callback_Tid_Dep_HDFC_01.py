@@ -134,7 +134,7 @@ def test_common_100_102_089():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {posting_date}")
 
@@ -229,7 +229,7 @@ def test_common_100_102_089():
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api = response["status"]
-                amount_api = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
@@ -241,7 +241,7 @@ def test_common_100_102_089():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,

@@ -1,6 +1,5 @@
 import string
 import sys
-from time import sleep
 import pytest
 import random
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -889,7 +888,7 @@ def test_common_100_102_149():
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
             refund_auth_code = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['created_time'].values[0]
+            created_time_refunded = result['created_time'].values[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -910,12 +909,22 @@ def test_common_100_102_149():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "UPI", "pmt_status": "UPG_AUTH_REFUNDED", "txn_amt": str(amount),
-                                       "settle_status": "SETTLED", "txn_id": txn_id, "rrn": str(rrn),
+                date_and_time_2 = date_time_converter.to_app_format(created_time_refunded)
+                expected_app_values = {"pmt_mode": "UPI", "pmt_status": "UPG_AUTH_REFUNDED",
+                                       "txn_amt": str(amount),"settle_status": "SETTLED",
+                                       "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id": external_ref, "msg": "PAYMENT SUCCESSFUL",
                                        # "auth_code": auth_code,
-                                       "date": date_and_time}
+                                       "date": date_and_time,
+                                       "pmt_mode_2": "UPI", "pmt_status_2": "UPG_REFUNDED",
+                                       "txn_amt_2": str(amount), "settle_status_2": "SETTLED",
+                                       "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
+                                       # "customer_name": customer_name,"payer_name": payer_name,
+                                       "order_id_2": external_ref, "msg_2": "PAYMENT SUCCESSFUL",
+                                       # "auth_code": auth_code,
+                                       "date_2": date_and_time_2
+                                       }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -958,13 +967,54 @@ def test_common_100_102_149():
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
+                txn_history_page.click_back_Btn_transaction_details()
+                txn_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
+
+                payment_status_refunded = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id_refunded}, {payment_status_refunded}")
+                # app_auth_code = txn_history_page.fetch_auth_code_text()
+                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
+                payment_mode_refunded = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id_refunded}, {payment_mode_refunded}")
+                app_txn_id_refunded = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_txn_id_refunded}")
+                app_amount_refunded = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id_refunded}, {app_amount_refunded}")
+                app_date_and_time_refunded = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id_refunded}, {app_date_and_time_refunded}")
+                # app_customer_name = txn_history_page.fetch_customer_name_text()
+                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status_refunded = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id_refunded}, {app_settlement_status_refunded}")
+                # app_payer_name = txn_history_page.fetch_payer_name_text()
+                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg_refunded = txn_history_page.fetch_txn_payment_message_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id_refunded}, {app_payment_msg_refunded}")
+                app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id_refunded}, {app_order_id_refunded}")
+                app_rrn_refunded = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn_refunded}")  # behavior is diff on both emulator and device (Number/NUMBER)
+
                 actual_app_values = {"pmt_mode": payment_mode, "pmt_status": payment_status.split(':')[1],
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      # "customer_name": app_customer_name,"payer_name": app_payer_name,
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      # "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "msg": app_payment_msg, "date": app_date_and_time,
+                                     "pmt_mode_2": payment_mode_refunded,
+                                     "pmt_status_2": payment_status_refunded.split(':')[1],
+                                     "txn_amt_2": app_amount_refunded.split(' ')[1],
+                                     "txn_id_2": app_txn_id_refunded, "rrn_2": str(app_rrn_refunded),
+                                     # "customer_name": app_customer_name,"payer_name": app_payer_name,
+                                     "settle_status_2": app_settlement_status_refunded,
+                                     "order_id_2": app_order_id_refunded,
+                                     # "auth_code": app_auth_code,
+                                     "msg_2": app_payment_msg_refunded,
+                                     "date_2": app_date_and_time_refunded
+                                     }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -977,6 +1027,7 @@ def test_common_100_102_149():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
+                date_2 = date_time_converter.db_datetime(created_time_refunded)
                 expected_api_values = {"pmt_status": "UPG_AUTH_REFUNDED", "txn_amt": float(amount),
                                        "pmt_mode": "UPI",
                                        "pmt_state": "UPG_REFUNDED",
@@ -985,7 +1036,17 @@ def test_common_100_102_149():
                                        "txn_type": "CHARGE",
                                        "mid": mid, "tid": tid,
                                        "org_code": org_code,
-                                       "date": date}
+                                       "date": date,
+                                       "pmt_status_2": "UPG_REFUNDED", "txn_amt_2": float(amount),
+                                       "pmt_mode_2": "UPI",
+                                       "pmt_state_2": "UPG_REFUNDED",
+                                       "rrn_2": str(rrn_refunded), "settle_status_2": "SETTLED",
+                                       "acquirer_code_2": "AXIS", #"issuer_code_2": "AXIS",
+                                       "txn_type_2": "REFUND",
+                                       "mid_2": mid, "tid_2": tid,
+                                       "org_code_2": org_code,
+                                       "date_2": date_2
+                                       }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1009,7 +1070,31 @@ def test_common_100_102_149():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_refunded][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api_refunded = response["status"]
+                amount_api_refunded = float(response["amount"])
+                payment_mode_api_refunded = response["paymentMode"]
+                state_api_refunded = response["states"][0]
+                rrn_api_refunded = response["rrNumber"]
+                settlement_status_api_refunded = response["settlementStatus"]
+                #issuer_code_api_refunded = response["issuerCode"]
+                acquirer_code_api_refunded = response["acquirerCode"]
+                org_code_api_refunded = response["orgCode"]
+                mid_api_refunded = response["mid"]
+                tid_api_refunded = response["tid"]
+                txn_type_api_refunded = response["txnType"]
+                # auth_code_api = response["authCode"]
+                date_api_refunded = response["createdTime"]
+
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api, "pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),
@@ -1017,7 +1102,18 @@ def test_common_100_102_149():
                                      "acquirer_code": acquirer_code_api, "issuer_code": issuer_code_api, "mid": mid_api,
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": org_code_api,
                                      # "auth_code": auth_code_api,
-                                     "date": date_time_converter.from_api_to_datetime_format(date_api)}
+                                     "date": date_time_converter.from_api_to_datetime_format(date_api),
+                                     "pmt_status_2": status_api_refunded, "txn_amt_2": amount_api_refunded,
+                                     "pmt_mode_2": payment_mode_api_refunded,
+                                     "pmt_state_2": state_api_refunded, "rrn_2": str(rrn_api_refunded),
+                                     "settle_status_2": settlement_status_api_refunded,
+                                     "acquirer_code_2": acquirer_code_api_refunded,
+                                     #"issuer_code_2": issuer_code_api_refunded,
+                                     "mid_2": mid_api_refunded,"tid_2": tid_api_refunded,
+                                     "txn_type_2": txn_type_api_refunded,  "org_code_2": org_code_api_refunded,
+                                     # "auth_code": auth_code_api,
+                                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded)
+                                     }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
