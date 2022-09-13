@@ -3,7 +3,8 @@ import random
 import sys
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor, \
+    ResourceAssigner, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -27,6 +28,16 @@ def test_common_100_104_043():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -41,9 +52,9 @@ def test_common_100_104_043():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("HDFC_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="HDFC",payment_gateway="HDFC"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -57,8 +68,8 @@ def test_common_100_104_043():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": confirm_data["Username"],
-                                                                        "password": confirm_data["Password"],
+                                                          request_body={"username":app_username,
+                                                                        "password":app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -71,6 +82,8 @@ def test_common_100_104_043():
                 txnid = confirm_response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -248,6 +261,16 @@ def test_common_100_104_044():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -262,9 +285,9 @@ def test_common_100_104_044():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("HDFC_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="HDFC",payment_gateway="HDFC"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -278,8 +301,8 @@ def test_common_100_104_044():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": confirm_data["Username"],
-                                                                        "password": confirm_data["Password"],
+                                                          request_body={"username":app_username,
+                                                                        "password":app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -292,6 +315,8 @@ def test_common_100_104_044():
                 txnid = confirm_response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -469,6 +494,16 @@ def test_common_100_104_045():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -483,9 +518,9 @@ def test_common_100_104_045():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("HDFC_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="HDFC",payment_gateway="HDFC"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -499,8 +534,8 @@ def test_common_100_104_045():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": confirm_data["Username"],
-                                                                        "password": confirm_data["Password"],
+                                                          request_body={"username":app_username,
+                                                                        "password":app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -513,6 +548,8 @@ def test_common_100_104_045():
                 txnid = confirm_response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -690,6 +727,16 @@ def test_common_100_104_046():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -704,9 +751,9 @@ def test_common_100_104_046():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("HDFC_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="HDFC",payment_gateway="HDFC"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -720,8 +767,8 @@ def test_common_100_104_046():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": confirm_data["Username"],
-                                                                        "password": confirm_data["Password"],
+                                                          request_body={"username":app_username,
+                                                                        "password":app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -734,6 +781,8 @@ def test_common_100_104_046():
                 txnid = confirm_response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -911,6 +960,16 @@ def test_common_100_104_047():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -925,9 +984,9 @@ def test_common_100_104_047():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("HDFC_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="HDFC",payment_gateway="HDFC"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -941,8 +1000,8 @@ def test_common_100_104_047():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": confirm_data["Username"],
-                                                                        "password": confirm_data["Password"],
+                                                          request_body={"username":app_username,
+                                                                        "password":app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -955,6 +1014,8 @@ def test_common_100_104_047():
                 txnid = confirm_response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -1132,6 +1193,16 @@ def test_common_100_104_048():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1146,9 +1217,9 @@ def test_common_100_104_048():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("HDFC_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="HDFC",payment_gateway="HDFC"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -1162,8 +1233,8 @@ def test_common_100_104_048():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username": confirm_data["Username"],
-                                                                        "password": confirm_data["Password"],
+                                                          request_body={"username":app_username,
+                                                                        "password":app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
@@ -1176,6 +1247,8 @@ def test_common_100_104_048():
                 txnid = confirm_response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']

@@ -132,7 +132,7 @@ def test_common_100_102_126():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"Query result, Txn_id_expired and rrn_expired : {txn_id} and {rrn}")
-            posting_date = result['created_time'].values[0]
+            created_date = result['created_time'].values[0]
 
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
@@ -167,7 +167,7 @@ def test_common_100_102_126():
             customer_name_new = result['customer_name'].values[0]
             payer_name_new = result['payer_name'].values[0]
             auth_code_new = result['auth_code'].values[0]
-            modified_date_new = result['created_time'].values[0]
+            created_date_new = result['created_time'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -187,8 +187,8 @@ def test_common_100_102_126():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                date_and_time_new = date_time_converter.to_app_format(modified_date_new)
+                date_and_time = date_time_converter.to_app_format(created_date)
+                date_and_time_new = date_time_converter.to_app_format(created_date_new)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED",
@@ -297,8 +297,8 @@ def test_common_100_102_126():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                date_new = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_date)
+                date_new = date_time_converter.db_datetime(created_date_new)
                 expected_api_values = {"pmt_status": "EXPIRED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "EXPIRED","settle_status": "FAILED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
@@ -534,7 +534,7 @@ def test_common_100_102_126():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(modified_date_new)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_date_new)
                 expected_charge_slip_values = {
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                     'BASE AMOUNT:': "Rs." + str(amount), 'date': txn_date,

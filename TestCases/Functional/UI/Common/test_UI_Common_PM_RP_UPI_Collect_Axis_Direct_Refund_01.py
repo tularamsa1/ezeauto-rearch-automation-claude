@@ -29,14 +29,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_101():
+def test_common_100_103_108():
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Refund_By_API_AxisDirect
-    Sub Feature Description: Verification of a Remote Pay refund using api for AxisDirect
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Refund_By_API_AxisDirect
+    Sub Feature Description: Verfication of a full Remote Pay upi collect refund using api for Axis Direct
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    101: TC101
+    108: TC108
     """
 
     try:
@@ -92,19 +92,28 @@ def test_common_100_103_101():
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
-            response = APIProcessor.send_request(api_details)
-            ui_driver = TestSuiteSetup.initialize_firefox_driver()
-            paymentLinkUrl = response['paymentLink']
-            ui_driver.get(paymentLinkUrl)
-            logger.info("Opening the link in the browser")
-            rp_upi_txn = remotePayTxnPage(ui_driver)
-            logger.info("Clicking on UPI to start the txn.")
-            rp_upi_txn.clickOnRemotePayUPI()
-            logger.info("Launching UPI")
-            rp_upi_txn.clickOnRemotePayLaunchUPI()
-            rp_upi_txn.clickOnRemotePayCancelUPI()
-            rp_upi_txn.clickOnRemotePayProceed()
-            logger.info("UPI txn is completed.")
+            response = APIProcessor.send_request(api_details)  # Check
+            if response['success'] == False:
+                raise Exception("Api could not initiate a cnp txn.")
+            else:
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                paymentLinkUrl = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
+                logger.info("Opening the link in the browser")
+                ui_driver.get(paymentLinkUrl)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
+                remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayProceed()
+                logger.info("UPI collect txn is completed.")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -457,7 +466,7 @@ def test_common_100_103_101():
                     # "bank_code_refunded": "HDFC",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
-                    "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "original_upi_txn_type": "COLLECT",
                     "refunded_upi_txn_type": "REFUND",
                     "original_upi_bank_code": "AXIS_DIRECT",
                     "refunded_upi_bank_code": "AXIS_DIRECT",
@@ -651,14 +660,14 @@ def test_common_100_103_101():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_102():
+def test_common_100_103_109():
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Refund_Failed_AxisDirect
-    Sub Feature Description: Verification of a Remote Pay upi refund failed via AxisDirect
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Refund_Failed_AxisDirect
+    Sub Feature Description: Verfication of a Remote Pay UPI Collect refund failed via Axis Direct
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    102: TC102
+    109: TC109
     """
 
     try:
@@ -713,19 +722,29 @@ def test_common_100_103_102():
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
-            response = APIProcessor.send_request(api_details)
-            ui_driver = TestSuiteSetup.initialize_firefox_driver()
-            paymentLinkUrl = response['paymentLink']
-            ui_driver.get(paymentLinkUrl)
-            logger.info("Opening the link in the browser")
-            rp_upi_txn = remotePayTxnPage(ui_driver)
-            logger.info("Clicking on UPI to start the txn.")
-            rp_upi_txn.clickOnRemotePayUPI()
-            logger.info("Launching UPI")
-            rp_upi_txn.clickOnRemotePayLaunchUPI()
-            rp_upi_txn.clickOnRemotePayCancelUPI()
-            rp_upi_txn.clickOnRemotePayProceed()
-            logger.info("UPI txn is completed.")
+            response = APIProcessor.send_request(api_details)  # Check
+            if response['success'] == False:
+                raise Exception("Api could not initiate a cnp txn.")
+            else:
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                paymentLinkUrl = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
+                logger.info("Opening the link in the browser")
+                ui_driver.get(paymentLinkUrl)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
+                remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayProceed()
+                logger.info("UPI collect txn is completed.")
+
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -1059,7 +1078,7 @@ def test_common_100_103_102():
                     # "bank_code_refunded": "HDFC",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
-                    "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "original_upi_txn_type": "COLLECT",
                     "refunded_upi_txn_type": "REFUND",
                     "original_upi_bank_code": "AXIS_DIRECT",
                     "refunded_upi_bank_code": "AXIS_DIRECT",
@@ -1263,14 +1282,14 @@ def test_common_100_103_102():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_103():
+def test_common_100_103_110():
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Refund_Posted_AxisDirect
-    Sub Feature Description: Verification of a Remote Pay upi refund posted via AxisDirect
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Refund_Posted_AxisDirect
+    Sub Feature Description: Verification of a Remote Pay UPI Collect refund posted via Axis Direct
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    103: TC103
+    110: TC110
     """
 
     try:
@@ -1323,19 +1342,28 @@ def test_common_100_103_103():
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
-            response = APIProcessor.send_request(api_details)
-            ui_driver = TestSuiteSetup.initialize_firefox_driver()
-            paymentLinkUrl = response['paymentLink']
-            ui_driver.get(paymentLinkUrl)
-            logger.info("Opening the link in the browser")
-            rp_upi_txn = remotePayTxnPage(ui_driver)
-            logger.info("Clicking on UPI to start the txn.")
-            rp_upi_txn.clickOnRemotePayUPI()
-            logger.info("Launching UPI")
-            rp_upi_txn.clickOnRemotePayLaunchUPI()
-            rp_upi_txn.clickOnRemotePayCancelUPI()
-            rp_upi_txn.clickOnRemotePayProceed()
-            logger.info("UPI txn is completed.")
+            response = APIProcessor.send_request(api_details)  # Check
+            if response['success'] == False:
+                raise Exception("Api could not initiate a cnp txn.")
+            else:
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                paymentLinkUrl = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
+                logger.info("Opening the link in the browser")
+                ui_driver.get(paymentLinkUrl)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
+                remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayProceed()
+                logger.info("UPI Collect txn is completed.")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -1691,7 +1719,7 @@ def test_common_100_103_103():
                     # "bank_code_refunded": "HDFC",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
-                    "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "original_upi_txn_type": "COLLECT",
                     "refunded_upi_txn_type": "REFUND",
                     "original_upi_bank_code": "AXIS_DIRECT",
                     "refunded_upi_bank_code": "AXIS_DIRECT",
@@ -1893,14 +1921,14 @@ def test_common_100_103_103():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_104():
+def test_common_100_103_111():
     """
-    Sub Feature Code: UI_Common_PM_RP_Pure_upi_PartialRefund
-    Sub Feature Description: Verification of a Remote Pay upi partial refund via AxisDirect
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_partial_Refund_AxisDirect
+    Sub Feature Description: Verfication of a Remote Pay UPI Collect partial refund via Axis Direct
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    104: TC104
+    111: TC111
     """
 
     try:
@@ -1954,19 +1982,28 @@ def test_common_100_103_104():
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
-            response = APIProcessor.send_request(api_details)
-            ui_driver = TestSuiteSetup.initialize_firefox_driver()
-            paymentLinkUrl = response['paymentLink']
-            ui_driver.get(paymentLinkUrl)
-            logger.info("Opening the link in the browser")
-            rp_upi_txn = remotePayTxnPage(ui_driver)
-            logger.info("Clicking on UPI to start the txn.")
-            rp_upi_txn.clickOnRemotePayUPI()
-            logger.info("Launching UPI")
-            rp_upi_txn.clickOnRemotePayLaunchUPI()
-            rp_upi_txn.clickOnRemotePayCancelUPI()
-            rp_upi_txn.clickOnRemotePayProceed()
-            logger.info("UPI txn is completed.")
+            response = APIProcessor.send_request(api_details)  # Check
+            if response['success'] == False:
+                raise Exception("Api could not initiate a cnp txn.")
+            else:
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                paymentLinkUrl = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
+                logger.info("Opening the link in the browser")
+                ui_driver.get(paymentLinkUrl)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
+                remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayProceed()
+                logger.info("UPI Collect txn is completed.")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -2317,7 +2354,7 @@ def test_common_100_103_104():
                     # "bank_code_refunded": "HDFC",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
-                    "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "original_upi_txn_type": "COLLECT",
                     "refunded_upi_txn_type": "REFUND",
                     "original_upi_bank_code": "AXIS_DIRECT",
                     "refunded_upi_bank_code": "AXIS_DIRECT",
@@ -2526,14 +2563,14 @@ def test_common_100_103_104():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_105():
+def test_common_100_103_112():
     """
-    Sub Feature Code: UI_Common_PM_RP_Upi_two_times_partial_refund_AXIS_DIRECT
-    Sub Feature Description: Verification of a two remote pay partial refund when second partial refund amount is greater than original amount
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_two_times_partial_refund_AXIS_DIRECT
+    Sub Feature Description: Verfication of a two remote pay upi collect partial refund when second partial refund amount is greater than original amount
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    105: TC105
+    112: TC112
     """
 
     try:
@@ -2589,19 +2626,28 @@ def test_common_100_103_105():
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
-            response = APIProcessor.send_request(api_details)
-            ui_driver = TestSuiteSetup.initialize_firefox_driver()
-            paymentLinkUrl = response['paymentLink']
-            ui_driver.get(paymentLinkUrl)
-            logger.info("Opening the link in the browser")
-            rp_upi_txn = remotePayTxnPage(ui_driver)
-            logger.info("Clicking on UPI to start the txn.")
-            rp_upi_txn.clickOnRemotePayUPI()
-            logger.info("Launching UPI")
-            rp_upi_txn.clickOnRemotePayLaunchUPI()
-            rp_upi_txn.clickOnRemotePayCancelUPI()
-            rp_upi_txn.clickOnRemotePayProceed()
-            logger.info("UPI txn is completed.")
+            response = APIProcessor.send_request(api_details)  # Check
+            if response['success'] == False:
+                raise Exception("Api could not initiate a cnp txn.")
+            else:
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                paymentLinkUrl = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
+                logger.info("Opening the link in the browser")
+                ui_driver.get(paymentLinkUrl)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
+                remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayProceed()
+                logger.info("UPI collect txn is completed.")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -2964,7 +3010,7 @@ def test_common_100_103_105():
                     "bank_code_refunded": "AXIS_DIRECT",
                     # "original_pmt_gateway": "HDFC",
                     # "refunded_pmt_gateway": "HDFC",
-                    "original_upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "original_upi_txn_type": "COLLECT",
                     "refunded_upi_txn_type": "REFUND",
                     "original_upi_bank_code": "AXIS_DIRECT",
                     "refunded_upi_bank_code": "AXIS_DIRECT",
