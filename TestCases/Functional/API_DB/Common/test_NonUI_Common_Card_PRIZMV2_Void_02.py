@@ -3,7 +3,8 @@ import random
 import sys
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor, \
+    ResourceAssigner, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -27,6 +28,16 @@ def test_common_100_104_079():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -41,9 +52,9 @@ def test_common_100_104_079():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -56,6 +67,8 @@ def test_common_100_104_079():
                 txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -233,6 +246,16 @@ def test_common_100_104_080():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -247,9 +270,9 @@ def test_common_100_104_080():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -262,6 +285,8 @@ def test_common_100_104_080():
                 txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -439,6 +464,16 @@ def test_common_100_104_081():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -453,9 +488,9 @@ def test_common_100_104_081():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -468,6 +503,8 @@ def test_common_100_104_081():
                 txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -645,6 +682,16 @@ def test_common_100_104_082():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -659,9 +706,9 @@ def test_common_100_104_082():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -674,6 +721,8 @@ def test_common_100_104_082():
                 txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -851,6 +900,16 @@ def test_common_100_104_083():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -865,9 +924,9 @@ def test_common_100_104_083():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -880,6 +939,8 @@ def test_common_100_104_083():
                 txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']
@@ -1057,6 +1118,16 @@ def test_common_100_104_084():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1071,9 +1142,9 @@ def test_common_100_104_084():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'],
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
+                                                                    "username":app_username,
+                                                                    "password":app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -1086,6 +1157,8 @@ def test_common_100_104_084():
                 txnid = response['txnId']
                 api_details = DBProcessor.get_api_details('Void/Reversal_Card_Txn',
                                                           request_body={"txnId": txnid,
+                                                                        "username": app_username,
+                                                                        "password": app_password
                                                                         })
                 void_response = APIProcessor.send_request(api_details)
                 void_success = void_response['success']

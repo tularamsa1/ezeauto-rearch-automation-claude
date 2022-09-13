@@ -3,7 +3,8 @@ import random
 import sys
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, card_processor, \
+    ResourceAssigner, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -27,6 +28,20 @@ def test_common_100_104_139():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -41,9 +56,9 @@ def test_common_100_104_139():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'], #Add step to pass the UN and get the MID
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": device_serial,
+                                                                    "username": app_username,
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -55,11 +70,12 @@ def test_common_100_104_139():
 
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + card_details['Device Serial'] + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
                 result = DBProcessor.getValueFromDB(query)
                 terminal_info_id = result['id'].iloc[0]
                 logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement')
+                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                    "password": portal_password})
                 api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
                 settle_response =  APIProcessor.send_request(api_details)
                 settle_success = settle_response['success']
@@ -72,16 +88,17 @@ def test_common_100_104_139():
                     result = DBProcessor.setValueToDB(query,"mware")
                     logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
 
-                    api_details = DBProcessor.get_api_details('DB Refresh')#Need to add portal creds in req payload
+                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                    "password": portal_password})#Need to add portal creds in req payload
                     refresh_response = APIProcessor.send_request(api_details)
                     refresh_success = refresh_response['success']
 
                     if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": card_details["Username"],
-                                                                            "password": card_details["Password"],
+                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": app_username,
+                                                                                               "password": app_password,
                                                                             "ezetapDeviceData": card_details["Ezetap Device Data"],
                                                                             "originalTransactionId": txn_id, "amount": original_amount,
-                                                                            "deviceSerial": card_details["Device Serial"] })
+                                                                            "deviceSerial": device_serial })
                         refund_response = APIProcessor.send_request(api_details)
                         refund_success = refund_response['success']
                     else:
@@ -296,6 +313,20 @@ def test_common_100_104_140():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -310,9 +341,9 @@ def test_common_100_104_140():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'], #Add step to pass the UN and get the MID
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": device_serial,
+                                                                    "username": app_username,
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -324,11 +355,12 @@ def test_common_100_104_140():
 
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + card_details['Device Serial'] + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
                 result = DBProcessor.getValueFromDB(query)
                 terminal_info_id = result['id'].iloc[0]
                 logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement')
+                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                    "password": portal_password})
                 api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
                 settle_response =  APIProcessor.send_request(api_details)
                 settle_success = settle_response['success']
@@ -341,16 +373,17 @@ def test_common_100_104_140():
                     result = DBProcessor.setValueToDB(query,"mware")
                     logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
 
-                    api_details = DBProcessor.get_api_details('DB Refresh')#Need to add portal creds in req payload
+                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                    "password": portal_password})#Need to add portal creds in req payload
                     refresh_response = APIProcessor.send_request(api_details)
                     refresh_success = refresh_response['success']
 
                     if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": card_details["Username"],
-                                                                            "password": card_details["Password"],
+                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": app_username,
+                                                                                                "password": app_password,
                                                                             "ezetapDeviceData": card_details["Ezetap Device Data"],
                                                                             "originalTransactionId": txn_id, "amount": original_amount,
-                                                                            "deviceSerial": card_details["Device Serial"] })
+                                                                            "deviceSerial": device_serial })
                         refund_response = APIProcessor.send_request(api_details)
                         refund_success = refund_response['success']
                     else:
@@ -565,6 +598,20 @@ def test_common_100_104_141():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -579,9 +626,9 @@ def test_common_100_104_141():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'], #Add step to pass the UN and get the MID
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": device_serial,
+                                                                    "username": app_username,
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -593,11 +640,12 @@ def test_common_100_104_141():
 
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + card_details['Device Serial'] + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
                 result = DBProcessor.getValueFromDB(query)
                 terminal_info_id = result['id'].iloc[0]
                 logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement')
+                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                    "password": portal_password})
                 api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
                 settle_response =  APIProcessor.send_request(api_details)
                 settle_success = settle_response['success']
@@ -610,16 +658,17 @@ def test_common_100_104_141():
                     result = DBProcessor.setValueToDB(query,"mware")
                     logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
 
-                    api_details = DBProcessor.get_api_details('DB Refresh')#Need to add portal creds in req payload
+                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                    "password": portal_password})#Need to add portal creds in req payload
                     refresh_response = APIProcessor.send_request(api_details)
                     refresh_success = refresh_response['success']
 
                     if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": card_details["Username"],
-                                                                            "password": card_details["Password"],
+                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": app_username,
+                                                                                                "password": app_password,
                                                                             "ezetapDeviceData": card_details["Ezetap Device Data"],
                                                                             "originalTransactionId": txn_id, "amount": original_amount,
-                                                                            "deviceSerial": card_details["Device Serial"] })
+                                                                            "deviceSerial": device_serial })
                         refund_response = APIProcessor.send_request(api_details)
                         refund_success = refund_response['success']
                     else:
@@ -833,6 +882,20 @@ def test_common_100_104_142():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -847,9 +910,9 @@ def test_common_100_104_142():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'], #Add step to pass the UN and get the MID
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": device_serial,
+                                                                    "username": app_username,
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -861,11 +924,12 @@ def test_common_100_104_142():
 
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + card_details['Device Serial'] + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
                 result = DBProcessor.getValueFromDB(query)
                 terminal_info_id = result['id'].iloc[0]
                 logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement')
+                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                    "password": portal_password})
                 api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
                 settle_response =  APIProcessor.send_request(api_details)
                 settle_success = settle_response['success']
@@ -878,16 +942,17 @@ def test_common_100_104_142():
                     result = DBProcessor.setValueToDB(query,"mware")
                     logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
 
-                    api_details = DBProcessor.get_api_details('DB Refresh')#Need to add portal creds in req payload
+                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                    "password": portal_password})#Need to add portal creds in req payload
                     refresh_response = APIProcessor.send_request(api_details)
                     refresh_success = refresh_response['success']
 
                     if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": card_details["Username"],
-                                                                            "password": card_details["Password"],
+                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": app_username,
+                                                                    "password": app_password,
                                                                             "ezetapDeviceData": card_details["Ezetap Device Data"],
                                                                             "originalTransactionId": txn_id, "amount": original_amount,
-                                                                            "deviceSerial": card_details["Device Serial"] })
+                                                                            "deviceSerial": device_serial })
                         refund_response = APIProcessor.send_request(api_details)
                         refund_success = refund_response['success']
                     else:
@@ -1102,6 +1167,20 @@ def test_common_100_104_143():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1116,9 +1195,9 @@ def test_common_100_104_143():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'], #Add step to pass the UN and get the MID
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": device_serial,
+                                                                    "username": app_username,
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -1130,11 +1209,12 @@ def test_common_100_104_143():
 
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + card_details['Device Serial'] + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
                 result = DBProcessor.getValueFromDB(query)
                 terminal_info_id = result['id'].iloc[0]
                 logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement')
+                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                    "password": portal_password})
                 api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
                 settle_response =  APIProcessor.send_request(api_details)
                 settle_success = settle_response['success']
@@ -1147,16 +1227,17 @@ def test_common_100_104_143():
                     result = DBProcessor.setValueToDB(query,"mware")
                     logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
 
-                    api_details = DBProcessor.get_api_details('DB Refresh')#Need to add portal creds in req payload
+                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                    "password": portal_password})#Need to add portal creds in req payload
                     refresh_response = APIProcessor.send_request(api_details)
                     refresh_success = refresh_response['success']
 
                     if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": card_details["Username"],
-                                                                            "password": card_details["Password"],
+                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": app_username,
+                                                                                                "password": app_password,
                                                                             "ezetapDeviceData": card_details["Ezetap Device Data"],
                                                                             "originalTransactionId": txn_id, "amount": original_amount,
-                                                                            "deviceSerial": card_details["Device Serial"] })
+                                                                            "deviceSerial": device_serial })
                         refund_response = APIProcessor.send_request(api_details)
                         refund_success = refund_response['success']
                     else:
@@ -1371,6 +1452,20 @@ def test_common_100_104_144():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1385,9 +1480,9 @@ def test_common_100_104_144():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": card_details['Device Serial'],
-                                                                    "username": card_details['Username'], #Add step to pass the UN and get the MID
-                                                                    "password": card_details['Password'],
+                                                      request_body={"deviceSerial": device_serial,
+                                                                    "username": app_username,
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -1399,11 +1494,12 @@ def test_common_100_104_144():
 
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + card_details['Device Serial'] + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                query = "select id from terminal_info where device_serial = '" + device_serial+ "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
                 result = DBProcessor.getValueFromDB(query)
                 terminal_info_id = result['id'].iloc[0]
                 logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement')
+                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                            "password": portal_password})
                 api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
                 settle_response =  APIProcessor.send_request(api_details)
                 settle_success = settle_response['success']
@@ -1416,16 +1512,17 @@ def test_common_100_104_144():
                     result = DBProcessor.setValueToDB(query,"mware")
                     logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
 
-                    api_details = DBProcessor.get_api_details('DB Refresh')#Need to add portal creds in req payload
+                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                            "password": portal_password})#Need to add portal creds in req payload
                     refresh_response = APIProcessor.send_request(api_details)
                     refresh_success = refresh_response['success']
 
                     if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": card_details["Username"],
-                                                                            "password": card_details["Password"],
+                        api_details = DBProcessor.get_api_details('Online_Refund', request_body={"username": app_username,
+                                                                            "password": app_password,
                                                                             "ezetapDeviceData": card_details["Ezetap Device Data"],
                                                                             "originalTransactionId": txn_id, "amount": original_amount,
-                                                                            "deviceSerial": card_details["Device Serial"] })
+                                                                            "deviceSerial": device_serial })
                         refund_response = APIProcessor.send_request(api_details)
                         refund_success = refund_response['success']
                     else:
