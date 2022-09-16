@@ -4,6 +4,7 @@ import sqlite3
 
 import requests
 
+import Utilities.sqlite_processor
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -46,6 +47,36 @@ def configure_bqr_settings():
         logger.debug(f"There are no merchants available for performing bqr settings.")
 
 
+def configure_upi_settings():
+    """
+    This method is used to configure the upi settings for the merchants after creation.
+    """
+    api_details = merchant_creator.get_api_details_from_db("configureUpi")
+    url = ConfigReader.read_config("APIs", "baseurl") + api_details["EndPoint"]
+    headers = json.loads(api_details["Header"])
+    lst_upi_settings_api_body = generate_upi_setting_api_for_all_merchants()
+    if lst_upi_settings_api_body:
+        for upi_setting_api_body in lst_upi_settings_api_body:
+            merchant_code = get_merchant_code_using_mid(upi_setting_api_body['acquisitions'][0]['terminals'][0]['mid'])
+            acquirer_code = upi_setting_api_body['acquisitions'][0]['acquirerCode']
+            payment_gateway = upi_setting_api_body['acquisitions'][0]['paymentGateway']
+            payload = json.dumps(upi_setting_api_body)
+            logger.debug(payload)
+            response = requests.request("POST", url, headers=headers, data=payload)
+            logger.debug(response.text)
+            result = json.loads(response.text)
+            if result["success"]:
+                logger.debug(f"UPI setting through api done successfully for {acquirer_code} with {payment_gateway} "
+                             f"of {merchant_code}.")
+                update_config_result(merchant_code, acquirer_code, payment_gateway, "UPI", "API")
+            else:
+                logger.debug(f"UPI setting through api failed for {acquirer_code} with {payment_gateway} "
+                             f"of {merchant_code}.")
+                update_config_result(merchant_code, acquirer_code, payment_gateway, "UPI", "FAILED")
+    else:
+        logger.debug(f"There are no merchants available for performing upi settings.")
+
+
 def generate_bqr_setting_api_for_all_merchants() -> list or None:
     """
     This method is used to generate the bqr setting api body for all the available merchants
@@ -74,6 +105,36 @@ def generate_bqr_setting_api_for_all_merchants() -> list or None:
         logger.error(f"Unable to brq setting api list due to error {str(e)}")
         lst_bqr_settings = None
     return lst_bqr_settings
+
+
+def generate_upi_setting_api_for_all_merchants() -> list or None:
+    """
+    This method is used to generate the upi setting api body for all the available merchants
+    :return: list
+    """
+    lst_upi_settings = []
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT MerchantCode FROM merchants WHERE CreationStatus IN ('Created','Existed');")
+        merchant_details = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        lst_merchants_code = []
+        for merchant_details in merchant_details:
+            lst_merchants_code.append(merchant_details[0])
+        acquisitions_with_details = get_all_acquisition_details()
+        lst_acquisition_details = []
+        for acquisition_with_detail in acquisitions_with_details:
+            acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
+            lst_acquisition_details.append(acq_det)
+        for merchant_code in lst_merchants_code:
+            for acquisition in lst_acquisition_details:
+                lst_upi_settings.append(generate_upi_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
+    except Exception as e:
+        logger.error(f"Unable to upi setting api list due to error {str(e)}")
+        lst_upi_settings = None
+    return lst_upi_settings
 
 
 def generate_bqr_setting_api_body(merchant_code: str, acquirer_code: str, payment_gateway: str) -> dict or None:
@@ -106,6 +167,39 @@ def generate_bqr_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['tid'] = settings['tid']
         if check_if_virtual_mid_required_for_bqr(acquirer_code, payment_gateway) == "True":
             merchant_configuration_api['virtualMid'] = 'V' + settings['mid']
+        logger.debug(merchant_configuration_api)
+        return merchant_configuration_api
+    except Exception as e:
+        logger.error(f"Unable to generate the merchant config api due to error {str(e)}")
+        return None
+
+
+def generate_upi_setting_api_body(merchant_code: str, acquirer_code: str, payment_gateway: str) -> dict or None:
+    """
+    This method is used to generate the upi setting api body for a specific acquirer code and payment
+    gateway of a merchant.
+    :param merchant_code str
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: dict (merchant config api body)
+    """
+    try:
+        merchant_configuration_api = json.loads(merchant_creator.get_api_details_from_db("configureUpi")['RequestBody'])
+        settings = get_setting_details(merchant_code, acquirer_code, payment_gateway)
+        merchant_configuration_api["username"] = ConfigReader.read_config("SuperUserCredentials", "username")
+        merchant_configuration_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
+        merchant_configuration_api['bankCode'] = settings['bank_code']
+        merchant_configuration_api['pspBankCode'] = settings['upi_bank_code']
+        merchant_configuration_api['categoryCode'] = settings['category_code']
+        merchant_configuration_api['name'] = settings['merchant_name']
+        merchant_configuration_api['merchantCode'] = merchant_code
+        merchant_configuration_api['PgMerchantId'] = str(settings['tid']).upper()
+        merchant_configuration_api['acquisitions'][0]['acquirerCode'] = settings['acquirer_code']
+        merchant_configuration_api['acquisitions'][0]['paymentGateway'] = settings['payment_gateway']
+        merchant_configuration_api['acquisitions'][0]['terminals'][0]['mid'] = settings['mid']
+        merchant_configuration_api['acquisitions'][0]['terminals'][0]['tid'] = settings['tid']
+        add_key_to_upi_setting_api_body(merchant_configuration_api)
+        merchant_configuration_api['vpa'] = settings['mid'] + "@upi"
         logger.debug(merchant_configuration_api)
         return merchant_configuration_api
     except Exception as e:
