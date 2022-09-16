@@ -5,9 +5,8 @@ from Utilities import DBProcessor, ConfigReader
 from DataProvider import GlobalConstants
 from Utilities.execution_log_processor import EzeAutoLogger
 
-
 logger = EzeAutoLogger(__name__)
-dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/Database/ezeauto.db"
+# dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/Database/ezeauto.db"
 excel_path = ConfigReader.read_config_paths("System",
                                             "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 lst_unavailable_tid = []
@@ -20,8 +19,8 @@ def create_merchants_with_users():
     This calls the generate_merchant_creation_api_body method for getting the list of request bodies.
     Each request body represents a merchant.
     """
-    api_details = get_api_from_db("createMerchant")
-    conn = sqlite3.connect(dbPath)
+    api_details = get_api_details_from_db("createMerchant")
+    conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
     cursor = conn.cursor()
     url = ConfigReader.read_config("APIs", "baseurl") + api_details["EndPoint"]
     headers = json.loads(api_details["Header"])
@@ -64,8 +63,8 @@ def create_users_for_merchant(merchant_code):
         This calls the generate_user_creation_api_body method for getting the list of request bodies.
         Each request body represents a user.
         """
-    api_details = get_api_from_db("createUser")
-    conn = sqlite3.connect(dbPath)
+    api_details = get_api_details_from_db("createUser")
+    conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
     cursor = conn.cursor()
     url = ConfigReader.read_config("APIs", "baseurl") + api_details["EndPoint"]
     headers = json.loads(api_details["Header"])
@@ -100,32 +99,6 @@ def create_users_for_merchant(merchant_code):
         logger.info("User creation skipped")
     cursor.close()
     conn.close()
-
-
-def get_api_from_db(api_name: str) -> dict:
-    """
-    This method is used to get the api details from the api_details table of database.
-
-    :param api_name:str
-    :return: dict
-    """
-    dict_api_details = {}
-    conn = sqlite3.connect(dbPath)
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT * from api_details where ApiName = '{api_name}';")
-    details = cursor.fetchall()
-    dict_api_details["ID"] = details[0][0]
-    dict_api_details["ApiName"] = details[0][1]
-    dict_api_details["Protocol"] = details[0][2]
-    dict_api_details["Method"] = details[0][3]
-    dict_api_details["EndPoint"] = details[0][4]
-    dict_api_details["Header"] = details[0][5]
-    dict_api_details["RequestBody"] = details[0][6]
-    dict_api_details["ExpectedResult"] = details[0][7]
-    dict_api_details["CurlData"] = details[0][8]
-    cursor.close()
-    conn.close()
-    return dict_api_details
 
 
 def check_if_merchant_exists(merchant_code: str) -> bool:
@@ -175,7 +148,7 @@ def generate_merchant_creation_api_body() -> list:
     lst_merchant_creation_api_body = []
 
     try:
-        conn = sqlite3.connect(dbPath)
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT * from merchants;")
         merchants = cursor.fetchall()
@@ -185,7 +158,7 @@ def generate_merchant_creation_api_body() -> list:
                 #     create_users_for_merchant("EZETAP")
                 if not check_if_merchant_exists(merchant[0]):
                     try:
-                        merchant_creation_api = json.loads(get_api_from_db("createMerchant")["RequestBody"])
+                        merchant_creation_api = json.loads(get_api_details_from_db("createMerchant")["RequestBody"])
                         merchant_creation_api["username"] = ConfigReader.read_config("SuperUserCredentials", "username")
                         merchant_creation_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
                         merchant_creation_api["acquisitions"] = generate_acquisitions_for_merchant_creation(merchant[0])
@@ -199,7 +172,7 @@ def generate_merchant_creation_api_body() -> list:
                             for user in users:
                                 if count > 0:
                                     merchant_creation_api["users"].append(
-                                        json.loads(get_api_from_db("createMerchant")["RequestBody"])["users"][0])
+                                        json.loads(get_api_details_from_db("createMerchant")["RequestBody"])["users"][0])
                                     merchant_creation_api["users"].append(merchant_creation_api["users"][0])
                                 merchant_creation_api["users"][count]["name"] = user[0]
                                 merchant_creation_api["users"][count]["userToken"] = user[2]
@@ -245,7 +218,7 @@ def generate_users_creation_api_body(merchant_code: str) -> list:
     lst_user_creation_api_body = []
 
     try:
-        conn = sqlite3.connect(dbPath)
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
         cursor.execute(f"SELECT * from users WHERE MerchantCode = '{merchant_code}';")
         users = cursor.fetchall()
@@ -253,7 +226,7 @@ def generate_users_creation_api_body(merchant_code: str) -> list:
             for user in users:
                 if not check_if_user_exists(user[0]):
                     try:
-                        user_creation_api = json.loads(get_api_from_db("createUser")["RequestBody"])
+                        user_creation_api = json.loads(get_api_details_from_db("createUser")["RequestBody"])
                         user_creation_api["username"] = ConfigReader.read_config("SuperUserCredentials", "username")
                         user_creation_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
                         # for replacing the user details in the api
@@ -540,3 +513,30 @@ def trim_extra_digits_of_tid(tid: str, max_length: int) -> str:
         return tid
     else:
         return tid
+
+
+def get_api_details_from_db(api_name: str) -> dict:
+    """
+    This method is used to get the api details from the api_details table of database.
+
+    :param api_name:str
+    :return: dict
+    """
+    dict_api_details = {}
+    conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * from api_details where ApiName = '{api_name}';")
+    details = cursor.fetchall()
+    dict_api_details["ID"] = details[0][0]
+    dict_api_details["ApiName"] = details[0][1]
+    dict_api_details["Protocol"] = details[0][2]
+    dict_api_details["Method"] = details[0][3]
+    dict_api_details["EndPoint"] = details[0][4]
+    dict_api_details["Header"] = details[0][5]
+    dict_api_details["RequestBody"] = details[0][6]
+    dict_api_details["ExpectedResult"] = details[0][7]
+    dict_api_details["CurlData"] = details[0][8]
+    cursor.close()
+    conn.close()
+    return dict_api_details
+
