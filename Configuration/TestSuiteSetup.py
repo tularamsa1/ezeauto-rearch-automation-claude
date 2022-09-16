@@ -18,7 +18,7 @@ from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import DirectoryCreator, Ezewallet_Setup
 from Utilities import sqlite_processor,merchant_creator,DBProcessor
-from Utilities import ResourceAssigner, ConfigReader
+from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -457,6 +457,8 @@ def prepareDevicesAndDB():
         sqlite_processor.update_app_users_to_db()
         sqlite_processor.update_portal_users_to_db()
         sqlite_processor.update_terminal_details_of_all_merchants()
+        merchant_configurer.clear_merchant_config_related_tables()
+        merchant_configurer.configure_bqr_settings()
     return True
 
 

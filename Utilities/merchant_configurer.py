@@ -19,682 +19,6 @@ def configure_bqr_settings():
     url = ConfigReader.read_config("APIs", "baseurl") + api_details["EndPoint"]
     headers = json.loads(api_details["Header"])
     lst_bqr_settings_api_body = generate_bqr_setting_api_for_all_merchants()
-    lst_bqr_settings_api_body = [{'accountNumber': '3446182934', 'acquisitions': [
-        {'acquirerCode': 'HDFC', 'apps': [], 'bankIdentifier': '0794589BI021078', 'microserviceCall': False,
-         'offline': False, 'paymentGateway': 'HDFC', 'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-         'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0, 'status': 'ACTIVE', 'terminals': [
-            {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True, 'keyRotationReqd': True,
-             'kxWithPg': True, 'loyaltyEnabled': False, 'microserviceCall': False, 'mid': 'MIDIS8921188816',
-             'offline': False, 'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False, 'sequenceId': 1,
-             'settingVer': 0, 'status': 'ACTIVE', 'tid': '21188a21', 'tidPriority': 0, 'tleEnabled': True,
-             'upgrade': True}], 'upgrade': True}], 'apps': [], 'bankCode': 'HDFC', 'bharatQrBankCode': 'HDFC',
-                                  'categoryCode': '4112', 'city': 'Delhi', 'currencyCode': '356',
-                                  'enableOrgSetting': True, 'ifscCode': 'KKBK0004589', 'mVisaId': '6435484104176227',
-                                  'masterpassPan': '3535535087415157', 'microserviceCall': False,
-                                  'mvisaPan': '6435484104176227', 'name': 'Auto_test_merch25', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '21188A21', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '2295831538928410', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'AXIS',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'AXIS',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188816',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '21188a22',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'AXIS_DIRECT',
-                                                                                     'bharatQrBankCode': 'N/A',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '8074004665381721',
-                                                                                     'masterpassPan': '7300940362854243',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '8074004665381721',
-                                                                                     'name': 'Auto_test_merch25',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '21188A22',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '9639357554264427',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'YES', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'ATOS',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188816', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '21188a23',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'YES', 'bharatQrBankCode': 'YES', 'categoryCode': '4112',
-                                  'city': 'Delhi', 'currencyCode': '356', 'enableOrgSetting': True,
-                                  'ifscCode': 'KKBK0004589', 'mVisaId': '8992938346353119',
-                                  'masterpassPan': '5721597150355159', 'microserviceCall': False,
-                                  'mvisaPan': '8992938346353119', 'name': 'Auto_test_merch25', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '21188A23', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '7302162342909710', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'ICICI',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'FDC',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188816',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '21188a24',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'ICICI',
-                                                                                     'bharatQrBankCode': 'FDC_ICICI',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '7595106499001452',
-                                                                                     'masterpassPan': '1433239107999857',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '7595106499001452',
-                                                                                     'name': 'Auto_test_merch25',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '21188A24',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '4166645103833591',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'AXIS', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'ATOS_TLE',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188816', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '21188a25',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'AXIS', 'bharatQrBankCode': 'AXIS_TLE',
-                                  'categoryCode': '4112', 'city': 'Delhi', 'currencyCode': '356',
-                                  'enableOrgSetting': True, 'ifscCode': 'KKBK0004589', 'mVisaId': '6640168353122204',
-                                  'masterpassPan': '3138154724317528', 'microserviceCall': False,
-                                  'mvisaPan': '6640168353122204', 'name': 'Auto_test_merch25', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '21188A25', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '4930110253994738', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'KOTAK',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'KOTAK_ATOS',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188816',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '21188a26',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'KOTAK',
-                                                                                     'bharatQrBankCode': 'KOTAK_WL',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '9933238533445937',
-                                                                                     'masterpassPan': '3029460040462346',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '9933238533445937',
-                                                                                     'name': 'Auto_test_merch25',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '21188A26',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '7672688564001183',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'AIRP', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'APB',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188816', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '21188a27',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'APB', 'bharatQrBankCode': 'N/A', 'categoryCode': '4112',
-                                  'city': 'Delhi', 'currencyCode': '356', 'enableOrgSetting': True,
-                                  'ifscCode': 'KKBK0004589', 'mVisaId': '2981590314540528',
-                                  'masterpassPan': '1816109937895615', 'microserviceCall': False,
-                                  'mvisaPan': '2981590314540528', 'name': 'Auto_test_merch25', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '21188A27', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '3617288595084078', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'AXIS',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'ATOS',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188816',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '21188a28',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'AXIS',
-                                                                                     'bharatQrBankCode': 'AXIS',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '3950622822316809',
-                                                                                     'masterpassPan': '1890050618008884',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '3950622822316809',
-                                                                                     'name': 'Auto_test_merch25',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '21188A28',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '6815619399257062',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'HDFC', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'HDFC',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188916', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '211889a0',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'HDFC', 'bharatQrBankCode': 'HDFC', 'categoryCode': '4112',
-                                  'city': 'Delhi', 'currencyCode': '356', 'enableOrgSetting': True,
-                                  'ifscCode': 'KKBK0004589', 'mVisaId': '6333017039045133',
-                                  'masterpassPan': '5330484919772287', 'microserviceCall': False,
-                                  'mvisaPan': '6333017039045133', 'name': 'Auto_test_merch26', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '211889A0', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '8464241291539925', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'AXIS',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'AXIS',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188916',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '211889a1',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'AXIS_DIRECT',
-                                                                                     'bharatQrBankCode': 'N/A',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '1338122689098678',
-                                                                                     'masterpassPan': '4754587841706574',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '1338122689098678',
-                                                                                     'name': 'Auto_test_merch26',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '211889A1',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '4831647953638383',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'YES', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'ATOS',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188916', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '211889a2',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'YES', 'bharatQrBankCode': 'YES', 'categoryCode': '4112',
-                                  'city': 'Delhi', 'currencyCode': '356', 'enableOrgSetting': True,
-                                  'ifscCode': 'KKBK0004589', 'mVisaId': '6132107508996969',
-                                  'masterpassPan': '5504998595928361', 'microserviceCall': False,
-                                  'mvisaPan': '6132107508996969', 'name': 'Auto_test_merch26', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '211889A2', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '7101577565129578', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'ICICI',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'FDC',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188916',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '211889a3',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'ICICI',
-                                                                                     'bharatQrBankCode': 'FDC_ICICI',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '1477200510400617',
-                                                                                     'masterpassPan': '6645509814300494',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '1477200510400617',
-                                                                                     'name': 'Auto_test_merch26',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '211889A3',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '4984905238513480',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'AXIS', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'ATOS_TLE',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188916', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '211889a4',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'AXIS', 'bharatQrBankCode': 'AXIS_TLE',
-                                  'categoryCode': '4112', 'city': 'Delhi', 'currencyCode': '356',
-                                  'enableOrgSetting': True, 'ifscCode': 'KKBK0004589', 'mVisaId': '5497490238710760',
-                                  'masterpassPan': '7717093555327590', 'microserviceCall': False,
-                                  'mvisaPan': '5497490238710760', 'name': 'Auto_test_merch26', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '211889A4', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '3644735740944124', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'KOTAK',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'KOTAK_ATOS',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188916',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '211889a5',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'KOTAK',
-                                                                                     'bharatQrBankCode': 'KOTAK_WL',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '7110319482090391',
-                                                                                     'masterpassPan': '7065353619472279',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '7110319482090391',
-                                                                                     'name': 'Auto_test_merch26',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '211889A5',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '3548985816227401',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'},
-                                 {'accountNumber': '3446182934', 'acquisitions': [
-                                     {'acquirerCode': 'AIRP', 'apps': [], 'bankIdentifier': '0794589BI021078',
-                                      'microserviceCall': False, 'offline': False, 'paymentGateway': 'APB',
-                                      'priority': 0, 'requestTime': 1653291856647, 'scheduler': False,
-                                      'selfSignUp': False, 'settingVer': 0, 'settlementCycleDays': 0,
-                                      'status': 'ACTIVE', 'terminals': [
-                                         {'apps': [], 'emiOnly': False, 'ignoreProperty': False, 'initialized': True,
-                                          'keyRotationReqd': True, 'kxWithPg': True, 'loyaltyEnabled': False,
-                                          'microserviceCall': False, 'mid': 'MIDIS8921188916', 'offline': False,
-                                          'requestTime': 1653291856648, 'scheduler': False, 'selfSignUp': False,
-                                          'sequenceId': 1, 'settingVer': 0, 'status': 'ACTIVE', 'tid': '211889a6',
-                                          'tidPriority': 0, 'tleEnabled': True, 'upgrade': True}], 'upgrade': True}],
-                                  'apps': [], 'bankCode': 'APB', 'bharatQrBankCode': 'N/A', 'categoryCode': '4112',
-                                  'city': 'Delhi', 'currencyCode': '356', 'enableOrgSetting': True,
-                                  'ifscCode': 'KKBK0004589', 'mVisaId': '8906828693208232',
-                                  'masterpassPan': '7959492960692972', 'microserviceCall': False,
-                                  'mvisaPan': '8906828693208232', 'name': 'Auto_test_merch26', 'offline': False,
-                                  'orgType': 'MERCHANT', 'pan': '211889A6', 'pinCode': '110024',
-                                  'requestTime': 1653291856647, 'rupayPan': '7432435799102184', 'scheduler': False,
-                                  'selfSignUp': False, 'settingVer': 0, 'setupType': 'BHARATQR', 'status': 'ACTIVE',
-                                  'subscriptionPlan': 'BASIC', 'timeZone': 'Asia/Calcutta', 'upgrade': True,
-                                  'username': '9886191638', 'password': 'A000000'}, {'accountNumber': '3446182934',
-                                                                                     'acquisitions': [
-                                                                                         {'acquirerCode': 'AXIS',
-                                                                                          'apps': [],
-                                                                                          'bankIdentifier': '0794589BI021078',
-                                                                                          'microserviceCall': False,
-                                                                                          'offline': False,
-                                                                                          'paymentGateway': 'ATOS',
-                                                                                          'priority': 0,
-                                                                                          'requestTime': 1653291856647,
-                                                                                          'scheduler': False,
-                                                                                          'selfSignUp': False,
-                                                                                          'settingVer': 0,
-                                                                                          'settlementCycleDays': 0,
-                                                                                          'status': 'ACTIVE',
-                                                                                          'terminals': [{'apps': [],
-                                                                                                         'emiOnly': False,
-                                                                                                         'ignoreProperty': False,
-                                                                                                         'initialized': True,
-                                                                                                         'keyRotationReqd': True,
-                                                                                                         'kxWithPg': True,
-                                                                                                         'loyaltyEnabled': False,
-                                                                                                         'microserviceCall': False,
-                                                                                                         'mid': 'MIDIS8921188916',
-                                                                                                         'offline': False,
-                                                                                                         'requestTime': 1653291856648,
-                                                                                                         'scheduler': False,
-                                                                                                         'selfSignUp': False,
-                                                                                                         'sequenceId': 1,
-                                                                                                         'settingVer': 0,
-                                                                                                         'status': 'ACTIVE',
-                                                                                                         'tid': '211889a7',
-                                                                                                         'tidPriority': 0,
-                                                                                                         'tleEnabled': True,
-                                                                                                         'upgrade': True}],
-                                                                                          'upgrade': True}], 'apps': [],
-                                                                                     'bankCode': 'AXIS',
-                                                                                     'bharatQrBankCode': 'AXIS',
-                                                                                     'categoryCode': '4112',
-                                                                                     'city': 'Delhi',
-                                                                                     'currencyCode': '356',
-                                                                                     'enableOrgSetting': True,
-                                                                                     'ifscCode': 'KKBK0004589',
-                                                                                     'mVisaId': '4952117256055276',
-                                                                                     'masterpassPan': '9756112952374690',
-                                                                                     'microserviceCall': False,
-                                                                                     'mvisaPan': '4952117256055276',
-                                                                                     'name': 'Auto_test_merch26',
-                                                                                     'offline': False,
-                                                                                     'orgType': 'MERCHANT',
-                                                                                     'pan': '211889A7',
-                                                                                     'pinCode': '110024',
-                                                                                     'requestTime': 1653291856647,
-                                                                                     'rupayPan': '1712286706987057',
-                                                                                     'scheduler': False,
-                                                                                     'selfSignUp': False,
-                                                                                     'settingVer': 0,
-                                                                                     'setupType': 'BHARATQR',
-                                                                                     'status': 'ACTIVE',
-                                                                                     'subscriptionPlan': 'BASIC',
-                                                                                     'timeZone': 'Asia/Calcutta',
-                                                                                     'upgrade': True,
-                                                                                     'username': '9886191638',
-                                                                                     'password': 'A000000'}]
     if lst_bqr_settings_api_body:
         for bqr_setting_api_body in lst_bqr_settings_api_body:
             merchant_code = get_merchant_code_using_mid(bqr_setting_api_body['acquisitions'][0]['terminals'][0]['mid'])
@@ -727,30 +51,28 @@ def generate_bqr_setting_api_for_all_merchants() -> list or None:
     This method is used to generate the bqr setting api body for all the available merchants
     :return: list
     """
-    conn = ""
-    cursor = ""
     lst_bqr_settings = []
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT MerchantCode FROM merchants WHERE CreationStatus IN ('Created','Existed');")
         merchant_details = cursor.fetchall()
+        cursor.close()
+        conn.close()
         lst_merchants_code = []
         for merchant_details in merchant_details:
             lst_merchants_code.append(merchant_details[0])
-        cursor.execute("SELECT AcquirerCode, PaymentGateway FROM acquisitions;")
-        acquisition_details = cursor.fetchall()
+        acquisitions_with_details = get_all_acquisition_details()
         lst_acquisition_details = []
-        for acquisition_detail in acquisition_details:
-            lst_acquisition_details.append([acquisition_detail[0], acquisition_detail[1]])
+        for acquisition_with_detail in acquisitions_with_details:
+            acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
+            lst_acquisition_details.append(acq_det)
         for merchant_code in lst_merchants_code:
             for acquisition in lst_acquisition_details:
                 lst_bqr_settings.append(generate_bqr_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
     except Exception as e:
         logger.error(f"Unable to brq setting api list due to error {str(e)}")
         lst_bqr_settings = None
-    cursor.close()
-    conn.close()
     return lst_bqr_settings
 
 
@@ -772,13 +94,11 @@ def generate_bqr_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         merchant_configuration_api['bharatQrBankCode'] = settings['bqr_bank_code']
         merchant_configuration_api['categoryCode'] = settings['category_code']
         merchant_configuration_api['name'] = settings['merchant_name']
-        merchant_configuration_api['mvisaPan'] = get_brand_pan_number(merchant_code, acquirer_code, payment_gateway)[
-            'visa_pan']
-        merchant_configuration_api['masterpassPan'] = \
-        get_brand_pan_number(merchant_code, acquirer_code, payment_gateway)['master_pan']
-        merchant_configuration_api['rupayPan'] = get_brand_pan_number(merchant_code, acquirer_code, payment_gateway)[
-            'rupay_pan']
-        merchant_configuration_api['mVisaId'] = merchant_configuration_api['mvisaPan']
+        brand_pan_numbers = get_brand_pan_number(merchant_code, acquirer_code, payment_gateway)
+        merchant_configuration_api['mvisaPan'] = brand_pan_numbers['visa_pan']
+        merchant_configuration_api['masterpassPan'] = brand_pan_numbers['master_pan']
+        merchant_configuration_api['rupayPan'] = brand_pan_numbers['rupay_pan']
+        merchant_configuration_api['mVisaId'] = brand_pan_numbers['visa_pan']
         merchant_configuration_api['pan'] = str(settings['tid']).upper()
         merchant_configuration_api['acquisitions'][0]['acquirerCode'] = settings['acquirer_code']
         merchant_configuration_api['acquisitions'][0]['paymentGateway'] = settings['payment_gateway']
@@ -916,6 +236,7 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
         setting_details['bqr_terminal_dependant'] = acquisition_details[7]
         setting_details['upi_terminal_dependant'] = acquisition_details[8]
         setting_details['key_for_upi'] = acquisition_details[9]
+        setting_details['virtual_mid_required'] = acquisition_details[10]
         cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
                        f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
                        f"PaymentGateway = '{payment_gateway}';")
@@ -949,16 +270,18 @@ def get_brand_pan_number(merchant_code: str, acquirer_code: str, payment_gateway
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
         cursor.execute(f"SELECT VisaPrimaryPan, MasterPrimaryPan, RupayPrimaryPan FROM settings_generated_values"
-                       f" WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
-                       f"PaymentGateway = '{payment_gateway}';")
-        entries = cursor.fetchone()
-        if entries:
-            logger.debug("Picking the available pan numbers...")
-            brands_pan['visa_pan'] = entries[0]
-            brands_pan['master_pan'] = entries[1]
-            brands_pan['rupay_pan'] = entries[2]
+                       f" WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code.upper()}' AND "
+                       f"PaymentGateway = '{payment_gateway.upper()}';")
+        entry_available = cursor.fetchone()
+        if entry_available:
+            logger.debug(f"Picking the available pan numbers for {acquirer_code} with {payment_gateway} "
+                         f"of {merchant_code}")
+            brands_pan['visa_pan'] = entry_available[0]
+            brands_pan['master_pan'] = entry_available[1]
+            brands_pan['rupay_pan'] = entry_available[2]
         else:
-            logger.debug("Generating unique number for brand pan numbers...")
+            logger.debug(f"Generating unique number for {acquirer_code} with {payment_gateway} "
+                         f"of {merchant_code}")
             brands_pan['visa_pan'] = get_unique_pan_for_bqr_settings(16)
             brands_pan['master_pan'] = get_unique_pan_for_bqr_settings(16)
             brands_pan['rupay_pan'] = get_unique_pan_for_bqr_settings(16)
@@ -980,6 +303,7 @@ def get_unique_pan_for_bqr_settings(digits: int) -> str or None:
         pan_number = generate_random_number(digits)
         while check_if_pan_exists(str(pan_number)):
             pan_number = generate_random_number(digits)
+        logger.debug(f"Unique number {str(pan_number)} was generated for bqr settings.")
         return str(pan_number)
     except Exception as e:
         logger.error(f"Unable to get unique pan number due to error {str(e)}")
@@ -1048,7 +372,11 @@ def update_config_result(merchant_code: str, acquirer_code: str, payment_gateway
         cursor.execute(f"SELECT * FROM configuration_results WHERE MerchantCode = '{merchant_code}' AND "
                        f"AcquirerCode = '{acquirer_code}' AND PaymentGateway = '{payment_gateway}' AND "
                        f"SettingType = '{setting_type}';")
-        if len(cursor.fetchall()) > 0:
+        result_count = len(cursor.fetchall())
+        if result_count > 0:
+            print(f"UPDATE configuration_results SET SetThrough = '{set_through}' WHERE "
+                           f"MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
+                           f"PaymentGateway = '{payment_gateway}' AND SettingType = '{setting_type}'; ")
             cursor.execute(f"UPDATE configuration_results SET SetThrough = '{set_through}' WHERE "
                            f"MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
                            f"PaymentGateway = '{payment_gateway}' AND SettingType = '{setting_type}'; ")
@@ -1124,4 +452,22 @@ def check_if_virtual_mid_required_for_bqr(acquirer_code: str, payment_gateway: s
     return result
 
 
-print(configure_bqr_settings())
+def get_all_acquisition_details() -> list:
+    """
+    This method is used to get all the acquisition details available.
+    :return: list
+    """
+    conn = ""
+    cursor = ""
+    acquisition_details = []
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("Select * from acquisitions;")
+        acquisition_details = cursor.fetchall()
+    except Exception as e:
+        logger.error(f"Unable to get the acquisition details due to error {str(e)}")
+        acquisition_details = None
+    cursor.close()
+    conn.close()
+    return acquisition_details
