@@ -458,7 +458,10 @@ def prepareDevicesAndDB():
         sqlite_processor.update_portal_users_to_db()
         sqlite_processor.update_terminal_details_of_all_merchants()
         merchant_configurer.clear_merchant_config_related_tables()
-        merchant_configurer.configure_bqr_settings()
+        merchant_configurer.configure_bqr_settings_through_api()
+        merchant_configurer.configure_upi_settings_through_api()
+        merchant_configurer.configure_bqr_settings_through_db()
+        merchant_configurer.configure_upi_settings_through_db()
     return True
 
 
