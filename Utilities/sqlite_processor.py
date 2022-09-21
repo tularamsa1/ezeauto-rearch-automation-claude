@@ -30,6 +30,7 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM api_details;")
         cursor.execute("DELETE FROM acquisitions;")
         cursor.execute("DELETE FROM terminal_details;")
+        cursor.execute("DELETE FROM remotepay_settings;")
         conn.commit()
         logger.info("All the assigner tables cleared successfully.")
     except Exception as e:
@@ -284,3 +285,44 @@ def update_terminal_details_of_all_merchants():
             update_terminal_details_of_merchant(merchant[0])
     except Exception as e:
         logger.error(f"Unable to connect to db due to error {str(e)}")
+
+
+def update_remotepay_settings():
+    """
+    This method is used to update the remotepay_settings table with the values defined in excel.
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        remotepay_setting_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="RemotepaySettings")
+        for i in range(0, len(remotepay_setting_details)):
+            cursor.execute(f"Select * from remotepay_settings where Name = '{remotepay_setting_details['Name'][i]}';")
+            result = cursor.fetchall()
+            try:
+                if len(result) > 0:
+                    cursor.execute(f"update remotepay_settings set Value = '{remotepay_setting_details['Value'][i]}',"
+                                   f"Component = '{remotepay_setting_details['Component'][i]}',"
+                                   f"LockId = '{remotepay_setting_details['LockId'][i]}',"
+                                   f"Entity = '{remotepay_setting_details['Entity'][i]}', "
+                                   f"EntityId = '{remotepay_setting_details['EntityId'][i]}',"
+                                   f"Inheritable = '{remotepay_setting_details['Inheritable'][i]}' where "
+                                   f"Name = '{remotepay_setting_details['Name'][i]}';")
+                else:
+                    cursor.execute(f"insert into remotepay_settings(Name, Value, Component, LockId, Entity, EntityId, "
+                                   f"Inheritable)values('{remotepay_setting_details['Name'][i]}',"
+                                   f"'{remotepay_setting_details['Value'][i]}',"
+                                   f"'{remotepay_setting_details['Component'][i]}',"
+                                   f"'{remotepay_setting_details['LockId'][i]}',"
+                                   f"'{remotepay_setting_details['Entity'][i]}',"
+                                   f"'{remotepay_setting_details['EntityId'][i]}',"
+                                   f"'{remotepay_setting_details['Inheritable'][i]}');")
+                conn.commit()
+                logger.debug(f"Details of {remotepay_setting_details['Name'][i]} remote pay settings updated to db.")
+            except Exception as e:
+                logger.debug(f"Details of {remotepay_setting_details['Name'][i]} remote pay settings not updated to db.")
+    except Exception as e:
+        logger.error(f"Unable to update the remote pay settings due to error {str(e)}")
+    cursor.close()
+    conn.close()

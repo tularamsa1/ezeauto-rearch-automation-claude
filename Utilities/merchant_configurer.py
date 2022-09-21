@@ -131,7 +131,6 @@ def configure_bqr_settings_through_db():
         logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
 
 
-
 def configure_upi_settings_through_db():
     """
         This method is used to configure the upi settings for all the merchants whose setting failed through api.
@@ -178,6 +177,22 @@ def configure_upi_settings_through_db():
     except Exception as e:
         logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
 
+
+def configure_cnp_settings_through_db():
+    """
+        This method is used to configure the upi settings for all the merchants whose setting failed through api.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select * from merchants where CreationStatus in ('Created','Existed') and "
+                       f"Availability = 'Available';")
+        merchants = cursor.fetchall()
+        for merchant in merchants:
+            merchant_code = merchant[0]
+            configure_cnp_setting_for_merchant(merchant_code)
+    except Exception as e:
+        logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
 
 
 def generate_bqr_setting_api_for_all_merchants() -> list or None:
@@ -308,6 +323,56 @@ def generate_upi_setting_api_body(merchant_code: str, acquirer_code: str, paymen
     except Exception as e:
         logger.error(f"Unable to generate the merchant config api due to error {str(e)}")
         return None
+
+
+def configure_cnp_setting_for_merchant(merchant_code: str):
+    """
+    This method is used to generate the query to be executed for setting the cnp for merchant
+    :param merchant_code str
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("select * from remotepay_settings;")
+        remotepay_settings_detail = cursor.fetchall()
+        for i in range(0, len(remotepay_settings_detail)):
+            query = "INSERT INTO remotepay_setting (created_by, created_time, modified_by, modified_time, entity, " \
+                    "entity_id, setting_name, setting_value, lock_id, component, inheritable, org_code) VALUES " \
+                    "('ezetap',now(),'ezetap',now(),'<entity>','<entity_id>','<setting_name>','<setting_value>'," \
+                    "<lock_id>,'<component>',<inheritable> '','<org_code>');"
+            setting_name = remotepay_settings_detail[i][0]
+            setting_value = remotepay_settings_detail[i][1]
+            component = remotepay_settings_detail[i][2]
+            lock_id = remotepay_settings_detail[i][3]
+            entity = remotepay_settings_detail[i][4]
+            entity_id = remotepay_settings_detail[i][5]
+            inheritable = remotepay_settings_detail[i][6]
+            query = query.replace('<setting_name>', setting_name)
+            query = query.replace('<setting_value>', setting_value)
+            query = query.replace('<component>', component)
+            query = query.replace('<lock_id>', lock_id)
+            query = query.replace('<entity>', entity)
+            query = query.replace('<entity_id>', entity_id)
+            query = query.replace('<inheritable>', inheritable)
+            query = query.replace('<org_code>', merchant_code)
+            if not check_if_remotepay_setting_exists(org_code=merchant_code, setting_name=setting_name):
+                result = DBProcessor.setValueToDB(query)
+                if DBProcessor.set_value_to_db_query_passed(result):
+                    if check_if_remotepay_setting_exists(merchant_code, setting_name):
+                        logger.debug(f"{setting_name} setting for {merchant_code} done successfully.")
+                        update_config_result(merchant_code, setting_name, 'N/A', "CNP", "DB")
+                    else:
+                        logger.debug(f"{setting_name} setting for {merchant_code} failed.")
+                        update_config_result(merchant_code, setting_name, 'N/A', "CNP", "FAILED")
+                else:
+                    logger.debug(f"{setting_name} setting for {merchant_code} failed.")
+                    update_config_result(merchant_code, setting_name, 'N/A', "CNP", "FAILED")
+            else:
+                logger.debug(f"{setting_name} setting for {merchant_code} is already available.")
+    except Exception as e:
+        logger.debug(f"Unable to generate the query for remotepay setting due to error {str(e)}")
 
 
 def check_if_pan_exists(pan_number: str) -> bool or None:
@@ -819,6 +884,7 @@ def generate_upi_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         logger.error(f"Unable to generate upi setting for {acquirer_code} with {payment_gateway} of {org_code}.")
         return None
 
+
 def check_if_upi_setting_exists(org_code: str, terminal_info_id: str) -> bool or None:
     """
     This method is used to check if the upi setting exists for a merchant.
@@ -841,7 +907,29 @@ def check_if_upi_setting_exists(org_code: str, terminal_info_id: str) -> bool or
         logger.error(f"Unable to check if the upi setting is available for {org_code}, due to error {str(e)}")
         return None
 
-def generate_random_alpha_numeric_values(number_of_digits) ->str or None:
+
+def check_if_remotepay_setting_exists(org_code: str, setting_name: str) -> bool or None:
+    """
+    This method is used to check if the remotepay setting is available for the merchant.
+    :param org_code str
+    :param setting_name str
+    :return bool or None
+    """
+    try:
+        query = f"select * from remotepay_setting where org_code = '{org_code}' and setting_name = '{setting_name}'; "
+        result = DBProcessor.getValueFromDB(query)
+        if len(result) > 0:
+            logger.debug(f"{setting_name} setting for {org_code} is already available.")
+            return True
+        else:
+            logger.debug(f"{setting_name} setting for {org_code} is not available.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if the remote pay setting exists for {org_code}, due to error {str(e)}")
+        return None
+
+
+def generate_random_alpha_numeric_values(number_of_digits) -> str or None:
     """
     This method is used to generate the random alpha number values of required length
     """
@@ -871,7 +959,8 @@ def generate_upi_app_key() -> str or None:
         logger.error(f"Unable to generate the api key for upi due to error {str(e)}")
         return None
 
-def generate_enc_key() -> str:
+
+def generate_enc_key() -> str or None:
     """
     This method is used to generate the encryption key for upi setting.
     :return: str
@@ -883,3 +972,5 @@ def generate_enc_key() -> str:
     except Exception as e:
         logger.error(f"Unable to generate the enc key due to error {str(e)}")
         return None
+
+configure_cnp_settings_through_db()
