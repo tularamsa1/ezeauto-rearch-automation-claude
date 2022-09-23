@@ -22,14 +22,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_158():
+def test_common_100_102_223():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Pending_Via_KOTAK_ATOS
-    Sub Feature Description: Verification of BQRV4 BQR pending txn via KOTAK_ATOS
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_Pending_Via_AXIS_DIRECT
+    Sub Feature Description: Verification of BQRV4 UPI pending txn via AXIS_DIRECT
     TC naming code description:
     100: Payment Method
-    101: UPI
-    158: TC158
+    102: BQRV4
+    223: TC223
     """
 
     try:
@@ -56,12 +56,22 @@ def test_common_100_101_158():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"RESULT of updating DB setting active : {result}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -87,7 +97,7 @@ def test_common_100_101_158():
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
-            amount = random.randint(1, 100)
+            amount = random.randint(1, 49)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             home_page.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")
@@ -138,14 +148,14 @@ def test_common_100_101_158():
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
 
             query = "select id from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Fetching id from the upi_merchant_config table : id : {upi_mc_id}")
 
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             mid = result['mid'].values[0]
@@ -262,8 +272,8 @@ def test_common_100_101_158():
                     "pmt_state": "PENDING",
                     # "rrn": str(rrn),
                     "settle_status": "PENDING",
-                    "acquirer_code": "KOTAK",
-                    "issuer_code": "KOTAK",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     # "auth_code": auth_code,
@@ -331,9 +341,9 @@ def test_common_100_101_158():
                     "txn_amt": amount,
                     # "upi_txn_status": "AUTHORIZED",
                     "settle_status": "PENDING",
-                    "acquirer_code": "KOTAK",
-                    "bank_code": "KOTAK",
-                    "pmt_gateway": "KOTAK_ATOS",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "HDFC",
                     # "upi_txn_type": "PAY_BQR",
                     # "upi_bank_code": "KOTAK_WL",
                     # "upi_mc_id": upi_mc_id,
@@ -349,7 +359,7 @@ def test_common_100_101_158():
                     # "bqr_merchant_pan": merchant_pan,
                     "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
-                    "bqr_bank_code": "KOTAK",
+                    "bqr_bank_code": "HDFC",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
