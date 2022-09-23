@@ -1,7 +1,7 @@
 import requests
 import json
 import sqlite3
-from Utilities import DBProcessor, ConfigReader
+from Utilities import DBProcessor, ConfigReader,sqlite_processor
 from DataProvider import GlobalConstants
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -11,6 +11,19 @@ excel_path = ConfigReader.read_config_paths("System",
                                             "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 lst_unavailable_tid = []
 lst_unavailable_device_serial = []
+
+
+def create_merchants():
+    """
+    This method is used to create the merchants for execution.
+    """
+    sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
+    sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
+    sqlite_processor.update_acquisitions_to_db()
+    create_merchants_with_users()
+    sqlite_processor.update_app_users_to_db()
+    sqlite_processor.update_portal_users_to_db()
+    sqlite_processor.update_terminal_details_of_all_merchants()
 
 
 def create_merchants_with_users():

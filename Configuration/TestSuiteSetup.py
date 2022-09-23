@@ -450,20 +450,8 @@ def prepareDevicesAndDB():
             ResourceAssigner.updateDevicesInDB(devices)
         ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
-        sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
-        sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
-        sqlite_processor.update_acquisitions_to_db()
-        sqlite_processor.update_remotepay_settings()
-        merchant_creator.create_merchants_with_users()
-        sqlite_processor.update_app_users_to_db()
-        sqlite_processor.update_portal_users_to_db()
-        sqlite_processor.update_terminal_details_of_all_merchants()
-        merchant_configurer.clear_merchant_config_related_tables()
-        merchant_configurer.configure_bqr_settings_through_api()
-        merchant_configurer.configure_upi_settings_through_api()
-        merchant_configurer.configure_bqr_settings_through_db()
-        merchant_configurer.configure_upi_settings_through_db()
-        merchant_configurer.configure_cnp_settings_through_db()
+        merchant_creator.create_merchants()
+        merchant_configurer.configure_merchants()
     return True
 
 

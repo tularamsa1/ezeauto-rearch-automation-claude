@@ -29,6 +29,7 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM api_details;")
         cursor.execute("DELETE FROM acquisitions;")
+        cursor.execute("DELETE FROM pg_details;")
         cursor.execute("DELETE FROM terminal_details;")
         cursor.execute("DELETE FROM remotepay_settings;")
         conn.commit()
@@ -220,14 +221,52 @@ def update_acquisitions_to_db():
         acquisition_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="AcquisitionDetails")
         acquisition_details.fillna('N/A', inplace=True)
         for i in range(0, len(acquisition_details)):
-            cursor.execute(f"SELECT * FROM acquisitions WHERE AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' AND PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';")
-            if not len (cursor.fetchall())>0:
+            query = f"SELECT * FROM acquisitions WHERE AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' " \
+                    f"AND PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            if not len(result)>0:
                 cursor.execute(
-                    f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName, BankCode, BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, KeyForUpi, VirtualMidRequired)values("{acquisition_details.iloc[i]['Acquirer Code']}", "{acquisition_details.iloc[i]['Payment Gateway']}", "{acquisition_details.iloc[i]['Number of Terminals']}", "{acquisition_details.iloc[i]['HSM Name']}", "{acquisition_details.iloc[i]['Bank Code']}", "{acquisition_details.iloc[i]['BQR Bank Code']}", "{acquisition_details.iloc[i]['UPI(psp) Bank Code']}", "{acquisition_details.iloc[i]['BQR Terminal Dependant']}", "{acquisition_details.iloc[i]['UPI Terminal Dependant']}", "{acquisition_details.iloc[i]['Key for UPI']}", "{acquisition_details.iloc[i]['virtual MID Required']}");""")
+                    f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName, BankCode, 
+                    BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, KeyForUpi, 
+                    VirtualMidRequired, BqrSettingRequired, UpiSettingRequired)values(
+                    "{acquisition_details.iloc[i]['Acquirer Code']}", 
+                    "{acquisition_details.iloc[i]['Payment Gateway']}", 
+                    "{acquisition_details.iloc[i]['Number of Terminals']}", 
+                    "{acquisition_details.iloc[i]['HSM Name']}", 
+                    "{acquisition_details.iloc[i]['Bank Code']}",
+                    "{acquisition_details.iloc[i]['BQR Bank Code']}", 
+                    "{acquisition_details.iloc[i]['UPI(psp) Bank Code']}", 
+                    "{acquisition_details.iloc[i]['BQR Terminal Dependant']}", 
+                    "{acquisition_details.iloc[i]['UPI Terminal Dependant']}", 
+                    "{acquisition_details.iloc[i]['Key for UPI']}", 
+                    "{acquisition_details.iloc[i]['virtual MID Required']}", 
+                    "{acquisition_details.iloc[i]['BQR settings required']}", 
+                    "{acquisition_details.iloc[i]['UPI settings required']}");""")
                 conn.commit()
-                logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and payment gateway {acquisition_details.iloc[i]['Payment Gateway']} added to acquisitions table.")
+                logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and "
+                             f"payment gateway {acquisition_details.iloc[i]['Payment Gateway']} "
+                             f"added to acquisitions table.")
             else:
-                logger.debug(f"Entry for acquisition{acquisition_details.iloc[i]['Acquirer Code']} and payment gateway{acquisition_details.iloc[i]['Payment Gateway']} is already available.")
+                query = f"UPDATE acquisitions SET NumberOfTerminals = " \
+                        f"'{acquisition_details.iloc[i]['Number of Terminals']}', " \
+                        f"HsmName = '{acquisition_details.iloc[i]['HSM Name']}', " \
+                        f"BankCode = '{acquisition_details.iloc[i]['Bank Code']}', " \
+                        f"BqrBankCode = '{acquisition_details.iloc[i]['BQR Bank Code']}', " \
+                        f"UPIBankCode = '{acquisition_details.iloc[i]['UPI(psp) Bank Code']}', " \
+                        f"BqrTerminalDependant = '{acquisition_details.iloc[i]['BQR Terminal Dependant']}', " \
+                        f"UpiTerminalDependant = '{acquisition_details.iloc[i]['UPI Terminal Dependant']}', " \
+                        f"KeyForUpi = '{acquisition_details.iloc[i]['Key for UPI']}', " \
+                        f"VirtualMidRequired = '{acquisition_details.iloc[i]['virtual MID Required']}', " \
+                        f"BqrSettingRequired = '{acquisition_details.iloc[i]['BQR settings required']}', " \
+                        f"UpiSettingRequired = '{acquisition_details.iloc[i]['UPI settings required']}' " \
+                        f"where AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' and " \
+                        f"PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
+                cursor.execute(query)
+                conn.commit()
+                logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and "
+                             f"payment gateway {acquisition_details.iloc[i]['Payment Gateway']} "
+                             f"has been updated in the acquisitions table.")
         cursor.close()
         conn.close()
     except Exception as e:
@@ -326,3 +365,55 @@ def update_remotepay_settings():
         logger.error(f"Unable to update the remote pay settings due to error {str(e)}")
     cursor.close()
     conn.close()
+
+
+def update_pg_details():
+    """
+    This method is used to update the pg details into the db taking the data from the excel file.
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        df_pg_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="PgDetails")
+        df_pg_details.fillna('NULL', inplace=True)
+        for i in range(0, len(df_pg_details)):
+            cursor.execute(f"SELECT * FROM pg_details WHERE Bank = '{df_pg_details['Bank'][i]}' AND "
+                           f"PaymentGateway = '{df_pg_details['Payment Gateway'][i]}';")
+            result = cursor.fetchall()
+            if len(result) > 0:
+                cursor.execute(f"UPDATE pg_details SET ApiKey = '{df_pg_details['Api Key'][i]}', "
+                               f"Secret = '{df_pg_details['Secret'][i]}', ApiKey2 = '{df_pg_details['Api Key2'][i]}', "
+                               f"Secret2 = '{df_pg_details['Secret2'][i]}', ApiKey3 = '{df_pg_details['Api Key3'][i]}',"
+                               f"Secret3 = '{df_pg_details['Secret3'][i]}', LockId = '{df_pg_details['Lock Id'][i]}', "
+                               f"HashAlog= '{df_pg_details['Hash Algo'][i]}', "
+                               f"MleEnabled = '{df_pg_details['Mle Enabled'][i]}', "
+                               f"NbEnabled = '{df_pg_details['Nb Enabled'][i]}', "
+                               f"NbSelected = '{df_pg_details['Nb Selected'][i]}', "
+                               f"CnpCardpayEnabled = '{df_pg_details['Cnp Cardpay Enabled'][i]}', "
+                               f"AccountLabelId = '{df_pg_details['Account Label Id'][i]}', "
+                               f"TransactionTimeout = '{df_pg_details['Transaction Timeout'][i]}' "
+                               f"WHERE Bank = '{df_pg_details['Bank'][i]}' AND "
+                               f"PaymentGateway = '{df_pg_details['Payment Gateway'][i]}'; ")
+                logger.debug(f"Details of {df_pg_details['Bank'][i]} pg {df_pg_details['Payment Gateway'][i]} updated.")
+            else:
+                cursor.execute(f"INSERT INTO pg_details(Bank, PaymentGateway, ApiKey, Secret, ApiKey2, Secret2, "
+                               f"ApiKey3, Secret3, LockId, HashAlog, MleEnabled, NbEnabled, NbSelected, "
+                               f"CnpCardpayEnabled, AccountLabelId, TransactionTimeout)VALUES"
+                               f"('{df_pg_details['Bank'][i]}','{df_pg_details['Payment Gateway'][i]}',"
+                               f"'{df_pg_details['Api Key'][i]}','{df_pg_details['Secret'][i]}',"
+                               f"'{df_pg_details['Api Key2'][i]}','{df_pg_details['Secret2'][i]}',"
+                               f"'{df_pg_details['Api Key3'][i]}','{df_pg_details['Secret3'][i]}',"
+                               f"'{df_pg_details['Lock Id'][i]}','{df_pg_details['Hash Algo'][i]}',"
+                               f"'{df_pg_details['Mle Enabled'][i]}','{df_pg_details['Nb Enabled'][i]}',"
+                               f"'{df_pg_details['Nb Selected'][i]}','{df_pg_details['Cnp Cardpay Enabled'][i]}',"
+                               f"'{df_pg_details['Account Label Id'][i]}','{df_pg_details['Transaction Timeout'][i]}');"
+                               f"")
+                logger.debug(f"Details of {df_pg_details['Bank'][i]} pg {df_pg_details['Payment Gateway'][i]} added.")
+            conn.commit()
+    except Exception as e:
+        logger.error(f"Unable to update the pg details to db due to error {str(e)}")
+
+
+update_acquisitions_to_db()

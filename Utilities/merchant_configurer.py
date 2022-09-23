@@ -4,10 +4,26 @@ import sqlite3
 
 import requests
 from DataProvider import GlobalConstants
-from Utilities import DBProcessor, merchant_creator, ConfigReader
+from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
+
+
+def configure_merchants():
+    """
+    This method is used to configure all the required settings for the merchant.
+    """
+    clear_merchant_config_related_tables()
+    sqlite_processor.update_pg_details()
+    sqlite_processor.update_remotepay_settings()
+    configure_bqr_settings_through_api()
+    configure_upi_settings_through_api()
+    configure_bqr_settings_through_db()
+    configure_upi_settings_through_db()
+    configure_cnp_settings_through_db()
+    configure_pg_settings_through_db()
+    refresh_db()
 
 
 def configure_bqr_settings_through_api():
@@ -180,7 +196,7 @@ def configure_upi_settings_through_db():
 
 def configure_cnp_settings_through_db():
     """
-        This method is used to configure the upi settings for all the merchants whose setting failed through api.
+        This method is used to configure the cnp settings for all the merchants.
     """
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
@@ -192,7 +208,110 @@ def configure_cnp_settings_through_db():
             merchant_code = merchant[0]
             configure_cnp_setting_for_merchant(merchant_code)
     except Exception as e:
-        logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
+        logger.error(f"Unable to configure the cnp setting due to error {str(e)}")
+
+
+def configure_pg_settings_through_db():
+    """
+        This method is used to configure the pg settings for all the merchants.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select * from merchants where CreationStatus in ('Created','Existed') and "
+                       f"Availability = 'Available';")
+        merchants = cursor.fetchall()
+        for merchant in merchants:
+            merchant_code = merchant[0]
+            configure_pg_settings_for_merchant(merchant_code)
+    except Exception as e:
+        logger.error(f"Unable to configure the cnp setting due to error {str(e)}")
+
+
+def configure_pg_settings_for_merchant(merchant_code: str):
+    """
+    This method is used to generate the query for merchant pg configuration.
+    :param merchant_code str
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM pg_details;")
+        lst_pg_details = cursor.fetchall()
+        for pg_detail in lst_pg_details:
+            if check_if_payment_gateway_exists_in_terminal_info_table(pg_detail[1]):
+                payment_gateway = pg_detail[1]
+            else:
+                payment_gateway = get_payment_gateway_from_terminal_details(pg_detail[0])
+            acquirer_code = pg_detail[0]
+            setting_details = get_setting_details(merchant_code, acquirer_code, payment_gateway)
+            merchant_id = mid = setting_details['mid']
+            tid = setting_details['tid']
+            terminal_info_id = get_terminal_info_id(merchant_code, acquirer_code, payment_gateway, mid, tid)
+            api_key = pg_detail[2]
+            secret = pg_detail[3]
+            api_key2 = pg_detail[4]
+            secret2 = pg_detail[5]
+            api_key3 = pg_detail[6]
+            secret3 = pg_detail[7]
+            lock_id = pg_detail[8]
+            hash_algo = pg_detail[9]
+            mle_enabled = pg_detail[10]
+            nb_enabled = pg_detail[11]
+            nb_selected = pg_detail[12]
+            cnp_cardpay_enabled = pg_detail[13]
+            acc_label_id = pg_detail[14]
+            transaction_timeout = pg_detail[15]
+            payment_gateway = pg_detail[1]
+            query = "INSERT INTO merchant_pg_config (org_code, payment_gateway, merchant_id, status, priority, " \
+                    "api_key, secret, created_by, created_time, lock_id, modified_by, modified_time, hash_algo, " \
+                    "mle_enabled, api_key2, secret2, nb_enabled, nb_selected, cnp_cardpay_enabled, terminal_info_id, " \
+                    "acc_label_id, mid, tid, bank_code, api_key3, secret3, transaction_timeout) VALUES ('<org_code>'," \
+                    "'<payment_gateway>','<merchant_id>','ACTIVE',0,'<api_key>','<secret>','ezetap',now(),<lock_id>," \
+                    "'ezetap',now(),'<hash_algo>','<mle_enabled>','<api_key2>','<secret2>','<nb_enabled>'," \
+                    "'<nb_selected>','<cnp_cardpay_enabled>', '<terminal_info_id>',<acc_label_id>,'<mid>','<tid>'," \
+                    "'<bank_code>','<api_key3>','<secret3>',<transaction_timeout>);"
+            query = query.replace('<org_code>', merchant_code)
+            query = query.replace('<payment_gateway>', payment_gateway)
+            query = query.replace('<merchant_id>', merchant_id)
+            query = query.replace('<api_key>', api_key)
+            query = query.replace('<secret>', secret)
+            query = query.replace('<lock_id>', lock_id)
+            query = query.replace('<hash_algo>', hash_algo)
+            query = query.replace('<mle_enabled>', mle_enabled)
+            query = query.replace('<api_key2>', api_key2)
+            query = query.replace('<secret2>', secret2)
+            query = query.replace('<nb_enabled>', nb_enabled)
+            query = query.replace('<nb_selected>', nb_selected)
+            query = query.replace('<cnp_cardpay_enabled>', cnp_cardpay_enabled)
+            query = query.replace('<terminal_info_id>', str(terminal_info_id))
+            query = query.replace('<acc_label_id>', acc_label_id)
+            query = query.replace('<mid>', mid)
+            query = query.replace('<tid>', tid)
+            query = query.replace('<bank_code>', acquirer_code)
+            query = query.replace('<api_key3>', api_key3)
+            query = query.replace('<secret3>', secret3)
+            query = query.replace('<transaction_timeout>', transaction_timeout)
+
+            if not check_if_pg_config_exists(merchant_code, payment_gateway):
+                print(query)
+                result = DBProcessor.setValueToDB(query)
+                if DBProcessor.set_value_to_db_query_passed(result):
+                    if check_if_pg_config_exists(merchant_code, payment_gateway):
+                        logger.debug(f"Pg configured successfully for {merchant_code} with {payment_gateway}.")
+                        update_config_result(merchant_code, acquirer_code, payment_gateway, "PGconfig", "DB")
+                    else:
+                        logger.debug(f"PG configuration failed for {merchant_code} with {payment_gateway}.")
+                        update_config_result(merchant_code, acquirer_code, payment_gateway, "PGconfig", "FAILED")
+                else:
+                    logger.debug(f"PG configuration failed for {merchant_code} with {payment_gateway}.")
+                    update_config_result(merchant_code, acquirer_code, payment_gateway, "PGconfig", "FAILED")
+            else:
+                logger.debug(f"PG configuration already exists for {merchant_code} with {payment_gateway}.")
+
+
+    except Exception as e:
+        logger.error(f"Unable to generate the query for pg configuration due to error {str(e)}")
 
 
 def generate_bqr_setting_api_for_all_merchants() -> list or None:
@@ -214,8 +333,9 @@ def generate_bqr_setting_api_for_all_merchants() -> list or None:
         acquisitions_with_details = get_all_acquisition_details()
         lst_acquisition_details = []
         for acquisition_with_detail in acquisitions_with_details:
-            acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
-            lst_acquisition_details.append(acq_det)
+            if check_if_bqr_setting_required(acquisition_with_detail[0], acquisition_with_detail[1]):
+                acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
+                lst_acquisition_details.append(acq_det)
         for merchant_code in lst_merchants_code:
             for acquisition in lst_acquisition_details:
                 lst_bqr_settings.append(generate_bqr_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
@@ -640,12 +760,14 @@ def update_config_result(merchant_code: str, acquirer_code: str, payment_gateway
                            f"MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
                            f"PaymentGateway = '{payment_gateway}' AND SettingType = '{setting_type}'; ")
             conn.commit()
-            logger.debug(f"BQR setting result updated for {acquirer_code} with {payment_gateway} of {merchant_code}.")
+            logger.debug(f"{setting_type} setting result updated for {acquirer_code} with {payment_gateway} of "
+                         f"{merchant_code}.")
         else:
             cursor.execute(f"INSERT INTO configuration_results(MerchantCode, AcquirerCode, PaymentGateway, "
                            f"SettingType, SetThrough)VALUES('{merchant_code}','{acquirer_code}',"
                            f"'{payment_gateway}','{setting_type}','{set_through}');")
-            logger.debug(f"New entry added for {acquirer_code} with {payment_gateway} of {merchant_code}.")
+            logger.debug(f"New entry added for {acquirer_code} with {payment_gateway} of {merchant_code} for "
+                         f"{setting_type} setting.")
             conn.commit()
     except Exception as e:
         logger.error(f"Unable update the config results due to error {str(e)}")
@@ -885,6 +1007,22 @@ def generate_upi_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         return None
 
 
+def get_payment_gateway_from_terminal_details(acquirer_code: str) -> str:
+    """
+    This method is used to fetch the payment gateway of an acquirer.
+    In case of multiple payment gateways availability, first one will be picked.
+    :param acquirer_code
+    :return: str or None
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select PaymentGateway from terminal_details where AcquirerCode = '{acquirer_code}';")
+        return cursor.fetchone()[0]
+    except Exception as e:
+        logger.error(f"Unable to get the pg due to error {str(e)}")
+
+
 def check_if_upi_setting_exists(org_code: str, terminal_info_id: str) -> bool or None:
     """
     This method is used to check if the upi setting exists for a merchant.
@@ -927,6 +1065,46 @@ def check_if_remotepay_setting_exists(org_code: str, setting_name: str) -> bool 
     except Exception as e:
         logger.error(f"Unable to check if the remote pay setting exists for {org_code}, due to error {str(e)}")
         return None
+
+
+def check_if_payment_gateway_exists_in_terminal_info_table(payment_gate: str) -> str:
+    """
+    This method is used to check if the payment gateway exists in the environment.
+    :param payment_gate str
+    :return: str
+    """
+    try:
+        query = f"select * from terminal_info where payment_gateway = '{payment_gate}';"
+        result = DBProcessor.getValueFromDB(query)
+        if len(result)>0:
+            logger.debug(f"{payment_gate} is available in terminal info table.")
+            return True
+        else:
+            logger.debug(f"{payment_gate} is not available in terminal info table.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if {payment_gate} is available in terminal info table due to error {str(e)}")
+
+
+def check_if_pg_config_exists(org_code: str, payment_gateway: str) -> bool:
+    """
+    This method is used to check if the pg configuration is available for the merchant.
+    :param org_code str
+    :param payment_gateway str
+    :return bool
+    """
+    try:
+        query = f"select * from merchant_pg_config where org_code = '{org_code}'and " \
+                f"payment_gateway = '{payment_gateway}';"
+        result = DBProcessor.getValueFromDB(query)
+        if len(result) > 0:
+            logger.debug(f"PG config is available for {org_code} with {payment_gateway}")
+            return True
+        else:
+            logger.debug(f"PG config is not available for {org_code} with {payment_gateway}")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if pg is available for {org_code} with {payment_gateway} due to error {str(e)}")
 
 
 def generate_random_alpha_numeric_values(number_of_digits) -> str or None:
@@ -973,4 +1151,68 @@ def generate_enc_key() -> str or None:
         logger.error(f"Unable to generate the enc key due to error {str(e)}")
         return None
 
-configure_cnp_settings_through_db()
+
+def refresh_db():
+    """
+    This method is used to refresh the db.
+    """
+    try:
+        username = ConfigReader.read_config("SuperUserCredentials", "username")
+        password = ConfigReader.read_config("SuperUserCredentials", "password")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": username,
+                                                                              "password": password})
+        response = APIProcessor.send_request(api_details)
+        if response['success']:
+            logger.debug(f"DB was refreshed successfully.")
+        else:
+            logger.debug(f"DB refresh failed.")
+    except Exception as e:
+        logger.debug(f"Unable to refresh the db due to error {str(e)}")
+
+
+def check_if_bqr_setting_required(acquirer_code: str, payment_gateway: str) -> bool:
+    """
+    This method is used to check if bqr setting is required for a combination of acquirer and payment gateway.
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: bool
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT BqrSettingRequired FROM acquisitions where AcquirerCode = '{acquirer_code}' "
+                       f"and PaymentGateway = '{payment_gateway}';")
+        if str(cursor.fetchone()[0]).lower() == 'yes':
+            logger.debug(f"BQR setting is required for {acquirer_code} with {payment_gateway}.")
+            return True
+        else:
+            logger.debug(f"BQR setting is not required for {acquirer_code} with {payment_gateway}.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if bqr setting is required for {acquirer_code} with {payment_gateway}.")
+
+
+def check_if_upi_setting_required(acquirer_code: str, payment_gateway: str) -> bool:
+    """
+    This method is used to check if upi setting is required for a combination of acquirer and payment gateway.
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: bool
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT UpiSettingRequired FROM acquisitions where AcquirerCode = '{acquirer_code}' "
+                       f"and PaymentGateway = '{payment_gateway}';")
+        if str(cursor.fetchone()[0]).lower() == 'yes':
+            logger.debug(f"UPI setting is required for {acquirer_code} with {payment_gateway}.")
+            return True
+        else:
+            logger.debug(f"UPI setting is not required for {acquirer_code} with {payment_gateway}.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if UPI setting is required for {acquirer_code} with {payment_gateway}.")
+
+
+sqlite_processor.update_acquisitions_to_db()
+print(generate_bqr_setting_api_for_all_merchants())
