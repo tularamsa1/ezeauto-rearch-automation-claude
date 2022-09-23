@@ -13,14 +13,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_157():
+def test_common_100_104_163():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMVCTLS_DEBIT_VISA
-        Sub Feature Description:API that performs EMVCTLS Offline Refund txn having DEBIT VISA card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMV_DEBIT_VISA
+        Sub Feature Description:API that performs EMV offline Refund txn having DEBIT VISA card via ATOS_TLE
         TC naming code description:
         100: Payment Method
         104: CARD
-        157: TC157
+        163: TC163
     """
 
     try:
@@ -40,7 +40,8 @@ def test_common_100_104_157():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+        device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="AXIS",
+                                                                       payment_gateway="ATOS_TLE")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -54,11 +55,11 @@ def test_common_100_104_157():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
-                                                                    "username": app_username,
-                                                                     "password": app_password,
+                                                                    "username": app_username, #Add step to pass the UN and get the MID
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -67,42 +68,61 @@ def test_common_100_104_157():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" +device_serial+ "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
-                result = DBProcessor.getValueFromDB(query)
-                terminal_info_id = result['id'].iloc[0]
-                logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                            "password": portal_password})
-                api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
-                settle_response =  APIProcessor.send_request(api_details)
-                settle_success = settle_response['success']
-                if settle_success == True:
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query)
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query,"mware")
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
+                                                                        })
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
 
-                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                            "password": portal_password})#Need to add portal creds in req payload
-                    refresh_response = APIProcessor.send_request(api_details)
-                    refresh_success = refresh_response['success']
 
-                    if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Offline_Refund', request_body={"username": app_username,
-                                                                            "password": app_password,
-                                                                            "originalTransactionId": txn_id, "amount": original_amount })
-                        refund_response = APIProcessor.send_request(api_details)
-                        refund_success = refund_response['success']
+                if confirm_success == True:
+                    query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                    result = DBProcessor.getValueFromDB(query)
+                    terminal_info_id = result['id'].iloc[0]
+                    logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
+                    api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                                          "password": portal_password})
+                    api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
+                        terminal_info_id)
+                    settle_response = APIProcessor.send_request(api_details)
+                    settle_success = settle_response['success']
+                    if settle_success == True:
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query)
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query, "mware")
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                              "password": portal_password})  # Need to add portal creds in req payload
+                        refresh_response = APIProcessor.send_request(api_details)
+                        refresh_success = refresh_response['success']
+
+                        if refresh_success == True:
+                            api_details = DBProcessor.get_api_details('Offline_Refund',
+                                                                      request_body={"username": app_username,
+                                                                                    "password": app_password,
+                                                                                    "originalTransactionId": txn_id,
+                                                                                    "amount": original_amount})
+                            refund_response = APIProcessor.send_request(api_details)
+                            refund_success = refund_response['success']
+                        else:
+                            logger.error("DB Cache Refresh not successfull")
                     else:
-                        logger.error("DB Cache Refresh not successfull")
-                else:
                         logger.error("Settlement failed")
+
+                else:
+                    logger.error("confirm Transaction failed")
 
             else:
                 logger.error("Card payment Failed")
@@ -130,12 +150,12 @@ def test_common_100_104_157():
                                          "pmt_status":"REFUNDED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
                                          "txn_type":"REFUND", "acq_code":"AXIS"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(refund_response['amount'])
-                    txnid = refund_response['txnId']
+                    refund_txnid = refund_response['txnId']
                     orgtxnid = refund_response['origTxnId']
                     payment_mode = refund_response['paymentMode']
                     payment_status = refund_response['status']
@@ -160,7 +180,7 @@ def test_common_100_104_157():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Offline Refund is not successfull")
+                    logger.error("Online Refund is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -193,7 +213,7 @@ def test_common_100_104_157():
                                     "pmt_status_req_1":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+refund_txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -217,7 +237,7 @@ def test_common_100_104_157():
                 pmt_status_1 = result_txn["status"].iloc[0]
                 pmt_state_1 = result_txn["state"].iloc[0]
 
-                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + txnid + "';"
+                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + refund_txnid + "';"
                 result_txn_mware = DBProcessor.getValueFromDB(query_txn_mware,"mware")
                 logger.debug(f"Query result: {result_txn_mware}")
 
@@ -241,7 +261,7 @@ def test_common_100_104_157():
                 mware_pmt_status_1 = result_txn_mware["status"].iloc[0]
                 mware_pmt_state_1 = result_txn_mware["state"].iloc[0]
 
-                query_txn_req = "select amount, status from txn_request where id = '" + txnid + "';"
+                query_txn_req = "select amount, status from txn_request where id = '" + refund_txnid + "';"
                 result_txn_req = DBProcessor.getValueFromDB(query_txn_req)
                 logger.debug(f"Query result: {result_txn_req}")
 
@@ -291,19 +311,17 @@ def test_common_100_104_157():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_158():
+def test_common_100_104_164():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMVCTLS_DEBIT_MASTER
-        Sub Feature Description:API that performs EMVCTLS Offline Refund txn having DEBIT MASTER card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMV_DEBIT_MASTER
+        Sub Feature Description:API that performs EMV offline Refund txn having DEBIT MASTER card via ATOS_TLE
         TC naming code description:
         100: Payment Method
         104: CARD
-        158: TC158
+        164: TC164
     """
 
     try:
@@ -323,7 +341,8 @@ def test_common_100_104_158():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+        device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="AXIS",
+                                                                       payment_gateway="ATOS_TLE")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -337,10 +356,10 @@ def test_common_100_104_158():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
-                                                                    "username": app_username,
+                                                                    "username": app_username, #Add step to pass the UN and get the MID
                                                                     "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
@@ -350,44 +369,61 @@ def test_common_100_104_158():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
-                result = DBProcessor.getValueFromDB(query)
-                terminal_info_id = result['id'].iloc[0]
-                logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                            "password": portal_password})
-                api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
-                settle_response =  APIProcessor.send_request(api_details)
-                settle_success = settle_response['success']
-                if settle_success == True:
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query)
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query,"mware")
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
+                                                                        })
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
 
-                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                            "password": portal_password})#Need to add portal creds in req payload
-                    refresh_response = APIProcessor.send_request(api_details)
-                    refresh_success = refresh_response['success']
 
-                    if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Offline_Refund',
-                                                                  request_body={"username": app_username,
-                                                                                "password": app_password,
-                                                                                "originalTransactionId": txn_id,
-                                                                                "amount": original_amount})
-                        refund_response = APIProcessor.send_request(api_details)
-                        refund_success = refund_response['success']
+                if confirm_success == True:
+                    query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                    result = DBProcessor.getValueFromDB(query)
+                    terminal_info_id = result['id'].iloc[0]
+                    logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
+                    api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                                          "password": portal_password})
+                    api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
+                        terminal_info_id)
+                    settle_response = APIProcessor.send_request(api_details)
+                    settle_success = settle_response['success']
+                    if settle_success == True:
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query)
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query, "mware")
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                              "password": portal_password})  # Need to add portal creds in req payload
+                        refresh_response = APIProcessor.send_request(api_details)
+                        refresh_success = refresh_response['success']
+
+                        if refresh_success == True:
+                            api_details = DBProcessor.get_api_details('Offline_Refund',
+                                                                      request_body={"username": app_username,
+                                                                                    "password": app_password,
+                                                                                    "originalTransactionId": txn_id,
+                                                                                    "amount": original_amount})
+                            refund_response = APIProcessor.send_request(api_details)
+                            refund_success = refund_response['success']
+                        else:
+                            logger.error("DB Cache Refresh not successfull")
                     else:
-                        logger.error("DB Cache Refresh not successfull")
-                else:
                         logger.error("Settlement failed")
+
+                else:
+                    logger.error("confirm Transaction failed")
 
             else:
                 logger.error("Card payment Failed")
@@ -415,12 +451,12 @@ def test_common_100_104_158():
                                          "pmt_status":"REFUNDED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
                                          "txn_type":"REFUND", "acq_code":"AXIS"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(refund_response['amount'])
-                    txnid = refund_response['txnId']
+                    refund_txnid = refund_response['txnId']
                     orgtxnid = refund_response['origTxnId']
                     payment_mode = refund_response['paymentMode']
                     payment_status = refund_response['status']
@@ -445,7 +481,7 @@ def test_common_100_104_158():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Offline Refund is not successfull")
+                    logger.error("Online Refund is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -478,7 +514,7 @@ def test_common_100_104_158():
                                     "pmt_status_req_1":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+refund_txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -502,7 +538,7 @@ def test_common_100_104_158():
                 pmt_status_1 = result_txn["status"].iloc[0]
                 pmt_state_1 = result_txn["state"].iloc[0]
 
-                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + txnid + "';"
+                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + refund_txnid + "';"
                 result_txn_mware = DBProcessor.getValueFromDB(query_txn_mware,"mware")
                 logger.debug(f"Query result: {result_txn_mware}")
 
@@ -526,7 +562,7 @@ def test_common_100_104_158():
                 mware_pmt_status_1 = result_txn_mware["status"].iloc[0]
                 mware_pmt_state_1 = result_txn_mware["state"].iloc[0]
 
-                query_txn_req = "select amount, status from txn_request where id = '" + txnid + "';"
+                query_txn_req = "select amount, status from txn_request where id = '" + refund_txnid + "';"
                 result_txn_req = DBProcessor.getValueFromDB(query_txn_req)
                 logger.debug(f"Query result: {result_txn_req}")
 
@@ -577,18 +613,17 @@ def test_common_100_104_158():
 
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_159():
+def test_common_100_104_165():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMVCTLS_DEBIT_RUPAY
-        Sub Feature Description:API that performs EMVCTLS Offline Refund txn having DEBIT RUPAY card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMV_DEBIT_RUPAY
+        Sub Feature Description:API that performs EMV offline Refund txn having DEBIT RUPAY card via ATOS_TLE
         TC naming code description:
         100: Payment Method
         104: CARD
-        159: TC159
+        165: TC165
     """
 
     try:
@@ -608,7 +643,8 @@ def test_common_100_104_159():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+        device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="AXIS",
+                                                                       payment_gateway="ATOS_TLE")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -622,10 +658,10 @@ def test_common_100_104_159():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
-                                                                    "username": app_username,
+                                                                    "username": app_username, #Add step to pass the UN and get the MID
                                                                     "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
@@ -635,44 +671,61 @@ def test_common_100_104_159():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
-                result = DBProcessor.getValueFromDB(query)
-                terminal_info_id = result['id'].iloc[0]
-                logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                            "password": portal_password})
-                api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
-                settle_response =  APIProcessor.send_request(api_details)
-                settle_success = settle_response['success']
-                if settle_success == True:
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query)
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query,"mware")
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
+                                                                        })
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
 
-                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                            "password": portal_password})#Need to add portal creds in req payload
-                    refresh_response = APIProcessor.send_request(api_details)
-                    refresh_success = refresh_response['success']
 
-                    if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Offline_Refund',
-                                                                  request_body={"username": app_username,
-                                                                                "password": app_password,
-                                                                                "originalTransactionId": txn_id,
-                                                                                "amount": original_amount})
-                        refund_response = APIProcessor.send_request(api_details)
-                        refund_success = refund_response['success']
+                if confirm_success == True:
+                    query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                    result = DBProcessor.getValueFromDB(query)
+                    terminal_info_id = result['id'].iloc[0]
+                    logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
+                    api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                                          "password": portal_password})
+                    api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
+                        terminal_info_id)
+                    settle_response = APIProcessor.send_request(api_details)
+                    settle_success = settle_response['success']
+                    if settle_success == True:
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query)
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query, "mware")
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                              "password": portal_password})  # Need to add portal creds in req payload
+                        refresh_response = APIProcessor.send_request(api_details)
+                        refresh_success = refresh_response['success']
+
+                        if refresh_success == True:
+                            api_details = DBProcessor.get_api_details('Offline_Refund',
+                                                                      request_body={"username": app_username,
+                                                                                    "password": app_password,
+                                                                                    "originalTransactionId": txn_id,
+                                                                                    "amount": original_amount})
+                            refund_response = APIProcessor.send_request(api_details)
+                            refund_success = refund_response['success']
+                        else:
+                            logger.error("DB Cache Refresh not successfull")
                     else:
-                        logger.error("DB Cache Refresh not successfull")
-                else:
                         logger.error("Settlement failed")
+
+                else:
+                    logger.error("confirm Transaction failed")
 
             else:
                 logger.error("Card payment Failed")
@@ -700,12 +753,12 @@ def test_common_100_104_159():
                                          "pmt_status":"REFUNDED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
                                          "txn_type":"REFUND", "acq_code":"AXIS"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(refund_response['amount'])
-                    txnid = refund_response['txnId']
+                    refund_txnid = refund_response['txnId']
                     orgtxnid = refund_response['origTxnId']
                     payment_mode = refund_response['paymentMode']
                     payment_status = refund_response['status']
@@ -730,7 +783,7 @@ def test_common_100_104_159():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Offline Refund is not successfull")
+                    logger.error("Online Refund is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -763,7 +816,7 @@ def test_common_100_104_159():
                                     "pmt_status_req_1":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+refund_txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -787,7 +840,7 @@ def test_common_100_104_159():
                 pmt_status_1 = result_txn["status"].iloc[0]
                 pmt_state_1 = result_txn["state"].iloc[0]
 
-                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + txnid + "';"
+                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + refund_txnid + "';"
                 result_txn_mware = DBProcessor.getValueFromDB(query_txn_mware,"mware")
                 logger.debug(f"Query result: {result_txn_mware}")
 
@@ -811,7 +864,7 @@ def test_common_100_104_159():
                 mware_pmt_status_1 = result_txn_mware["status"].iloc[0]
                 mware_pmt_state_1 = result_txn_mware["state"].iloc[0]
 
-                query_txn_req = "select amount, status from txn_request where id = '" + txnid + "';"
+                query_txn_req = "select amount, status from txn_request where id = '" + refund_txnid + "';"
                 result_txn_req = DBProcessor.getValueFromDB(query_txn_req)
                 logger.debug(f"Query result: {result_txn_req}")
 
@@ -862,17 +915,19 @@ def test_common_100_104_159():
 
 
 
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_160():
+def test_common_100_104_166():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMVCTLS_CREDIT_VISA
-        Sub Feature Description:API that performs EMVCTLS Offline Refund txn having CREDIT VISA card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMV_CREDIT_VISA
+        Sub Feature Description:API that performs EMV offline Refund txn having CREDIT VISA card via ATOS_TLE
         TC naming code description:
         100: Payment Method
         104: CARD
-        160: TC160
+        166: TC166
     """
 
     try:
@@ -892,7 +947,8 @@ def test_common_100_104_160():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+        device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="AXIS",
+                                                                       payment_gateway="ATOS_TLE")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -906,11 +962,11 @@ def test_common_100_104_160():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
-                                                                    "username": app_username,
-                                                                     "password": app_password,
+                                                                    "username": app_username, #Add step to pass the UN and get the MID
+                                                                    "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
@@ -919,44 +975,61 @@ def test_common_100_104_160():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
-                result = DBProcessor.getValueFromDB(query)
-                terminal_info_id = result['id'].iloc[0]
-                logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                            "password": portal_password})
-                api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
-                settle_response =  APIProcessor.send_request(api_details)
-                settle_success = settle_response['success']
-                if settle_success == True:
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query)
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query,"mware")
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
+                                                                        })
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
 
-                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                            "password": portal_password})#Need to add portal creds in req payload
-                    refresh_response = APIProcessor.send_request(api_details)
-                    refresh_success = refresh_response['success']
 
-                    if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Offline_Refund',
-                                                                  request_body={"username": app_username,
-                                                                                "password": app_password,
-                                                                                "originalTransactionId": txn_id,
-                                                                                "amount": original_amount})
-                        refund_response = APIProcessor.send_request(api_details)
-                        refund_success = refund_response['success']
+                if confirm_success == True:
+                    query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                    result = DBProcessor.getValueFromDB(query)
+                    terminal_info_id = result['id'].iloc[0]
+                    logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
+                    api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                                          "password": portal_password})
+                    api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
+                        terminal_info_id)
+                    settle_response = APIProcessor.send_request(api_details)
+                    settle_success = settle_response['success']
+                    if settle_success == True:
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query)
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query, "mware")
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                              "password": portal_password})  # Need to add portal creds in req payload
+                        refresh_response = APIProcessor.send_request(api_details)
+                        refresh_success = refresh_response['success']
+
+                        if refresh_success == True:
+                            api_details = DBProcessor.get_api_details('Offline_Refund',
+                                                                      request_body={"username": app_username,
+                                                                                    "password": app_password,
+                                                                                    "originalTransactionId": txn_id,
+                                                                                    "amount": original_amount})
+                            refund_response = APIProcessor.send_request(api_details)
+                            refund_success = refund_response['success']
+                        else:
+                            logger.error("DB Cache Refresh not successfull")
                     else:
-                        logger.error("DB Cache Refresh not successfull")
-                else:
                         logger.error("Settlement failed")
+
+                else:
+                    logger.error("confirm Transaction failed")
 
             else:
                 logger.error("Card payment Failed")
@@ -984,12 +1057,12 @@ def test_common_100_104_160():
                                          "pmt_status":"REFUNDED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
                                          "txn_type":"REFUND", "acq_code":"AXIS"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(refund_response['amount'])
-                    txnid = refund_response['txnId']
+                    refund_txnid = refund_response['txnId']
                     orgtxnid = refund_response['origTxnId']
                     payment_mode = refund_response['paymentMode']
                     payment_status = refund_response['status']
@@ -1014,7 +1087,7 @@ def test_common_100_104_160():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Offline Refund is not successfull")
+                    logger.error("Online Refund is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1047,7 +1120,7 @@ def test_common_100_104_160():
                                     "pmt_status_req_1":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+refund_txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -1071,7 +1144,7 @@ def test_common_100_104_160():
                 pmt_status_1 = result_txn["status"].iloc[0]
                 pmt_state_1 = result_txn["state"].iloc[0]
 
-                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + txnid + "';"
+                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + refund_txnid + "';"
                 result_txn_mware = DBProcessor.getValueFromDB(query_txn_mware,"mware")
                 logger.debug(f"Query result: {result_txn_mware}")
 
@@ -1095,7 +1168,7 @@ def test_common_100_104_160():
                 mware_pmt_status_1 = result_txn_mware["status"].iloc[0]
                 mware_pmt_state_1 = result_txn_mware["state"].iloc[0]
 
-                query_txn_req = "select amount, status from txn_request where id = '" + txnid + "';"
+                query_txn_req = "select amount, status from txn_request where id = '" + refund_txnid + "';"
                 result_txn_req = DBProcessor.getValueFromDB(query_txn_req)
                 logger.debug(f"Query result: {result_txn_req}")
 
@@ -1145,19 +1218,17 @@ def test_common_100_104_160():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_161():
+def test_common_100_104_167():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMVCTLS_CREDIT_MASTER
-        Sub Feature Description:API that performs EMVCTLS Offline Refund txn having CREDIT MASTER card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMV_CREDIT_MASTER
+        Sub Feature Description:API that performs EMV offline Refund txn having CREDIT MASTER card via ATOS_TLE
         TC naming code description:
         100: Payment Method
         104: CARD
-        143: TC161
+        167: TC167
     """
 
     try:
@@ -1177,7 +1248,8 @@ def test_common_100_104_161():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+        device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="AXIS",
+                                                                       payment_gateway="ATOS_TLE")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -1191,10 +1263,10 @@ def test_common_100_104_161():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
-                                                                    "username": app_username,
+                                                                    "username": app_username, #Add step to pass the UN and get the MID
                                                                     "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
@@ -1204,44 +1276,61 @@ def test_common_100_104_161():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
-                result = DBProcessor.getValueFromDB(query)
-                terminal_info_id = result['id'].iloc[0]
-                logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                            "password": portal_password})
-                api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
-                settle_response =  APIProcessor.send_request(api_details)
-                settle_success = settle_response['success']
-                if settle_success == True:
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query)
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query,"mware")
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
+                                                                        })
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
 
-                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                            "password": portal_password})#Need to add portal creds in req payload
-                    refresh_response = APIProcessor.send_request(api_details)
-                    refresh_success = refresh_response['success']
 
-                    if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Offline_Refund',
-                                                                  request_body={"username": app_username,
-                                                                                "password": app_password,
-                                                                                "originalTransactionId": txn_id,
-                                                                                "amount": original_amount})
-                        refund_response = APIProcessor.send_request(api_details)
-                        refund_success = refund_response['success']
+                if confirm_success == True:
+                    query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                    result = DBProcessor.getValueFromDB(query)
+                    terminal_info_id = result['id'].iloc[0]
+                    logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
+                    api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                                          "password": portal_password})
+                    api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
+                        terminal_info_id)
+                    settle_response = APIProcessor.send_request(api_details)
+                    settle_success = settle_response['success']
+                    if settle_success == True:
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query)
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query, "mware")
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                              "password": portal_password})  # Need to add portal creds in req payload
+                        refresh_response = APIProcessor.send_request(api_details)
+                        refresh_success = refresh_response['success']
+
+                        if refresh_success == True:
+                            api_details = DBProcessor.get_api_details('Offline_Refund',
+                                                                      request_body={"username": app_username,
+                                                                                    "password": app_password,
+                                                                                    "originalTransactionId": txn_id,
+                                                                                    "amount": original_amount})
+                            refund_response = APIProcessor.send_request(api_details)
+                            refund_success = refund_response['success']
+                        else:
+                            logger.error("DB Cache Refresh not successfull")
                     else:
-                        logger.error("DB Cache Refresh not successfull")
-                else:
                         logger.error("Settlement failed")
+
+                else:
+                    logger.error("confirm Transaction failed")
 
             else:
                 logger.error("Card payment Failed")
@@ -1269,12 +1358,12 @@ def test_common_100_104_161():
                                          "pmt_status":"REFUNDED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
                                          "txn_type":"REFUND", "acq_code":"AXIS"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(refund_response['amount'])
-                    txnid = refund_response['txnId']
+                    refund_txnid = refund_response['txnId']
                     orgtxnid = refund_response['origTxnId']
                     payment_mode = refund_response['paymentMode']
                     payment_status = refund_response['status']
@@ -1299,7 +1388,7 @@ def test_common_100_104_161():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Offline Refund is not successfull")
+                    logger.error("Online Refund is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1332,7 +1421,7 @@ def test_common_100_104_161():
                                     "pmt_status_req_1":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+refund_txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -1356,7 +1445,7 @@ def test_common_100_104_161():
                 pmt_status_1 = result_txn["status"].iloc[0]
                 pmt_state_1 = result_txn["state"].iloc[0]
 
-                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + txnid + "';"
+                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + refund_txnid + "';"
                 result_txn_mware = DBProcessor.getValueFromDB(query_txn_mware,"mware")
                 logger.debug(f"Query result: {result_txn_mware}")
 
@@ -1380,7 +1469,7 @@ def test_common_100_104_161():
                 mware_pmt_status_1 = result_txn_mware["status"].iloc[0]
                 mware_pmt_state_1 = result_txn_mware["state"].iloc[0]
 
-                query_txn_req = "select amount, status from txn_request where id = '" + txnid + "';"
+                query_txn_req = "select amount, status from txn_request where id = '" + refund_txnid + "';"
                 result_txn_req = DBProcessor.getValueFromDB(query_txn_req)
                 logger.debug(f"Query result: {result_txn_req}")
 
@@ -1431,18 +1520,17 @@ def test_common_100_104_161():
 
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_100_104_162():
+def test_common_100_104_168():
     """
-        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMVCTLS_CREDIT_RUPAY
-        Sub Feature Description:API that performs EMVCTLS Offline Refund txn having CREDIT RUPAY card via ATOS_TLE
+        Sub Feature Code: NonUI_Common_ATOS_TLE_Card_Offline_Refund_EMV_CREDIT_RUPAY
+        Sub Feature Description:API that performs EMV offline Refund txn having CREDIT RUPAY card via ATOS_TLE
         TC naming code description:
         100: Payment Method
         104: CARD
-        162: TC162
+        168: TC168
     """
 
     try:
@@ -1462,7 +1550,8 @@ def test_common_100_104_162():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        device_serial =  merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="ATOS_TLE")
+        device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="AXIS",
+                                                                       payment_gateway="ATOS_TLE")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -1476,10 +1565,10 @@ def test_common_100_104_162():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMVCTLS_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
-                                                                    "username": app_username,
+                                                                    "username": app_username, #Add step to pass the UN and get the MID
                                                                     "password": app_password,
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
@@ -1489,44 +1578,61 @@ def test_common_100_104_162():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-
             if card_payment_success == True:
                 txn_id = response['txnId']
-                query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
-                result = DBProcessor.getValueFromDB(query)
-                terminal_info_id = result['id'].iloc[0]
-                logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
-                api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                            "password": portal_password})
-                api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(terminal_info_id) #Need to add request payload when merchant creation
-                settle_response =  APIProcessor.send_request(api_details)
-                settle_success = settle_response['success']
-                if settle_success == True:
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query)
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
-                    query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
-                    result = DBProcessor.setValueToDB(query,"mware")
-                    logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+                api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
+                                                                        })
+                confirm_response = APIProcessor.send_request(api_details)
+                confirm_success = confirm_response['success']
 
-                    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                            "password": portal_password})#Need to add portal creds in req payload
-                    refresh_response = APIProcessor.send_request(api_details)
-                    refresh_success = refresh_response['success']
 
-                    if refresh_success == True:
-                        api_details = DBProcessor.get_api_details('Offline_Refund',
-                                                                  request_body={"username": app_username,
-                                                                                "password": app_password,
-                                                                                "originalTransactionId": txn_id,
-                                                                                "amount": original_amount})
-                        refund_response = APIProcessor.send_request(api_details)
-                        refund_success = refund_response['success']
+                if confirm_success == True:
+                    query = "select id from terminal_info where device_serial = '" + device_serial + "' and payment_gateway = 'ATOS_TLE' and acquirer_code = 'AXIS';"
+                    result = DBProcessor.getValueFromDB(query)
+                    terminal_info_id = result['id'].iloc[0]
+                    logger.debug(f"Query result: fetching terminal_info_id of FDC PG: {terminal_info_id}")
+                    api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
+                                                                                          "password": portal_password})
+                    api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
+                        terminal_info_id)
+                    settle_response = APIProcessor.send_request(api_details)
+                    settle_success = settle_response['success']
+                    if settle_success == True:
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query)
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        query = "update txn set state = 'SETTLED', settlement_status = 'SETTLED' where ref_txn_id = '" + txn_id + "';"
+                        result = DBProcessor.setValueToDB(query, "mware")
+                        logger.info(f"Query result: Updated the state and settlement status in txn table: {result}")
+
+                        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                                              "password": portal_password})  # Need to add portal creds in req payload
+                        refresh_response = APIProcessor.send_request(api_details)
+                        refresh_success = refresh_response['success']
+
+                        if refresh_success == True:
+                            api_details = DBProcessor.get_api_details('Offline_Refund',
+                                                                      request_body={"username": app_username,
+                                                                                    "password": app_password,
+                                                                                    "originalTransactionId": txn_id,
+                                                                                    "amount": original_amount})
+                            refund_response = APIProcessor.send_request(api_details)
+                            refund_success = refund_response['success']
+                        else:
+                            logger.error("DB Cache Refresh not successfull")
                     else:
-                        logger.error("DB Cache Refresh not successfull")
-                else:
                         logger.error("Settlement failed")
+
+                else:
+                    logger.error("confirm Transaction failed")
 
             else:
                 logger.error("Card payment Failed")
@@ -1554,12 +1660,12 @@ def test_common_100_104_162():
                                          "pmt_status":"REFUNDED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
                                          "txn_type":"REFUND", "acq_code":"AXIS"}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(refund_response['amount'])
-                    txnid = refund_response['txnId']
+                    refund_txnid = refund_response['txnId']
                     orgtxnid = refund_response['origTxnId']
                     payment_mode = refund_response['paymentMode']
                     payment_status = refund_response['status']
@@ -1584,7 +1690,7 @@ def test_common_100_104_162():
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
                 else:
-                    logger.error("Offline Refund is not successfull")
+                    logger.error("Online Refund is not successfull")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1617,7 +1723,7 @@ def test_common_100_104_162():
                                     "pmt_status_req_1":"SUCCESS"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+refund_txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -1641,7 +1747,7 @@ def test_common_100_104_162():
                 pmt_status_1 = result_txn["status"].iloc[0]
                 pmt_state_1 = result_txn["state"].iloc[0]
 
-                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + txnid + "';"
+                query_txn_mware = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where ref_txn_id = '" + refund_txnid + "';"
                 result_txn_mware = DBProcessor.getValueFromDB(query_txn_mware,"mware")
                 logger.debug(f"Query result: {result_txn_mware}")
 
@@ -1665,7 +1771,7 @@ def test_common_100_104_162():
                 mware_pmt_status_1 = result_txn_mware["status"].iloc[0]
                 mware_pmt_state_1 = result_txn_mware["state"].iloc[0]
 
-                query_txn_req = "select amount, status from txn_request where id = '" + txnid + "';"
+                query_txn_req = "select amount, status from txn_request where id = '" + refund_txnid + "';"
                 result_txn_req = DBProcessor.getValueFromDB(query_txn_req)
                 logger.debug(f"Query result: {result_txn_req}")
 
@@ -1713,7 +1819,6 @@ def test_common_100_104_162():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 
 
