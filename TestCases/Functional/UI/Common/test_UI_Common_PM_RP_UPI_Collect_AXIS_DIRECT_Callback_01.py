@@ -5,15 +5,17 @@ import time
 from datetime import datetime
 import pytest
 from termcolor import colored
-
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
+from PageFactory.Portal_HomePage import PortalHomePage
+from PageFactory.Portal_LoginPage import PortalLoginPage
+from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
 from PageFactory.portal_remotePayPage import remotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_converter
+ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -25,19 +27,22 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_080():
+def test_common_100_103_127():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_success_callback_before_expiry_AutoRefund_Enabled_AXIS_DIRECT
-    Sub Feature Description: Performing a UPI  success callback via Axis Direct before expiry when auto refund is enabled
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Success_Via_UPI_CollectCallback_Axis_Direct
+    Sub Feature Description: Verification of a Remote Pay successful pure upi txn via AXIS_DIRECT using callback
+    Sub Feature Code: UI_Common_PM_UPI_Collect_success_callback_before_expiry_AutoRefund_Enabled_Axis_Direct
+    Sub Feature Description: Performing a  UPI Collect success callback via Axis_Direct before expiry when auto refund is enabled
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    080: TC_080
+    127: TC_127
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+        print(
+            colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
@@ -45,6 +50,7 @@ def test_common_100_103_080():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
@@ -62,7 +68,6 @@ def test_common_100_103_080():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
                                                                               "settingForOrgCode": org_code})
@@ -71,20 +76,23 @@ def test_common_100_103_080():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
-        GlobalVariables.setupCompletedSuccessfully = True
+        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
 
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+
+        msg = ""
         GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+            print(
+                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
+                        'cyan'))
 
             amount = random.randint(1, 40)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -93,27 +101,34 @@ def test_common_100_103_080():
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
+
             response = APIProcessor.send_request(api_details)  # Check
             if response['success'] == False:
                 raise Exception("Api could not initiate a cnp txn.")
             else:
-                response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
-                paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                # ui_driver to portal_driver, python convention.
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                payment_link_url = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
-                logger.info("Clicking on UPI to start the txn.")
-                rp_upi_txn.clickOnRemotePayUPI()
-                logger.info("Launching UPI")
-                rp_upi_txn.clickOnRemotePayLaunchUPI()
+                ui_driver.get(payment_link_url)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")  # Check vineeths method for perform click
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
 
             query = "select * from upi_merchant_config where bank_code = 'AXIS_DIRECT' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
             pg_merchant_id = result['pgMerchantId'].values[0]
-            vpa = result['vpa'].values[0]
+            vpa = result['vpa'].values[0]  # logger id needs to be added
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
 
@@ -154,18 +169,18 @@ def test_common_100_103_080():
                                                                  'gatewayTransactionId': ref_id})
 
             curl_data = api_details['CurlData']
+            print(curl_data)
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
+
             data_buffer = ''
             ssh_stdin, ssh_stdout, ssh_stderr = TestSuiteSetup.GlobalVariables.ssh.exec_command(curl_data, get_pty=True)
             logger.debug(f"executing the curl_data on the remote server")
             for line in iter(lambda: ssh_stdout.readline(), ''):
                 data_buffer += line
-            logger.debug(f"Executed curl data on the remote server is: {data_buffer}")
+            logger.debug(f"OUTPUT : {data_buffer}")  # add some message in place of output
 
             logger.debug(
                 f"preparing the request payload data to trigger the /api/2.0/upi/confirm/axisdirect")
-            print(type(data_buffer))
-            # data_buffer = ast.literal_eval(data_buffer)
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
             response = APIProcessor.send_request(api_details)
@@ -178,8 +193,10 @@ def test_common_100_103_080():
             mid = result['mid'].values[0]
             tid = result['tid'].values[0]
             org_code_txn = result['org_code'].values[0]
+            txn_type = result['txn_type'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
+            auth_code = result['auth_code'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -188,9 +205,9 @@ def test_common_100_103_080():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-        # -----------------------------------------End of Test Execution--------------------------------------
+            # -----------------------------------------End of Test Execution--------------------------------------
 
-        # -----------------------------------------Start of Validation----------------------------------------
+            # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -211,9 +228,11 @@ def test_common_100_103_080():
                     "payment_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "date": date_and_time,
-                    # "auth_code": auth_code,
+                   # "auth_code": auth_code,
                 }
+
                 logger.debug(f"expected_app_values: {expected_app_values}")
+
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)  # logger
                 loginPage = LoginPage(app_driver)
                 loginPage.perform_login(app_username, app_password)
@@ -224,6 +243,7 @@ def test_common_100_103_080():
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
                 txnHistoryPage.click_on_transaction_by_txn_id(txn_id)
+
                 app_payment_status = txnHistoryPage.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_payment_mode = txnHistoryPage.fetch_txn_type_text()
@@ -263,16 +283,17 @@ def test_common_100_103_080():
                     "payment_msg": app_payment_msg,
                     "rrn": str(app_rrn),
                     "date": app_date_and_time,
-                    # "auth_code": app_auth_code,
+                   # "auth_code": app_auth_code,
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of App Validation---------------------------------------
+                logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                # -----------------------------------------End of App Validation---------------------------------------
 
-            # -----------------------------------------Start of API Validation------------------------------------
+                # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
@@ -286,19 +307,19 @@ def test_common_100_103_080():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": "REMOTE_PAY",
+                    "txn_type": txn_type,
                     "mid": mid,
                     "tid": tid,
                     "org_code": org_code_txn,
                     "date": date_and_time,
-                    # "auth_code": auth_code,
+                    #"auth_code": auth_code,
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
                                                                         "password": app_password,
                                                                         "txnId": txn_id})
-                logger.debug("Respone from Api details is", api_details)  # Change API details, add loggers
+                logger.debug("API DETAILS:", api_details)  # Change API details, add loggers
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
@@ -313,7 +334,7 @@ def test_common_100_103_080():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
-                # auth_code_api = response["authCode"] #No authcode in response
+                #auth_code_api = response["authCode"]
 
                 actual_api_values = {"pmt_status": status_api,
                                      "txn_amt": amount_api,
@@ -328,16 +349,17 @@ def test_common_100_103_080():
                                      "tid": tid_api,
                                      "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     # "auth_code": auth_code_api
+                                     #"auth_code": auth_code_api
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+                # ---------------------------------------------------------------------------------------------#remove this comment
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
-            logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of API Validation---------------------------------------
+                logger.info(f"Completed API validation for the test case : {testcase_id}")
+            # -----------------------------------------End of API Validation---------------------------------------
 
-        # -----------------------------------------Start of DB Validation--------------------------------------
+            # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
@@ -350,7 +372,7 @@ def test_common_100_103_080():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "upi_txn_type": "COLLECT",
                     "upi_bank_code": "AXIS_DIRECT",
                     "upi_mc_id": upi_mc_id,
                     "pmt_intent_status": "COMPLETED",
@@ -404,31 +426,32 @@ def test_common_100_103_080():
                     "tid": tid_db
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-            # -----------------------------------------End of DB Validation---------------------------------------
+                logger.info(f"Completed DB validation for the test case : {testcase_id}")
+                # -----------------------------------------End of DB Validation---------------------------------------
 
-            # -----------------------------------------Start of Portal Validation---------------------------------
-            if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+                # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 try:
-                    # --------------------------------------------------------------------------------------------
-                    expected_portal_values = {}
-                    #
-                    # Write the test case Portal validation code block here. Set this to pass if not required.
-                    #
-                    actual_portal_values = {}
-                    # ---------------------------------------------------------------------------------------------
-                    Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                    actualPortal=actual_portal_values)
+                        # --------------------------------------------------------------------------------------------
+                        expected_portal_values = {}
+                        #
+                        # Write the test case Portal validation code block here. Set this to pass if not required.
+                        #
+                        actual_portal_values = {}
+                        # ---------------------------------------------------------------------------------------------
+                        Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                        actualPortal=actual_portal_values)
                 except Exception as e:
                     Configuration.perform_portal_val_exception(testcase_id, e)
-                logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+                    logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+                # -----------------------------------------End of Portal Validation---------------------------------------
 
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+                # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -439,20 +462,21 @@ def test_common_100_103_080():
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                    'date': txn_date,
                                    'time': txn_time,
-                                   # 'AUTH CODE': "None"
+                                   #'AUTH CODE': auth_code
                                    }
                 logger.debug(f"expected_values : {expected_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_values)
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
-        GlobalVariables.time_calc.validation.end()
-        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
-        logger.info(f"Completed Validation for the test case : {testcase_id}")
-        # -------------------------------------------End of Validation---------------------------------------------
+                logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+                # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+            GlobalVariables.time_calc.validation.end()
+            logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+            logger.info(f"Completed Validation for the test case : {testcase_id}")
+            # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -463,14 +487,14 @@ def test_common_100_103_080():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_103_081():
+def test_common_100_103_132():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Failed_Via_UPI_Callback_AXIS_DIRECT
-    Sub Feature Description: Verification of a failed UPI txn via Axis Direct using Callback
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Failed_Via_AXIS_DIRECT
+    Sub Feature Description: Verification of a Remote Pay failed UPI collect txn via AXIS DIRECT using callback
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    081: TC_081
+    132: TC_132
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -479,10 +503,12 @@ def test_common_100_103_081():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
@@ -500,58 +526,54 @@ def test_common_100_103_081():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
-                                                                              "password": portal_password,
-                                                                              "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
+            # ------------------------------------------------------------------------------------------------
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            amount = random.randint(1, 40)
+            logger.info("Test Case Execution Started for the test case : test_com_100_103_006")
+            amount = random.randint(1,40)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.info(f"Entered order id is: {order_id}")
-            logger.info(f"Entered amount is: {amount}")
             api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
+
             response = APIProcessor.send_request(api_details)  # Check
             if response['success'] == False:
                 raise Exception("Api could not initiate a cnp txn.")
             else:
-                response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
-                paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                # ui_driver to portal_driver, python convention.
+                ui_driver = TestSuiteSetup.initialize_portal_driver()
+                payment_link_url = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
-                logger.info("Clicking on UPI to start the txn.")
-                rp_upi_txn.clickOnRemotePayUPI()
-                logger.info("Launching UPI")
-                rp_upi_txn.clickOnRemotePayLaunchUPI()
+                ui_driver.get(payment_link_url)
+                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")  # Check vineeths method for perform click
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
 
             query = "select * from upi_merchant_config where bank_code = 'AXIS_DIRECT' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
             pg_merchant_id = result['pgMerchantId'].values[0]
-            vpa = result['vpa'].values[0]
+            vpa = result['vpa'].values[0]  # logger id needs to be added
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
 
@@ -609,6 +631,10 @@ def test_common_100_103_081():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response : {response}")
 
+            # query = "select * from txn where id = '" + txn_id + "';"  # add loggers and remove duplicate tables.
+            # logger.debug(f"Query to fetch transaction id from database : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -616,9 +642,12 @@ def test_common_100_103_081():
             mid = result['mid'].values[0]
             tid = result['tid'].values[0]
             org_code_txn = result['org_code'].values[0]
+            txn_type = result['txn_type'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
+            auth_code = result['auth_code'].values[0]
 
+            # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -627,11 +656,11 @@ def test_common_100_103_081():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -651,8 +680,10 @@ def test_common_100_103_081():
                     "date": date_and_time,
                     # "auth_code": auth_code,
                 }
+
                 logger.debug(f"expected_app_values: {expected_app_values}")
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)  # logger
+
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
@@ -661,7 +692,9 @@ def test_common_100_103_081():
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
+                # txnHistoryPage.click_on_transaction_by_order_id(order_id)
                 txnHistoryPage.click_on_transaction_by_txn_id(txn_id)
+
                 app_payment_status = txnHistoryPage.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_payment_mode = txnHistoryPage.fetch_txn_type_text()
@@ -676,7 +709,7 @@ def test_common_100_103_081():
                 logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txnHistoryPage.fetch_settlement_status_text()
                 logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payer_name = txnHistoryPage.fetch_payer_name_text()
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_status = app_payment_status.split(':')[1]
@@ -703,7 +736,9 @@ def test_common_100_103_081():
                     "date": app_date_and_time,
                     # "auth_code": app_auth_code,
                 }
+
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -714,21 +749,19 @@ def test_common_100_103_081():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.db_datetime(posting_date)  # Replace date with dateand time
+                date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "FAILED",
-                    "txn_amt": amount,
-                    "pmt_mode": "UPI",
-                    "pmt_state": "FAILED",
-                    "rrn": str(rrn),
+                    "txn_amt": amount, "pmt_mode": "UPI",
+                    "pmt_state": "FAILED", "rrn": str(rrn),
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": "REMOTE_PAY",
+                    "txn_type": txn_type,
                     "mid": mid,
                     "tid": tid,
                     "org_code": org_code_txn,
-                    "date": date_and_time,
+                    "date": date,
                     # "auth_code": auth_code,
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -736,7 +769,7 @@ def test_common_100_103_081():
                                                           request_body={"username": app_username,
                                                                         "password": app_password,
                                                                         "txnId": txn_id})
-                logger.debug("Respone from Api details is", api_details)  # Change API details, add loggers
+                logger.debug("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
@@ -751,31 +784,29 @@ def test_common_100_103_081():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
-                # auth_code_api = response["authCode"] #No authcode in response
+                # auth_code_api = response["authCode"]
 
-                actual_api_values = {"pmt_status": status_api,
-                                     "txn_amt": amount_api,
+                actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
                                      "pmt_mode": payment_mode_api,
-                                     "pmt_state": state_api,
-                                     "rrn": str(rrn_api),
+                                     "pmt_state": state_api, "rrn": str(rrn_api),
                                      "settle_status": settlement_status_api,
                                      "acquirer_code": acquirer_code_api,
                                      "issuer_code": issuer_code_api,
-                                     "txn_type": txn_type_api,
-                                     "mid": mid_api,
-                                     "tid": tid_api,
-                                     "org_code": orgCode_api,
+                                     "txn_type": txn_type_api, "mid": mid_api,
+                                     "tid": tid_api, "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
                                      # "auth_code": auth_code_api
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+                # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of API Validation---------------------------------------
 
-        # -----------------------------------------Start of DB Validation--------------------------------------
+            # -----------------------------------------End of API Validation---------------------------------------
+
+            # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
@@ -788,7 +819,7 @@ def test_common_100_103_081():
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "upi_txn_type": "COLLECT",
                     "upi_bank_code": "AXIS_DIRECT",
                     "upi_mc_id": upi_mc_id,
                     "pmt_intent_status": "COMPLETED",
@@ -805,6 +836,7 @@ def test_common_100_103_081():
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 state_db = result["state"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
                 acquirer_code_db = result["acquirer_code"].iloc[0]
                 bank_code_db = result["bank_code"].iloc[0]
                 settlement_status_db = result["settlement_status"].iloc[0]
@@ -842,6 +874,7 @@ def test_common_100_103_081():
                     "tid": tid_db
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -849,22 +882,23 @@ def test_common_100_103_081():
             # -----------------------------------------End of DB Validation---------------------------------------
 
             # -----------------------------------------Start of Portal Validation---------------------------------
-            if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-                logger.info(f"Started Portal validation for the test case : {testcase_id}")
-                try:
-                    # --------------------------------------------------------------------------------------------
-                    expected_portal_values = {}
-                    #
-                    # Write the test case Portal validation code block here. Set this to pass if not required.
-                    #
-                    actual_portal_values = {}
-                    # ---------------------------------------------------------------------------------------------
-                    Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                    actualPortal=actual_portal_values)
-                except Exception as e:
-                    Configuration.perform_portal_val_exception(testcase_id, e)
-                logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                expected_portal_values = {}
+                #
+                # Write the test case Portal validation code block here. Set this to pass if not required.
+                #
+                actual_portal_values = {}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -873,20 +907,23 @@ def test_common_100_103_081():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_082():
+def test_common_100_103_133():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_success_callback_after_expiry_AXIS_DIRECT
-    Sub Feature Description: Performing a UPI  success callback via Axis Direct after expiry
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_success_callback_after_expiry_AXIS_DIRECT
+    Sub Feature Description: Performing a UPI Collect success callback via Axis Direct after expiry
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    082: TC_082
+    133: TC_133
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -943,16 +980,22 @@ def test_common_100_103_082():
             if response['success'] == False:
                 raise Exception("Api could not initiate a cnp txn.")
             else:
-                response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
-                paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                # ui_driver to portal_driver, python convention.
+                portal_driver = TestSuiteSetup.initialize_portal_driver()
+                payment_link_url = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
-                logger.info("Clicking on UPI to start the txn.")
-                rp_upi_txn.clickOnRemotePayUPI()
-                logger.info("Launching UPI")
-                rp_upi_txn.clickOnRemotePayLaunchUPI()
+                portal_driver.get(payment_link_url)
+                remotePayUpiCollectTxn = remotePayTxnPage(portal_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")  # Check vineeths method for perform click
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -1086,8 +1129,8 @@ def test_common_100_103_082():
                     "txn_amount": str(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    "customer_name": customer_name,
-                    "payer_name": payer_name,
+                    #"customer_name": customer_name,
+                    #"payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT FAILED",
                     # "rrn": str(rrn),
@@ -1115,13 +1158,13 @@ def test_common_100_103_082():
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 # app_rrn = txnHistoryPage.fetch_RRN_text()
                 # logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
-                app_customer_name = txnHistoryPage.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                # app_customer_name = txnHistoryPage.fetch_customer_name_text()
+                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txnHistoryPage.fetch_settlement_status_text()
                 logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
-                app_payer_name = txnHistoryPage.fetch_payer_name_text()
-                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                # app_payer_name = txnHistoryPage.fetch_payer_name_text()
+                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_status = app_payment_status.split(':')[1]
                 app_order_id = txnHistoryPage.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
@@ -1138,8 +1181,8 @@ def test_common_100_103_082():
                     "txn_amount": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
-                    "customer_name": app_customer_name,
-                    "payer_name": app_payer_name,
+                    #"customer_name": app_customer_name,
+                    #"payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
                     # "rrn": str(app_rrn),
@@ -1231,7 +1274,7 @@ def test_common_100_103_082():
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "upi_txn_type": "COLLECT",
                     "upi_bank_code": "AXIS_DIRECT",
                     "upi_mc_id": upi_mc_id,
                     "pmt_intent_status": "EXPIRED",
@@ -1317,18 +1360,21 @@ def test_common_100_103_082():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_103_083():
+def test_common_100_103_134():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_failed_callback_after_expiry_AXIS_DIRECT_AutoRefund_Disabled
-    Sub Feature Description: Performing a UPI  failed callback via Axis Direct after expiry the when auto refund is disabled
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_failed_callback_after_expiry_AXIS_DIRECT_AutoRefund_Disabled
+    Sub Feature Description: Performing a UPI collect failed callback via Axis Direct after expiry when auto refund is disabled
     100: Payment Method
     103: RemotePay
-    083: TC083
+    134: TC134
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1391,17 +1437,22 @@ def test_common_100_103_083():
             if response['success'] == False:
                 raise Exception("Api could not initate a cnp txn.")
             else:
-                response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
-                paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                # ui_driver to portal_driver, python convention.
+                portal_driver = TestSuiteSetup.initialize_portal_driver()
+                payment_link_url = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
-                logger.info("Clicking on UPI to start the txn.")
-                rp_upi_txn.clickOnRemotePayUPI()
-                logger.info("Launching UPI")
-                rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                portal_driver.get(payment_link_url)
+                remotePayUpiCollectTxn = remotePayTxnPage(portal_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")  # Check vineeths method for perform click
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -1695,7 +1746,7 @@ def test_common_100_103_083():
                     "upi_txn_status": "FAILED",
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
-                    "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
+                    "upi_txn_type": "COLLECT",
                     "upi_bank_code": "AXIS_DIRECT",
                     "pmt_intent_status": "EXPIRED",
                     "mid": mid,
@@ -1724,6 +1775,11 @@ def test_common_100_103_083():
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_txn_type_db = result["txn_type"].iloc[0]
 
+                query = "select * from payment_intent where id='" + payment_intent_id + "'"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                payment_intent_status = result["status"].iloc[0]
+
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -1735,7 +1791,7 @@ def test_common_100_103_083():
                     "upi_txn_type": upi_txn_type_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    "pmt_intent_status": intent_status,
+                    "pmt_intent_status": payment_intent_status,
                     "upi_bank_code": upi_bank_code_db
                 }
 
@@ -1771,19 +1827,22 @@ def test_common_100_103_083():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_103_084():
+def test_common_100_103_135():
     """
-    Sub Feature Code: UI_Common_PM_RP_Two_UPI_Success_Callback_After_Expiry_AutoRefundDisabled_AXIS_DIRECT
-    Sub Feature Description: Verification of a two upi success callback after expiry via Axis Direct when auto refund is disabled.
+    Sub Feature Code: UI_Common_PM_RP_Two_UPI_Collect_Success_Callback_After_Expiry_AutoRefundDisabled_AXIS_DIRECT
+    Sub Feature Description: Verification of a two upi collect success callback after expiry via Axis Direct when auto refund is disabled.
     100: Payment Method
     103: RemotePay
-    084: TC084
+    135: TC135
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1847,17 +1906,22 @@ def test_common_100_103_084():
             if response['success'] == False:
                 raise Exception("Api could not initate a cnp txn.")
             else:
-                response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
-                paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                # ui_driver to portal_driver, python convention.
+                portal_driver = TestSuiteSetup.initialize_portal_driver()
+                payment_link_url = response['paymentLink']
+                payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
-                logger.info("Clicking on UPI to start the txn.")
-                rp_upi_txn.clickOnRemotePayUPI()
-                logger.info("Launching UPI")
-                rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                portal_driver.get(payment_link_url)
+                remotePayUpiCollectTxn = remotePayTxnPage(portal_driver)
+                remotePayUpiCollectTxn.clickOnRemotePayUPI()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
+                logger.info("Opening UPI Collect to start the txn.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectId("abc")  # Check vineeths method for perform click
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
+                logger.info("VPA validation completed.")
+                remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -2412,7 +2476,7 @@ def test_common_100_103_084():
                                       "settlement_status": "FAILED",
                                       "acquirer_code": "AXIS",
                                       "bank_code": "AXIS",
-                                      "upi_txn_type_db": "REMOTE_PAY_UPI_INTENT",
+                                      "upi_txn_type_db": "COLLECT",
                                       "upi_bank_code_db": "AXIS_DIRECT",
                                       "upi_mc_id_db": upi_mc_id,
 
@@ -2425,7 +2489,7 @@ def test_common_100_103_084():
                                       "new_acquirer_code_1": "AXIS",
                                       "new_bank_code_1": "AXIS",
                                       "new_payment_gateway_1": "AXIS",
-                                      "new_upi_txn_type_db_1": "REMOTE_PAY_UPI_INTENT",
+                                      "new_upi_txn_type_db_1": "COLLECT",
                                       "new_upi_bank_code_db_1": "AXIS_DIRECT",
                                       "new_upi_mc_id_db_1": upi_mc_id,
 
@@ -2438,7 +2502,7 @@ def test_common_100_103_084():
                                       "new_acquirer_code_2": "AXIS",
                                       "new_bank_code_2": "AXIS",
                                       "new_payment_gateway_2": "AXIS",
-                                      "new_upi_txn_type_db_2": "REMOTE_PAY_UPI_INTENT",
+                                      "new_upi_txn_type_db_2": "COLLECT",
                                       "new_upi_bank_code_db_2": "AXIS_DIRECT",
                                       "new_upi_mc_id_db_2": upi_mc_id,
                                       "mid": mid,
@@ -2619,6 +2683,16 @@ def test_common_100_103_084():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
+
+
+
+
+
+
+
+
+
+
 
 
 
