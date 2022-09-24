@@ -1334,7 +1334,7 @@ def test_common_100_101_135():
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
-            amount = 999
+            amount = 260
             order_id = datetime.now().strftime('%m%d%H%M%S')
             home_page.enter_amount_and_order_number(amount, order_id)
             logger.debug(f"Entered amount is : {amount}")

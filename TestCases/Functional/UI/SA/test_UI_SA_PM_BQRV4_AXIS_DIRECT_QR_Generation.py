@@ -17,14 +17,14 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_sa_100_101_084():
+def test_sa_100_102_224():
     """
-    Description: Verification of a UPI QR Generation Success through SA via APB
-    Sub feature code: UI_SA_PM_UPI_QR_Generation_Success_via_APB
+    Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_DIRECT
+    Sub feature code: UI_SA_PM_BQRV4_QR_Generation_Success_via_AXIS_DIRECT
     TC naming code description:
     100->Payment Method
-    101->UPI
-    084->TC84
+    102->BQRV4
+    224->TC224
     """
 
     try:
@@ -51,7 +51,7 @@ def test_sa_100_101_084():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='APB', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -65,7 +65,24 @@ def test_sa_100_101_084():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
-
+        query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+        query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
+                                                                                "password": portal_password,
+                                                                                "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
+        api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -79,11 +96,6 @@ def test_sa_100_101_084():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            query = "select org_code from org_employee where username='" + str(app_username) + "';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code : {org_code}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
@@ -102,7 +114,10 @@ def test_sa_100_101_084():
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
-            payment_page.click_on_Upi_paymentMode()
+            payment_page.click_on_Bqr_paymentMode()
+            logger.info("Selected payment mode is BQR")
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -139,4 +154,3 @@ def test_sa_100_101_084():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
