@@ -990,6 +990,7 @@ def test_common_100_103_015():
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
