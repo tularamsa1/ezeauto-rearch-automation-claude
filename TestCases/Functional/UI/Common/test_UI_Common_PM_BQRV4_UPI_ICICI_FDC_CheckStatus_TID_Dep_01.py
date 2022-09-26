@@ -26,14 +26,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_159():
+def test_common_100_102_246():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_UPI_Success_Via_CheckStatus_API_TID_Dep_ICICI_FDC
     Sub Feature Description: Verification of a successful bqrv4 upi txn via ICICI_FDC Tid Dep using check status api
     TC naming code description:
     100: Payment Method
-    101: UPI
-    159: TC159
+    102: BQRV4
+    246: TC246
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

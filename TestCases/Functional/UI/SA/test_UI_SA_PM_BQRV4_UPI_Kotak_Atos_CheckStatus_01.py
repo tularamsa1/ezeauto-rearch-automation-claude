@@ -1,6 +1,5 @@
 import random
 import sys
-import time
 from datetime import datetime
 
 import pytest
@@ -27,14 +26,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_sa_100_101_120():
+def test_sa_100_102_225():
     """
-    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Success_Via_SA_CheckStatus_KOTAK
-    Sub Feature Description: Verification of a successful upi txn via BQRV4 KOTAK using SA check status
+    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Success_Via_SA_CheckStatus_KOTAK_ATOS
+    Sub Feature Description: Verification of a successful upi txn via BQRV4 KOTAK_ATOS using SA check status
     TC naming code description:
     100: Payment Method
-    101: UPI
-    120: TC120
+    102: BQRV4
+    225: TC225
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -492,14 +491,14 @@ def test_sa_100_101_120():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_sa_100_101_121():
+def test_sa_100_102_226():
     """
-    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Failed_Via_SA_CheckStatus_KOTAK
-    Sub Feature Description: Verification of a failed upi txn via BQRV4 KOTAK using SA check status
+    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Failed_Via_SA_CheckStatus_KOTAK_ATOS
+    Sub Feature Description: Verification of a failed upi txn via BQRV4 KOTAK_ATOS using SA check status
     TC naming code description:
     100: Payment Method
-    101: UPI
-    121: TC121
+    102: BQRV4
+    226: TC226
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

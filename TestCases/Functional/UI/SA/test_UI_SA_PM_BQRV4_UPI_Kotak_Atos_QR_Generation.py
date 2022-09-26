@@ -17,14 +17,14 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_sa_100_101_124():
+def test_sa_100_102_227():
     """
     Description: Verification of a UPI via BQRV4 Generation Success through SA via KOTAK_ATOS
     Sub feature code: UI_SA_PM_BQRV4_UPI_QR_Generation_Success_via_KOTAK_ATOS
     TC naming code description:
     100->Payment Method
-    101->UPI
-    124->TC124
+    102->BQRV4
+    227->TC227
     """
 
     try:
