@@ -414,6 +414,3 @@ def update_pg_details():
             conn.commit()
     except Exception as e:
         logger.error(f"Unable to update the pg details to db due to error {str(e)}")
-
-
-update_acquisitions_to_db()

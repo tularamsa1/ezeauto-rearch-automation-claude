@@ -1,7 +1,6 @@
 import json
 import random
 import sqlite3
-
 import requests
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
@@ -116,6 +115,7 @@ def configure_bqr_settings_through_db():
             if not check_if_bqr_setting_exists(merchant_details[0], bqr_config_id, terminal_info_id):
                 query = generate_bqr_settings_query_for_merchant(merchant_details[0], merchant_details[1],
                                                                  merchant_details[2])
+                logger.debug(query)
                 result = DBProcessor.setValueToDB(query)
                 rows_affected = len(result)
                 if rows_affected > 0:
@@ -169,6 +169,7 @@ def configure_upi_settings_through_db():
             if not check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
                 query = generate_upi_settings_query_for_merchant(merchant_details[0], merchant_details[1],
                                                                  merchant_details[2])
+                logger.debug(query)
                 result = DBProcessor.setValueToDB(query)
                 rows_affected = len(result)
                 if rows_affected > 0:
@@ -292,9 +293,9 @@ def configure_pg_settings_for_merchant(merchant_code: str):
             query = query.replace('<api_key3>', api_key3)
             query = query.replace('<secret3>', secret3)
             query = query.replace('<transaction_timeout>', transaction_timeout)
-
+            logger.debug(f"PG setting query of {merchant_code} is {query}")
             if not check_if_pg_config_exists(merchant_code, payment_gateway):
-                print(query)
+                logger.debug(f"Query for PG setting of {merchant_code} is {query}")
                 result = DBProcessor.setValueToDB(query)
                 if DBProcessor.set_value_to_db_query_passed(result):
                     if check_if_pg_config_exists(merchant_code, payment_gateway):
@@ -312,6 +313,98 @@ def configure_pg_settings_for_merchant(merchant_code: str):
 
     except Exception as e:
         logger.error(f"Unable to generate the query for pg configuration due to error {str(e)}")
+
+
+def configure_cnp_setting_for_merchant(merchant_code: str):
+    """
+    This method is used to generate the query to be executed for setting the cnp for merchant
+    :param merchant_code str
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("select * from remotepay_settings;")
+        remotepay_settings_detail = cursor.fetchall()
+        for i in range(0, len(remotepay_settings_detail)):
+            query = "INSERT INTO remotepay_setting (created_by, created_time, modified_by, modified_time, entity, " \
+                    "entity_id, setting_name, setting_value, lock_id, component, inheritable, org_code) VALUES " \
+                    "('<created_by>',now(),'<modified_by>',now(),'<entity>','<entity_id>','<setting_name>'," \
+                    "'<setting_value>',<lock_id>,'<component>',<inheritable> '','<org_code>');"
+            setting_name = remotepay_settings_detail[i][0]
+            setting_value = remotepay_settings_detail[i][1]
+            component = remotepay_settings_detail[i][2]
+            lock_id = remotepay_settings_detail[i][3]
+            entity = remotepay_settings_detail[i][4]
+            entity_id = remotepay_settings_detail[i][5]
+            inheritable = remotepay_settings_detail[i][6]
+            query = query.replace('<created_by>', merchant_code)
+            query = query.replace('<modified_by>', merchant_code)
+            query = query.replace('<setting_name>', setting_name)
+            query = query.replace('<setting_value>', setting_value)
+            query = query.replace('<component>', component)
+            query = query.replace('<lock_id>', lock_id)
+            query = query.replace('<entity>', entity)
+            query = query.replace('<entity_id>', entity_id)
+            query = query.replace('<inheritable>', inheritable)
+            query = query.replace('<org_code>', merchant_code)
+            logger.debug(f"Query for cnp setting {setting_name} of {merchant_code} is {query}")
+            if not check_if_remotepay_setting_exists(org_code=merchant_code, setting_name=setting_name):
+                logger.debug(f"Query for cnp setting of {merchant_code} is {query}")
+                result = DBProcessor.setValueToDB(query)
+                if DBProcessor.set_value_to_db_query_passed(result):
+                    if check_if_remotepay_setting_exists(merchant_code, setting_name):
+                        logger.debug(f"{setting_name} setting for {merchant_code} done successfully.")
+                        update_config_result(merchant_code, setting_name, 'N/A', "CNP", "DB")
+                    else:
+                        logger.debug(f"{setting_name} setting for {merchant_code} failed.")
+                        update_config_result(merchant_code, setting_name, 'N/A', "CNP", "FAILED")
+                else:
+                    logger.debug(f"{setting_name} setting for {merchant_code} failed.")
+                    update_config_result(merchant_code, setting_name, 'N/A', "CNP", "FAILED")
+            else:
+                logger.debug(f"{setting_name} setting for {merchant_code} is already available.")
+    except Exception as e:
+        logger.debug(f"Unable to generate the query for remotepay setting due to error {str(e)}")
+
+
+def configure_terminal_dependency(merchant_code: str, acquirer_code: str, payment_gateway: str, payment_mode: str):
+    """
+    This method is used to configure the terminal dependency for a merchant.
+    :param merchant_code str
+    :param acquirer_code str
+    :param payment_gateway str
+    :param payment_mode str
+    """
+    try:
+        if payment_mode.lower() == 'upi':
+            payment_mode = "UPI"
+        else:
+            payment_mode = "BHARATQR"
+
+        if check_if_terminal_dependant(acquirer_code, payment_gateway, payment_mode) == "true":
+            query = f"SELECT * from terminal_dependency_config where org_code = '{merchant_code}' and " \
+                    f"payment_mode = '{payment_mode}' and acquirer_code = '{acquirer_code}' and " \
+                    f"payment_gateway = '{payment_gateway}';"
+            result = DBProcessor.getValueFromDB(query)
+            if len(result) > 0:
+                logger.debug(f"Terminal dependency is already configured for {acquirer_code} of {merchant_code}")
+            else:
+                query = f"INSERT INTO terminal_dependency_config(org_code, payment_mode, acquirer_code, payment_gateway, " \
+                        f"terminal_dependent_enabled, created_by, created_time, modified_by, modified_time) VALUES " \
+                        f"('{merchant_code}', '{payment_mode}',  '{acquirer_code}', '{payment_gateway}',  1,  'ezetap', " \
+                        f"now(), 'ezetap', now());"
+                logger.debug(f"Query for configuring terminal dependency of {merchant_code} is {query}")
+                result = DBProcessor.setValueToDB(query)
+                if DBProcessor.set_value_to_db_query_passed(result):
+                    logger.debug(f"Terminal dependency successfully configured for {acquirer_code} of {merchant_code}")
+                else:
+                    logger.debug(f"Terminal dependency configuration failed for {acquirer_code} of {merchant_code}")
+        else:
+            logger.debug(f"{payment_mode} of {acquirer_code} with {payment_gateway} is not terminal dependant.")
+    except Exception as e:
+        logger.error(f"Unable to configure the terminal dependency for {merchant_code} due to error {str(e)}")
 
 
 def generate_bqr_setting_api_for_all_merchants() -> list or None:
@@ -364,8 +457,9 @@ def generate_upi_setting_api_for_all_merchants() -> list or None:
         acquisitions_with_details = get_all_acquisition_details()
         lst_acquisition_details = []
         for acquisition_with_detail in acquisitions_with_details:
-            acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
-            lst_acquisition_details.append(acq_det)
+            if check_if_upi_setting_required(acquisition_with_detail[0], acquisition_with_detail[1]):
+                acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
+                lst_acquisition_details.append(acq_det)
         for merchant_code in lst_merchants_code:
             for acquisition in lst_acquisition_details:
                 lst_upi_settings.append(generate_upi_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
@@ -445,54 +539,164 @@ def generate_upi_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         return None
 
 
-def configure_cnp_setting_for_merchant(merchant_code: str):
+def generate_bqr_settings_query_for_merchant(org_code: str, acquirer_code: str, payment_gateway: str) -> str or None:
     """
-    This method is used to generate the query to be executed for setting the cnp for merchant
-    :param merchant_code str
+    This method is used to configure the bqr settings of all available merchants through db.
+    :param org_code str
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: str
     """
-    conn = ""
-    cursor = ""
     try:
-        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("select * from remotepay_settings;")
-        remotepay_settings_detail = cursor.fetchall()
-        for i in range(0, len(remotepay_settings_detail)):
-            query = "INSERT INTO remotepay_setting (created_by, created_time, modified_by, modified_time, entity, " \
-                    "entity_id, setting_name, setting_value, lock_id, component, inheritable, org_code) VALUES " \
-                    "('ezetap',now(),'ezetap',now(),'<entity>','<entity_id>','<setting_name>','<setting_value>'," \
-                    "<lock_id>,'<component>',<inheritable> '','<org_code>');"
-            setting_name = remotepay_settings_detail[i][0]
-            setting_value = remotepay_settings_detail[i][1]
-            component = remotepay_settings_detail[i][2]
-            lock_id = remotepay_settings_detail[i][3]
-            entity = remotepay_settings_detail[i][4]
-            entity_id = remotepay_settings_detail[i][5]
-            inheritable = remotepay_settings_detail[i][6]
-            query = query.replace('<setting_name>', setting_name)
-            query = query.replace('<setting_value>', setting_value)
-            query = query.replace('<component>', component)
-            query = query.replace('<lock_id>', lock_id)
-            query = query.replace('<entity>', entity)
-            query = query.replace('<entity_id>', entity_id)
-            query = query.replace('<inheritable>', inheritable)
-            query = query.replace('<org_code>', merchant_code)
-            if not check_if_remotepay_setting_exists(org_code=merchant_code, setting_name=setting_name):
-                result = DBProcessor.setValueToDB(query)
-                if DBProcessor.set_value_to_db_query_passed(result):
-                    if check_if_remotepay_setting_exists(merchant_code, setting_name):
-                        logger.debug(f"{setting_name} setting for {merchant_code} done successfully.")
-                        update_config_result(merchant_code, setting_name, 'N/A', "CNP", "DB")
-                    else:
-                        logger.debug(f"{setting_name} setting for {merchant_code} failed.")
-                        update_config_result(merchant_code, setting_name, 'N/A', "CNP", "FAILED")
-                else:
-                    logger.debug(f"{setting_name} setting for {merchant_code} failed.")
-                    update_config_result(merchant_code, setting_name, 'N/A', "CNP", "FAILED")
-            else:
-                logger.debug(f"{setting_name} setting for {merchant_code} is already available.")
+        setting_details = get_setting_details(org_code, acquirer_code, payment_gateway)
+        mid = setting_details['mid']
+        tid = setting_details['tid']
+        merchant_name = setting_details['merchant_name']
+        provider_name = setting_details['bqr_bank_code']
+        category_code = setting_details['category_code']
+        bank_code = setting_details['bank_code']
+        bharatqr_provider_config_id = get_bharatqr_provider_config_id(provider_name)
+        terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
+        random_numbers = get_brand_pan_number(org_code, acquirer_code, payment_gateway)
+        visa_pan =  random_numbers['visa_pan']
+        master_pan = random_numbers['master_pan']
+        rupay_pan = random_numbers['rupay_pan']
+        query = f"insert into bharatqr_merchant_config (org_code,visa_merchant_id_primary," \
+                f"mastercard_merchant_id_primary,npci_merchant_id_primary,merchant_ifsc,merchant_account_number," \
+                f"currency_code,country_code,provider_id,status,merchant_name,merchant_city,merchant_pin_code," \
+                f"merchant_category_code,bank_code,merchant_pan,terminal_info_id,created_by,created_time,modified_by," \
+                f"modified_time) values ('<org_code>','<visa_pan>','<master_pan>','<rupay_pan>','KKBK0004589'," \
+                f"'123456789012','356','IN','<bharatqr_provider_config_id>','ACTIVE','<merchant_name>'," \
+                f"'MerchantCity','100000','<category_code>','<bank_code>','<merchant_pan>','<terminal_info_id>'," \
+                f"'ezetap',now(),'ezetap',now());"
+        query = query.replace("<org_code>",org_code)
+        query = query.replace("<acquirer_code>", acquirer_code)
+        query = query.replace("<payment_gateway>", payment_gateway)
+        query = query.replace("<visa_pan>", visa_pan)
+        query = query.replace("<master_pan>", master_pan)
+        query = query.replace("<rupay_pan>", rupay_pan)
+        query = query.replace("<provider_name>", provider_name)
+        query = query.replace("<merchant_name>", merchant_name)
+        query = query.replace("<category_code>", category_code)
+        query = query.replace("<bank_code>", bank_code)
+        query = query.replace("<merchant_pan>", tid)
+        query = query.replace("<mid>", mid)
+        query = query.replace("<tid>", tid)
+        query = query.replace("<bharatqr_provider_config_id>", str(bharatqr_provider_config_id))
+        query = query.replace("<terminal_info_id>", str(terminal_info_id))
+        update_setting_generated_values(org_code, acquirer_code, payment_gateway, visa_pan, master_pan, rupay_pan)
+        return query
     except Exception as e:
-        logger.debug(f"Unable to generate the query for remotepay setting due to error {str(e)}")
+        logger.error(f"Unable to configure bqr settings through db due to error {str(e)}")
+        return None
+
+
+def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str:
+    """
+    This method is used to generate the query template based on the acquisition and payment gateway.
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: str
+    """
+    try:
+        query = "INSERT INTO upi_merchant_config (created_by, created_time, modified_by, modified_time, bank_code, " \
+                "merchant_code, mid, name, org_code, pgMerchantId, status, terminal_info_id, tid, vpa, upi_app_key, " \
+                "encKey, virtual_mid, virtual_tid) VALUES ('ezetap', now(), 'ezetap', now(), '<bank_code>', " \
+                "'<category_code>', '<mid>', '<merchant_name>', '<org_code>', '<pgMerchantId>', 'ACTIVE', " \
+                "'<terminal_info_id>', '<tid>', '<vpa>', '<upi_app_key>', '<encKey>', '<vmid>', '<vtid>');"
+        if acquirer_code == "HDFC" and payment_gateway == "HDFC" or \
+                acquirer_code == "AXIS" and payment_gateway == "AXIS" or \
+                acquirer_code == "ICICI" and payment_gateway == "FDC":
+            query = query.replace(", encKey, virtual_mid, virtual_tid", "")
+            query = query.replace(", '<encKey>', '<vmid>', '<vtid>'","")
+        elif acquirer_code == "YES" and payment_gateway == "ATOS" or \
+                acquirer_code == "AXIS" and payment_gateway == "ATOS_TLE" or \
+                acquirer_code == "KOTAK" and payment_gateway == "KOTAK_WL":
+            query = query.replace(", upi_app_key, encKey, virtual_mid, virtual_tid", "")
+            query = query.replace(", '<upi_app_key>', '<encKey>', '<vmid>', '<vtid>'", "")
+        elif acquirer_code == "AIRP" and payment_gateway == "APB":
+            query = query.replace(", virtual_mid, virtual_tid", "")
+            query = query.replace(", '<vmid>', '<vtid>'", "")
+        elif acquirer_code == "AXIS" and payment_gateway == "ATOS":
+            query = query.replace(", upi_app_key, encKey", "")
+            query = query.replace(", '<upi_app_key>', '<encKey>'", "")
+        return query
+    except Exception as e:
+        logger.error(f"Unable to generate the query upi query template for {acquirer_code} with {payment_gateway}.")
+
+
+def update_upi_values_to_query(query: str, acquirer_code: str, payment_gateway: str,
+                               upi_app_key: str, encKey: str, virtual_mid: str, virtual_tid: str) -> str:
+    """
+    This method is used to update the values to the upi settings query.
+    :param query str
+    :param acquirer_code str
+    :param payment_gateway str
+    :param upi_app_key str
+    :param encKey str
+    :param virtual_mid str
+    :param virtual_tid str
+    :return: str
+    """
+    try:
+        if acquirer_code == "HDFC" and payment_gateway == "HDFC" or \
+                acquirer_code == "AXIS" and payment_gateway == "AXIS" or \
+                acquirer_code == "ICICI" and payment_gateway == "FDC":
+            query = query.replace("<upi_app_key>", upi_app_key)
+        elif acquirer_code == "YES" and payment_gateway == "ATOS" or \
+                acquirer_code == "AXIS" and payment_gateway == "ATOS_TLE" or \
+                acquirer_code == "KOTAK" and payment_gateway == "KOTAK_WL":
+            pass
+        elif acquirer_code == "AIRP" and payment_gateway == "APB":
+            query = query.replace("<upi_app_key>", upi_app_key)
+            query = query.replace("<encKey>", encKey)
+        elif acquirer_code == "AXIS" and payment_gateway == "ATOS":
+            query = query.replace("<vmid>", virtual_mid)
+            query = query.replace("<vtid>", virtual_tid)
+        return query
+    except Exception as e:
+        logger.error(f"Unable to update upi setting values into query due to error {str(e)}")
+
+
+def generate_upi_settings_query_for_merchant(org_code: str, acquirer_code: str, payment_gateway: str) -> str or None:
+    """
+    This method is used to generate query of upi settings for a merchant.
+    :param org_code str
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: str
+    """
+    try:
+        setting_details = get_setting_details(org_code, acquirer_code, payment_gateway)
+        mid = setting_details['mid']
+        tid = setting_details['tid']
+        bank_code = setting_details['upi_bank_code']
+        category_code = setting_details['category_code']
+        merchant_name = setting_details['merchant_name']
+        pg_merchant_id = tid
+        terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
+        vpa = mid + "@upi"
+        upi_app_key = setting_details['key_for_upi']
+        if upi_app_key == 'N/A':
+            upi_app_key = ''
+        enc_key = ''
+        vmid = mid
+        vtid = tid
+        query = generate_upi_query_template(acquirer_code, payment_gateway)
+        query = query.replace('<bank_code>', bank_code)
+        query = query.replace('<category_code>', category_code)
+        query = query.replace('<mid>', mid)
+        query = query.replace('<merchant_name>', merchant_name)
+        query = query.replace('<org_code>', org_code)
+        query = query.replace('<pgMerchantId>', pg_merchant_id)
+        query = query.replace('<terminal_info_id>', str(terminal_info_id))
+        query = query.replace('<tid>', tid)
+        query = query.replace('<vpa>', vpa)
+        query = update_upi_values_to_query(query, acquirer_code, payment_gateway, upi_app_key, enc_key, vmid, vtid)
+        return query
+    except Exception as e:
+        logger.error(f"Unable to generate upi setting for {acquirer_code} with {payment_gateway} of {org_code}.")
+        return None
 
 
 def check_if_pan_exists(pan_number: str) -> bool or None:
@@ -517,40 +721,6 @@ def check_if_pan_exists(pan_number: str) -> bool or None:
     except Exception as e:
         logger.error(f"Unable to check if the pan number exists in the environment due to error {str(e)}")
         return None
-
-
-def configure_terminal_dependency(merchant_code: str, acquirer_code: str, payment_gateway: str, payment_mode: str):
-    """
-    This method is used to configure the terminal dependency for a merchant.
-    :param merchant_code str
-    :param acquirer_code str
-    :param payment_gateway str
-    :param payment_mode str
-    """
-    try:
-        if payment_mode.lower() == 'upi':
-            payment_mode = "UPI"
-        else:
-            payment_mode = "BHARATQR"
-        query = f"SELECT * from terminal_dependency_config where org_code = '{merchant_code}' and " \
-                f"payment_mode = '{payment_mode}' and acquirer_code = '{acquirer_code}' and " \
-                f"payment_gateway = '{payment_gateway}';"
-        result = DBProcessor.getValueFromDB(query)
-        if len(result) > 0:
-            logger.debug(f"Terminal dependency is already configured for {acquirer_code} of {merchant_code}")
-        else:
-            query = f"INSERT INTO terminal_dependency_config(org_code, payment_mode, acquirer_code, payment_gateway, " \
-                    f"terminal_dependent_enabled, created_by, created_time, modified_by, modified_time) VALUES " \
-                    f"('{merchant_code}', '{payment_mode}',  '{acquirer_code}', '{payment_gateway}',  1,  'ezetap', " \
-                    f"now(), 'ezetap', now());"
-            result = DBProcessor.setValueToDB(query)
-            if DBProcessor.set_value_to_db_query_passed(result):
-                logger.debug(f"Terminal dependency successfully configured for {acquirer_code} of {merchant_code}")
-            else:
-                logger.debug(f"Terminal dependency configuration failed for {acquirer_code} of {merchant_code}")
-
-    except Exception as e:
-        logger.error(f"Unable to configure the terminal dependency for {merchant_code} due to error {str(e)}")
 
 
 def generate_random_number(number_of_digits: int) -> int:
@@ -913,100 +1083,6 @@ def check_if_bqr_setting_exists(org_code: str, bqr_provider_id: str, terminal_in
         return None
 
 
-def generate_bqr_settings_query_for_merchant(org_code: str, acquirer_code: str, payment_gateway: str) -> str or None:
-    """
-    This method is used to configure the bqr settings of all available merchants through db.
-    :param org_code str
-    :param acquirer_code str
-    :param payment_gateway str
-    :return: str
-    """
-    try:
-        setting_details = get_setting_details(org_code, acquirer_code, payment_gateway)
-        mid = setting_details['mid']
-        tid = setting_details['tid']
-        merchant_name = setting_details['merchant_name']
-        provider_name = setting_details['bqr_bank_code']
-        category_code = setting_details['category_code']
-        bank_code = setting_details['bank_code']
-        bharatqr_provider_config_id = get_bharatqr_provider_config_id(provider_name)
-        terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
-        random_numbers = get_brand_pan_number(org_code, acquirer_code, payment_gateway)
-        visa_pan =  random_numbers['visa_pan']
-        master_pan = random_numbers['master_pan']
-        rupay_pan = random_numbers['rupay_pan']
-        query = f"insert into bharatqr_merchant_config (org_code,visa_merchant_id_primary," \
-                f"mastercard_merchant_id_primary,npci_merchant_id_primary,merchant_ifsc,merchant_account_number," \
-                f"currency_code,country_code,provider_id,status,merchant_name,merchant_city,merchant_pin_code," \
-                f"merchant_category_code,bank_code,merchant_pan,terminal_info_id,created_by,created_time,modified_by," \
-                f"modified_time) values ('<org_code>','<visa_pan>','<master_pan>','<rupay_pan>','KKBK0004589'," \
-                f"'123456789012','356','IN','<bharatqr_provider_config_id>','ACTIVE','<merchant_name>'," \
-                f"'MerchantCity','100000','<category_code>','<bank_code>','<merchant_pan>','<terminal_info_id>'," \
-                f"'ezetap',now(),'ezetap',now());"
-        query = query.replace("<org_code>",org_code)
-        query = query.replace("<acquirer_code>", acquirer_code)
-        query = query.replace("<payment_gateway>", payment_gateway)
-        query = query.replace("<visa_pan>", visa_pan)
-        query = query.replace("<master_pan>", master_pan)
-        query = query.replace("<rupay_pan>", rupay_pan)
-        query = query.replace("<provider_name>", provider_name)
-        query = query.replace("<merchant_name>", merchant_name)
-        query = query.replace("<category_code>", category_code)
-        query = query.replace("<bank_code>", bank_code)
-        query = query.replace("<merchant_pan>", tid)
-        query = query.replace("<mid>", mid)
-        query = query.replace("<tid>", tid)
-        query = query.replace("<bharatqr_provider_config_id>", str(bharatqr_provider_config_id))
-        query = query.replace("<terminal_info_id>", str(terminal_info_id))
-        update_setting_generated_values(org_code, acquirer_code, payment_gateway, visa_pan, master_pan, rupay_pan)
-        return query
-    except Exception as e:
-        logger.error(f"Unable to configure bqr settings through db due to error {str(e)}")
-        return None
-
-
-def generate_upi_settings_query_for_merchant(org_code: str, acquirer_code: str, payment_gateway: str) -> str or None:
-    """
-    This method is used to generate query of upi settings for a merchant.
-    :param org_code str
-    :param acquirer_code str
-    :param payment_gateway str
-    :return: str
-    """
-    try:
-        setting_details = get_setting_details(org_code, acquirer_code, payment_gateway)
-        mid = setting_details['mid']
-        tid = setting_details['tid']
-        bank_code = setting_details['bank_code']
-        category_code = setting_details['category_code']
-        merchant_name = setting_details['merchant_name']
-        pg_merchant_id = tid
-        terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
-        vpa = mid + "@upi"
-        upi_app_key = ''
-        enc_key = ''
-        query = f"INSERT INTO upi_merchant_config (created_by, created_time, modified_by, modified_time, bank_code, " \
-                f"merchant_code, mid, name, org_code, pgMerchantId, status, terminal_info_id, tid, upi_app_key, vpa, " \
-                f"encKey) VALUES ('ezetap', now(), 'ezetap', now(), '<bank_code>', '<category_code>', '<mid>', " \
-                f"'<merchant_name>', '<org_code>', '<pgMerchantId>', 'ACTIVE', '<terminal_info_id>', '<tid>', " \
-                f"'<upi_app_key>', '<vpa>','<encKey>');"
-        query = query.replace('<bank_code>', bank_code)
-        query = query.replace('<category_code>', category_code)
-        query = query.replace('<mid>', mid)
-        query = query.replace('<merchant_name>', merchant_name)
-        query = query.replace('<org_code>', org_code)
-        query = query.replace('<pgMerchantId>', pg_merchant_id)
-        query = query.replace('<terminal_info_id>', str(terminal_info_id))
-        query = query.replace('<tid>', tid)
-        query = query.replace('<upi_app_key>', upi_app_key)
-        query = query.replace('<vpa>', vpa)
-        query = query.replace('<encKey>', enc_key)
-        return query
-    except Exception as e:
-        logger.error(f"Unable to generate upi setting for {acquirer_code} with {payment_gateway} of {org_code}.")
-        return None
-
-
 def get_payment_gateway_from_terminal_details(acquirer_code: str) -> str:
     """
     This method is used to fetch the payment gateway of an acquirer.
@@ -1067,11 +1143,11 @@ def check_if_remotepay_setting_exists(org_code: str, setting_name: str) -> bool 
         return None
 
 
-def check_if_payment_gateway_exists_in_terminal_info_table(payment_gate: str) -> str:
+def check_if_payment_gateway_exists_in_terminal_info_table(payment_gate: str) -> bool:
     """
     This method is used to check if the payment gateway exists in the environment.
     :param payment_gate str
-    :return: str
+    :return: bool
     """
     try:
         query = f"select * from terminal_info where payment_gateway = '{payment_gate}';"
@@ -1105,51 +1181,6 @@ def check_if_pg_config_exists(org_code: str, payment_gateway: str) -> bool:
             return False
     except Exception as e:
         logger.error(f"Unable to check if pg is available for {org_code} with {payment_gateway} due to error {str(e)}")
-
-
-def generate_random_alpha_numeric_values(number_of_digits) -> str or None:
-    """
-    This method is used to generate the random alpha number values of required length
-    """
-    try:
-        values = "0123456789abcdefghijklmnopqrstuvwxyz"
-        random_value = ""
-        for i in range(0, number_of_digits):
-            random_number = random.randint(0, 35)
-            random_value = random_value + values[random_number]
-        return random_value
-    except Exception as e:
-        logger.error(f"Unable to generate random alpha number values due to error {str(e)}")
-        return None
-
-
-def generate_upi_app_key() -> str or None:
-    """
-    This method is used to generate the api key for upi setting
-    :return: str
-    """
-    try:
-        upi_app_key = generate_random_alpha_numeric_values(8)+"-"+generate_random_alpha_numeric_values(4) + "-" + \
-                      generate_random_alpha_numeric_values(4)+"-"+generate_random_alpha_numeric_values(4) + "-" + \
-                      generate_random_alpha_numeric_values(12)
-        return upi_app_key
-    except Exception as e:
-        logger.error(f"Unable to generate the api key for upi due to error {str(e)}")
-        return None
-
-
-def generate_enc_key() -> str or None:
-    """
-    This method is used to generate the encryption key for upi setting.
-    :return: str
-    """
-    try:
-        enc_key = generate_random_alpha_numeric_values(8) + "-" + generate_random_alpha_numeric_values(4) + "-" + \
-                      generate_random_alpha_numeric_values(2)
-        return enc_key
-    except Exception as e:
-        logger.error(f"Unable to generate the enc key due to error {str(e)}")
-        return None
 
 
 def refresh_db():
@@ -1214,5 +1245,26 @@ def check_if_upi_setting_required(acquirer_code: str, payment_gateway: str) -> b
         logger.error(f"Unable to check if UPI setting is required for {acquirer_code} with {payment_gateway}.")
 
 
-sqlite_processor.update_acquisitions_to_db()
-print(generate_bqr_setting_api_for_all_merchants())
+def check_if_terminal_dependant(acquirer_code: str, payment_gateway: str, payment_mode: str) -> str:
+    """
+    This method is used to check if terminal dependency entry should be created for the acquirer and pg.
+    :param acquirer_code str
+    :param payment_gateway str
+    :param payment_mode str
+    :return: bool
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        if payment_mode.lower() == 'upi':
+            column_to_pick = "UpiTerminalDependant"
+        else:
+            column_to_pick = "BqrTerminalDependant"
+        cursor.execute(f"select {column_to_pick} from acquisitions where AcquirerCode = '{acquirer_code}' and "
+                       f"PaymentGateway = '{payment_gateway}';")
+        setting_required = cursor.fetchone()[0]
+        return setting_required.lower()
+    except Exception as e:
+        logger.debug(f"Unable to check if {acquirer_code} with {payment_gateway} is terminal dependant, due to "
+                     f"error {str(e)}")
+
