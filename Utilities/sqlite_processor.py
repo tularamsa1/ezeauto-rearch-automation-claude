@@ -228,8 +228,8 @@ def update_acquisitions_to_db():
             if not len(result)>0:
                 cursor.execute(
                     f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName, BankCode, 
-                    BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, KeyForUpi, 
-                    VirtualMidRequired, BqrSettingRequired, UpiSettingRequired)values(
+                    BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, AppKeyForUpi, 
+                    VirtualMidRequired, BqrSettingRequired, UpiSettingRequired, EncKeyForUpi)values(
                     "{acquisition_details.iloc[i]['Acquirer Code']}", 
                     "{acquisition_details.iloc[i]['Payment Gateway']}", 
                     "{acquisition_details.iloc[i]['Number of Terminals']}", 
@@ -239,10 +239,11 @@ def update_acquisitions_to_db():
                     "{acquisition_details.iloc[i]['UPI(psp) Bank Code']}", 
                     "{acquisition_details.iloc[i]['BQR Terminal Dependant']}", 
                     "{acquisition_details.iloc[i]['UPI Terminal Dependant']}", 
-                    "{acquisition_details.iloc[i]['Key for UPI']}", 
+                    "{acquisition_details.iloc[i]['App Key for UPI']}", 
                     "{acquisition_details.iloc[i]['virtual MID Required']}", 
                     "{acquisition_details.iloc[i]['BQR settings required']}", 
-                    "{acquisition_details.iloc[i]['UPI settings required']}");""")
+                    "{acquisition_details.iloc[i]['UPI settings required']}",
+                    "{acquisition_details.iloc[i]['Enc Key for UPI']}");""")
                 conn.commit()
                 logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and "
                              f"payment gateway {acquisition_details.iloc[i]['Payment Gateway']} "
@@ -256,10 +257,11 @@ def update_acquisitions_to_db():
                         f"UPIBankCode = '{acquisition_details.iloc[i]['UPI(psp) Bank Code']}', " \
                         f"BqrTerminalDependant = '{acquisition_details.iloc[i]['BQR Terminal Dependant']}', " \
                         f"UpiTerminalDependant = '{acquisition_details.iloc[i]['UPI Terminal Dependant']}', " \
-                        f"KeyForUpi = '{acquisition_details.iloc[i]['Key for UPI']}', " \
+                        f"AppKeyForUpi = '{acquisition_details.iloc[i]['App Key for UPI']}', " \
                         f"VirtualMidRequired = '{acquisition_details.iloc[i]['virtual MID Required']}', " \
                         f"BqrSettingRequired = '{acquisition_details.iloc[i]['BQR settings required']}', " \
-                        f"UpiSettingRequired = '{acquisition_details.iloc[i]['UPI settings required']}' " \
+                        f"UpiSettingRequired = '{acquisition_details.iloc[i]['UPI settings required']}', " \
+                        f"EncKeyForUpi = '{acquisition_details.iloc[i]['Enc Key for UPI']}' " \
                         f"where AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' and " \
                         f"PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
                 cursor.execute(query)

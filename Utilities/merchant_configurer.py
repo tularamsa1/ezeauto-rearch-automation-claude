@@ -13,16 +13,26 @@ def configure_merchants():
     """
     This method is used to configure all the required settings for the merchant.
     """
-    clear_merchant_config_related_tables()
-    sqlite_processor.update_pg_details()
-    sqlite_processor.update_remotepay_settings()
-    configure_bqr_settings_through_api()
-    configure_upi_settings_through_api()
-    configure_bqr_settings_through_db()
-    configure_upi_settings_through_db()
-    configure_cnp_settings_through_db()
-    configure_pg_settings_through_db()
-    refresh_db()
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("select * from merchants where CreationStatus = 'Created';")
+        available_merchants = cursor.fetchall()
+        if len(available_merchants) > 0:
+            clear_merchant_config_related_tables()
+            sqlite_processor.update_pg_details()
+            sqlite_processor.update_remotepay_settings()
+            configure_bqr_settings_through_api()
+            configure_upi_settings_through_api()
+            configure_bqr_settings_through_db()
+            configure_upi_settings_through_db()
+            configure_cnp_settings_through_db()
+            configure_pg_settings_through_db()
+            refresh_db()
+        else:
+            logger.debug("Merchant configuration skipped since there are no new merchants created.")
+    except Exception as e:
+        logger.error(f"Unable to configure the merchants due to error {str(e)}")
 
 
 def configure_bqr_settings_through_api():
@@ -104,26 +114,35 @@ def configure_bqr_settings_through_db():
         lst_merchant_details = cursor.fetchall()
         cursor.close()
         conn.close()
-        for merchant_details in lst_merchant_details:
-            setting_details = get_setting_details(merchant_details[0], merchant_details[1], merchant_details[2])
-            bqr_config_id = get_bharatqr_provider_config_id(setting_details['bqr_bank_code'])
-            terminal_info_id = get_terminal_info_id(setting_details['merchant_code'],
-                                                    setting_details['acquirer_code'],
-                                                    setting_details['payment_gateway'],
-                                                    setting_details['mid'],
-                                                    setting_details['tid'])
-            if not check_if_bqr_setting_exists(merchant_details[0], bqr_config_id, terminal_info_id):
-                query = generate_bqr_settings_query_for_merchant(merchant_details[0], merchant_details[1],
-                                                                 merchant_details[2])
-                logger.debug(query)
-                result = DBProcessor.setValueToDB(query)
-                rows_affected = len(result)
-                if rows_affected > 0:
-                    if check_if_bqr_setting_exists(merchant_details[0], bqr_config_id, terminal_info_id):
-                        logger.debug(f"Setting for {setting_details['acquirer_code']} with "
-                                     f"{setting_details['payment_gateway']} of {merchant_details[0]} successful.")
-                        update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
-                                             setting_details['payment_gateway'], "BQR", "DB")
+        if lst_merchant_details:
+            for merchant_details in lst_merchant_details:
+                setting_details = get_setting_details(merchant_details[0], merchant_details[1], merchant_details[2])
+                bqr_config_id = get_bharatqr_provider_config_id(setting_details['bqr_bank_code'])
+                terminal_info_id = get_terminal_info_id(setting_details['merchant_code'],
+                                                        setting_details['acquirer_code'],
+                                                        setting_details['payment_gateway'],
+                                                        setting_details['mid'],
+                                                        setting_details['tid'])
+                if not check_if_bqr_setting_exists(merchant_details[0], bqr_config_id, terminal_info_id):
+                    query = generate_bqr_settings_query_for_merchant(merchant_details[0], merchant_details[1],
+                                                                     merchant_details[2])
+                    logger.debug(query)
+                    result = DBProcessor.setValueToDB(query)
+                    rows_affected = len(result)
+                    if rows_affected > 0:
+                        if check_if_bqr_setting_exists(merchant_details[0], bqr_config_id, terminal_info_id):
+                            logger.debug(f"Setting for {setting_details['acquirer_code']} with "
+                                         f"{setting_details['payment_gateway']} of {merchant_details[0]} successful.")
+                            update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
+                                                 setting_details['payment_gateway'], "BQR", "DB")
+                        else:
+                            logger.debug(f"Setting for {setting_details['acquirer_code']} with "
+                                         f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
+                            update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
+                                                 setting_details['payment_gateway'], "BQR", "FAILED")
+                            update_setting_generated_values(setting_details['merchant_code'],
+                                                            setting_details['acquirer_code'],
+                                                            setting_details['payment_gateway'], "N/A", "N/A","N/A")
                     else:
                         logger.debug(f"Setting for {setting_details['acquirer_code']} with "
                                      f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
@@ -131,18 +150,12 @@ def configure_bqr_settings_through_db():
                                              setting_details['payment_gateway'], "BQR", "FAILED")
                         update_setting_generated_values(setting_details['merchant_code'],
                                                         setting_details['acquirer_code'],
-                                                        setting_details['payment_gateway'], "N/A", "N/A","N/A")
+                                                        setting_details['payment_gateway'], "N/A", "N/A", "N/A")
                 else:
-                    logger.debug(f"Setting for {setting_details['acquirer_code']} with "
-                                 f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
-                    update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
-                                         setting_details['payment_gateway'], "BQR", "FAILED")
-                    update_setting_generated_values(setting_details['merchant_code'],
-                                                    setting_details['acquirer_code'],
-                                                    setting_details['payment_gateway'], "N/A", "N/A", "N/A")
-            else:
-                logger.debug(f"Configuration for {setting_details['acquirer_code']} with "
-                             f"{setting_details['payment_gateway']} of {merchant_details[0]} is already available.")
+                    logger.debug(f"Configuration for {setting_details['acquirer_code']} with "
+                                 f"{setting_details['payment_gateway']} of {merchant_details[0]} is already available.")
+        else:
+            logger.debug(f"No merchants available for configuring BQR through db.")
     except Exception as e:
         logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
 
@@ -159,38 +172,41 @@ def configure_upi_settings_through_db():
         lst_merchant_details = cursor.fetchall()
         cursor.close()
         conn.close()
-        for merchant_details in lst_merchant_details:
-            setting_details = get_setting_details(merchant_details[0], merchant_details[1], merchant_details[2])
-            terminal_info_id = get_terminal_info_id(setting_details['merchant_code'],
-                                                    setting_details['acquirer_code'],
-                                                    setting_details['payment_gateway'],
-                                                    setting_details['mid'],
-                                                    setting_details['tid'])
-            if not check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
-                query = generate_upi_settings_query_for_merchant(merchant_details[0], merchant_details[1],
-                                                                 merchant_details[2])
-                logger.debug(query)
-                result = DBProcessor.setValueToDB(query)
-                rows_affected = len(result)
-                if rows_affected > 0:
-                    if check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
-                        logger.debug(f"Setting for {setting_details['acquirer_code']} with "
-                                     f"{setting_details['payment_gateway']} of {merchant_details[0]} successful.")
-                        update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
-                                             setting_details['payment_gateway'], "UPI", "DB")
+        if lst_merchant_details:
+            for merchant_details in lst_merchant_details:
+                setting_details = get_setting_details(merchant_details[0], merchant_details[1], merchant_details[2])
+                terminal_info_id = get_terminal_info_id(setting_details['merchant_code'],
+                                                        setting_details['acquirer_code'],
+                                                        setting_details['payment_gateway'],
+                                                        setting_details['mid'],
+                                                        setting_details['tid'])
+                if not check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
+                    query = generate_upi_settings_query_for_merchant(merchant_details[0], merchant_details[1],
+                                                                     merchant_details[2])
+                    logger.debug(query)
+                    result = DBProcessor.setValueToDB(query)
+                    rows_affected = len(result)
+                    if rows_affected > 0:
+                        if check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
+                            logger.debug(f"Setting for {setting_details['acquirer_code']} with "
+                                         f"{setting_details['payment_gateway']} of {merchant_details[0]} successful.")
+                            update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
+                                                 setting_details['payment_gateway'], "UPI", "DB")
+                        else:
+                            logger.debug(f"Setting for {setting_details['acquirer_code']} with "
+                                         f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
+                            update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
+                                                 setting_details['payment_gateway'], "UPI", "FAILED")
                     else:
                         logger.debug(f"Setting for {setting_details['acquirer_code']} with "
                                      f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
                         update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
                                              setting_details['payment_gateway'], "UPI", "FAILED")
                 else:
-                    logger.debug(f"Setting for {setting_details['acquirer_code']} with "
-                                 f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
-                    update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
-                                         setting_details['payment_gateway'], "UPI", "FAILED")
-            else:
-                logger.debug(f"Configuration for {setting_details['acquirer_code']} with "
-                             f"{setting_details['payment_gateway']} of {merchant_details[0]} is already available.")
+                    logger.debug(f"Configuration for {setting_details['acquirer_code']} with "
+                                 f"{setting_details['payment_gateway']} of {merchant_details[0]} is already available.")
+        else:
+            logger.debug(f"No merchants available for configuring upi through db.")
     except Exception as e:
         logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
 
@@ -202,12 +218,15 @@ def configure_cnp_settings_through_db():
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute(f"select * from merchants where CreationStatus in ('Created','Existed') and "
+        cursor.execute(f"select * from merchants where CreationStatus in ('Created') and "
                        f"Availability = 'Available';")
         merchants = cursor.fetchall()
-        for merchant in merchants:
-            merchant_code = merchant[0]
-            configure_cnp_setting_for_merchant(merchant_code)
+        if merchants:
+            for merchant in merchants:
+                merchant_code = merchant[0]
+                configure_cnp_setting_for_merchant(merchant_code)
+        else:
+            logger.debug(f"CNP configuration skipped since there is no new merchant created.")
     except Exception as e:
         logger.error(f"Unable to configure the cnp setting due to error {str(e)}")
 
@@ -219,12 +238,15 @@ def configure_pg_settings_through_db():
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute(f"select * from merchants where CreationStatus in ('Created','Existed') and "
+        cursor.execute(f"select * from merchants where CreationStatus in ('Created') and "
                        f"Availability = 'Available';")
         merchants = cursor.fetchall()
-        for merchant in merchants:
-            merchant_code = merchant[0]
-            configure_pg_settings_for_merchant(merchant_code)
+        if merchants:
+            for merchant in merchants:
+                merchant_code = merchant[0]
+                configure_pg_settings_for_merchant(merchant_code)
+        else:
+            logger.debug("PG configuration skipped since there are no new merchant created.")
     except Exception as e:
         logger.error(f"Unable to configure the cnp setting due to error {str(e)}")
 
@@ -416,22 +438,25 @@ def generate_bqr_setting_api_for_all_merchants() -> list or None:
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT MerchantCode FROM merchants WHERE CreationStatus IN ('Created','Existed');")
+        cursor.execute("SELECT MerchantCode FROM merchants WHERE CreationStatus IN ('Created');")
         merchant_details = cursor.fetchall()
         cursor.close()
         conn.close()
-        lst_merchants_code = []
-        for merchant_details in merchant_details:
-            lst_merchants_code.append(merchant_details[0])
-        acquisitions_with_details = get_all_acquisition_details()
-        lst_acquisition_details = []
-        for acquisition_with_detail in acquisitions_with_details:
-            if check_if_bqr_setting_required(acquisition_with_detail[0], acquisition_with_detail[1]):
-                acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
-                lst_acquisition_details.append(acq_det)
-        for merchant_code in lst_merchants_code:
-            for acquisition in lst_acquisition_details:
-                lst_bqr_settings.append(generate_bqr_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
+        if merchant_details:
+            lst_merchants_code = []
+            for merchant_details in merchant_details:
+                lst_merchants_code.append(merchant_details[0])
+            acquisitions_with_details = get_all_acquisition_details()
+            lst_acquisition_details = []
+            for acquisition_with_detail in acquisitions_with_details:
+                if check_if_bqr_setting_required(acquisition_with_detail[0], acquisition_with_detail[1]):
+                    acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
+                    lst_acquisition_details.append(acq_det)
+            for merchant_code in lst_merchants_code:
+                for acquisition in lst_acquisition_details:
+                    lst_bqr_settings.append(generate_bqr_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
+        else:
+            logger.debug(f"BQR configuration through api skipped since there is no new merchant created.")
     except Exception as e:
         logger.error(f"Unable to brq setting api list due to error {str(e)}")
         lst_bqr_settings = None
@@ -447,22 +472,25 @@ def generate_upi_setting_api_for_all_merchants() -> list or None:
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT MerchantCode FROM merchants WHERE CreationStatus IN ('Created','Existed');")
+        cursor.execute("SELECT MerchantCode FROM merchants WHERE CreationStatus IN ('Created');")
         merchant_details = cursor.fetchall()
         cursor.close()
         conn.close()
-        lst_merchants_code = []
-        for merchant_details in merchant_details:
-            lst_merchants_code.append(merchant_details[0])
-        acquisitions_with_details = get_all_acquisition_details()
-        lst_acquisition_details = []
-        for acquisition_with_detail in acquisitions_with_details:
-            if check_if_upi_setting_required(acquisition_with_detail[0], acquisition_with_detail[1]):
-                acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
-                lst_acquisition_details.append(acq_det)
-        for merchant_code in lst_merchants_code:
-            for acquisition in lst_acquisition_details:
-                lst_upi_settings.append(generate_upi_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
+        if merchant_details:
+            lst_merchants_code = []
+            for merchant_details in merchant_details:
+                lst_merchants_code.append(merchant_details[0])
+            acquisitions_with_details = get_all_acquisition_details()
+            lst_acquisition_details = []
+            for acquisition_with_detail in acquisitions_with_details:
+                if check_if_upi_setting_required(acquisition_with_detail[0], acquisition_with_detail[1]):
+                    acq_det = [acquisition_with_detail[0], acquisition_with_detail[1]]
+                    lst_acquisition_details.append(acq_det)
+            for merchant_code in lst_merchants_code:
+                for acquisition in lst_acquisition_details:
+                    lst_upi_settings.append(generate_upi_setting_api_body(merchant_code, acquisition[0], acquisition[1]))
+        else:
+            logger.debug(f"UPI configuration through api skipped since there is no new merchant created.")
     except Exception as e:
         logger.error(f"Unable to upi setting api list due to error {str(e)}")
         lst_upi_settings = None
@@ -525,13 +553,13 @@ def generate_upi_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         merchant_configuration_api['categoryCode'] = settings['category_code']
         merchant_configuration_api['name'] = settings['merchant_name']
         merchant_configuration_api['merchantCode'] = merchant_code
-        merchant_configuration_api['PgMerchantId'] = str(settings['tid']).upper()
+        merchant_configuration_api['pgMerchantId'] = settings['tid']
         merchant_configuration_api['acquisitions'][0]['acquirerCode'] = settings['acquirer_code']
         merchant_configuration_api['acquisitions'][0]['paymentGateway'] = settings['payment_gateway']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['mid'] = settings['mid']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['tid'] = settings['tid']
         add_key_to_upi_setting_api_body(merchant_configuration_api)
-        merchant_configuration_api['vpa'] = settings['mid'] + "@upi"
+        merchant_configuration_api['vpa'] = settings['tid'] + "@upi"
         logger.debug(merchant_configuration_api)
         return merchant_configuration_api
     except Exception as e:
@@ -675,11 +703,11 @@ def generate_upi_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         merchant_name = setting_details['merchant_name']
         pg_merchant_id = tid
         terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
-        vpa = mid + "@upi"
-        upi_app_key = setting_details['key_for_upi']
+        vpa = tid + "@upi"
+        upi_app_key = setting_details['app_key_for_upi']
+        enc_key = setting_details['enc_key_for_upi']
         if upi_app_key == 'N/A':
             upi_app_key = ''
-        enc_key = ''
         vmid = mid
         vtid = tid
         query = generate_upi_query_template(acquirer_code, payment_gateway)
@@ -751,10 +779,13 @@ def add_key_to_upi_setting_api_body(merchant_configuration_api_body: dict) -> di
         payment_gateway = merchant_configuration_api_body['acquisitions'][0]['paymentGateway']
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute(f"SELECT KeyForUpi FROM acquisitions WHERE AcquirerCode = '{acquirer}' and "
+        cursor.execute(f"SELECT AppKeyForUpi, EncKeyForUpi FROM acquisitions WHERE AcquirerCode = '{acquirer}' and "
                        f"PaymentGateway = '{payment_gateway}';")
         key = cursor.fetchone()
-        if key[0] != 'N/A':
+        if key[0] != 'N/A' and key[1] != 'N/A':
+            merchant_configuration_api_body['upiAppKey'] = key[0]
+            merchant_configuration_api_body['encKey'] = key[1]
+        elif key[0] != 'N/A':
             merchant_configuration_api_body['key'] = key[0]
     except Exception as e:
         logger.error(f"Unable to add key to the merchant configuration request body due to error {str(e)}")
@@ -787,8 +818,11 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
         setting_details['upi_bank_code'] = acquisition_details[6]
         setting_details['bqr_terminal_dependant'] = acquisition_details[7]
         setting_details['upi_terminal_dependant'] = acquisition_details[8]
-        setting_details['key_for_upi'] = acquisition_details[9]
+        setting_details['app_key_for_upi'] = acquisition_details[9]
         setting_details['virtual_mid_required'] = acquisition_details[10]
+        setting_details['bqr_settings_required'] = acquisition_details[11]
+        setting_details['upi_settings_required'] = acquisition_details[12]
+        setting_details['enc_key_for_upi'] = acquisition_details[13]
         cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
                        f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
                        f"PaymentGateway = '{payment_gateway}';")
@@ -1267,4 +1301,3 @@ def check_if_terminal_dependant(acquirer_code: str, payment_gateway: str, paymen
     except Exception as e:
         logger.debug(f"Unable to check if {acquirer_code} with {payment_gateway} is terminal dependant, due to "
                      f"error {str(e)}")
-
