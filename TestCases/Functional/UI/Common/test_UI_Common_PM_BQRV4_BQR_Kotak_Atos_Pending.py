@@ -22,14 +22,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_158():
+def test_common_100_102_245():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_BQR_Pending_Via_KOTAK_ATOS
     Sub Feature Description: Verification of BQRV4 BQR pending txn via KOTAK_ATOS
     TC naming code description:
     100: Payment Method
-    101: UPI
-    158: TC158
+    102: BQRV4
+    245: TC245
     """
 
     try:
