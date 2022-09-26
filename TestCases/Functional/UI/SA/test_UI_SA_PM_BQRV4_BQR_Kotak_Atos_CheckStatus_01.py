@@ -27,14 +27,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_sa_100_101_152():
+def test_sa_100_102_228():
     """
     Sub Feature Code: UI_SA_PM_BQRV4_BQR_Success_Via_SA_CheckStatus_KOTAK_ATOS
     Sub Feature Description: Verification of a successful bqr txn via BQRV4 KOTAK_ATOS using SA check status
     TC naming code description:
     100: Payment Method
-    101: UPI
-    152: TC152
+    102: BQRV4
+    228: TC228
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -495,14 +495,14 @@ def test_sa_100_101_152():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_sa_100_101_153():
+def test_sa_100_102_229():
     """
     Sub Feature Code: UI_SA_PM_BQRV4_BQR_Failed_Via_SA_CheckStatus_KOTAK_ATOS
     Sub Feature Description: Performing a failed BQR txn via BQRV4 KOTAK ATOS using SA check status
     TC naming code description:
     100: Payment Method
-    101: UPI
-    153: TC153
+    102: BQRV4
+    229: TC229
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -948,14 +948,14 @@ def test_sa_100_101_153():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_sa_100_101_155():
+def test_sa_100_102_230():
     """
     Sub Feature Code: UI_SA_PM_BQRV4_BQR_SA_CheckStatus_After_Expiry_KOTAK_ATOS
     Sub Feature Description: Verification of a BQRV4 bqr txn after expiry for KOTAK_ATOS using SA check status
     TC naming code description:
     100: Payment Method
-    101: UPI
-    155: TC155
+    102: BQRV4
+    230: TC1230
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

@@ -23,14 +23,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_140():
+def test_common_100_101_122():
     """
     Sub Feature Code: UI_Common_PM_UPI_two_times_partial_refund_via_api_amount_greater_than_original_amount_APB
     Sub Feature Description: Verification of a UPI partial refund via api when partial refund amount is greater than original amount for APB
     TC naming code description:
     100: Payment Method
     101: UPI
-    140: TC140
+    122: TC122
     """
 
     try:
@@ -688,14 +688,14 @@ def test_common_100_101_140():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_141():
+def test_common_100_101_123():
     """
     Sub Feature Code: UI_Common_PM_UPI_two_times_successful_partial_refund_via_api_APB
     Sub Feature Description: Verification of two times partial refund for upi txn via api for APB
     TC naming code description:
     100: Payment Method
     101: UPI
-    141: TC141
+    123: TC123
     """
 
     try:
@@ -1609,7 +1609,7 @@ def test_common_100_101_141():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_142():
+def test_common_100_101_124():
     """
     Sub Feature Code: UI_Common_PM_Pure_UPI_PartialRefund_In_Decimal_via_api_APB
     Sub Feature Description: Verification of  a pure UPI txn when Partial refund is performed via api for APB
@@ -1617,7 +1617,7 @@ def test_common_100_101_142():
     TC naming code description:
     100: Payment Method
     101: UPI
-    142: TC142
+    124: TC124
     """
 
     try:
@@ -2268,14 +2268,14 @@ def test_common_100_101_142():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_143():
+def test_common_100_101_125():
     """
     Sub Feature Code: UI_Common_PM_Pure_UPI_PartialRefund_via_api_APB
     Sub Feature Description: Verification of  a pure UPI txn when Partial refund is performed via api for APB
     TC naming code description:
     100: Payment Method
     101: UPI
-    143: TC143
+    125: TC125
     """
 
     try:

@@ -25,14 +25,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_144():
+def test_common_100_101_126():
     """
     Sub Feature Code: UI_Common_PM_UPI_Success_Via_Pure_UPI_Success_Callback_Auto_Refund_Enabled_TID_Dep_HDFC
     Sub Feature Description: Verification of a successful pure upi txn via HDFC Tid Dep using success callback when auto refund is enabled
     TC naming code description:
     100: Payment Method
     101: UPI
-    144: TC144
+    126: TC126
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -478,14 +478,14 @@ def test_common_100_101_144():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_145():
+def test_common_100_101_127():
     """
     Sub Feature Code: UI_Common_PM_UPI_Failed_Via_Pure_UPI_Failed_Callback_Auto_Refund_Enabled_TID_Dep_HDFC
     Sub Feature Description: Verification of a failed UPI txn via HDFC Tid Dep using failed callback when auto refund is enabled
     TC naming code description:
     100: Payment Method
     101: UPI
-    145: TC145
+    127: TC127
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -909,7 +909,7 @@ def test_common_100_101_145():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_146():
+def test_common_100_101_128():
     """
     Sub Feature Code: UI_Common_PM_UPI_Expired_Via_Pure_UPI_Expired_Callback_Auto_Refund_Enabled_TID_Dep_HDFC
     Sub Feature Description: Verification of a expired UPI txn via HDFC Tid Dep using expired callback when auto refund is enabled
@@ -917,7 +917,7 @@ def test_common_100_101_146():
     TC naming code description:
     100: Payment Method
     101: UPI
-    146: TC146
+    128: TC128
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

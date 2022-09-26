@@ -27,14 +27,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_147():
+def test_common_100_102_237():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_BQR_Success_Callback_KOTAK_ATOS
     Sub Feature Description: Verification of a successful bqr txn using BQRV4 BQR Success Callback via Kotak_ATOS
     TC naming code description:
     100: Payment Method
-    101: UPI
-    147: TC147
+    102: BQRV4
+    237: TC237
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -509,14 +509,14 @@ def test_common_100_101_147():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_148():
+def test_common_100_102_238():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_BQR_2_Success_Callback_KOTAK_ATOS
     Sub Feature Description: Verification of a successful bqr txn using 2 BQRV4 BQR Success Callback via Kotak_ATOS
     TC naming code description:
     100: Payment Method
-    101: UPI
-    148: TC148
+    102: BQRV4
+    238: TC238
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1228,14 +1228,14 @@ def test_common_100_101_148():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_157():
+def test_common_100_102_244():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_BQR_Success_Callback_After_QR_Expiry_KOTAK_ATOS
     Sub Feature Description: Verification of a successful bqr txn using BQRV4 BQR Success Callback after QR expiry via Kotak_ATOS
     TC naming code description:
     100: Payment Method
-    101: UPI
-    157: TC157
+    102: BQRV4
+    244: TC244
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
