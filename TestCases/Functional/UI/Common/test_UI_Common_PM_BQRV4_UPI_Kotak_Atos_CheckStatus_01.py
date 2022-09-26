@@ -26,14 +26,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_122():
+def test_common_100_102_231():
     """
-    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Success_Via_API_CheckStatus_KOTAK
-    Sub Feature Description: Verification of a successful upi txn via BQRV4 via KOTAK using check status api
+    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Success_Via_API_CheckStatus_KOTAK_ATOS
+    Sub Feature Description: Verification of a successful upi txn via BQRV4 via KOTAK_ATOS using check status api
     TC naming code description:
     100: Payment Method
-    101: UPI
-    122: TC122
+    102: BQRV4
+    231: TC231
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -504,14 +504,14 @@ def test_common_100_101_122():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-def test_common_100_101_123():
+def test_common_100_102_232():
     """
-    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Failed_Via_API_CheckStatus_KOTAK
-    Sub Feature Description: Verification of a failed upi txn via BQRV4 KOTAK using check status api
+    Sub Feature Code: UI_SA_PM_BQRV4_UPI_Failed_Via_API_CheckStatus_KOTAK_ATOS
+    Sub Feature Description: Verification of a failed upi txn via BQRV4 KOTAK_ATOS using check status api
     TC naming code description:
     100: Payment Method
-    101: UPI
-    123: TC123
+    102: BQRV4
+    232: TC232
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

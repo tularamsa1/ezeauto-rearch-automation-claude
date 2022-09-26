@@ -1614,14 +1614,14 @@ def test_common_100_101_137():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_138():
+def test_common_100_101_120():
     """
     Sub Feature Code: UI_Common_PM_UPI_two_times_successful_partial_refund_via_api_HDFC
     Sub Feature Description: Verification of two times partial refund for upi txn via api for Tid Dep HDFC
     TC naming code description:
     100: Payment Method
     101: UPI
-    138: TC138
+    120: TC120
     """
 
     try:
@@ -2456,7 +2456,7 @@ def test_common_100_101_138():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_139():
+def test_common_100_101_121():
     """
     Sub Feature Code: UI_Common_PM_Pure_UPI_PartialRefund_In_Decimal_via_api_HDFC
     Sub Feature Description: Verification of  a pure UPI txn when Partial refund is performed via api for HDFC
@@ -2464,7 +2464,7 @@ def test_common_100_101_139():
     TC naming code description:
     100: Payment Method
     101: UPI
-    139: TC139
+    121: TC121
     """
 
     try:
