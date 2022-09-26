@@ -426,11 +426,11 @@ def test_common_100_102_187():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_100_102_191():
+def test_common_100_102_190():
     """
     Sub Feature Code: UI_Common_BQRV4_BQR_QR_Generation_Success_TID_Dep_AXIS_ATOS_TLE
     Sub Feature Description: Verification of a BQRV4 QR generation successful AXIS ATOS TLE Tid Dep
-    TC naming code description: 100: Payment Method, 112: BQRV4, 186: TC186
+    TC naming code description: 100: Payment Method, 112: BQRV4, 190: TC190
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
