@@ -26,14 +26,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_125():
+def test_common_100_102_233():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_UPI_Success_Callback_KOTAK_ATOS
     Sub Feature Description: Verification of a successfull upi txn using BQRV4 UPI Success Callback via Kotak_ATOS
     TC naming code description:
     100: Payment Method
-    101: UPI
-    125: TC125
+    102: BQRV4
+    233: TC233
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -508,14 +508,14 @@ def test_common_100_101_125():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_126():
+def test_common_100_102_234():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_UPI_2_Success_Callback_KOTAK_ATOS
     Sub Feature Description: Verification of a successful upi txn using 2 BQRV4 UPI Success Callback via Kotak_ATOS
     TC naming code description:
     100: Payment Method
-    101: UPI
-    126: TC126
+    102: BQRV4
+    234: TC234
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

@@ -299,7 +299,7 @@ def test_sa_100_101_068():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AIRP",
                     "bank_code": "AIRP",
-                    "payment_gateway": "APB",
+                    "pmt_gateway": "APB",
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "APB",
                     "upi_mc_id": upi_mc_id,
