@@ -357,7 +357,7 @@ def configure_cnp_setting_for_merchant(merchant_code: str):
             component = remotepay_settings_detail[i][2]
             lock_id = remotepay_settings_detail[i][3]
             entity = remotepay_settings_detail[i][4]
-            entity_id = remotepay_settings_detail[i][5]
+            entity_id = get_entity_id_of_merchant(merchant_code)
             inheritable = remotepay_settings_detail[i][6]
             query = query.replace('<created_by>', merchant_code)
             query = query.replace('<modified_by>', merchant_code)
@@ -585,7 +585,7 @@ def generate_bqr_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         bharatqr_provider_config_id = get_bharatqr_provider_config_id(provider_name)
         terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
         random_numbers = get_brand_pan_number(org_code, acquirer_code, payment_gateway)
-        visa_pan =  random_numbers['visa_pan']
+        visa_pan = random_numbers['visa_pan']
         master_pan = random_numbers['master_pan']
         rupay_pan = random_numbers['rupay_pan']
         vmid = mid
@@ -626,10 +626,10 @@ def generate_bqr_query_template(acquirer_code: str, payment_gateway: str) -> str
                 f"mastercard_merchant_id_primary,npci_merchant_id_primary,merchant_ifsc,merchant_account_number," \
                 f"currency_code,country_code,provider_id,status,merchant_name,merchant_city,merchant_pin_code," \
                 f"merchant_category_code,bank_code,merchant_pan,terminal_info_id,created_by,created_time,modified_by," \
-                f"modified_time,virtual_mid,virtual_tid) values ('<org_code>','<visa_pan>','<master_pan>'," \
+                f"modified_time,mid,tid,virtual_mid,virtual_tid) values ('<org_code>','<visa_pan>','<master_pan>'," \
                 f"'<rupay_pan>','KKBK0004589','123456789012','356','IN','<bharatqr_provider_config_id>','ACTIVE'," \
                 f"'<merchant_name>','MerchantCity','100000','<category_code>','<bank_code>','<merchant_pan>'," \
-                f"'<terminal_info_id>','ezetap',now(),'ezetap',now(),'<vmid>','<vtid>');"
+                f"'<terminal_info_id>','ezetap',now(),'ezetap',now(),'<mid>','<tid>','<vmid>','<vtid>');"
         if not (acquirer_code == "AXIS" and payment_gateway == "ATOS"):
             query = query.replace(",virtual_mid,virtual_tid", "")
             query = query.replace(",'<vmid>','<vtid>'","")
@@ -1340,4 +1340,18 @@ def check_if_terminal_dependant(acquirer_code: str, payment_gateway: str, paymen
     except Exception as e:
         logger.debug(f"Unable to check if {acquirer_code} with {payment_gateway} is terminal dependant, due to "
                      f"error {str(e)}")
+
+
+def get_entity_id_of_merchant(org_code: str) -> str:
+    """
+    This method is used to fetch the entity id of a merchant from the server.
+    :param org_code str
+    :return: str
+    """
+    try:
+        query = f"SELECT id from org where org_code = '{org_code}';"
+        result = DBProcessor.getValueFromDB(query)
+        return str(result['id'][0])
+    except Exception as e:
+        logger.debug(f"Unable to get the entity id of merchant due to error {str(e)}")
 
