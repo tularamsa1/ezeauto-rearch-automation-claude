@@ -142,7 +142,7 @@ def configure_bqr_settings_through_db():
                                                  setting_details['payment_gateway'], "BQR", "FAILED")
                             update_setting_generated_values(setting_details['merchant_code'],
                                                             setting_details['acquirer_code'],
-                                                            setting_details['payment_gateway'], "N/A", "N/A","N/A")
+                                                            setting_details['payment_gateway'], "N/A", "N/A", "N/A")
                     else:
                         logger.debug(f"Setting for {setting_details['acquirer_code']} with "
                                      f"{setting_details['payment_gateway']} of {merchant_details[0]} failed.")
@@ -331,8 +331,6 @@ def configure_pg_settings_for_merchant(merchant_code: str):
                     update_config_result(merchant_code, acquirer_code, payment_gateway, "PGconfig", "FAILED")
             else:
                 logger.debug(f"PG configuration already exists for {merchant_code} with {payment_gateway}.")
-
-
     except Exception as e:
         logger.error(f"Unable to generate the query for pg configuration due to error {str(e)}")
 
@@ -526,7 +524,8 @@ def generate_bqr_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['mid'] = settings['mid']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['tid'] = settings['tid']
         if check_if_virtual_mid_required_for_bqr(acquirer_code, payment_gateway) == "True":
-            merchant_configuration_api['virtualMid'] = 'V' + settings['mid']
+            merchant_configuration_api['virtualMid'] = settings['mid']
+            merchant_configuration_api['virtualTid'] = settings['tid']
         logger.debug(merchant_configuration_api)
         return merchant_configuration_api
     except Exception as e:
@@ -589,14 +588,9 @@ def generate_bqr_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         visa_pan =  random_numbers['visa_pan']
         master_pan = random_numbers['master_pan']
         rupay_pan = random_numbers['rupay_pan']
-        query = f"insert into bharatqr_merchant_config (org_code,visa_merchant_id_primary," \
-                f"mastercard_merchant_id_primary,npci_merchant_id_primary,merchant_ifsc,merchant_account_number," \
-                f"currency_code,country_code,provider_id,status,merchant_name,merchant_city,merchant_pin_code," \
-                f"merchant_category_code,bank_code,merchant_pan,terminal_info_id,created_by,created_time,modified_by," \
-                f"modified_time) values ('<org_code>','<visa_pan>','<master_pan>','<rupay_pan>','KKBK0004589'," \
-                f"'123456789012','356','IN','<bharatqr_provider_config_id>','ACTIVE','<merchant_name>'," \
-                f"'MerchantCity','100000','<category_code>','<bank_code>','<merchant_pan>','<terminal_info_id>'," \
-                f"'ezetap',now(),'ezetap',now());"
+        vmid = mid
+        vtid = tid
+        query = generate_bqr_query_template(acquirer_code, payment_gateway)
         query = query.replace("<org_code>",org_code)
         query = query.replace("<acquirer_code>", acquirer_code)
         query = query.replace("<payment_gateway>", payment_gateway)
@@ -613,10 +607,35 @@ def generate_bqr_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         query = query.replace("<bharatqr_provider_config_id>", str(bharatqr_provider_config_id))
         query = query.replace("<terminal_info_id>", str(terminal_info_id))
         update_setting_generated_values(org_code, acquirer_code, payment_gateway, visa_pan, master_pan, rupay_pan)
+        query = update_bqr_values_to_query(query, acquirer_code, payment_gateway, vmid, vtid)
         return query
     except Exception as e:
         logger.error(f"Unable to configure bqr settings through db due to error {str(e)}")
         return None
+
+
+def generate_bqr_query_template(acquirer_code: str, payment_gateway: str) -> str:
+    """
+    This method is used to generate the query templated for bqr based on the acquisition and payment gateway.
+    :param acquirer_code str
+    :param payment_gateway str
+    :return: str
+    """
+    try:
+        query = f"insert into bharatqr_merchant_config (org_code,visa_merchant_id_primary," \
+                f"mastercard_merchant_id_primary,npci_merchant_id_primary,merchant_ifsc,merchant_account_number," \
+                f"currency_code,country_code,provider_id,status,merchant_name,merchant_city,merchant_pin_code," \
+                f"merchant_category_code,bank_code,merchant_pan,terminal_info_id,created_by,created_time,modified_by," \
+                f"modified_time,virtual_mid,virtual_tid) values ('<org_code>','<visa_pan>','<master_pan>'," \
+                f"'<rupay_pan>','KKBK0004589','123456789012','356','IN','<bharatqr_provider_config_id>','ACTIVE'," \
+                f"'<merchant_name>','MerchantCity','100000','<category_code>','<bank_code>','<merchant_pan>'," \
+                f"'<terminal_info_id>','ezetap',now(),'ezetap',now(),'<vmid>','<vtid>');"
+        if not (acquirer_code == "AXIS" and payment_gateway == "ATOS"):
+            query = query.replace(",virtual_mid,virtual_tid", "")
+            query = query.replace(",'<vmid>','<vtid>'","")
+        return query
+    except Exception as e:
+        logger.debug(f"Unable to generate the bqr query template due to error {str(e)}")
 
 
 def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str:
@@ -651,6 +670,26 @@ def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str
         return query
     except Exception as e:
         logger.error(f"Unable to generate the query upi query template for {acquirer_code} with {payment_gateway}.")
+
+
+def update_bqr_values_to_query(query: str, acquirer_code: str, payment_gateway: str, virtual_mid: str,
+                               virtual_tid: str) -> str:
+    """
+    This method is used to update the values to the bqr settings query.
+    :param query str
+    :param acquirer_code str
+    :param payment_gateway str
+    :param virtual_mid str
+    :param virtual_tid str
+    :return: str
+    """
+    try:
+        if acquirer_code == "AXIS" and payment_gateway == "ATOS":
+            query = query.replace('<vmid>', virtual_mid)
+            query = query.replace('<vtid>', virtual_tid)
+        return query
+    except Exception as e:
+        logger.debug(f"Unable to update values to bqr settings query due to error {str(e)}")
 
 
 def update_upi_values_to_query(query: str, acquirer_code: str, payment_gateway: str,
@@ -1301,3 +1340,4 @@ def check_if_terminal_dependant(acquirer_code: str, payment_gateway: str, paymen
     except Exception as e:
         logger.debug(f"Unable to check if {acquirer_code} with {payment_gateway} is terminal dependant, due to "
                      f"error {str(e)}")
+
