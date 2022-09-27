@@ -17,8 +17,12 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 def test_common_300_304_006():
     """
-            Sub Feature Code: NonUI_Common_Config_GWMC_fetch_get_mp_water_update_details
+            Sub Feature Code: NonUI_Common_Config_BMC_fetch_get_mp_water_update_details
             Sub Feature Description: fetching details of Bhopal Muncipal FDC Merchant having key "get_mp_water_update_details" via fetch/data API
+            TC naming code description:
+            300: Config
+            304: BMC
+            006: TC006
     """
     try:
         GlobalVariables.time_calc.setup.resume()
@@ -43,10 +47,13 @@ def test_common_300_304_006():
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
+            number = response['data']['response'][0]['d']['Number']
+            row = response['data']['response'][0]['d']['Row']
             id = response['data']['response'][0]['d']['__metadata']['id']
             type = response['data']['response'][0]['d']['__metadata']['type']
             uri = response['data']['response'][0]['d']['__metadata']['uri']
-            logger.info(f"API Result: Fetch Response for BMC Merchant : {success}, {id}. {type},{uri}")
+            log_msg_no = response['data']['response'][0]['d']['LogMsgNo']
+            logger.info(f"API Result: Fetch Response for BMC Merchant : {success}, {number},{row},{id}. {type},{uri},{log_msg_no}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -78,20 +85,24 @@ def test_common_300_304_006():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "id": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type='',Id='')", "type": "ZWT_DP_SRV.UpdateCon" , "uri": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type='',Id='')"}
+                expectedAPIValues1 = {"success": True, "number": "000" ,"row": 0 ,"id":"https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type='',Id='')",
+                                      "type": "ZWT_DP_SRV.UpdateCon" ,"uri": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type='',Id='')" ,
+                                      "log_msg_no":"000000"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "id": id, "type": type, "uri": uri}
+                actualAPIValues1 = {"success": success, "number": number ,"row":row ,"id":id,
+                                      "type": type,"uri":uri ,
+                                      "log_msg_no":log_msg_no}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"d": {"Message": "", "LogNo": "", "System": "", "Field": "", "Type": "", "Number": "000", "MessageV4": "", "MessageV3": "", "Parameter": "", "Id": "", "Row": 0, "__metadata": {"id": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type="",Id="")", "type": "ZWT_DP_SRV.UpdateCon", "uri": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type="",Id="")"}, "LogMsgNo": "000000", "MessageV2": "", "MessageV1": ""}}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data.replace("'", '"')}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"d": {"Message": "", "LogNo": "", "System": "", "Field": "", "Type": "", "Number": "000", "MessageV4": "", "MessageV3": "", "Parameter": "", "Id": "", "Row": 0, "__metadata": {"id": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type="",Id="")", "type": "ZWT_DP_SRV.UpdateCon", "uri": "https://www.mpenagarpalika.gov.in:8001/sap/opu/odata/sap/ZWT_DP_SRV/UpdateConCollection(Type="",Id="")"}, "LogMsgNo": "000000", "MessageV2": "", "MessageV1": ""}}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data.replace("'", '"')}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - " + str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
