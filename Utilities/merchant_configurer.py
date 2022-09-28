@@ -20,8 +20,10 @@ def configure_merchants():
         available_merchants = cursor.fetchall()
         if len(available_merchants) > 0:
             clear_merchant_config_related_tables()
+            sqlite_processor.update_merchant_org_settings()
             sqlite_processor.update_pg_details()
             sqlite_processor.update_remotepay_settings()
+            configure_org_settings()
             configure_bqr_settings_through_api()
             configure_upi_settings_through_api()
             configure_bqr_settings_through_db()
@@ -34,6 +36,23 @@ def configure_merchants():
     except Exception as e:
         logger.error(f"Unable to configure the merchants due to error {str(e)}")
 
+
+def configure_org_settings():
+    """
+    This method is used to configure the org settings for the merchant.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select * from merchants where CreationStatus = 'Created';")
+        merchants = cursor.fetchall()
+        dict_settings = generate_org_settings_dictionary()
+        for merchant in merchants:
+            configure_org_settings_for_merchant(merchant[0], dict_settings)
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        logger.debug(f"Unable to configure the org settings due to error {str(e)}")
 
 def configure_bqr_settings_through_api():
     """
@@ -1355,3 +1374,45 @@ def get_entity_id_of_merchant(org_code: str) -> str:
     except Exception as e:
         logger.debug(f"Unable to get the entity id of merchant due to error {str(e)}")
 
+
+def configure_org_settings_for_merchant(org_code: str, settings: dict):
+    """
+    This method is used to perform the org settings for the specified merchant.
+    :param org_code str
+    :param settings dict
+    """
+    try:
+        username = ConfigReader.read_config("SuperUserCredentials", "username")
+        password = ConfigReader.read_config("SuperUserCredentials", "password")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": username,
+                                                                                       "password": password,
+                                                                                       "settingForOrgCode": org_code,
+                                                                                       "settings": settings})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(response)
+        if response['success']:
+            logger.debug(f"Org settings for {org_code} was done successfully.")
+            update_config_result(org_code, "N/A", "N/A", "OrgSettings", "API")
+        else:
+            logger.debug(f"Org setting for {org_code} failed.")
+            update_config_result(org_code, "N/A", "N/A", "OrgSettings", "Failed")
+    except Exception as e:
+        logger.error(f"Unable to configure the org setting for the merchant {org_code} due to error {str(e)}")
+
+
+def generate_org_settings_dictionary() -> dict:
+    """
+    This method is used to generate the dictionary of org settings
+    :return: dict
+    """
+    try:
+        dict_settings = {}
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"select * from merchant_org_settings;")
+        settings = cursor.fetchall()
+        for setting in settings:
+            dict_settings[setting[0]] = setting[1]
+        return dict_settings
+    except Exception as e:
+        logger.error(f"Unable to generate the org settings dictionary due to error {str(e)}")

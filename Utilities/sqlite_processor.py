@@ -29,6 +29,7 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM api_details;")
         cursor.execute("DELETE FROM acquisitions;")
+        cursor.execute("DELETE FROM merchant_org_settings;")
         cursor.execute("DELETE FROM pg_details;")
         cursor.execute("DELETE FROM terminal_details;")
         cursor.execute("DELETE FROM remotepay_settings;")
@@ -416,3 +417,37 @@ def update_pg_details():
             conn.commit()
     except Exception as e:
         logger.error(f"Unable to update the pg details to db due to error {str(e)}")
+
+
+def update_merchant_org_settings():
+    """
+    This method is used to update the merchant_org_settings table in the db.
+    """
+    try:
+        df_merchant_org_settings = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="OrgSettings")
+        df_merchant_org_settings.fillna("", inplace=True)
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        for i in range(0, len(df_merchant_org_settings)):
+            try:
+                cursor.execute(f"select * from merchant_org_settings where "
+                               f"SettingName = '{df_merchant_org_settings['Setting Name'][i]}';")
+                result = cursor.fetchall()
+                if len(result) > 0:
+                    cursor.execute(f"UPDATE merchant_org_settings SET "
+                                   f"SettingValue = '{df_merchant_org_settings['Setting Value'][i]}' "
+                                   f"WHERE SettingName = '{df_merchant_org_settings['Setting Name'][i]}';")
+                else:
+                    cursor.execute(f"INSERT INTO merchant_org_settings(SettingName, SettingValue) VALUES"
+                                   f"('{df_merchant_org_settings['Setting Name'][i]}',"
+                                   f"'{df_merchant_org_settings['Setting Value'][i]}');")
+                conn.commit()
+            except Exception as e:
+                logger.error(f"Unable to update the setting {df_merchant_org_settings['Setting Name'][i]} into db"
+                             f"due to error {str(e)}.")
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Unable to update the merchant org settings to db due to error {str(e)}")
+
+
