@@ -35,6 +35,7 @@ def send_request(api_details):
     if api_details['ApiName'] == 'callBackUpiMerchantRes':
         payload = urlencode(payload)
         resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
+        update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)
         logger.debug(
             f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
@@ -43,6 +44,7 @@ def send_request(api_details):
     if api_details['ApiName'] == 'confirm_axisdirect':
         payload = payload['data']
         resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
+        update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)
         logger.debug(
             f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
@@ -57,6 +59,17 @@ def send_request(api_details):
         logger.debug(f"psp_base_url from the upi_merchant_config table is : {psp_base_url}")
         url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
         resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        update_api_details_to_report_variables(resp)
+        json_resp = json.loads(resp.text)
+        logger.debug(
+            f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+        return json_resp
+
+    if api_details['ApiName'] == 'callbackBQRKotakAtos' or api_details['ApiName'] == 'callbackUpiKotakAtos':
+        router_ip = Base_Actions.get_environment("str_exe_env_ip")
+        url = str(url).replace('https://dev11.ezetap.com', str(protocol+"://" + router_ip + ":8002"))
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)
         logger.debug(
             f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
@@ -69,15 +82,6 @@ def send_request(api_details):
         f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
     return json_resp
 
-
-def sample():
-    url = 'https://dev11.ezetap.com/api/2.0/txn/list'
-    headers = {'Content-Type': 'application/json'}
-    payload = {"username": "5784758454", "password": "A123456"}
-
-    resp = requests.post(url, headers=headers, data=json.dumps(payload))
-    json_resp = json.loads(resp.text)
-    print(json_resp)
 
 def update_api_details_to_report_variables(response: requests.models.Response):
     """

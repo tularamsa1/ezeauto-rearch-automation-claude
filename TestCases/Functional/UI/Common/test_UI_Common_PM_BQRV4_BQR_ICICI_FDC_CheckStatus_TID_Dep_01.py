@@ -590,7 +590,7 @@ def test_common_100_102_154():
             result = DBProcessor.getValueFromDB(query)
             device_serial = result['device_serial'].values[0]
             logger.info(f"fetched device_serial is : {device_serial}")
-            amount = random.randint(101, 200)
+            amount = random.randint(201, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating bqr qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('TidDepBqrGenerate',

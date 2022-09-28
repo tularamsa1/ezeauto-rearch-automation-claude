@@ -2245,7 +2245,7 @@ def test_common_100_101_117():
                     "txn_amt": str(amount),
                     "rrn": str(rrn),
                     "order_id": external_ref,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                 }
 
@@ -2289,7 +2289,7 @@ def test_common_100_101_117():
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
 
