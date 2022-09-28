@@ -9,13 +9,16 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
+
+# From below use only the markers that are applicable for the test case and remove the rest.
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_sub_feature_code():
+@pytest.mark.uiVal
+def test_sub_feature_code():  # Make sure to add the test case name as same as the sub feature code.
     """
     Sub Feature Code: write the sub feature code here
     Sub Feature Description: write the sub feature description here
@@ -40,7 +43,7 @@ def test_sub_feature_code():
 
         # Write the setup code here
 
-        GlobalVariables.setupCompletedSuccessfully = True
+        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
