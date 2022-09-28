@@ -18,6 +18,10 @@ def test_common_300_302_001():
     """
             Sub Feature Code: NonUI_Common_Config_Airtel_fetch_get_airtel_pos_details
             Sub Feature Description: fetching details of Airtel Merchant having key "get_airtel_pos_details" via fetch/data API
+            TC naming code description:
+            300: Config
+            302: Airtel
+            001: TC001
     """
     try:
         GlobalVariables.time_calc.setup.resume()
@@ -38,12 +42,19 @@ def test_common_300_302_001():
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
             api_details = DBProcessor.get_api_details('fetch_get_airtel_pos_details')
             response = APIProcessor.send_request(api_details)
-            response_data = json.dumps(response)
             success = response['success']
-            salesId = response['data']['response'][0]['salesId']
-            customerName = response['data']['response'][0]['customerName']
-            payableAmount = response['data']['response'][0]['payableAmount']
-            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {salesId}, {customerName},{payableAmount}")
+            sales_id = response['data']['response'][0]['salesId']
+            store_name = response['data']['response'][0]['storeName']
+            performainvoice_no = response['data']['response'][0]['performaInvoiceNo']
+            customer_name = response['data']['response'][0]['customerName']
+            payable_amt = response['data']['response'][0]['payableAmount']
+            customer_mobno = response['data']['response'][0]['customerMobileNo']
+            store_code = response['data']['response'][0]['storeCode']
+            status = response['data']['response'][0]['status']
+
+
+
+            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {sales_id},{store_name},{customer_name},{payable_amt}, {performainvoice_no},{customer_mobno},{store_code},{status}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -70,20 +81,24 @@ def test_common_300_302_001():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "salesId": "-12105", "customerName": "MADAN MOHARE", "payableAmount":"2000.0"}
+                expectedAPIValues1 = {"success": True, "sales_id": "-12105", "store_name":"Banaswadi OR","performa_invoice_no":"11108150",
+                                      "customer_name": "MADAN MOHARE", "payable_amt":"2000.0", "customer_mobno":"9845417886","store_code":"020559",
+                                      "status":"SUCCESS"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "salesId": salesId, "customerName": customerName,"payableAmount":payableAmount}
+                actualAPIValues1 = {"success": success, "sales_id": sales_id, "store_name":store_name,"performa_invoice_no":performainvoice_no,
+                                      "customer_name": customer_name, "payable_amt":payable_amt, "customer_mobno":customer_mobno,"store_code":store_code,
+                                      "status":status}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"salesId": "-12105", "storeName": "Banaswadi OR", "performaInvoiceNo": "11108150", "customerName": "MADAN MOHARE", "payableAmount": "2000.0", "customerMobileNo": "9845417886", "storeCode": "020559", "status": "SUCCESS"}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"salesId": "-12105", "storeName": "Banaswadi OR", "performaInvoiceNo": "11108150", "customerName": "MADAN MOHARE", "payableAmount": "2000.0", "customerMobileNo": "9845417886", "storeCode": "020559", "status": "SUCCESS"}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
@@ -160,6 +175,10 @@ def test_common_300_302_002():
     """
                 Sub Feature Code: NonUI_Common_Config_Airtel_fetch_get_airtel_dth_details
                 Sub Feature Description: fetching details of Airtel Merchant having key "get_airtel_dth_details" via fetch/data API
+                TC naming code description:
+                300: Config
+                302: Airtel
+                002: TC002
     """
     try:
         GlobalVariables.time_calc.setup.resume()
@@ -183,12 +202,13 @@ def test_common_300_302_002():
 
             api_details = DBProcessor.get_api_details('fetch_get_airtel_dth_details')
             response = APIProcessor.send_request(api_details)
-            response_data = json.dumps(response)
             success = response['success']
-            Circle = response['data']['response'][0]['Circle']
-            Amount = response['data']['response'][0]['Amount']
-            Id = response['data']['response'][0]['Id']
-            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {Circle}, {Amount},{Id}")
+            circle = response['data']['response'][0]['Circle']
+            amount = response['data']['response'][0]['Amount']
+            error = response['data']['response'][0]['Error']
+            id = response['data']['response'][0]['Id']
+            name = response['data']['response'][0]['Name']
+            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {circle}, {amount},{error},{id},{name}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -215,20 +235,20 @@ def test_common_300_302_002():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "Circle": "Delhi", "Amount": "474.00", "Id":"3018671717"}
+                expectedAPIValues1 = {"success": True, "circle": "Delhi", "amount": "474.00","error":"success", "id":"3018671717", "name":"DK Arora"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "Circle": Circle, "Amount": Amount,"Id":Id}
+                actualAPIValues1 = {"success": success, "circle": circle, "amount": amount,"error":error, "id":id, "name":name}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"Circle": "Delhi", "Amount": "474.00", "Error": "success", "Id": "3018671717", "Name": "DK Arora"}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"Circle": "Delhi", "Amount": "474.00", "Error": "success", "Id": "3018671717", "Name": "DK Arora"}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
@@ -303,6 +323,10 @@ def test_common_300_302_003():
     """
                     Sub Feature Code: NonUI_Common_Config_Airtel_fetch_get_airtel_rtn_details
                     Sub Feature Description: fetching details of Airtel Merchant having key "get_airtel_rtn_details" via fetch/data API
+                    TC naming code description:
+                    300: Config
+                    302: Airtel
+                    003: TC003
     """
 
     try:
@@ -326,11 +350,10 @@ def test_common_300_302_003():
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
             api_details = DBProcessor.get_api_details('fetch_get_airtel_rtn_details')
             response = APIProcessor.send_request(api_details)
-            response_data = json.dumps(response)
             success = response['success']
             value = response['data']['response'][0]['keys'][0]['value']
-            Error = response['data']['response'][0]['Error']
-            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {value}, {Error}")
+            error = response['data']['response'][0]['Error']
+            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {value}, {error}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -358,20 +381,20 @@ def test_common_300_302_003():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "value": "3004588033", "Error": "success"}
+                expectedAPIValues1 = {"success": True, "value": "3004588033", "error": "success"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "value": value, "Error": Error}
+                actualAPIValues1 = {"success": success, "value": value, "error": error}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"keys": [{"value": "3004588033"}], "Error": "success"}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"keys": [{"value": "3004588033"}], "Error": "success"}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
@@ -447,6 +470,10 @@ def test_common_300_302_004():
     """
         Sub Feature Code: NonUI_Common_Config_Airtel_fetch_get_rtn_dth_details
         Sub Feature Description: fetching details of Airtel Merchant having key "get_rtn_dth_details" via fetch/data API
+        TC naming code description:
+        300: Config
+        302: Airtel
+        004: TC004
     """
     try:
         GlobalVariables.time_calc.setup.resume()
@@ -472,10 +499,13 @@ def test_common_300_302_004():
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
-            Id = response['data']['response'][0]['Id']
-            Amount = response['data']['response'][0]['Amount']
-            Name = response['data']['response'][0]['Name']
-            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {Id}, {Amount},{Name}")
+            circle = response['data']['response'][0]['Circle']
+            amount = response['data']['response'][0]['Amount']
+            error = response['data']['response'][0]['Error']
+            id = response['data']['response'][0]['Id']
+            name = response['data']['response'][0]['Name']
+            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {circle}, {amount},{error},{id},{name}")
+
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -502,20 +532,22 @@ def test_common_300_302_004():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "Id": "3004588033", "Amount": "137.00", "Name":"Ravikumar P"}
+                expectedAPIValues1 = {"success": True, "circle": "Telangana", "amount": "137.00", "error": "success",
+                                      "id": "3004588033", "name": "Ravikumar P"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "Id": Id, "Amount": Amount,"Name":Name}
+                actualAPIValues1 = {"success": success, "circle": circle, "amount": amount, "error": error, "id": id,
+                                    "name": name}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"Circle": "Telangana", "Amount": "137.00", "Error": "success", "Id": "3004588033", "Name": "Ravikumar P"}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"Circle": "Telangana", "Amount": "137.00", "Error": "success", "Id": "3004588033", "Name": "Ravikumar P"}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"
@@ -590,6 +622,10 @@ def test_common_300_302_005():
     """
         Sub Feature Code: NonUI_Common_Config_Airtel_fetch_get_postpaid_Mobile
         Sub Feature Description: fetching details of Airtel Merchant having key "get_postpaid_Mobile" via fetch/data API
+        TC naming code description:
+        300: Config
+        302: Airtel
+        005: TC005
     """
     try:
         GlobalVariables.time_calc.setup.resume()
@@ -615,10 +651,26 @@ def test_common_300_302_005():
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
-            airtelNo = response['data']['response'][0]['airtelNo']
-            customerAccountId = response['data']['response'][0]['customerAccountId']
-            currentOutstanding = response['data']['response'][0]['currentOutstanding']
-            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success}, {airtelNo}, {customerAccountId},{currentOutstanding}")
+            msg = response['data']['response'][0]['msg']
+            current_outstanding = response['data']['response'][0]['currentOutstanding']
+            min_amt = response['data']['response'][0]['_minAmount']
+            airtel_no = response['data']['response'][0]['airtelNo']
+            classification = response['data']['response'][0]['classification']
+            customer_name = response['data']['response'][0]['customerName']
+            usimuser = response['data']['response'][0]['uSimUser']
+            customer_account_id = response['data']['response'][0]['customerAccountId']
+            customer_class = response['data']['response'][0]['customerClass']
+            airtel_customer = response['data']['response'][0]['airtelCustomer']
+            segment = response['data']['response'][0]['segment']
+            amt_field = response['data']['response'][0]['_amountField']
+            circle_id = response['data']['response'][0]['circleId']
+            invoice_no = response['data']['response'][0]['invoiceNo']
+            max_amt = response['data']['response'][0]['_maxAmount']
+
+
+            logger.info(f"API Result: Fetch Response for Airtel Merchant : {success},{msg},{current_outstanding},{min_amt},{airtel_no},{classification},"
+                        f"{customer_name}, {usimuser},{customer_account_id},{customer_class},{airtel_customer},{segment},{amt_field},{circle_id},{invoice_no},{max_amt}")
+
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -644,20 +696,26 @@ def test_common_300_302_005():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "airtelNo": "9163043479", "customerAccountId": "1-3864996877484", "currentOutstanding":"2123"}
+                expectedAPIValues1 = {"success": True, "msg": "success" ,"current_outstanding": "2123" ,"min_amt": "1" ,"airtel_no": "9163043479" ,
+                                      "classification": "B2C" ,"customer_name": "Prabir" , "usimuser": "YES" ,"customer_account_id": "1-3864996877484" ,
+                                      "customer_class": "NO" ,"airtel_customer": "No" ,"segment": "Retail" ,"amt_field": "2123.19" ,"circle_id": "115(Kolkata)" ,
+                                      "invoice_no": "BM2319I000942526" ,"max_amt":"50000"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "airtelNo": airtelNo, "customerAccountId": customerAccountId,"currentOutstanding":currentOutstanding}
+                actualAPIValues1 = {"success": success, "msg": msg ,"current_outstanding": current_outstanding,"min_amt": min_amt ,"airtel_no": airtel_no ,
+                                      "classification": classification ,"customer_name": customer_name , "usimuser": usimuser ,"customer_account_id": customer_account_id,
+                                        "customer_class": customer_class ,"airtel_customer":airtel_customer,"segment": segment,"amt_field": amt_field ,"circle_id": circle_id ,
+                                      "invoice_no": invoice_no ,"max_amt":max_amt}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)
 
                 # Whole String comparision
-                expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"msg": "success", "currentOutstanding": "2123", "_minAmount": "1", "airtelNo": "9163043479", "classification": "B2C", "customerName": "Prabir", "uSimUser": "YES", "customerAccountId": "1-3864996877484", "customerClass": "NO", "airtelCustomer": "No", "segment": "Retail", "_amountField": "2123.19", "circleId": "115(Kolkata)", "invoiceNo": "BM2319I000942526", "_maxAmount": "50000"}]}}'}
-                logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
-                actualAPIValues2 = {"Result": response_data}
-                logger.debug(f"actualAPIValues: {actualAPIValues2}")
-
-                Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
+                # expectedAPIValues2 = {"Result": '{"success": true, "data": {"response": [{"msg": "success", "currentOutstanding": "2123", "_minAmount": "1", "airtelNo": "9163043479", "classification": "B2C", "customerName": "Prabir", "uSimUser": "YES", "customerAccountId": "1-3864996877484", "customerClass": "NO", "airtelCustomer": "No", "segment": "Retail", "_amountField": "2123.19", "circleId": "115(Kolkata)", "invoiceNo": "BM2319I000942526", "_maxAmount": "50000"}]}}'}
+                # logger.debug(f"expectedAPIValues: {expectedAPIValues2}")
+                # actualAPIValues2 = {"Result": response_data}
+                # logger.debug(f"actualAPIValues: {actualAPIValues2}")
+                #
+                # Validator.validationAgainstAPI(expectedAPI=expectedAPIValues2, actualAPI=actualAPIValues2)
             except Exception as e:
                 print("API Validation failed due to exception - "+str(e))
                 msg = msg + "API Validation did not complete due to exception.\n"

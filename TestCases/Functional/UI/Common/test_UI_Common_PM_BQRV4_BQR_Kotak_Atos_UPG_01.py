@@ -366,7 +366,7 @@ def test_common_100_102_239():
                     "ipr_tid": tid,
                     # "ipr_vpa": customer_vpa,
                     "ipr_config_id": merchant_config_id,
-                    "ipr_pg_merchant_id": pg_merchant_id,
+                    "ipr_pg_merchant_id": merchant_pan,
                     "ipr_error_msg": "Bharat QR PgTxnRef Tampered "+ str(provider_ref_id),
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -892,7 +892,7 @@ def test_common_100_102_240():
                     "ipr_tid": tid,
                     # "ipr_vpa": customer_vpa,
                     "ipr_config_id": merchant_config_id,
-                    "ipr_pg_merchant_id": pg_merchant_id,
+                    "ipr_pg_merchant_id": merchant_pan,
                     "ipr_error_msg": "Actual ="+str(amount) + " Expected ="+str(amount-1) + ".00",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")

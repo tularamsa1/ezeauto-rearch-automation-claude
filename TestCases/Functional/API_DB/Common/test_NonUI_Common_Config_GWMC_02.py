@@ -19,6 +19,10 @@ def test_common_300_303_006():
     """
             Sub Feature Code: NonUI_Common_Config_GWMC_fetch_get_gwmc_tax
             Sub Feature Description: fetching details of GWMC Merchant having key "get_gwmc_tax" via fetch/data API
+            TC naming code description:
+            300: Config
+            303: GWMC
+            006: TC006
     """
     try:
         GlobalVariables.time_calc.setup.resume()
@@ -42,10 +46,13 @@ def test_common_300_303_006():
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
-            DEPTCODE = response['data']['response'][0]['keys'][0]['DEPTCODE']
-            DEPTNAME = response['data']['response'][0]['keys'][0]['DEPTNAME']
-            errorcode = response['data']['response'][0]['errorcode']
-            logger.info(f"API Result: Fetch Response for GWMC Merchant : {success}, {DEPTCODE}, {DEPTNAME},{errorcode}")
+            dept_code_1 = response['data']['response'][0]['keys'][0]['DEPTCODE']
+            dept_name_1 = response['data']['response'][0]['keys'][0]['DEPTNAME']
+            dept_code_2 = response['data']['response'][0]['keys'][1]['DEPTCODE']
+            dept_name_2 = response['data']['response'][0]['keys'][1]['DEPTNAME']
+            error_code = response['data']['response'][0]['errorcode']
+            logger.info(f"API Result: Fetch Response for GWMC Merchant : {success}, {dept_code_1}, {dept_name_1},"
+                        f"{dept_code_2}, {dept_name_2},{error_code}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -72,9 +79,11 @@ def test_common_300_303_006():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAPIValues1 = {"success": True, "DEPTCODE": "0003", "DEPTNAME": "GENERAL ESTABLISHMENT SECTION", "errorcode":"00"}
+                expectedAPIValues1 = {"success": True,"dept_code_1": "0003" , "dept_name_1": "GENERAL ESTABLISHMENT SECTION" ,
+                                      "dept_code_2": "0002" , "dept_name_2": "HEALTH SECTION" ,"error_code":"00"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
-                actualAPIValues1 = {"success": success, "DEPTCODE": DEPTCODE, "DEPTNAME": DEPTNAME, "errorcode": errorcode}
+                actualAPIValues1 = {"success": success, "dept_code_1": dept_code_1 , "dept_name_1": dept_name_1 ,
+                                      "dept_code_2": dept_code_2, "dept_name_2":dept_name_2 ,"error_code":error_code}
                 logger.debug(f"actualAPIValues: {actualAPIValues1}")
 
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues1, actualAPI=actualAPIValues1)

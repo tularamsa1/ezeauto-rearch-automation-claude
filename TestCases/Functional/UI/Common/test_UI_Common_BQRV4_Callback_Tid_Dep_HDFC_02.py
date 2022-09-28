@@ -2316,6 +2316,7 @@ def test_common_100_102_118():
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_new_3 = result['id'].values[0]
+            rrn_new_2 = result['rr_number'].iloc[0]
             customer_name_new_3 = result['customer_name'].values[0]
             payer_name_new_3 = result['payer_name'].values[0]
             auth_code_new_3 = result['auth_code'].values[0]

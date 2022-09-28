@@ -111,14 +111,16 @@ def test_common_100_101_091():
 
             txn_id = response["txnId"]
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
-
+            logger.debug(f"response received for the TidDepUpiQRGenerate api : {response}")
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result : {result}")
             pg_merchant_id = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
-            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
+            org_code_vpa = result['org_code'].values[0]
+            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id} and org_code_vpa : {org_code_vpa}")
 
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")

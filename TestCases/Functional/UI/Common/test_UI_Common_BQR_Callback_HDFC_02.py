@@ -181,11 +181,11 @@ def test_common_100_102_011():
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
-                                       "pmt_mode_new": "BHARAT QR", "pmt_status_new": "AUTHORIZED",
-                                       "txn_amt_new": str(amount), "rrn_new": str(rrn_new),
-                                       "settle_status_new": "SETTLED", "txn_id_new": txn_id_new,
-                                       "order_id_new": order_id, "msg_new": "PAYMENT SUCCESSFUL",
-                                       "auth_code_new": auth_code_new, "date_new": date_and_time_new
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
+                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
+                                       "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "auth_code_2": auth_code_new, "date_2": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 payment_page.click_on_proceed_homepage()
@@ -248,12 +248,12 @@ def test_common_100_102_011():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,"auth_code": app_auth_code,
                                      "msg": app_payment_msg, "date": app_date_and_time,
-                                     "pmt_mode_new": payment_mode_new, "pmt_status_new": payment_status_new.split(':')[1],
-                                     "txn_amt_new": app_amount_new.split(' ')[1],
-                                     "txn_id_new": app_txn_id_new, "rrn_new": str(app_rrn_new),
-                                     "settle_status_new": app_settlement_status_new,
-                                     "order_id_new": app_order_id_new, "auth_code_new": app_auth_code_new,
-                                     "msg_new": app_payment_msg_new, "date_new": app_date_and_time_new
+                                     "pmt_mode_2": payment_mode_new, "pmt_status_2": payment_status_new.split(':')[1],
+                                     "txn_amt_2": app_amount_new.split(' ')[1],
+                                     "txn_id_2": app_txn_id_new, "rrn_2": str(app_rrn_new),
+                                     "settle_status_2": app_settlement_status_new,
+                                     "order_id_2": app_order_id_new, "auth_code_2": app_auth_code_new,
+                                     "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -268,27 +268,30 @@ def test_common_100_102_011():
             try:
                 date = date_time_converter.db_datetime(posting_date)
                 date_new = date_time_converter.db_datetime(posting_date_new)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": amount,"pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date,
-                                       "pmt_status_new": "AUTHORIZED", "txn_amt_new": amount,
-                                       "pmt_mode_new": "BHARATQR","pmt_state_new": "SETTLED",
-                                       "rrn_new": str(rrn_new), "settle_status_new": "SETTLED","acquirer_code_new": "HDFC",
-                                       "issuer_code_new": "HDFC", "txn_type_new": "CHARGE",
-                                       "mid_new": mid, "tid_new": tid, "org_code_new": org_code,
-                                       "auth_code_new": auth_code_new, "date_new": date_new
+                                       "pmt_status_2": "AUTHORIZED", "txn_amt_2": float(amount),
+                                       "pmt_mode_2": "BHARATQR", "pmt_state_2": "SETTLED",
+                                       "rrn_2": str(rrn_new), "settle_status_2": "SETTLED", "acquirer_code_2": "HDFC",
+                                       "issuer_code_2": "HDFC", "txn_type_2": "CHARGE",
+                                       "mid_2": mid, "tid_2": tid, "org_code_2": org_code,
+                                       "auth_code_2": auth_code_new, "date_2": date_new
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
@@ -311,7 +314,7 @@ def test_common_100_102_011():
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api_new = response["status"]
-                amount_api_new = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -331,15 +334,15 @@ def test_common_100_102_011():
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "pmt_status_new": status_api_new, "txn_amt_new": amount_api_new,
-                                     "pmt_mode_new": payment_mode_api_new,
-                                     "pmt_state_new": state_api_new, "rrn_new": str(rrn_api_new),
-                                     "settle_status_new": settlement_status_api_new,
-                                     "acquirer_code_new": acquirer_code_api_new,
-                                     "issuer_code_new": issuer_code_api_new, "mid_new": mid_api_new,
-                                     "txn_type_new": txn_type_api_new, "tid_new": tid_api_new,
-                                     "auth_code_new": auth_code_api_new, "org_code_new": org_code_api_new,
-                                     "date_new": date_time_converter.from_api_to_datetime_format(date_api_new),
+                                     "pmt_status_2": status_api_new, "txn_amt_2": amount_api_new,
+                                     "pmt_mode_2": payment_mode_api_new,
+                                     "pmt_state_2": state_api_new, "rrn_2": str(rrn_api_new),
+                                     "settle_status_2": settlement_status_api_new,
+                                     "acquirer_code_2": acquirer_code_api_new,
+                                     "issuer_code_2": issuer_code_api_new, "mid_2": mid_api_new,
+                                     "txn_type_2": txn_type_api_new, "tid_2": tid_api_new,
+                                     "auth_code_2": auth_code_api_new, "org_code_2": org_code_api_new,
+                                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new),
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -363,18 +366,18 @@ def test_common_100_102_011():
                                       "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                                       "bqr_merchant_pan": bqr_m_pan,
                                       "bqr_rrn": str(rrn), "bqr_org_code": org_code,
-                                      "txn_amt_new": amount, "pmt_mode_new": "BHARATQR", "pmt_status_new": "AUTHORIZED",
-                                      "pmt_state_new": "SETTLED", "acquirer_code_new": "HDFC",
-                                      "bank_name_new": "HDFC Bank",
-                                      "mid_new": mid, "tid_new": tid, "pmt_gateway_new": "HDFC",
-                                      "rrn_new": str(rrn), "settle_status_new": "SETTLED",
-                                      "bqr_pmt_status_new": "Transaction Success", "bqr_pmt_state_new": "SETTLED",
-                                      "bqr_txn_amt_new": amount,
-                                      "bqr_txn_type_new": "DYNAMIC_QR", "brq_terminal_info_id_new": terminal_info_id,
-                                      "bqr_bank_code_new": "HDFC",
-                                      "bqr_merchant_config_id_new": bqr_mc_id, "bqr_txn_primary_id_new": txn_id_new,
-                                      "bqr_merchant_pan_new": bqr_m_pan,
-                                      "bqr_rrn_new": str(rrn), "bqr_org_code_new": org_code
+                                      "txn_amt_2": amount, "pmt_mode_2": "BHARATQR", "pmt_status_2": "AUTHORIZED",
+                                      "pmt_state_2": "SETTLED", "acquirer_code_2": "HDFC",
+                                      "bank_name_2": "HDFC Bank",
+                                      "mid_2": mid, "tid_2": tid, "pmt_gateway_2": "HDFC",
+                                      "rrn_2": str(rrn), "settle_status_2": "SETTLED",
+                                      "bqr_pmt_status_2": "Transaction Success", "bqr_pmt_state_2": "SETTLED",
+                                      "bqr_txn_amt_2": amount,
+                                      "bqr_txn_type_2": "DYNAMIC_QR", "brq_terminal_info_id_2": terminal_info_id,
+                                      "bqr_bank_code_2": "HDFC",
+                                      "bqr_merchant_config_id_2": bqr_mc_id, "bqr_txn_primary_id_2": txn_id_new,
+                                      "bqr_merchant_pan_2": bqr_m_pan,
+                                      "bqr_rrn_2": str(rrn), "bqr_org_code_2": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -416,8 +419,7 @@ def test_common_100_102_011():
                 logger.debug(f"Query result : {result}")
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
-                bqr_amount_db = int(
-                    result["txn_amount"].iloc[0])
+                bqr_amount_db = int(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
                 brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
@@ -457,21 +459,21 @@ def test_common_100_102_011():
                                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
                                     "bqr_merchant_pan": bqr_merchant_pan_db,
                                     "bqr_rrn": bqr_rrn_db, "bqr_org_code": bqr_org_code_db,
-                                    "txn_amt_new": amount_db_new, "pmt_mode_new": payment_mode_db_new,
-                                    "pmt_status_new": payment_status_db_new, "pmt_state_new": payment_state_db_new,
-                                    "acquirer_code_new": acquirer_code_db_new, "bank_name_new": bank_name_db_new,
-                                    "mid_new": mid_db_new, "tid_new": tid_db_new,
-                                    "pmt_gateway_new": payment_gateway_db_new, "rrn_new": rr_number_db_new,
-                                    "settle_status_new": settlement_status_db_new,
-                                    "bqr_pmt_status_new": bqr_status_db_new, "bqr_pmt_state_new": bqr_state_db_new,
-                                    "bqr_txn_amt_new": bqr_amount_db_new,
-                                    "bqr_txn_type_new": bqr_txn_type_db_new,
-                                    "brq_terminal_info_id_new": brq_terminal_info_id_db_new,
-                                    "bqr_bank_code_new": bqr_bank_code_db_new,
-                                    "bqr_merchant_config_id_new": bqr_merchant_config_id_db_new,
-                                    "bqr_txn_primary_id_new": bqr_txn_primary_id_db_new,
-                                    "bqr_merchant_pan_new": bqr_merchant_pan_db_new,
-                                    "bqr_rrn_new": bqr_rrn_db_new, "bqr_org_code_new": bqr_org_code_db_new
+                                    "txn_amt_2": amount_db_new, "pmt_mode_2": payment_mode_db_new,
+                                    "pmt_status_2": payment_status_db_new, "pmt_state_2": payment_state_db_new,
+                                    "acquirer_code_2": acquirer_code_db_new, "bank_name_2": bank_name_db_new,
+                                    "mid_2": mid_db_new, "tid_2": tid_db_new,
+                                    "pmt_gateway_2": payment_gateway_db_new, "rrn_2": rr_number_db_new,
+                                    "settle_status_2": settlement_status_db_new,
+                                    "bqr_pmt_status_2": bqr_status_db_new, "bqr_pmt_state_2": bqr_state_db_new,
+                                    "bqr_txn_amt_2": bqr_amount_db_new,
+                                    "bqr_txn_type_2": bqr_txn_type_db_new,
+                                    "brq_terminal_info_id_2": brq_terminal_info_id_db_new,
+                                    "bqr_bank_code_2": bqr_bank_code_db_new,
+                                    "bqr_merchant_config_id_2": bqr_merchant_config_id_db_new,
+                                    "bqr_txn_primary_id_2": bqr_txn_primary_id_db_new,
+                                    "bqr_merchant_pan_2": bqr_merchant_pan_db_new,
+                                    "bqr_rrn_2": bqr_rrn_db_new, "bqr_org_code_2": bqr_org_code_db_new
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -590,6 +592,7 @@ def test_common_100_102_086():
 
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -634,7 +637,6 @@ def test_common_100_102_086():
             auth_code = "AE" + txn_id.split('E')[1]
             rrn = "RE" + txn_id.split('E')[1]
             txn_id_new = 'T'+ txn_id[1:]
-            #txn_id_new = txn_id.split('E')[1]+'E'+str(random.randint(10000000, 999999999))
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
@@ -695,11 +697,11 @@ def test_common_100_102_086():
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
-                                       "pmt_mode_new": "BHARAT QR", "pmt_status_new": "REFUND_PENDING",
-                                       "txn_amt_new": str(amount), "rrn_new": str(rrn_new),
-                                       "settle_status_new": "SETTLED", "txn_id_new": txn_id_new,
-                                       "order_id_new": order_id, "msg_new": "PAYMENT SUCCESSFUL",
-                                       "auth_code_new": auth_code_new, "date_new": date_and_time_new
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
+                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
+                                       "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "auth_code_2": auth_code_new, "date_2": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 app_driver.reset()
@@ -767,12 +769,12 @@ def test_common_100_102_086():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,"auth_code": app_auth_code,
                                      "msg": app_payment_msg, "date": app_date_and_time,
-                                     "pmt_mode_new": payment_mode_new, "pmt_status_new": payment_status_new.split(':')[1],
-                                     "txn_amt_new": app_amount_new.split(' ')[1],
-                                     "txn_id_new": app_txn_id_new, "rrn_new": str(app_rrn_new),
-                                     "settle_status_new": app_settlement_status_new,
-                                     "order_id_new": app_order_id_new, "auth_code_new": app_auth_code_new,
-                                     "msg_new": app_payment_msg_new, "date_new": app_date_and_time_new
+                                     "pmt_mode_2": payment_mode_new, "pmt_status_2": payment_status_new.split(':')[1],
+                                     "txn_amt_2": app_amount_new.split(' ')[1],
+                                     "txn_id_2": app_txn_id_new, "rrn_2": str(app_rrn_new),
+                                     "settle_status_2": app_settlement_status_new,
+                                     "order_id_2": app_order_id_new, "auth_code_2": app_auth_code_new,
+                                     "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -787,28 +789,29 @@ def test_common_100_102_086():
             try:
                 date = date_time_converter.db_datetime(created_time)
                 date_new = date_time_converter.db_datetime(created_time_new)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": amount,"pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date,
-                                       "pmt_status_new": "REFUND_PENDING", "txn_amt_new": amount,
-                                       "pmt_mode_new": "BHARATQR","pmt_state_new": "REFUND_PENDING",
-                                       "rrn_new": str(rrn_new), "settle_status_new": "SETTLED","acquirer_code_new": "HDFC",
-                                       "issuer_code_new": "HDFC", "txn_type_new": "CHARGE",
-                                       "mid_new": mid, "tid_new": tid, "org_code_new": org_code,
-                                       "auth_code_new": auth_code_new, "date_new": date_new
+                                       "pmt_status_2": "REFUND_PENDING", "txn_amt_2": float(amount),
+                                       "pmt_mode_2": "BHARATQR", "pmt_state_2": "REFUND_PENDING",
+                                       "rrn_2": str(rrn_new), "settle_status_2": "SETTLED", "acquirer_code_2": "HDFC",
+                                       "issuer_code_2": "HDFC", "txn_type_2": "CHARGE",
+                                       "mid_2": mid, "tid_2": tid, "org_code_2": org_code,
+                                       "auth_code_2": auth_code_new, "date_2": date_new
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
@@ -830,7 +833,7 @@ def test_common_100_102_086():
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for api details api is : {response} ")
                 status_api_new = response["status"]
-                amount_api_new = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -871,30 +874,30 @@ def test_common_100_102_086():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"txn_amt": amount,"pmt_mode": "BHARATQR","pmt_status": "AUTHORIZED",
-                                      "pmt_state": "SETTLED","acquirer_code" : "HDFC", "bank_name" : "HDFC Bank",
-                                      "mid" :mid, "tid" : tid, "pmt_gateway": "HDFC",
-                                      "rrn" : str(rrn), "settle_status": "SETTLED",
+                expected_db_values = {"txn_amt": float(amount),"pmt_mode": "BHARATQR","pmt_status": "AUTHORIZED",
+                                      "pmt_state": "SETTLED", "acquirer_code": "HDFC", "bank_name": "HDFC Bank",
+                                      "mid": mid, "tid": tid, "pmt_gateway": "HDFC",
+                                      "rrn": str(rrn), "settle_status": "SETTLED",
                                       "bqr_pmt_status": "Transaction Success", "bqr_pmt_state": "SETTLED",
-                                      "bqr_txn_amt": amount,
+                                      "bqr_txn_amt": float(amount),
                                       "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
                                       "bqr_bank_code": "HDFC",
                                       "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                                       "bqr_merchant_pan": bqr_m_pan,
                                       "bqr_rrn": str(rrn), "bqr_org_code": org_code,
-                                      "txn_amt_new": amount, "pmt_mode_new": "BHARATQR",
-                                      "pmt_status_new": "REFUND_PENDING",
-                                      "pmt_state_new": "REFUND_PENDING", "acquirer_code_new": "HDFC",
-                                      "bank_name_new": "HDFC Bank",
-                                      "mid_new": mid, "tid_new": tid, "pmt_gateway_new": "HDFC",
-                                      "rrn_new": str(rrn), "settle_status_new": "SETTLED",
-                                      "bqr_pmt_status_new": "Transaction Success", "bqr_pmt_state_new": "REFUND_PENDING",
-                                      "bqr_txn_amt_new": amount,
-                                      "bqr_txn_type_new": "DYNAMIC_QR", "brq_terminal_info_id_new": terminal_info_id,
-                                      "bqr_bank_code_new": "HDFC",
-                                      "bqr_merchant_config_id_new": bqr_mc_id, "bqr_txn_primary_id_new": txn_id_new,
-                                      "bqr_merchant_pan_new": bqr_m_pan,
-                                      "bqr_rrn_new": str(rrn), "bqr_org_code_new": org_code
+                                      "txn_amt_2": float(amount), "pmt_mode_2": "BHARATQR",
+                                      "pmt_status_2": "REFUND_PENDING",
+                                      "pmt_state_2": "REFUND_PENDING", "acquirer_code_2": "HDFC",
+                                      "bank_name_2": "HDFC Bank",
+                                      "mid_2": mid, "tid_2": tid, "pmt_gateway_2": "HDFC",
+                                      "rrn_2": str(rrn), "settle_status_2": "SETTLED",
+                                      "bqr_pmt_status_2": "Transaction Success", "bqr_pmt_state_2": "REFUND_PENDING",
+                                      "bqr_txn_amt_2": float(amount),
+                                      "bqr_txn_type_2": "DYNAMIC_QR", "brq_terminal_info_id_2": terminal_info_id,
+                                      "bqr_bank_code_2": "HDFC",
+                                      "bqr_merchant_config_id_2": bqr_mc_id, "bqr_txn_primary_id_2": txn_id_new,
+                                      "bqr_merchant_pan_2": bqr_m_pan,
+                                      "bqr_rrn_2": str(rrn), "bqr_org_code_2": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -902,7 +905,7 @@ def test_common_100_102_086():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
+                amount_db = float(result["amount"].iloc[0])
                 payment_mode_db = result["payment_mode"].iloc[0]
                 payment_status_db = result["status"].iloc[0]
                 payment_state_db = result["state"].iloc[0]
@@ -918,7 +921,7 @@ def test_common_100_102_086():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                amount_db_new = int(result["amount"].iloc[0])
+                amount_db_new = float(result["amount"].iloc[0])
                 payment_mode_db_new = result["payment_mode"].iloc[0]
                 payment_status_db_new = result["status"].iloc[0]
                 payment_state_db_new = result["state"].iloc[0]
@@ -936,8 +939,7 @@ def test_common_100_102_086():
                 logger.debug(f"Query result : {result}")
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
-                bqr_amount_db = int(
-                    result["txn_amount"].iloc[0])
+                bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
                 brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
@@ -953,7 +955,7 @@ def test_common_100_102_086():
                 logger.debug(f"Query result : {result}")
                 bqr_status_db_new = result["status_desc"].iloc[0]
                 bqr_state_db_new = result["state"].iloc[0]
-                bqr_amount_db_new = int(result["txn_amount"].iloc[0])
+                bqr_amount_db_new = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db_new = result["txn_type"].iloc[0]
                 brq_terminal_info_id_db_new = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db_new = result["bank_code"].iloc[0]
@@ -965,9 +967,9 @@ def test_common_100_102_086():
 
                 actual_db_values = {"txn_amt": amount_db,"pmt_mode": payment_mode_db,
                                     "pmt_status": payment_status_db, "pmt_state": payment_state_db,
-                                    "acquirer_code" : acquirer_code_db, "bank_name" : bank_name_db,
-                                    "mid" :mid_db, "tid" : tid_db,
-                                    "pmt_gateway": payment_gateway_db, "rrn" : rr_number_db,
+                                    "acquirer_code": acquirer_code_db, "bank_name": bank_name_db,
+                                    "mid": mid_db, "tid": tid_db,
+                                    "pmt_gateway": payment_gateway_db, "rrn": rr_number_db,
                                     "settle_status": settlement_status_db,
                                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                                     "bqr_txn_amt": bqr_amount_db,
@@ -977,21 +979,21 @@ def test_common_100_102_086():
                                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
                                     "bqr_merchant_pan": bqr_merchant_pan_db,
                                     "bqr_rrn": bqr_rrn_db, "bqr_org_code": bqr_org_code_db,
-                                    "txn_amt_new": amount_db_new, "pmt_mode_new": payment_mode_db_new,
-                                    "pmt_status_new": payment_status_db_new, "pmt_state_new": payment_state_db_new,
-                                    "acquirer_code_new": acquirer_code_db_new, "bank_name_new": bank_name_db_new,
-                                    "mid_new": mid_db_new, "tid_new": tid_db_new,
-                                    "pmt_gateway_new": payment_gateway_db_new, "rrn_new": rr_number_db_new,
-                                    "settle_status_new": settlement_status_db_new,
-                                    "bqr_pmt_status_new": bqr_status_db_new, "bqr_pmt_state_new": bqr_state_db_new,
-                                    "bqr_txn_amt_new": bqr_amount_db_new,
-                                    "bqr_txn_type_new": bqr_txn_type_db_new,
-                                    "brq_terminal_info_id_new": brq_terminal_info_id_db_new,
-                                    "bqr_bank_code_new": bqr_bank_code_db_new,
-                                    "bqr_merchant_config_id_new": bqr_merchant_config_id_db_new,
-                                    "bqr_txn_primary_id_new": bqr_txn_primary_id_db_new,
-                                    "bqr_merchant_pan_new": bqr_merchant_pan_db_new,
-                                    "bqr_rrn_new": bqr_rrn_db_new, "bqr_org_code_new": bqr_org_code_db_new
+                                    "txn_amt_2": amount_db_new, "pmt_mode_2": payment_mode_db_new,
+                                    "pmt_status_2": payment_status_db_new, "pmt_state_2": payment_state_db_new,
+                                    "acquirer_code_2": acquirer_code_db_new, "bank_name_2": bank_name_db_new,
+                                    "mid_2": mid_db_new, "tid_2": tid_db_new,
+                                    "pmt_gateway_2": payment_gateway_db_new, "rrn_2": rr_number_db_new,
+                                    "settle_status_2": settlement_status_db_new,
+                                    "bqr_pmt_status_2": bqr_status_db_new, "bqr_pmt_state_2": bqr_state_db_new,
+                                    "bqr_txn_amt_2": bqr_amount_db_new,
+                                    "bqr_txn_type_2": bqr_txn_type_db_new,
+                                    "brq_terminal_info_id_2": brq_terminal_info_id_db_new,
+                                    "bqr_bank_code_2": bqr_bank_code_db_new,
+                                    "bqr_merchant_config_id_2": bqr_merchant_config_id_db_new,
+                                    "bqr_txn_primary_id_2": bqr_txn_primary_id_db_new,
+                                    "bqr_merchant_pan_2": bqr_merchant_pan_db_new,
+                                    "bqr_rrn_2": bqr_rrn_db_new, "bqr_org_code_2": bqr_org_code_db_new
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1243,16 +1245,16 @@ def test_common_100_102_087():
                                        "settle_status": "FAILED", "txn_id": txn_id,
                                        "order_id": order_id, "msg": "PAYMENT FAILED",
                                        "date": date_and_time,
-                                       "pmt_mode_new": "BHARAT QR", "pmt_status_new": "REFUND_PENDING",
-                                       "txn_amt_new": str(amount), "rrn_new": str(rrn_new),
-                                       "settle_status_new": "SETTLED", "txn_id_new": txn_id_new,
-                                       "order_id_new": order_id, "msg_new": "PAYMENT SUCCESSFUL",
-                                       "auth_code_new": auth_code_new, "date_new": date_and_time_new,
-                                       "pmt_mode_new_2": "BHARAT QR", "pmt_status_new_2": "REFUND_PENDING",
-                                       "txn_amt_new_2": str(amount), "rrn_new_2": str(rrn_new_2),
-                                       "settle_status_new_2": "SETTLED", "txn_id_new_2": txn_id_new_2,
-                                       "order_id_new_2": order_id, "msg_new_2": "PAYMENT SUCCESSFUL",
-                                       "auth_code_new_2": auth_code_new_2, "date_new_2": date_and_time_new_2
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
+                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
+                                       "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "auth_code_2": auth_code_new, "date_2": date_and_time_new,
+                                       "pmt_mode_3": "BHARAT QR", "pmt_status_3": "REFUND_PENDING",
+                                       "txn_amt_3": str(amount), "rrn_3": str(rrn_new_2),
+                                       "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_2,
+                                       "order_id_3": order_id, "msg_3": "PAYMENT SUCCESSFUL",
+                                       "auth_code_3": auth_code_new_2, "date_3": date_and_time_new_2
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 login_page = LoginPage(app_driver)
@@ -1343,20 +1345,20 @@ def test_common_100_102_087():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      "msg": app_payment_msg, "date": app_date_and_time,
-                                     "pmt_mode_new": payment_mode_new,
-                                     "pmt_status_new": payment_status_new.split(':')[1],
-                                     "txn_amt_new": app_amount_new.split(' ')[1],
-                                     "txn_id_new": app_txn_id_new, "rrn_new": str(app_rrn_new),
-                                     "settle_status_new": app_settlement_status_new,
-                                     "order_id_new": app_order_id_new, "auth_code_new": app_auth_code_new,
-                                     "msg_new": app_payment_msg_new, "date_new": app_date_and_time_new,
-                                     "pmt_mode_new_2": payment_mode_new_2,
-                                     "pmt_status_new_2": payment_status_new_2.split(':')[1],
-                                     "txn_amt_new_2": app_amount_new_2.split(' ')[1],
-                                     "txn_id_new_2": app_txn_id_new_2, "rrn_new_2": str(app_rrn_new_2),
-                                     "settle_status_new_2": app_settlement_status_new_2,
-                                     "order_id_new_2": app_order_id_new_2, "auth_code_new_2": app_auth_code_new_2,
-                                     "msg_new_2": app_payment_msg_new_2, "date_new_2": app_date_and_time_new_2
+                                     "pmt_mode_2": payment_mode_new,
+                                     "pmt_status_2": payment_status_new.split(':')[1],
+                                     "txn_amt_2": app_amount_new.split(' ')[1],
+                                     "txn_id_2": app_txn_id_new, "rrn_2": str(app_rrn_new),
+                                     "settle_status_2": app_settlement_status_new,
+                                     "order_id_2": app_order_id_new, "auth_code_2": app_auth_code_new,
+                                     "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new,
+                                     "pmt_mode_3": payment_mode_new_2,
+                                     "pmt_status_3": payment_status_new_2.split(':')[1],
+                                     "txn_amt_3": app_amount_new_2.split(' ')[1],
+                                     "txn_id_3": app_txn_id_new_2, "rrn_3": str(app_rrn_new_2),
+                                     "settle_status_3": app_settlement_status_new_2,
+                                     "order_id_3": app_order_id_new_2, "auth_code_3": app_auth_code_new_2,
+                                     "msg_3": app_payment_msg_new_2, "date_3": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -1372,34 +1374,36 @@ def test_common_100_102_087():
                 date = date_time_converter.db_datetime(posting_date)
                 date_new = date_time_converter.db_datetime(posting_date_new)
                 date_new_2 = date_time_converter.db_datetime(posting_date_new_2)
-                expected_api_values = {"pmt_status": "EXPIRED", "txn_amt": amount, "pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "EXPIRED", "txn_amt": float(amount), "pmt_mode": "BHARATQR",
                                        "pmt_state": "EXPIRED", "settle_status": "FAILED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC", "txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code,
                                        "date": date,
-                                       "pmt_status_new": "REFUND_PENDING", "txn_amt_new": amount,
-                                       "pmt_mode_new": "BHARATQR", "pmt_state_new": "REFUND_PENDING",
-                                       "rrn_new": str(rrn_new), "settle_status_new": "SETTLED",
-                                       "acquirer_code_new": "HDFC",
-                                       "issuer_code_new": "HDFC", "txn_type_new": "CHARGE",
-                                       "mid_new": mid, "tid_new": tid, "org_code_new": org_code,
-                                       "auth_code_new": auth_code_new, "date_new": date_new,
-                                       "pmt_status_new_2": "REFUND_PENDING", "txn_amt_new_2": amount,
-                                       "pmt_mode_new_2": "BHARATQR", "pmt_state_new_2": "REFUND_PENDING",
-                                       "rrn_new_2": str(rrn_new_2), "settle_status_new_2": "SETTLED",
-                                       "acquirer_code_new_2": "HDFC",
-                                       "issuer_code_new_2": "HDFC", "txn_type_new_2": "CHARGE",
-                                       "mid_new_2": mid, "tid_new_2": tid, "org_code_new_2": org_code,
-                                       "auth_code_new_2": auth_code_new_2, "date_new_2": date_new_2
+                                       "pmt_status_2": "REFUND_PENDING", "txn_amt_2": float(amount),
+                                       "pmt_mode_2": "BHARATQR", "pmt_state_2": "REFUND_PENDING",
+                                       "rrn_2": str(rrn_new), "settle_status_2": "SETTLED",
+                                       "acquirer_code_2": "HDFC",
+                                       "issuer_code_2": "HDFC", "txn_type_2": "CHARGE",
+                                       "mid_2": mid, "tid_2": tid, "org_code_2": org_code,
+                                       "auth_code_2": auth_code_new, "date_2": date_new,
+                                       "pmt_status_3": "REFUND_PENDING", "txn_amt_3": float(amount),
+                                       "pmt_mode_3": "BHARATQR", "pmt_state_3": "REFUND_PENDING",
+                                       "rrn_3": str(rrn_new_2), "settle_status_3": "SETTLED",
+                                       "acquirer_code_3": "HDFC",
+                                       "issuer_code_3": "HDFC", "txn_type_3": "CHARGE",
+                                       "mid_3": mid, "tid_3": tid, "org_code_3": org_code,
+                                       "auth_code_3": auth_code_new_2, "date_3": date_new_2
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1413,15 +1417,15 @@ def test_common_100_102_087():
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
-                amount_api_new = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -1435,15 +1439,15 @@ def test_common_100_102_087():
                 auth_code_api_new = response["authCode"]
                 date_api_new = response["postingDate"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new_2})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new_2][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new_2 = response["status"]
-                amount_api_new_2 = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new_2 = float(response["amount"])
                 payment_mode_api_new_2 = response["paymentMode"]
                 state_api_new_2 = response["states"][0]
                 rrn_api_new_2 = response["rrNumber"]
@@ -1503,36 +1507,36 @@ def test_common_100_102_087():
                                       "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                                       "bqr_merchant_pan": bqr_m_pan,
                                       "bqr_org_code": org_code,
-                                      "txn_amt_new": amount, "pmt_mode_new": "BHARATQR",
-                                      "pmt_status_new": "REFUND_PENDING",
-                                      "pmt_state_new": "REFUND_PENDING", "acquirer_code_new": "HDFC",
-                                      "bank_name_new": "HDFC Bank",
-                                      "mid_new": mid, "tid_new": tid, "pmt_gateway_new": "HDFC",
-                                      "rrn_new": str(rrn_new), "settle_status_new": "SETTLED",
-                                      "bqr_pmt_status_new": "Transaction Success",
-                                      "bqr_pmt_state_new": "REFUND_PENDING",
-                                      "bqr_txn_amt_new": amount,
-                                      "bqr_txn_type_new": "DYNAMIC_QR", "brq_terminal_info_id_new": terminal_info_id,
-                                      "bqr_bank_code_new": "HDFC",
-                                      "bqr_merchant_config_id_new": bqr_mc_id, "bqr_txn_primary_id_new": txn_id_new,
-                                      "bqr_merchant_pan_new": bqr_m_pan,
-                                      "bqr_rrn_new": str(rrn_new), "bqr_org_code_new": org_code,
-                                      "txn_amt_new_2": amount, "pmt_mode_new_2": "BHARATQR",
-                                      "pmt_status_new_2": "REFUND_PENDING",
-                                      "pmt_state_new_2": "REFUND_PENDING", "acquirer_code_new_2": "HDFC",
-                                      "bank_name_new_2": "HDFC Bank",
-                                      "mid_new_2": mid, "tid_new_2": tid, "pmt_gateway_new_2": "HDFC",
-                                      "rrn_new_2": str(rrn_new_2), "settle_status_new_2": "SETTLED",
-                                      "bqr_pmt_status_new_2": "Transaction Success",
-                                      "bqr_pmt_state_new_2": "REFUND_PENDING",
-                                      "bqr_txn_amt_new_2": amount,
-                                      "bqr_txn_type_new_2": "DYNAMIC_QR",
-                                      "brq_terminal_info_id_new_2": terminal_info_id,
-                                      "bqr_bank_code_new_2": "HDFC",
-                                      "bqr_merchant_config_id_new_2": bqr_mc_id,
-                                      "bqr_txn_primary_id_new_2": txn_id_new_2,
-                                      "bqr_merchant_pan_new_2": bqr_m_pan,
-                                      "bqr_rrn_new_2": str(rrn_new_2), "bqr_org_code_new_2": org_code
+                                      "txn_amt_2": amount, "pmt_mode_2": "BHARATQR",
+                                      "pmt_status_2": "REFUND_PENDING",
+                                      "pmt_state_2": "REFUND_PENDING", "acquirer_code_2": "HDFC",
+                                      "bank_name_2": "HDFC Bank",
+                                      "mid_2": mid, "tid_2": tid, "pmt_gateway_2": "HDFC",
+                                      "rrn_2": str(rrn_new), "settle_status_2": "SETTLED",
+                                      "bqr_pmt_status_2": "Transaction Success",
+                                      "bqr_pmt_state_2": "REFUND_PENDING",
+                                      "bqr_txn_amt_2": amount,
+                                      "bqr_txn_type_2": "DYNAMIC_QR", "brq_terminal_info_id_2": terminal_info_id,
+                                      "bqr_bank_code_2": "HDFC",
+                                      "bqr_merchant_config_id_2": bqr_mc_id, "bqr_txn_primary_id_2": txn_id_new,
+                                      "bqr_merchant_pan_2": bqr_m_pan,
+                                      "bqr_rrn_2": str(rrn_new), "bqr_org_code_2": org_code,
+                                      "txn_amt_3": amount, "pmt_mode_3": "BHARATQR",
+                                      "pmt_status_3": "REFUND_PENDING",
+                                      "pmt_state_3": "REFUND_PENDING", "acquirer_code_3": "HDFC",
+                                      "bank_name_3": "HDFC Bank",
+                                      "mid_3": mid, "tid_3": tid, "pmt_gateway_3": "HDFC",
+                                      "rrn_3": str(rrn_new_2), "settle_status_3": "SETTLED",
+                                      "bqr_pmt_status_3": "Transaction Success",
+                                      "bqr_pmt_state_3": "REFUND_PENDING",
+                                      "bqr_txn_amt_3": amount,
+                                      "bqr_txn_type_3": "DYNAMIC_QR",
+                                      "brq_terminal_info_id_3": terminal_info_id,
+                                      "bqr_bank_code_3": "HDFC",
+                                      "bqr_merchant_config_id_3": bqr_mc_id,
+                                      "bqr_txn_primary_id_3": txn_id_new_2,
+                                      "bqr_merchant_pan_3": bqr_m_pan,
+                                      "bqr_rrn_3": str(rrn_new_2), "bqr_org_code_3": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -1644,39 +1648,39 @@ def test_common_100_102_087():
                                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
                                     "bqr_merchant_pan": bqr_merchant_pan_db,
                                     "bqr_org_code": bqr_org_code_db,
-                                    "txn_amt_new": amount_db_new, "pmt_mode_new": payment_mode_db_new,
-                                    "pmt_status_new": payment_status_db_new, "pmt_state_new": payment_state_db_new,
-                                    "acquirer_code_new": acquirer_code_db_new, "bank_name_new": bank_name_db_new,
-                                    "mid_new": mid_db_new, "tid_new": tid_db_new,
-                                    "pmt_gateway_new": payment_gateway_db_new, "rrn_new": rr_number_db_new,
-                                    "settle_status_new": settlement_status_db_new,
-                                    "bqr_pmt_status_new": bqr_status_db_new, "bqr_pmt_state_new": bqr_state_db_new,
-                                    "bqr_txn_amt_new": bqr_amount_db_new,
-                                    "bqr_txn_type_new": bqr_txn_type_db_new,
-                                    "brq_terminal_info_id_new": brq_terminal_info_id_db_new,
-                                    "bqr_bank_code_new": bqr_bank_code_db_new,
-                                    "bqr_merchant_config_id_new": bqr_merchant_config_id_db_new,
-                                    "bqr_txn_primary_id_new": bqr_txn_primary_id_db_new,
-                                    "bqr_merchant_pan_new": bqr_merchant_pan_db_new,
-                                    "bqr_rrn_new": bqr_rrn_db_new, "bqr_org_code_new": bqr_org_code_db_new,
-                                    "txn_amt_new_2": amount_db_new_2, "pmt_mode_new_2": payment_mode_db_new_2,
-                                    "pmt_status_new_2": payment_status_db_new_2,
-                                    "pmt_state_new_2": payment_state_db_new_2,
-                                    "acquirer_code_new_2": acquirer_code_db_new_2,
-                                    "bank_name_new_2": bank_name_db_new_2,
-                                    "mid_new_2": mid_db_new_2, "tid_new_2": tid_db_new_2,
-                                    "pmt_gateway_new_2": payment_gateway_db_new_2, "rrn_new_2": rr_number_db_new_2,
-                                    "settle_status_new_2": settlement_status_db_new_2,
-                                    "bqr_pmt_status_new_2": bqr_status_db_new_2,
-                                    "bqr_pmt_state_new_2": bqr_state_db_new_2,
-                                    "bqr_txn_amt_new_2": bqr_amount_db_new_2,
-                                    "bqr_txn_type_new_2": bqr_txn_type_db_new_2,
-                                    "brq_terminal_info_id_new_2": brq_terminal_info_id_db_new_2,
-                                    "bqr_bank_code_new_2": bqr_bank_code_db_new_2,
-                                    "bqr_merchant_config_id_new_2": bqr_merchant_config_id_db_new_2,
-                                    "bqr_txn_primary_id_new_2": bqr_txn_primary_id_db_new_2,
-                                    "bqr_merchant_pan_new_2": bqr_merchant_pan_db_new_2,
-                                    "bqr_rrn_new_2": bqr_rrn_db_new_2, "bqr_org_code_new_2": bqr_org_code_db_new_2
+                                    "txn_amt_2": amount_db_new, "pmt_mode_2": payment_mode_db_new,
+                                    "pmt_status_2": payment_status_db_new, "pmt_state_2": payment_state_db_new,
+                                    "acquirer_code_2": acquirer_code_db_new, "bank_name_2": bank_name_db_new,
+                                    "mid_2": mid_db_new, "tid_2": tid_db_new,
+                                    "pmt_gateway_2": payment_gateway_db_new, "rrn_2": rr_number_db_new,
+                                    "settle_status_2": settlement_status_db_new,
+                                    "bqr_pmt_status_2": bqr_status_db_new, "bqr_pmt_state_2": bqr_state_db_new,
+                                    "bqr_txn_amt_2": bqr_amount_db_new,
+                                    "bqr_txn_type_2": bqr_txn_type_db_new,
+                                    "brq_terminal_info_id_2": brq_terminal_info_id_db_new,
+                                    "bqr_bank_code_2": bqr_bank_code_db_new,
+                                    "bqr_merchant_config_id_2": bqr_merchant_config_id_db_new,
+                                    "bqr_txn_primary_id_2": bqr_txn_primary_id_db_new,
+                                    "bqr_merchant_pan_2": bqr_merchant_pan_db_new,
+                                    "bqr_rrn_2": bqr_rrn_db_new, "bqr_org_code_2": bqr_org_code_db_new,
+                                    "txn_amt_3": amount_db_new_2, "pmt_mode_3": payment_mode_db_new_2,
+                                    "pmt_status_3": payment_status_db_new_2,
+                                    "pmt_state_3": payment_state_db_new_2,
+                                    "acquirer_code_3": acquirer_code_db_new_2,
+                                    "bank_name_3": bank_name_db_new_2,
+                                    "mid_3": mid_db_new_2, "tid_3": tid_db_new_2,
+                                    "pmt_gateway_3": payment_gateway_db_new_2, "rrn_3": rr_number_db_new_2,
+                                    "settle_status_3": settlement_status_db_new_2,
+                                    "bqr_pmt_status_3": bqr_status_db_new_2,
+                                    "bqr_pmt_state_3": bqr_state_db_new_2,
+                                    "bqr_txn_amt_3": bqr_amount_db_new_2,
+                                    "bqr_txn_type_3": bqr_txn_type_db_new_2,
+                                    "brq_terminal_info_id_3": brq_terminal_info_id_db_new_2,
+                                    "bqr_bank_code_3": bqr_bank_code_db_new_2,
+                                    "bqr_merchant_config_id_3": bqr_merchant_config_id_db_new_2,
+                                    "bqr_txn_primary_id_3": bqr_txn_primary_id_db_new_2,
+                                    "bqr_merchant_pan_3": bqr_merchant_pan_db_new_2,
+                                    "bqr_rrn_3": bqr_rrn_db_new_2, "bqr_org_code_3": bqr_org_code_db_new_2
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1930,16 +1934,16 @@ def test_common_100_102_088():
                                        "settle_status": "FAILED", "txn_id": txn_id,
                                        "order_id": order_id, "msg": "PAYMENT FAILED",
                                        "date": date_and_time,
-                                       "pmt_mode_new": "BHARAT QR", "pmt_status_new": "AUTHORIZED",
-                                       "txn_amt_new": str(amount), "rrn_new": str(rrn_new),
-                                       "settle_status_new": "SETTLED", "txn_id_new": txn_id_new,
-                                       "order_id_new": order_id, "msg_new": "PAYMENT SUCCESSFUL",
-                                       "auth_code_new": auth_code_new, "date_new": date_and_time_new,
-                                       "pmt_mode_new_2": "BHARAT QR", "pmt_status_new_2": "AUTHORIZED",
-                                       "txn_amt_new_2": str(amount), "rrn_new_2": str(rrn_new_2),
-                                       "settle_status_new_2": "SETTLED", "txn_id_new_2": txn_id_new_2,
-                                       "order_id_new_2": order_id, "msg_new_2": "PAYMENT SUCCESSFUL",
-                                       "auth_code_new_2": auth_code_new_2, "date_new_2": date_and_time_new_2
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
+                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
+                                       "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "auth_code_2": auth_code_new, "date_2": date_and_time_new,
+                                       "pmt_mode_3": "BHARAT QR", "pmt_status_3": "AUTHORIZED",
+                                       "txn_amt_3": str(amount), "rrn_3": str(rrn_new_2),
+                                       "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_2,
+                                       "order_id_3": order_id, "msg_3": "PAYMENT SUCCESSFUL",
+                                       "auth_code_3": auth_code_new_2, "date_3": date_and_time_new_2
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 login_page = LoginPage(app_driver)
@@ -2030,20 +2034,20 @@ def test_common_100_102_088():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      "msg": app_payment_msg, "date": app_date_and_time,
-                                     "pmt_mode_new": payment_mode_new,
-                                     "pmt_status_new": payment_status_new.split(':')[1],
-                                     "txn_amt_new": app_amount_new.split(' ')[1],
-                                     "txn_id_new": app_txn_id_new, "rrn_new": str(app_rrn_new),
-                                     "settle_status_new": app_settlement_status_new,
-                                     "order_id_new": app_order_id_new, "auth_code_new": app_auth_code_new,
-                                     "msg_new": app_payment_msg_new, "date_new": app_date_and_time_new,
-                                     "pmt_mode_new_2": payment_mode_new_2,
-                                     "pmt_status_new_2": payment_status_new_2.split(':')[1],
-                                     "txn_amt_new_2": app_amount_new_2.split(' ')[1],
-                                     "txn_id_new_2": app_txn_id_new_2, "rrn_new_2": str(app_rrn_new_2),
-                                     "settle_status_new_2": app_settlement_status_new_2,
-                                     "order_id_new_2": app_order_id_new_2, "auth_code_new_2": app_auth_code_new_2,
-                                     "msg_new_2": app_payment_msg_new_2, "date_new_2": app_date_and_time_new_2
+                                     "pmt_mode_2": payment_mode_new,
+                                     "pmt_status_2": payment_status_new.split(':')[1],
+                                     "txn_amt_2": app_amount_new.split(' ')[1],
+                                     "txn_id_2": app_txn_id_new, "rrn_2": str(app_rrn_new),
+                                     "settle_status_2": app_settlement_status_new,
+                                     "order_id_2": app_order_id_new, "auth_code_2": app_auth_code_new,
+                                     "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new,
+                                     "pmt_mode_3": payment_mode_new_2,
+                                     "pmt_status_3": payment_status_new_2.split(':')[1],
+                                     "txn_amt_3": app_amount_new_2.split(' ')[1],
+                                     "txn_id_3": app_txn_id_new_2, "rrn_3": str(app_rrn_new_2),
+                                     "settle_status_3": app_settlement_status_new_2,
+                                     "order_id_3": app_order_id_new_2, "auth_code_3": app_auth_code_new_2,
+                                     "msg_3": app_payment_msg_new_2, "date_3": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -2059,34 +2063,35 @@ def test_common_100_102_088():
                 date = date_time_converter.db_datetime(posting_date)
                 date_new = date_time_converter.db_datetime(posting_date_new)
                 date_new_2 = date_time_converter.db_datetime(posting_date_new_2)
-                expected_api_values = {"pmt_status": "EXPIRED", "txn_amt": amount, "pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "EXPIRED", "txn_amt": float(amount), "pmt_mode": "BHARATQR",
                                        "pmt_state": "EXPIRED", "settle_status": "FAILED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC", "txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code,
                                        "date": date,
-                                       "pmt_status_new": "AUTHORIZED", "txn_amt_new": amount,
-                                       "pmt_mode_new": "BHARATQR", "pmt_state_new": "SETTLED",
-                                       "rrn_new": str(rrn_new), "settle_status_new": "SETTLED",
-                                       "acquirer_code_new": "HDFC",
-                                       "issuer_code_new": "HDFC", "txn_type_new": "CHARGE",
-                                       "mid_new": mid, "tid_new": tid, "org_code_new": org_code,
-                                       "auth_code_new": auth_code_new, "date_new": date_new,
-                                       "pmt_status_new_2": "AUTHORIZED", "txn_amt_new_2": amount,
-                                       "pmt_mode_new_2": "BHARATQR", "pmt_state_new_2": "SETTLED",
-                                       "rrn_new_2": str(rrn_new_2), "settle_status_new_2": "SETTLED",
-                                       "acquirer_code_new_2": "HDFC",
-                                       "issuer_code_new_2": "HDFC", "txn_type_new_2": "CHARGE",
-                                       "mid_new_2": mid, "tid_new_2": tid, "org_code_new_2": org_code,
-                                       "auth_code_new_2": auth_code_new_2, "date_new_2": date_new_2
+                                       "pmt_status_2": "AUTHORIZED", "txn_amt_2": float(amount),
+                                       "pmt_mode_2": "BHARATQR", "pmt_state_2": "SETTLED",
+                                       "rrn_2": str(rrn_new), "settle_status_2": "SETTLED",
+                                       "acquirer_code_2": "HDFC",
+                                       "issuer_code_2": "HDFC", "txn_type_2": "CHARGE",
+                                       "mid_2": mid, "tid_2": tid, "org_code_2": org_code,
+                                       "auth_code_2": auth_code_new, "date_2": date_new,
+                                       "pmt_status_3": "AUTHORIZED", "txn_amt_3": float(amount),
+                                       "pmt_mode_3": "BHARATQR", "pmt_state_3": "SETTLED",
+                                       "rrn_3": str(rrn_new_2), "settle_status_3": "SETTLED",
+                                       "acquirer_code_3": "HDFC",
+                                       "issuer_code_3": "HDFC", "txn_type_3": "CHARGE",
+                                       "mid_3": mid, "tid_3": tid, "org_code_3": org_code,
+                                       "auth_code_3": auth_code_new_2, "date_3": date_new_2
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -2100,15 +2105,15 @@ def test_common_100_102_088():
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
-                amount_api_new = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
                 state_api_new = response["states"][0]
                 rrn_api_new = response["rrNumber"]
@@ -2122,15 +2127,15 @@ def test_common_100_102_088():
                 auth_code_api_new = response["authCode"]
                 date_api_new = response["postingDate"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new_2})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new_2][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new_2 = response["status"]
-                amount_api_new_2 = float(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api_new_2 = float(response["amount"])
                 payment_mode_api_new_2 = response["paymentMode"]
                 state_api_new_2 = response["states"][0]
                 rrn_api_new_2 = response["rrNumber"]
@@ -2149,24 +2154,24 @@ def test_common_100_102_088():
                                      "acquirer_code": acquirer_code_api, "issuer_code": issuer_code_api, "mid": mid_api,
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "pmt_status_new": status_api_new, "txn_amt_new": amount_api_new,
-                                     "pmt_mode_new": payment_mode_api_new,
-                                     "pmt_state_new": state_api_new, "rrn_new": str(rrn_api_new),
-                                     "settle_status_new": settlement_status_api_new,
-                                     "acquirer_code_new": acquirer_code_api_new,
-                                     "issuer_code_new": issuer_code_api_new, "mid_new": mid_api_new,
-                                     "txn_type_new": txn_type_api_new, "tid_new": tid_api_new,
-                                     "auth_code_new": auth_code_api_new, "org_code_new": org_code_api_new,
-                                     "date_new": date_time_converter.from_api_to_datetime_format(date_api_new),
-                                     "pmt_status_new_2": status_api_new_2, "txn_amt_new_2": amount_api_new_2,
-                                     "pmt_mode_new_2": payment_mode_api_new_2,
-                                     "pmt_state_new_2": state_api_new_2, "rrn_new_2": str(rrn_api_new_2),
-                                     "settle_status_new_2": settlement_status_api_new_2,
-                                     "acquirer_code_new_2": acquirer_code_api_new_2,
-                                     "issuer_code_new_2": issuer_code_api_new_2, "mid_new_2": mid_api_new_2,
-                                     "txn_type_new_2": txn_type_api_new_2, "tid_new_2": tid_api_new_2,
-                                     "auth_code_new_2": auth_code_api_new_2, "org_code_new_2": org_code_api_new_2,
-                                     "date_new_2": date_time_converter.from_api_to_datetime_format(date_api_new_2)
+                                     "pmt_status_2": status_api_new, "txn_amt_2": amount_api_new,
+                                     "pmt_mode_2": payment_mode_api_new,
+                                     "pmt_state_2": state_api_new, "rrn_2": str(rrn_api_new),
+                                     "settle_status_2": settlement_status_api_new,
+                                     "acquirer_code_2": acquirer_code_api_new,
+                                     "issuer_code_2": issuer_code_api_new, "mid_2": mid_api_new,
+                                     "txn_type_2": txn_type_api_new, "tid_2": tid_api_new,
+                                     "auth_code_2": auth_code_api_new, "org_code_2": org_code_api_new,
+                                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new),
+                                     "pmt_status_3": status_api_new_2, "txn_amt_3": amount_api_new_2,
+                                     "pmt_mode_3": payment_mode_api_new_2,
+                                     "pmt_state_3": state_api_new_2, "rrn_3": str(rrn_api_new_2),
+                                     "settle_status_3": settlement_status_api_new_2,
+                                     "acquirer_code_3": acquirer_code_api_new_2,
+                                     "issuer_code_3": issuer_code_api_new_2, "mid_3": mid_api_new_2,
+                                     "txn_type_3": txn_type_api_new_2, "tid_3": tid_api_new_2,
+                                     "auth_code_3": auth_code_api_new_2, "org_code_3": org_code_api_new_2,
+                                     "date_3": date_time_converter.from_api_to_datetime_format(date_api_new_2)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -2190,34 +2195,34 @@ def test_common_100_102_088():
                                       "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                                       "bqr_merchant_pan": bqr_m_pan,
                                       "bqr_org_code": org_code,
-                                      "txn_amt_new": amount, "pmt_mode_new": "BHARATQR",
-                                      "pmt_status_new": "AUTHORIZED",
-                                      "pmt_state_new": "SETTLED", "acquirer_code_new": "HDFC",
-                                      "bank_name_new": "HDFC Bank",
-                                      "mid_new": mid, "tid_new": tid, "pmt_gateway_new": "HDFC",
-                                      "rrn_new": str(rrn_new), "settle_status_new": "SETTLED",
-                                      "bqr_pmt_status_new": "Transaction Success", "bqr_pmt_state_new": "SETTLED",
-                                      "bqr_txn_amt_new": amount,
-                                      "bqr_txn_type_new": "DYNAMIC_QR", "brq_terminal_info_id_new": terminal_info_id,
-                                      "bqr_bank_code_new": "HDFC",
-                                      "bqr_merchant_config_id_new": bqr_mc_id, "bqr_txn_primary_id_new": txn_id_new,
-                                      "bqr_merchant_pan_new": bqr_m_pan,
-                                      "bqr_rrn_new": str(rrn), "bqr_org_code_new": org_code,
-                                      "txn_amt_new_2": amount, "pmt_mode_new_2": "BHARATQR",
-                                      "pmt_status_new_2": "AUTHORIZED",
-                                      "pmt_state_new_2": "SETTLED", "acquirer_code_new_2": "HDFC",
-                                      "bank_name_new_2": "HDFC Bank",
-                                      "mid_new_2": mid, "tid_new_2": tid, "pmt_gateway_new_2": "HDFC",
-                                      "rrn_new_2": str(rrn_new_2), "settle_status_new_2": "SETTLED",
-                                      "bqr_pmt_status_new_2": "Transaction Success", "bqr_pmt_state_new_2": "SETTLED",
-                                      "bqr_txn_amt_new_2": amount,
-                                      "bqr_txn_type_new_2": "DYNAMIC_QR",
-                                      "brq_terminal_info_id_new_2": terminal_info_id,
-                                      "bqr_bank_code_new_2": "HDFC",
-                                      "bqr_merchant_config_id_new_2": bqr_mc_id,
-                                      "bqr_txn_primary_id_new_2": txn_id_new_2,
-                                      "bqr_merchant_pan_new_2": bqr_m_pan,
-                                      "bqr_rrn_new_2": str(rrn_new_2), "bqr_org_code_new_2": org_code
+                                      "txn_amt_2": amount, "pmt_mode_2": "BHARATQR",
+                                      "pmt_status_2": "AUTHORIZED",
+                                      "pmt_state_2": "SETTLED", "acquirer_code_2": "HDFC",
+                                      "bank_name_2": "HDFC Bank",
+                                      "mid_2": mid, "tid_2": tid, "pmt_gateway_2": "HDFC",
+                                      "rrn_2": str(rrn_new), "settle_status_2": "SETTLED",
+                                      "bqr_pmt_status_2": "Transaction Success", "bqr_pmt_state_2": "SETTLED",
+                                      "bqr_txn_amt_2": amount,
+                                      "bqr_txn_type_2": "DYNAMIC_QR", "brq_terminal_info_id_2": terminal_info_id,
+                                      "bqr_bank_code_2": "HDFC",
+                                      "bqr_merchant_config_id_2": bqr_mc_id, "bqr_txn_primary_id_2": txn_id_new,
+                                      "bqr_merchant_pan_2": bqr_m_pan,
+                                      "bqr_rrn_2": str(rrn), "bqr_org_code_2": org_code,
+                                      "txn_amt_3": amount, "pmt_mode_3": "BHARATQR",
+                                      "pmt_status_3": "AUTHORIZED",
+                                      "pmt_state_3": "SETTLED", "acquirer_code_3": "HDFC",
+                                      "bank_name_3": "HDFC Bank",
+                                      "mid_3": mid, "tid_3": tid, "pmt_gateway_3": "HDFC",
+                                      "rrn_3": str(rrn_new_2), "settle_status_3": "SETTLED",
+                                      "bqr_pmt_status_3": "Transaction Success", "bqr_pmt_state_3": "SETTLED",
+                                      "bqr_txn_amt_3": amount,
+                                      "bqr_txn_type_3": "DYNAMIC_QR",
+                                      "brq_terminal_info_id_3": terminal_info_id,
+                                      "bqr_bank_code_3": "HDFC",
+                                      "bqr_merchant_config_id_3": bqr_mc_id,
+                                      "bqr_txn_primary_id_3": txn_id_new_2,
+                                      "bqr_merchant_pan_3": bqr_m_pan,
+                                      "bqr_rrn_3": str(rrn_new_2), "bqr_org_code_3": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -2329,39 +2334,39 @@ def test_common_100_102_088():
                                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
                                     "bqr_merchant_pan": bqr_merchant_pan_db,
                                     "bqr_org_code": bqr_org_code_db,
-                                    "txn_amt_new": amount_db_new, "pmt_mode_new": payment_mode_db_new,
-                                    "pmt_status_new": payment_status_db_new, "pmt_state_new": payment_state_db_new,
-                                    "acquirer_code_new": acquirer_code_db_new, "bank_name_new": bank_name_db_new,
-                                    "mid_new": mid_db_new, "tid_new": tid_db_new,
-                                    "pmt_gateway_new": payment_gateway_db_new, "rrn_new": rr_number_db_new,
-                                    "settle_status_new": settlement_status_db_new,
-                                    "bqr_pmt_status_new": bqr_status_db_new, "bqr_pmt_state_new": bqr_state_db_new,
-                                    "bqr_txn_amt_new": bqr_amount_db_new,
-                                    "bqr_txn_type_new": bqr_txn_type_db_new,
-                                    "brq_terminal_info_id_new": brq_terminal_info_id_db_new,
-                                    "bqr_bank_code_new": bqr_bank_code_db_new,
-                                    "bqr_merchant_config_id_new": bqr_merchant_config_id_db_new,
-                                    "bqr_txn_primary_id_new": bqr_txn_primary_id_db_new,
-                                    "bqr_merchant_pan_new": bqr_merchant_pan_db_new,
-                                    "bqr_rrn_new": bqr_rrn_db_new, "bqr_org_code_new": bqr_org_code_db_new,
-                                    "txn_amt_new_2": amount_db_new_2, "pmt_mode_new_2": payment_mode_db_new_2,
-                                    "pmt_status_new_2": payment_status_db_new_2,
-                                    "pmt_state_new_2": payment_state_db_new_2,
-                                    "acquirer_code_new_2": acquirer_code_db_new_2,
-                                    "bank_name_new_2": bank_name_db_new_2,
-                                    "mid_new_2": mid_db_new_2, "tid_new_2": tid_db_new_2,
-                                    "pmt_gateway_new_2": payment_gateway_db_new_2, "rrn_new_2": rr_number_db_new_2,
-                                    "settle_status_new_2": settlement_status_db_new_2,
-                                    "bqr_pmt_status_new_2": bqr_status_db_new_2,
-                                    "bqr_pmt_state_new_2": bqr_state_db_new_2,
-                                    "bqr_txn_amt_new_2": bqr_amount_db_new_2,
-                                    "bqr_txn_type_new_2": bqr_txn_type_db_new_2,
-                                    "brq_terminal_info_id_new_2": brq_terminal_info_id_db_new_2,
-                                    "bqr_bank_code_new_2": bqr_bank_code_db_new_2,
-                                    "bqr_merchant_config_id_new_2": bqr_merchant_config_id_db_new_2,
-                                    "bqr_txn_primary_id_new_2": bqr_txn_primary_id_db_new_2,
-                                    "bqr_merchant_pan_new_2": bqr_merchant_pan_db_new_2,
-                                    "bqr_rrn_new_2": bqr_rrn_db_new_2, "bqr_org_code_new_2": bqr_org_code_db_new_2
+                                    "txn_amt_2": amount_db_new, "pmt_mode_2": payment_mode_db_new,
+                                    "pmt_status_2": payment_status_db_new, "pmt_state_2": payment_state_db_new,
+                                    "acquirer_code_2": acquirer_code_db_new, "bank_name_2": bank_name_db_new,
+                                    "mid_2": mid_db_new, "tid_2": tid_db_new,
+                                    "pmt_gateway_2": payment_gateway_db_new, "rrn_2": rr_number_db_new,
+                                    "settle_status_2": settlement_status_db_new,
+                                    "bqr_pmt_status_2": bqr_status_db_new, "bqr_pmt_state_2": bqr_state_db_new,
+                                    "bqr_txn_amt_2": bqr_amount_db_new,
+                                    "bqr_txn_type_2": bqr_txn_type_db_new,
+                                    "brq_terminal_info_id_2": brq_terminal_info_id_db_new,
+                                    "bqr_bank_code_2": bqr_bank_code_db_new,
+                                    "bqr_merchant_config_id_2": bqr_merchant_config_id_db_new,
+                                    "bqr_txn_primary_id_2": bqr_txn_primary_id_db_new,
+                                    "bqr_merchant_pan_2": bqr_merchant_pan_db_new,
+                                    "bqr_rrn_2": bqr_rrn_db_new, "bqr_org_code_2": bqr_org_code_db_new,
+                                    "txn_amt_3": amount_db_new_2, "pmt_mode_3": payment_mode_db_new_2,
+                                    "pmt_status_3": payment_status_db_new_2,
+                                    "pmt_state_3": payment_state_db_new_2,
+                                    "acquirer_code_3": acquirer_code_db_new_2,
+                                    "bank_name_3": bank_name_db_new_2,
+                                    "mid_3": mid_db_new_2, "tid_3": tid_db_new_2,
+                                    "pmt_gateway_3": payment_gateway_db_new_2, "rrn_3": rr_number_db_new_2,
+                                    "settle_status_3": settlement_status_db_new_2,
+                                    "bqr_pmt_status_3": bqr_status_db_new_2,
+                                    "bqr_pmt_state_3": bqr_state_db_new_2,
+                                    "bqr_txn_amt_3": bqr_amount_db_new_2,
+                                    "bqr_txn_type_3": bqr_txn_type_db_new_2,
+                                    "brq_terminal_info_id_3": brq_terminal_info_id_db_new_2,
+                                    "bqr_bank_code_3": bqr_bank_code_db_new_2,
+                                    "bqr_merchant_config_id_3": bqr_merchant_config_id_db_new_2,
+                                    "bqr_txn_primary_id_3": bqr_txn_primary_id_db_new_2,
+                                    "bqr_merchant_pan_3": bqr_merchant_pan_db_new_2,
+                                    "bqr_rrn_3": bqr_rrn_db_new_2, "bqr_org_code_3": bqr_org_code_db_new_2
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
