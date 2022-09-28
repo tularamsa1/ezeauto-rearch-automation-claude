@@ -258,9 +258,9 @@ def test_common_100_102_191():
                 app_settlement_status_new_2 = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id_new_2}, {app_settlement_status_new_2}")
-                app_payer_name_new_2 = txn_history_page.fetch_payer_name_text()
-                logger.info(
-                    f"Fetching txn payer name from txn history for the txn : {txn_id_new_2}, {app_payer_name_new_2}")
+                # app_payer_name_new_2 = txn_history_page.fetch_payer_name_text()
+                # logger.info(
+                #     f"Fetching txn payer name from txn history for the txn : {txn_id_new_2}, {app_payer_name_new_2}")
                 app_payment_msg_new_2 = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {txn_id_new_2}, {app_payment_msg_new_2}")
@@ -290,7 +290,7 @@ def test_common_100_102_191():
                                      "rrn_2": str(app_rrn_new_2),
                                      #"customer_name_2": app_customer_name_new_2,
                                      "settle_status_2": app_settlement_status_new_2,
-                                     "payer_name_2": app_payer_name_new_2,
+                                     #"payer_name_2": app_payer_name_new_2,
                                      "order_id_2": app_order_id_new_2,
                                      "payment_msg_2": app_payment_msg_new_2,
                                      "auth_code_2": app_auth_code_new_2,
