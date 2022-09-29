@@ -69,3 +69,4 @@ def get_device_data_details(ezetap_device_data: str) -> dict:
     else:
         return None
 
+

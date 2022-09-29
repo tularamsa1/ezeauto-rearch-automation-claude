@@ -16,9 +16,9 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator,Ezewallet_Setup
-from Utilities import ResourceAssigner, ConfigReader, sqlite_processor,merchant_creator,DBProcessor
-from Utilities import ResourceAssigner, ConfigReader
+from Utilities import DirectoryCreator, Ezewallet_Setup
+from Utilities import sqlite_processor,merchant_creator,DBProcessor
+from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -450,11 +450,8 @@ def prepareDevicesAndDB():
             ResourceAssigner.updateDevicesInDB(devices)
         ResourceAssigner.updateAppiumServersInDB(appium_server_ports)
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
-        sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
-        sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
-        merchant_creator.create_merchants_with_users()
-        sqlite_processor.update_app_users_to_db()
-        sqlite_processor.update_portal_users_to_db()
+        merchant_creator.create_merchants()
+        merchant_configurer.configure_merchants()
     return True
 
 
