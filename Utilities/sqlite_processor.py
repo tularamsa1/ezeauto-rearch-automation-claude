@@ -396,14 +396,15 @@ def update_pg_details():
                                f"NbSelected = '{df_pg_details['Nb Selected'][i]}', "
                                f"CnpCardpayEnabled = '{df_pg_details['Cnp Cardpay Enabled'][i]}', "
                                f"AccountLabelId = '{df_pg_details['Account Label Id'][i]}', "
-                               f"TransactionTimeout = '{df_pg_details['Transaction Timeout'][i]}' "
+                               f"TransactionTimeout = '{df_pg_details['Transaction Timeout'][i]}', "
+                               f"CnpTerminalDependant = '{df_pg_details['CNP Terminal Dependant'][i]}' "
                                f"WHERE Bank = '{df_pg_details['Bank'][i]}' AND "
                                f"PaymentGateway = '{df_pg_details['Payment Gateway'][i]}'; ")
                 logger.debug(f"Details of {df_pg_details['Bank'][i]} pg {df_pg_details['Payment Gateway'][i]} updated.")
             else:
                 cursor.execute(f"INSERT INTO pg_details(Bank, PaymentGateway, ApiKey, Secret, ApiKey2, Secret2, "
                                f"ApiKey3, Secret3, LockId, HashAlog, MleEnabled, NbEnabled, NbSelected, "
-                               f"CnpCardpayEnabled, AccountLabelId, TransactionTimeout)VALUES"
+                               f"CnpCardpayEnabled, AccountLabelId, TransactionTimeout, CnpTerminalDependant)VALUES"
                                f"('{df_pg_details['Bank'][i]}','{df_pg_details['Payment Gateway'][i]}',"
                                f"'{df_pg_details['Api Key'][i]}','{df_pg_details['Secret'][i]}',"
                                f"'{df_pg_details['Api Key2'][i]}','{df_pg_details['Secret2'][i]}',"
@@ -411,8 +412,8 @@ def update_pg_details():
                                f"'{df_pg_details['Lock Id'][i]}','{df_pg_details['Hash Algo'][i]}',"
                                f"'{df_pg_details['Mle Enabled'][i]}','{df_pg_details['Nb Enabled'][i]}',"
                                f"'{df_pg_details['Nb Selected'][i]}','{df_pg_details['Cnp Cardpay Enabled'][i]}',"
-                               f"'{df_pg_details['Account Label Id'][i]}','{df_pg_details['Transaction Timeout'][i]}');"
-                               f"")
+                               f"'{df_pg_details['Account Label Id'][i]}','{df_pg_details['Transaction Timeout'][i]}',"
+                               f"'{df_pg_details['CNP Terminal Dependant'][i]}');")
                 logger.debug(f"Details of {df_pg_details['Bank'][i]} pg {df_pg_details['Payment Gateway'][i]} added.")
             conn.commit()
     except Exception as e:
@@ -449,5 +450,4 @@ def update_merchant_org_settings():
         conn.close()
     except Exception as e:
         logger.error(f"Unable to update the merchant org settings to db due to error {str(e)}")
-
 

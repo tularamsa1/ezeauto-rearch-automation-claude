@@ -237,15 +237,17 @@ def configure_cnp_settings_through_db():
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute(f"select * from merchants where CreationStatus in ('Created') and "
-                       f"Availability = 'Available';")
+        cursor.execute(f"select * from merchants where CreationStatus = 'Created';")
         merchants = cursor.fetchall()
         if merchants:
             for merchant in merchants:
                 merchant_code = merchant[0]
+                logger.debug(f"Trying to configure cnp settings for {merchant_code}")
                 configure_cnp_setting_for_merchant(merchant_code)
         else:
             logger.debug(f"CNP configuration skipped since there is no new merchant created.")
+        cursor.close()
+        conn.close()
     except Exception as e:
         logger.error(f"Unable to configure the cnp setting due to error {str(e)}")
 
@@ -305,14 +307,8 @@ def configure_pg_settings_for_merchant(merchant_code: str):
             acc_label_id = pg_detail[14]
             transaction_timeout = pg_detail[15]
             payment_gateway = pg_detail[1]
-            query = "INSERT INTO merchant_pg_config (org_code, payment_gateway, merchant_id, status, priority, " \
-                    "api_key, secret, created_by, created_time, lock_id, modified_by, modified_time, hash_algo, " \
-                    "mle_enabled, api_key2, secret2, nb_enabled, nb_selected, cnp_cardpay_enabled, terminal_info_id, " \
-                    "acc_label_id, mid, tid, bank_code, api_key3, secret3, transaction_timeout) VALUES ('<org_code>'," \
-                    "'<payment_gateway>','<merchant_id>','ACTIVE',0,'<api_key>','<secret>','ezetap',now(),<lock_id>," \
-                    "'ezetap',now(),'<hash_algo>','<mle_enabled>','<api_key2>','<secret2>','<nb_enabled>'," \
-                    "'<nb_selected>','<cnp_cardpay_enabled>', '<terminal_info_id>',<acc_label_id>,'<mid>','<tid>'," \
-                    "'<bank_code>','<api_key3>','<secret3>',<transaction_timeout>);"
+            configure_terminal_dependency(merchant_code, acquirer_code, payment_gateway, "CNP")
+            query = generate_pg_creation_query_template(pg_detail)
             query = query.replace('<org_code>', merchant_code)
             query = query.replace('<payment_gateway>', payment_gateway)
             query = query.replace('<merchant_id>', merchant_id)
@@ -419,6 +415,8 @@ def configure_terminal_dependency(merchant_code: str, acquirer_code: str, paymen
     try:
         if payment_mode.lower() == 'upi':
             payment_mode = "UPI"
+        elif payment_mode.lower() == 'cnp':
+            payment_mode = "CNP"
         else:
             payment_mode = "BHARATQR"
 
@@ -432,7 +430,7 @@ def configure_terminal_dependency(merchant_code: str, acquirer_code: str, paymen
             else:
                 query = f"INSERT INTO terminal_dependency_config(org_code, payment_mode, acquirer_code, payment_gateway, " \
                         f"terminal_dependent_enabled, created_by, created_time, modified_by, modified_time) VALUES " \
-                        f"('{merchant_code}', '{payment_mode}',  '{acquirer_code}', '{payment_gateway}',  1,  'ezetap', " \
+                        f"('{merchant_code}', '{payment_mode}',  '{acquirer_code}', '{payment_gateway}',  0,  'ezetap', " \
                         f"now(), 'ezetap', now());"
                 logger.debug(f"Query for configuring terminal dependency of {merchant_code} is {query}")
                 result = DBProcessor.setValueToDB(query)
@@ -1348,12 +1346,17 @@ def check_if_terminal_dependant(acquirer_code: str, payment_gateway: str, paymen
     try:
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
-        if payment_mode.lower() == 'upi':
-            column_to_pick = "UpiTerminalDependant"
+        if payment_mode.lower() == 'cnp':
+            column_to_pick = "CnpTerminalDependant"
+            cursor.execute(f"select {column_to_pick} from pg_details where Bank = '{acquirer_code}' and "
+                           f"PaymentGateway = '{payment_gateway}';")
         else:
-            column_to_pick = "BqrTerminalDependant"
-        cursor.execute(f"select {column_to_pick} from acquisitions where AcquirerCode = '{acquirer_code}' and "
-                       f"PaymentGateway = '{payment_gateway}';")
+            if payment_mode.lower() == 'upi':
+                column_to_pick = "UpiTerminalDependant"
+            else:
+                column_to_pick = "BqrTerminalDependant"
+            cursor.execute(f"select {column_to_pick} from acquisitions where AcquirerCode = '{acquirer_code}' and "
+                           f"PaymentGateway = '{payment_gateway}';")
         setting_required = cursor.fetchone()[0]
         return setting_required.lower()
     except Exception as e:
@@ -1416,3 +1419,43 @@ def generate_org_settings_dictionary() -> dict:
         return dict_settings
     except Exception as e:
         logger.error(f"Unable to generate the org settings dictionary due to error {str(e)}")
+
+
+def generate_pg_creation_query_template(pg_detail: list) -> str:
+    """
+    This method is used to generate the pg creation query template.
+    :param pg_details str
+    :return: str
+    """
+    try:
+        dict_key_mapping = {0: 'Bank', 1: 'PaymentGateway', 2: 'ApiKey', 3: 'Secret', 4: 'ApiKey2', 5: 'Secret2',
+                            6: 'ApiKey3', 7: 'Secret3', 8: 'LockId', 9: 'HashAlog', 10: 'MleEnabled', 11: 'NbEnabled',
+                            12: 'NbSelected', 13: 'CnpCardpayEnabled', 14: 'AccountLabelId', 15: 'TransactionTimeout'}
+        dict_field_with_values = {"Bank": ["org_code,", "'<org_code>',"],
+                                  "PaymentGateway": [", payment_gateway", ",'<payment_gateway>'"],
+                                  "ApiKey": [", api_key", ",'<api_key>'"], "Secret": [", secret", ",'<secret>'"],
+                                  "ApiKey2": [", api_key2", ",'<api_key2>'"], "Secret2": [", secret2", ",'<secret2>'"],
+                                  "ApiKey3": [", api_key3", ",'<api_key3>'"], "Secret3": [", secret3", ",'<secret3>'"],
+                                  "LockId": [", lock_id", ",<lock_id>"], "HashAlog": [", hash_algo", ",'<hash_algo>'"],
+                                  "MleEnabled": [", mle_enabled", ",'<mle_enabled>'"],
+                                  "NbEnabled": [", nb_enabled", ",'<nb_enabled>'"],
+                                  "NbSelected": [", nb_selected", ",'<nb_selected>'"],
+                                  "CnpCardpayEnabled": [", cnp_cardpay_enabled", ",'<cnp_cardpay_enabled>'"],
+                                  "AccountLabelId": [", acc_label_id", ",'<acc_label_id>'"],
+                                  "TransactionTimeout": [", transaction_timeout", ",<transaction_timeout>"]}
+        query_template = "INSERT INTO merchant_pg_config (org_code, payment_gateway, merchant_id, status, priority, " \
+                "api_key, secret, created_by, created_time, lock_id, modified_by, modified_time, hash_algo, " \
+                "mle_enabled, api_key2, secret2, nb_enabled, nb_selected, cnp_cardpay_enabled, terminal_info_id, " \
+                "acc_label_id, mid, tid, bank_code, api_key3, secret3, transaction_timeout) VALUES ('<org_code>'," \
+                "'<payment_gateway>','<merchant_id>','ACTIVE',0,'<api_key>','<secret>','ezetap',now(),<lock_id>," \
+                "'ezetap',now(),'<hash_algo>','<mle_enabled>','<api_key2>','<secret2>','<nb_enabled>'," \
+                "'<nb_selected>','<cnp_cardpay_enabled>', '<terminal_info_id>','<acc_label_id>','<mid>','<tid>'," \
+                "'<bank_code>','<api_key3>','<secret3>',<transaction_timeout>);"
+        for i in range(0, len(pg_detail)-1):
+            if pg_detail[i].lower() in ('null', '') :
+                query_template = query_template.replace(dict_field_with_values[dict_key_mapping[i]][0], "")
+                query_template = query_template.replace(dict_field_with_values[dict_key_mapping[i]][1], "")
+        return query_template
+    except Exception as e:
+        logger.debug(f"Unable to generate the query template for pg creation due to error {str(e)}")
+

@@ -2,6 +2,7 @@ import shutil
 from termcolor import colored
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
+
 from Utilities import Rerun
 from Utilities import ConfigReader
 from Configuration import TestSuiteSetup
