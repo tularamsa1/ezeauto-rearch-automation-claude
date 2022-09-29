@@ -2416,7 +2416,7 @@ def test_common_100_102_064():
                 mid_api_new = response["mid"]
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
