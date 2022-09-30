@@ -155,7 +155,7 @@ def test_common_100_101_073():
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     # "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -211,7 +211,7 @@ def test_common_100_101_073():
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -295,7 +295,7 @@ def test_common_100_101_073():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AIRP",
                     "bank_code": "AIRP",
-                    "payment_gateway": "APB",
+                    "pmt_gateway": "APB",
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "APB",
                     "upi_mc_id": upi_mc_id,
@@ -337,7 +337,7 @@ def test_common_100_101_073():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
@@ -556,7 +556,7 @@ def test_common_100_101_074():
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT FAILED",
+                    "pmt_msg": "PAYMENT FAILED",
                     # "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -613,7 +613,7 @@ def test_common_100_101_074():
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -696,7 +696,7 @@ def test_common_100_101_074():
                     "settle_status": "FAILED",
                     "acquirer_code": "AIRP",
                     "bank_code": "AIRP",
-                    "payment_gateway": "APB",
+                    "pmt_gateway": "APB",
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "APB",
                     "upi_mc_id": upi_mc_id,
@@ -738,7 +738,7 @@ def test_common_100_101_074():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
@@ -934,7 +934,7 @@ def test_common_100_101_076():
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT FAILED",
+                    "pmt_msg": "PAYMENT FAILED",
                     # "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -988,7 +988,7 @@ def test_common_100_101_076():
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -1072,7 +1072,7 @@ def test_common_100_101_076():
                     "settle_status": "FAILED",
                     "acquirer_code": "AIRP",
                     "bank_code": "AIRP",
-                    "payment_gateway": "APB",
+                    "pmt_gateway": "APB",
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "APB",
                     "upi_mc_id": upi_mc_id,
@@ -1114,7 +1114,7 @@ def test_common_100_101_076():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,

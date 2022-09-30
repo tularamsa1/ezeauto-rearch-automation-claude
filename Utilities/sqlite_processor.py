@@ -1,12 +1,12 @@
 import sqlite3
 import pandas
 from DataProvider import GlobalConstants
-from Utilities import ConfigReader
+from Utilities import ConfigReader, DBProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
-
 logger = EzeAutoLogger(__name__)
-merchant_user_creation_excel_path = ConfigReader.read_config_paths("System", "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
+merchant_user_creation_excel_path = ConfigReader.read_config_paths("System",
+                                                                   "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 
 
 def clearAssignerTables():
@@ -28,10 +28,15 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM appium_servers_blocked;")
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM api_details;")
+        cursor.execute("DELETE FROM acquisitions;")
+        cursor.execute("DELETE FROM merchant_org_settings;")
+        cursor.execute("DELETE FROM pg_details;")
+        cursor.execute("DELETE FROM terminal_details;")
+        cursor.execute("DELETE FROM remotepay_settings;")
         conn.commit()
         logger.info("All the assigner tables cleared successfully.")
     except Exception as e:
-        print("Unable to clear the user tables due to error : "+str(e))
+        print("Unable to clear the user tables due to error : " + str(e))
     cursor.close()
     conn.close()
 
@@ -64,13 +69,15 @@ def update_users_to_db(users_list: list):
         for user in users_list:
             if check_merchant_exists_in_automation_db(user["MerchantCode"]):
                 try:
-                    cursor.execute(f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\");")
+                    cursor.execute(
+                        f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\");")
                     conn.commit()
                     logger.info(f"User {user['Name']} successfully added to the users db.")
                 except Exception as e:
                     logger.error(f"Unable to add the user {user['Name']} into db due to error {e}")
             else:
-                logger.info(f"User {user['Name']} creation skipped since associated merchant is not available in merchants db.")
+                logger.info(
+                    f"User {user['Name']} creation skipped since associated merchant is not available in merchants db.")
     except Exception as e:
         logger.error(f"Unable to connect to the db due to error {e}")
     cursor.close()
@@ -88,7 +95,8 @@ def update_app_users_to_db():
         if app_users:
             for app_user in app_users:
                 try:
-                    cursor.execute(f"INSERT INTO app_users(Username, Password, Status)VALUES('{app_user[2]}','{app_user[3]}', 'Available')")
+                    cursor.execute(
+                        f"INSERT INTO app_users(Username, Password, Status)VALUES('{app_user[2]}','{app_user[3]}', 'Available')")
                     conn.commit()
                     logger.info(f"App user {app_user[0]} added to the db successfully.")
                 except Exception as e:
@@ -136,7 +144,7 @@ def update_portal_users_to_db():
 def get_merchants_list_from_excel() -> list:
     merchants_list = []
     merchant_creation_excel_data = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="UserDetails")
-    if len(merchant_creation_excel_data)>0:
+    if len(merchant_creation_excel_data) > 0:
         for i in range(0, len(merchant_creation_excel_data)):
             merchant_name = ""
             if str((merchant_creation_excel_data.loc[i]).to_dict()["Type"]).lower() == "portal":
@@ -172,7 +180,8 @@ def get_users_list_from_excel() -> list:
                 user_details["Type"] = (merchant_creation_excel_data.loc[i]).to_dict()["Type"]
                 users_list.append(user_details)
             else:
-                logger.error(f"Type of user {(merchant_creation_excel_data.loc[i]).to_dict()['Name']} is defined wrongly. So its not added to user creation list.")
+                logger.error(
+                    f"Type of user {(merchant_creation_excel_data.loc[i]).to_dict()['Name']} is defined wrongly. So its not added to user creation list.")
     else:
         logger.warning("Unable to pull users list since no data available in the merchant creation excel file.")
     return users_list
@@ -201,3 +210,244 @@ def check_merchant_exists_in_automation_db(merchant):
     cursor.close()
     conn.close()
     return exists
+
+
+def update_acquisitions_to_db():
+    """
+    This method is used to read the acquisition details from excel and update the db.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        acquisition_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="AcquisitionDetails")
+        acquisition_details.fillna('N/A', inplace=True)
+        for i in range(0, len(acquisition_details)):
+            query = f"SELECT * FROM acquisitions WHERE AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' " \
+                    f"AND PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            if not len(result)>0:
+                cursor.execute(
+                    f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName, BankCode, 
+                    BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, AppKeyForUpi, 
+                    VirtualMidRequired, BqrSettingRequired, UpiSettingRequired, EncKeyForUpi)values(
+                    "{acquisition_details.iloc[i]['Acquirer Code']}", 
+                    "{acquisition_details.iloc[i]['Payment Gateway']}", 
+                    "{acquisition_details.iloc[i]['Number of Terminals']}", 
+                    "{acquisition_details.iloc[i]['HSM Name']}", 
+                    "{acquisition_details.iloc[i]['Bank Code']}",
+                    "{acquisition_details.iloc[i]['BQR Bank Code']}", 
+                    "{acquisition_details.iloc[i]['UPI(psp) Bank Code']}", 
+                    "{acquisition_details.iloc[i]['BQR Terminal Dependant']}", 
+                    "{acquisition_details.iloc[i]['UPI Terminal Dependant']}", 
+                    "{acquisition_details.iloc[i]['App Key for UPI']}", 
+                    "{acquisition_details.iloc[i]['virtual MID Required']}", 
+                    "{acquisition_details.iloc[i]['BQR settings required']}", 
+                    "{acquisition_details.iloc[i]['UPI settings required']}",
+                    "{acquisition_details.iloc[i]['Enc Key for UPI']}");""")
+                conn.commit()
+                logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and "
+                             f"payment gateway {acquisition_details.iloc[i]['Payment Gateway']} "
+                             f"added to acquisitions table.")
+            else:
+                query = f"UPDATE acquisitions SET NumberOfTerminals = " \
+                        f"'{acquisition_details.iloc[i]['Number of Terminals']}', " \
+                        f"HsmName = '{acquisition_details.iloc[i]['HSM Name']}', " \
+                        f"BankCode = '{acquisition_details.iloc[i]['Bank Code']}', " \
+                        f"BqrBankCode = '{acquisition_details.iloc[i]['BQR Bank Code']}', " \
+                        f"UPIBankCode = '{acquisition_details.iloc[i]['UPI(psp) Bank Code']}', " \
+                        f"BqrTerminalDependant = '{acquisition_details.iloc[i]['BQR Terminal Dependant']}', " \
+                        f"UpiTerminalDependant = '{acquisition_details.iloc[i]['UPI Terminal Dependant']}', " \
+                        f"AppKeyForUpi = '{acquisition_details.iloc[i]['App Key for UPI']}', " \
+                        f"VirtualMidRequired = '{acquisition_details.iloc[i]['virtual MID Required']}', " \
+                        f"BqrSettingRequired = '{acquisition_details.iloc[i]['BQR settings required']}', " \
+                        f"UpiSettingRequired = '{acquisition_details.iloc[i]['UPI settings required']}', " \
+                        f"EncKeyForUpi = '{acquisition_details.iloc[i]['Enc Key for UPI']}' " \
+                        f"where AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' and " \
+                        f"PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
+                cursor.execute(query)
+                conn.commit()
+                logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and "
+                             f"payment gateway {acquisition_details.iloc[i]['Payment Gateway']} "
+                             f"has been updated in the acquisitions table.")
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Unable to update the acquisition details to sqlite db due to error {str(e)}")
+
+
+def update_terminal_details_of_merchant(merchant_code: str):
+    """
+    This method is used to update the terminal-details table in the db.
+    :param merchant_code str
+    """
+    conn = ""
+    cursor = ""
+    try:
+        result = DBProcessor.getValueFromDB(f"SELECT name from org where org_code = '{merchant_code}';")
+        merchant_name = result['name'][0]
+        result = DBProcessor.getValueFromDB(f"SELECT tid, device_serial, acquirer_code, payment_gateway, "
+                                            f"acq_category_code, mid from terminal_info "
+                                            f"where org_code = '{merchant_code}';")
+        if len(result) > 0:
+            conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+            cursor = conn.cursor()
+            for i in range(0, len(result)):
+                try:
+                    cursor.execute(f"INSERT INTO terminal_details(TID, DeviceSerial, AcquirerCode, PaymentGateway,"
+                                   f" CategoryCode, MID, MerchantCode, MerchantName)VALUES('{result['tid'][i]}', "
+                                   f"'{result['device_serial'][i]}', '{result['acquirer_code'][i]}', "
+                                   f"'{result['payment_gateway'][i]}', '{result['acq_category_code'][i]}', "
+                                   f"'{result['mid'][i]}', '{merchant_code}', '{merchant_name}');")
+                    logger.debug(f"Details of tid {result['tid'][i]} added to the terminal details table.")
+                except sqlite3.IntegrityError as e:
+                    logger.error(f"Unable to add tid {result['tid'][i]} entry for {merchant_code} due to error {str(e)}")
+            conn.commit()
+            cursor.close()
+            conn.close()
+        else:
+            logger.warning("Merchant does not have any terminals configured.")
+    except Exception as e:
+        logger.error(f"Unable to update the terminal details into the ezeauto db due to error {str(e)}")
+
+
+def update_terminal_details_of_all_merchants():
+    """
+    This method is used to update the terminal details of all merchants into the db.
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"Select MerchantCode from merchants where CreationStatus in ('Created','Existed') and "
+                       "Availability = 'Available';")
+        merchants = cursor.fetchall()
+        for merchant in merchants:
+            update_terminal_details_of_merchant(merchant[0])
+    except Exception as e:
+        logger.error(f"Unable to connect to db due to error {str(e)}")
+
+
+def update_remotepay_settings():
+    """
+    This method is used to update the remotepay_settings table with the values defined in excel.
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        remotepay_setting_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="RemotepaySettings")
+        for i in range(0, len(remotepay_setting_details)):
+            cursor.execute(f"Select * from remotepay_settings where Name = '{remotepay_setting_details['Name'][i]}';")
+            result = cursor.fetchall()
+            try:
+                if len(result) > 0:
+                    cursor.execute(f"update remotepay_settings set Value = '{remotepay_setting_details['Value'][i]}',"
+                                   f"Component = '{remotepay_setting_details['Component'][i]}',"
+                                   f"LockId = '{remotepay_setting_details['LockId'][i]}',"
+                                   f"Entity = '{remotepay_setting_details['Entity'][i]}', "
+                                   f"EntityId = '{remotepay_setting_details['EntityId'][i]}',"
+                                   f"Inheritable = '{remotepay_setting_details['Inheritable'][i]}' where "
+                                   f"Name = '{remotepay_setting_details['Name'][i]}';")
+                else:
+                    cursor.execute(f"insert into remotepay_settings(Name, Value, Component, LockId, Entity, EntityId, "
+                                   f"Inheritable)values('{remotepay_setting_details['Name'][i]}',"
+                                   f"'{remotepay_setting_details['Value'][i]}',"
+                                   f"'{remotepay_setting_details['Component'][i]}',"
+                                   f"'{remotepay_setting_details['LockId'][i]}',"
+                                   f"'{remotepay_setting_details['Entity'][i]}',"
+                                   f"'{remotepay_setting_details['EntityId'][i]}',"
+                                   f"'{remotepay_setting_details['Inheritable'][i]}');")
+                conn.commit()
+                logger.debug(f"Details of {remotepay_setting_details['Name'][i]} remote pay settings updated to db.")
+            except Exception as e:
+                logger.debug(f"Details of {remotepay_setting_details['Name'][i]} remote pay settings not updated to db.")
+    except Exception as e:
+        logger.error(f"Unable to update the remote pay settings due to error {str(e)}")
+    cursor.close()
+    conn.close()
+
+
+def update_pg_details():
+    """
+    This method is used to update the pg details into the db taking the data from the excel file.
+    """
+    conn = ""
+    cursor = ""
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        df_pg_details = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="PgDetails")
+        df_pg_details.fillna('NULL', inplace=True)
+        for i in range(0, len(df_pg_details)):
+            cursor.execute(f"SELECT * FROM pg_details WHERE Bank = '{df_pg_details['Bank'][i]}' AND "
+                           f"PaymentGateway = '{df_pg_details['Payment Gateway'][i]}';")
+            result = cursor.fetchall()
+            if len(result) > 0:
+                cursor.execute(f"UPDATE pg_details SET ApiKey = '{df_pg_details['Api Key'][i]}', "
+                               f"Secret = '{df_pg_details['Secret'][i]}', ApiKey2 = '{df_pg_details['Api Key2'][i]}', "
+                               f"Secret2 = '{df_pg_details['Secret2'][i]}', ApiKey3 = '{df_pg_details['Api Key3'][i]}',"
+                               f"Secret3 = '{df_pg_details['Secret3'][i]}', LockId = '{df_pg_details['Lock Id'][i]}', "
+                               f"HashAlog= '{df_pg_details['Hash Algo'][i]}', "
+                               f"MleEnabled = '{df_pg_details['Mle Enabled'][i]}', "
+                               f"NbEnabled = '{df_pg_details['Nb Enabled'][i]}', "
+                               f"NbSelected = '{df_pg_details['Nb Selected'][i]}', "
+                               f"CnpCardpayEnabled = '{df_pg_details['Cnp Cardpay Enabled'][i]}', "
+                               f"AccountLabelId = '{df_pg_details['Account Label Id'][i]}', "
+                               f"TransactionTimeout = '{df_pg_details['Transaction Timeout'][i]}', "
+                               f"CnpTerminalDependant = '{df_pg_details['CNP Terminal Dependant'][i]}' "
+                               f"WHERE Bank = '{df_pg_details['Bank'][i]}' AND "
+                               f"PaymentGateway = '{df_pg_details['Payment Gateway'][i]}'; ")
+                logger.debug(f"Details of {df_pg_details['Bank'][i]} pg {df_pg_details['Payment Gateway'][i]} updated.")
+            else:
+                cursor.execute(f"INSERT INTO pg_details(Bank, PaymentGateway, ApiKey, Secret, ApiKey2, Secret2, "
+                               f"ApiKey3, Secret3, LockId, HashAlog, MleEnabled, NbEnabled, NbSelected, "
+                               f"CnpCardpayEnabled, AccountLabelId, TransactionTimeout, CnpTerminalDependant)VALUES"
+                               f"('{df_pg_details['Bank'][i]}','{df_pg_details['Payment Gateway'][i]}',"
+                               f"'{df_pg_details['Api Key'][i]}','{df_pg_details['Secret'][i]}',"
+                               f"'{df_pg_details['Api Key2'][i]}','{df_pg_details['Secret2'][i]}',"
+                               f"'{df_pg_details['Api Key3'][i]}','{df_pg_details['Secret3'][i]}',"
+                               f"'{df_pg_details['Lock Id'][i]}','{df_pg_details['Hash Algo'][i]}',"
+                               f"'{df_pg_details['Mle Enabled'][i]}','{df_pg_details['Nb Enabled'][i]}',"
+                               f"'{df_pg_details['Nb Selected'][i]}','{df_pg_details['Cnp Cardpay Enabled'][i]}',"
+                               f"'{df_pg_details['Account Label Id'][i]}','{df_pg_details['Transaction Timeout'][i]}',"
+                               f"'{df_pg_details['CNP Terminal Dependant'][i]}');")
+                logger.debug(f"Details of {df_pg_details['Bank'][i]} pg {df_pg_details['Payment Gateway'][i]} added.")
+            conn.commit()
+    except Exception as e:
+        logger.error(f"Unable to update the pg details to db due to error {str(e)}")
+
+
+def update_merchant_org_settings():
+    """
+    This method is used to update the merchant_org_settings table in the db.
+    """
+    try:
+        df_merchant_org_settings = pandas.read_excel(merchant_user_creation_excel_path, sheet_name="OrgSettings")
+        df_merchant_org_settings.fillna("", inplace=True)
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        for i in range(0, len(df_merchant_org_settings)):
+            try:
+                cursor.execute(f"select * from merchant_org_settings where "
+                               f"SettingName = '{df_merchant_org_settings['Setting Name'][i]}';")
+                result = cursor.fetchall()
+                if len(result) > 0:
+                    cursor.execute(f"UPDATE merchant_org_settings SET "
+                                   f"SettingValue = '{df_merchant_org_settings['Setting Value'][i]}' "
+                                   f"WHERE SettingName = '{df_merchant_org_settings['Setting Name'][i]}';")
+                else:
+                    cursor.execute(f"INSERT INTO merchant_org_settings(SettingName, SettingValue) VALUES"
+                                   f"('{df_merchant_org_settings['Setting Name'][i]}',"
+                                   f"'{df_merchant_org_settings['Setting Value'][i]}');")
+                conn.commit()
+            except Exception as e:
+                logger.error(f"Unable to update the setting {df_merchant_org_settings['Setting Name'][i]} into db"
+                             f"due to error {str(e)}.")
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Unable to update the merchant org settings to db due to error {str(e)}")
+

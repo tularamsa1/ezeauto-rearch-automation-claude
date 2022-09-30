@@ -185,7 +185,7 @@ def test_common_100_102_152():
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -238,7 +238,7 @@ def test_common_100_102_152():
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -328,7 +328,7 @@ def test_common_100_102_152():
                     "settle_status": "SETTLED",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
-                    "payment_gateway": "FDC",
+                    "pmt_gateway": "FDC",
                     # "upi_txn_type": "PAY_BQR",
                     # "upi_bank_code": "FDC_ICICI",
                     # "upi_mc_id": upi_mc_id,
@@ -401,7 +401,7 @@ def test_common_100_102_152():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     # "upi_txn_type": upi_txn_type_db,
                     # "upi_bank_code": upi_bank_code_db,
                     # "upi_mc_id": upi_mc_id_db,
@@ -662,7 +662,7 @@ def test_common_100_102_154():
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -715,7 +715,7 @@ def test_common_100_102_154():
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -805,7 +805,7 @@ def test_common_100_102_154():
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
-                    "payment_gateway": "FDC",
+                    "pmt_gateway": "FDC",
                     # "upi_txn_type": "PAY_BQR",
                     # "upi_bank_code": "FDC_ICICI",
                     # "upi_mc_id": upi_mc_id,
@@ -878,7 +878,7 @@ def test_common_100_102_154():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     # "upi_txn_type": upi_txn_type_db,
                     # "upi_bank_code": upi_bank_code_db,
                     # "upi_mc_id": upi_mc_id_db,
@@ -1108,7 +1108,7 @@ def test_common_100_102_157():
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT PENDING",
+                    "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1148,7 +1148,7 @@ def test_common_100_102_157():
                     "txn_id": app_txn_id,
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1236,7 +1236,7 @@ def test_common_100_102_157():
                     "settle_status": "PENDING",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
-                    "payment_gateway": "FDC",
+                    "pmt_gateway": "FDC",
                     "mid": mid,
                     "tid": tid,
                     "order_id": order_id,
@@ -1292,7 +1292,7 @@ def test_common_100_102_157():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "order_id": order_id_db,
@@ -1591,7 +1591,7 @@ def test_common_100_102_158():
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT FAILED",
+                    "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1631,7 +1631,7 @@ def test_common_100_102_158():
                     "txn_id": app_txn_id,
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1654,7 +1654,7 @@ def test_common_100_102_158():
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
-                    "payment_gateway": "FDC",
+                    "pmt_gateway": "FDC",
                     "mid": mid,
                     "tid": tid,
                     "order_id": order_id,
@@ -1710,7 +1710,7 @@ def test_common_100_102_158():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "order_id": order_id_db,
