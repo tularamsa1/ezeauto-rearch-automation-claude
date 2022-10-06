@@ -2719,7 +2719,7 @@ def test_common_100_102_250():
                     "pmt_mode_3": payment_mode_db_3,
                     "txn_amt_3": amount_db_3,
                     "settle_status_3": settlement_status_db_3,
-                    "acquirer_code_": acquirer_code_db_3,
+                    "acquirer_code_3": acquirer_code_db_3,
                     "bank_code_3": bank_code_db_3,
                     "pmt_gateway_3": payment_gateway_db_3,
                     "mid_3": mid_db_3,

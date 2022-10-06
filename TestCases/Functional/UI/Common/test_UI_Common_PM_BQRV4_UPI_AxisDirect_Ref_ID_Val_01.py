@@ -183,11 +183,11 @@ def test_common_100_102_167():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amount": str(amount),
+                    "txn_amt": str(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": str(order_id),
-                    "payment_msg": "PAYMENT FAILED",
+                    "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
                 }
 
@@ -220,11 +220,11 @@ def test_common_100_102_167():
                 actual_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": app_payment_status,
-                    "txn_amount": app_amount.split(' ')[1],
+                    "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
 
@@ -249,7 +249,7 @@ def test_common_100_102_167():
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
                     "txn_type": txn_type, "mid": mid, "tid": tid, "org_code": org_code_txn,
-                    "date": date, "error_message": error_message
+                    "date": date, "err_msg": error_message
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnDetails',
@@ -280,7 +280,7 @@ def test_common_100_102_167():
                                      "issuer_code": issuer_code_api,
                                      "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api, "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "error_message": error_message_api
+                                     "err_msg": error_message_api
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 # ---------------------------------------------------------------------------------------------
@@ -304,13 +304,13 @@ def test_common_100_102_167():
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "payment_gateway": "HDFC",
+                    "pmt_gateway": "HDFC",
                     # "upi_txn_type": "PAY_QR",
                     # "upi_bank_code": "AXIS_DIRECT",
                     # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    "pg_error_message": "UPI REF ID Validation Failed.",
+                    "pg_err_msg": "UPI REF ID Validation Failed.",
                     # "bqr_pmt_status_code": "SUCCESS",
                     "bqr_pmt_state": "FAILED",
                     "bqr_txn_amt": amount,
@@ -376,13 +376,13 @@ def test_common_100_102_167():
                     "acquirer_code": acquirer_code_db,
                     "issuer_code": issuer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     # "upi_txn_type": upi_txn_type_db,
                     # "upi_bank_code": upi_bank_code_db,
                     # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    "pg_error_message": str(error_message),
+                    "pg_err_msg": str(error_message),
                     # "bqr_pmt_status_code": bqr_status_code_db,
                     "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_txn_amt_db,

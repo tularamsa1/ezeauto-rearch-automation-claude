@@ -567,7 +567,7 @@ def test_common_100_101_136():
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT PENDING",
+                    "pmt_msg": "PAYMENT PENDING",
                     # "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -620,7 +620,7 @@ def test_common_100_101_136():
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -715,7 +715,7 @@ def test_common_100_101_136():
                     "settle_status": "PENDING",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "payment_gateway": "HDFC",
+                    "pmt_gateway": "HDFC",
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "HDFC",
                     "upi_mc_id": upi_mc_id,
@@ -761,7 +761,7 @@ def test_common_100_101_136():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
