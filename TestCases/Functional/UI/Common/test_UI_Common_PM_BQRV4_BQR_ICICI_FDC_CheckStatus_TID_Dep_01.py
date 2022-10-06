@@ -1478,7 +1478,7 @@ def test_common_100_102_158():
             txn_id = response["txnId"]
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
             logger.debug("waiting for the time till qr get expired...")
-            time.sleep(62)
+            time.sleep(65)
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1512,6 +1512,68 @@ def test_common_100_102_158():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                date_and_time = date_time_converter.to_app_format(created_time)
+                expected_app_values = {
+                    "pmt_mode": "BHARAT QR",
+                    "pmt_status": "EXPIRED",
+                    "txn_amt": str(amount),
+                    "settle_status": "FAILED",
+                    "txn_id": txn_id,
+                    "order_id": order_id,
+                    "pmt_msg": "PAYMENT FAILED",
+                    "date": date_and_time
+                }
+                logger.debug(f"expectedAppValues: {expected_app_values}")
+
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                login_page = LoginPage(app_driver)
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "settle_status": app_settlement_status,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -1579,68 +1641,6 @@ def test_common_100_102_158():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-        # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info(f"Started APP validation for the test case : {testcase_id}")
-            try:
-                date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {
-                    "pmt_mode": "BHARAT QR",
-                    "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount),
-                    "settle_status": "FAILED",
-                    "txn_id": txn_id,
-                    "order_id": order_id,
-                    "pmt_msg": "PAYMENT FAILED",
-                    "date": date_and_time
-                }
-                logger.debug(f"expectedAppValues: {expected_app_values}")
-
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                login_page = LoginPage(app_driver)
-                login_page.perform_login(app_username, app_password)
-                home_page = HomePage(app_driver)
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
-                home_page.click_on_history()
-                txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_txn_id(txn_id)
-                payment_status = txn_history_page.fetch_txn_status_text()
-                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
-                app_date_and_time = txn_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                payment_mode = txn_history_page.fetch_txn_type_text()
-                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                app_txn_id = txn_history_page.fetch_txn_id_text()
-                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
-                app_amount = txn_history_page.fetch_txn_amount_text()
-                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
-                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
-
-                actual_app_values = {
-                    "pmt_mode": payment_mode,
-                    "pmt_status": payment_status.split(':')[1],
-                    "txn_amt": app_amount.split(' ')[1],
-                    "txn_id": app_txn_id,
-                    "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
-                    "pmt_msg": app_payment_msg,
-                    "date": app_date_and_time
-                }
-                logger.debug(f"actual_app_values: {actual_app_values}")
-
-                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
-            except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
-        # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
