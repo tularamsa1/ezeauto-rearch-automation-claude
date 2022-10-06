@@ -87,7 +87,7 @@ def test_common_100_103_038():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -505,7 +505,7 @@ def test_common_100_103_039():
             # ------------------------------------------------------------------------------------------------
             amount = 11
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -909,7 +909,7 @@ def test_common_100_103_040():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)

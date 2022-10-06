@@ -90,7 +90,7 @@ def test_common_100_103_080():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -528,7 +528,7 @@ def test_common_100_103_081():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -936,7 +936,7 @@ def test_common_100_103_082():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -1383,7 +1383,7 @@ def test_common_100_103_083():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -1839,7 +1839,7 @@ def test_common_100_103_084():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 

@@ -85,7 +85,7 @@ def test_common_100_103_001():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -503,7 +503,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -523,6 +523,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
 
+            time.sleep(5)
             remote_pay_txn.wait_for_failed_message()
             failed_message = str(remote_pay_txn.failedScreenMessage())
             logger.info(f"Your failed Message is:  {failed_message}")
@@ -776,7 +777,7 @@ def test_common_100_103_009():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -916,7 +917,7 @@ def test_common_100_103_010():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -1305,7 +1306,7 @@ def test_common_100_103_012():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',request_body={"amount": amount, "externalRefNumber": order_id,
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from api is: {response}")
@@ -1329,7 +1330,7 @@ def test_common_100_103_012():
             if successMessage == expectedMessage:
                 pass
             else:
-                raise Exception("Expiry Message is not matching.")
+                raise Exception("Success Message is not matching.")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1338,9 +1339,6 @@ def test_common_100_103_012():
             logger.debug(f"txn id from txn table : {original_txn_id}")
             amount_txn = result['amount'].values[0]
             logger.debug(f"amount from txn table : {amount_txn}")
-
-
-
 
             #Refund
             api_details = DBProcessor.get_api_details('RemotePayRefund', request_body={"username": app_username, "password":app_password, "amount": amount,

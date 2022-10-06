@@ -34,8 +34,8 @@ def test_common_100_103_049():
     Sub Feature Description: Verification a Remote Pay upi callback for upg txn using amount mismatch when upg refund and auto refund disabled.
     TC naming code description:
     100: Payment Method
-    101: RemotePay
-    033: TC033
+    103: RemotePay
+    049: TC049
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -95,7 +95,7 @@ def test_common_100_103_049():
             amount1 = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount1, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -543,8 +543,8 @@ def test_common_100_103_050():
     Sub Feature Description: Verification a Remote Pay upi callback for upg txn using amount mismatch
     TC naming code description:
     100: Payment Method
-    101: RemotePay
-    033: TC033
+    103: RemotePay
+    050: TC050
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -604,7 +604,7 @@ def test_common_100_103_050():
             amount1 = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount1, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 

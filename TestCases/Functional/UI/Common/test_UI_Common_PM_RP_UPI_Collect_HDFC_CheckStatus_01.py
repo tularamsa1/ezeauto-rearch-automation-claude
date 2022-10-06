@@ -97,7 +97,7 @@ def test_common_100_103_004():
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -541,12 +541,10 @@ def test_common_100_103_005():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -571,7 +569,7 @@ def test_common_100_103_005():
 
             amount = 111
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -869,7 +867,7 @@ def test_common_100_103_032():
             amount = random.randint(1, 40)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -1186,7 +1184,7 @@ def test_common_100_103_089():
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    048: TC048
+    089: TC089
     """
 
     try:
@@ -1241,7 +1239,7 @@ def test_common_100_103_089():
             amount = random.randint(1, 40)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)

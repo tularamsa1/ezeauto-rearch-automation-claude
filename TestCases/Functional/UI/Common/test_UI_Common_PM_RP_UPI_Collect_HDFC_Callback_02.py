@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import pytest
 from termcolor import colored
-from Configuration import Configuration, TestSuiteSetup
+from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
@@ -58,12 +58,10 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
@@ -94,7 +92,7 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -594,18 +592,17 @@ def test_common_100_103_020():
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
+
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
@@ -648,7 +645,7 @@ def test_common_100_103_020():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -1143,12 +1140,10 @@ def test_common_100_103_021():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
@@ -1190,7 +1185,7 @@ def test_common_100_103_021():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -2121,12 +2116,10 @@ def test_common_100_103_022():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
@@ -2168,7 +2161,7 @@ def test_common_100_103_022():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -3092,12 +3085,10 @@ def test_common_100_103_023():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
@@ -3133,7 +3124,7 @@ def test_common_100_103_023():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
