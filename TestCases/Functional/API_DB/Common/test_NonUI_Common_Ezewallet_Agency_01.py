@@ -88,8 +88,8 @@ def test_common_200_201_001():
             try:
                 if card_payment_success == True:
                     time.sleep(4)
-                    expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED","settlement_status":"PENDING",
-                                        "payment_mode":"CARD", "account_label": "TOPUP", "balance":agency_balance_before+original_amount}
+                    expectedAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":"AUTHORIZED","settle_status":"PENDING",
+                                        "pmt_mode":"CARD", "account_label": "TOPUP", "balance":agency_balance_before+original_amount}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -97,8 +97,8 @@ def test_common_200_201_001():
                     result = DBProcessor.getValueFromDB(query, "closedloop")
                     bal_after_posting = float(result["balance"].iloc[0])
 
-                    actualAPIValues = {"success": card_payment_success, "cardpay_amount": amount, "status":status,"settlement_status":settlement_status,
-                                        "payment_mode":payment_mode,
+                    actualAPIValues = {"success": card_payment_success, "txn_amt": amount, "pmt_status":status,"settle_status":settlement_status,
+                                        "pmt_mode":payment_mode,
                                            "account_label": account_label, "balance":bal_after_posting}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -282,22 +282,22 @@ def test_common_200_201_002():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
 
-                expectedAPIValues = {"success": True, "upipay_amount": original_amount, "status":"PENDING",
-                                    "settlement_status":"PENDING","accountlabel": "TOPUP","payment_mode":"UPI",
+                expectedAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":"PENDING",
+                                    "settle_status":"PENDING","account_label": "TOPUP","pmt_mode":"UPI",
                                       "confirm_success":False,"error_code":"EZETAP_0000703","real_code":"STOP_PAYMENT_NOT_ALLOWED_FOR_AUTHORIZED_TRANSACTION",
-                                     "confirm_amount":original_amount,"confirm_settlement_status":"SETTLED", "confirm_status":"AUTHORIZED",
-                                     "confirm_account_label":"TOPUP","confirm_payment_mode":"UPI","balance":agency_balance_before+original_amount}
+                                     "confirm_amt":original_amount,"confirm_settle_status":"SETTLED", "confirm_pmt_status":"AUTHORIZED",
+                                     "confirm_account_label":"TOPUP","confirm_pmt_mode":"UPI","balance":agency_balance_before+original_amount}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 bal_after_posting = float(result["balance"].iloc[0])
 
-                actualAPIValues = {"success": True, "upipay_amount": original_amount, "status":status,
-                                    "settlement_status":settlement_status,"accountlabel":account_label,"payment_mode":payment_mode,
+                actualAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":status,
+                                    "settle_status":settlement_status,"account_label":account_label,"pmt_mode":payment_mode,
                                       "confirm_success":confirm_upi_success,"error_code":error_code,"real_code":real_code,
-                                     "confirm_amount":confirm_amount,"confirm_settlement_status":confirm_settlement_status, "confirm_status":confirm_status,
-                                     "confirm_account_label":confirm_accountlabel,"confirm_payment_mode":confirm_payment_mode,"balance":bal_after_posting}
+                                     "confirm_amt":confirm_amount,"confirm_settle_status":confirm_settlement_status, "confirm_pmt_status":confirm_status,
+                                     "confirm_account_label":confirm_accountlabel,"confirm_pmt_mode":confirm_payment_mode,"balance":bal_after_posting}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
 
 
@@ -688,7 +688,7 @@ def test_common_200_201_004():
                 logger.debug(f"Agency Balance before Transfer : {agency_balance_before}")
                 logger.debug(f"Actual amount for Transfer  : {original_transfer_amt}")
 
-                expectedDBValues = {"Agency balance": agency_balance_before}
+                expectedDBValues = {"agency_balance": agency_balance_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -696,7 +696,7 @@ def test_common_200_201_004():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agency_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": agency_bal_after}
+                actualDBValues = {"agency_balance": agency_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -837,7 +837,7 @@ def test_common_200_201_005():
                 logger.debug(f"Agency Balance before Transfer : {agency_balance_before}")
                 logger.debug(f"Actual amount for Transfer  : {agency_balance_before - agency_balance_before}")
 
-                expectedDBValues = {"Agency balance": agency_balance_before}
+                expectedDBValues = {"agency_balance": agency_balance_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -845,7 +845,7 @@ def test_common_200_201_005():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agency_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": agency_bal_after}
+                actualDBValues = {"agency_balance": agency_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 

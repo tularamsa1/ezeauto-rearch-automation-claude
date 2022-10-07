@@ -230,8 +230,8 @@ def test_common_200_203_017():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
-                                     "accountLabel": "TOPUP", "real_code": "FETCH_SUCCESSFUL",
+                expectedAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":"AUTHORIZED",
+                                     "account_label": "TOPUP", "real_code": "FETCH_SUCCESSFUL",
                                      "success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before+original_amount,
                                      "current_bal":agent_balance_before+original_amount,
                                      "mobile_no":GlobalConstants.AGENT_USER, "self_topup_amt":float(GlobalVariables.selftopup_amt),
@@ -254,8 +254,8 @@ def test_common_200_203_017():
                     self_topup_count = response['response']['selfTopUpCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                    actualAPIValues = {"success": fetch_recon_success, "cardpay_amount": amount, "status":status,
-                                     "accountLabel": account_label,"real_code": real_code,
+                    actualAPIValues = {"success": fetch_recon_success, "txn_amt": amount, "pmt_status":status,
+                                     "account_label": account_label,"real_code": real_code,
                                      "success_code":success_code, "closing_bal":closing_bal,
                                      "current_bal":current_bal,
                                      "mobile_no":mobile_no, "self_topup_amt":self_topup_amt,
@@ -419,8 +419,8 @@ def test_common_200_203_018():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "cashpay_amount": original_amount_cashpay, "status":"AUTHORIZED",
-                                     "settlementStatus":"SETTLED","accountLabel": "BILLPAY", "real_code": "FETCH_SUCCESSFUL",
+                expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "txn_amt": original_amount_cashpay, "pmt_status":"AUTHORIZED",
+                                     "settle_status":"SETTLED","account_label": "BILLPAY", "real_code": "FETCH_SUCCESSFUL",
                                      "success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before - original_amount_cashpay,
                                      "current_bal":agent_balance_before - original_amount_cashpay,
                                      "mobile_no":GlobalConstants.AGENT_USER, "collection_amt":float(GlobalVariables.collection_amt),
@@ -443,8 +443,8 @@ def test_common_200_203_018():
                     collection_count = response['response']['collectionCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                    actualAPIValues = {"success": fetch_recon_success, "username": username, "cashpay_amount": original_amount_cashpay, "status":status,
-                                     "settlementStatus":settlement_status,"accountLabel": account_label,"real_code": real_code,
+                    actualAPIValues = {"success": fetch_recon_success, "username": username, "txn_amt": original_amount_cashpay, "pmt_status":status,
+                                     "settle_status":settlement_status,"account_label": account_label,"real_code": real_code,
                                      "success_code":success_code, "closing_bal":closing_bal,
                                      "current_bal":current_bal,
                                      "mobile_no":mobile_no, "collection_amt":collection_amt,
@@ -630,8 +630,8 @@ def test_common_200_203_019():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER,
-                                     "refund_amount": original_amount_refunded, "status": "REFUNDED",
-                                     "settlementStatus": "SETTLED", "accountLabel": "BILLPAY",
+                                     "refund_txn_amt": original_amount_refunded, "pmt_status": "REFUNDED",
+                                     "settle_status": "SETTLED", "account_label": "BILLPAY",
                                      "real_code": "FETCH_SUCCESSFUL","success_code": "CLOSED_LOOP_000041",
                                      "closing_bal": agent_balance_before + original_amount_refunded,
                                      "current_bal": agent_balance_before + original_amount_refunded,
@@ -661,8 +661,8 @@ def test_common_200_203_019():
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_recon_success, "username": username,
-                                       "refund_amount": original_amount_refunded, "status": status,
-                                       "settlementStatus": settlement_status, "accountLabel": account_label, "real_code": real_code,
+                                       "refund_txn_amt": original_amount_refunded, "pmt_status": status,
+                                       "settle_status": settlement_status, "account_label": account_label, "real_code": real_code,
                                        "success_code": success_code,"closing_bal": closing_bal,"current_bal": current_bal,
                                        "mobile_no": mobile_no,  "refund_amt": refund_amt,
                                        "refund_count": refund_count,"collection_amt": collection_amt,
@@ -835,11 +835,11 @@ def test_common_200_203_020():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"success": True,
-                                     "realCode": "TRANSACTION_SUCCESSFUL", "successCode": "CLOSED_LOOP_000027",
-                                     "creditAccBalance": agency_balance_before + original_withdraw_amt,
-                                     "debitAccBalance": agent_balance_before - original_withdraw_amt
-                                     , "real_code": "FETCH_SUCCESSFUL",
-                                     "success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before - original_withdraw_amt,
+                                     "real_code": "TRANSACTION_SUCCESSFUL", "success_code": "CLOSED_LOOP_000027",
+                                     "credit_acc_balance": agency_balance_before + original_withdraw_amt,
+                                     "debit_acc_balance": agent_balance_before - original_withdraw_amt
+                                     , "fetch_real_code": "FETCH_SUCCESSFUL",
+                                     "fetch_success_code":"CLOSED_LOOP_000041", "closing_bal":agent_balance_before - original_withdraw_amt,
                                      "current_bal":agent_balance_before - original_withdraw_amt,
                                      "mobile_no":GlobalConstants.AGENT_USER, "withdraw_amt":float(GlobalVariables.withdraw_amt),
                                      "withdraw_count":GlobalVariables.withdraw_count}
@@ -861,9 +861,9 @@ def test_common_200_203_020():
                     withdraw_count = response['response']['withdrawCount']
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                    actualAPIValues = {"success": fetch_recon_success,"realCode": realcode, "successCode": successcode,
-                                     "creditAccBalance": credit_acc_bal,"debitAccBalance": debit_acc_bal,"real_code": real_code,
-                                     "success_code":success_code, "closing_bal":closing_bal,
+                    actualAPIValues = {"success": fetch_recon_success,"real_code": realcode, "success_code": successcode,
+                                     "credit_acc_balance": credit_acc_bal,"debit_acc_balance": debit_acc_bal,"fetch_real_code": real_code,
+                                     "fetch_success_code":success_code, "closing_bal":closing_bal,
                                      "current_bal":current_bal,"mobile_no":mobile_no,
                                      "withdraw_amt":withdraw_amt,
                                      "withdraw_count":withdraw_count}
@@ -1360,7 +1360,7 @@ def test_common_200_203_022():
             try:
                 logger.debug(f"Agent Balance before fetch passbook : {agent_balance_before}")
 
-                expectedDBValues = {"Agent balance": agent_balance_before }
+                expectedDBValues = {"agent_balance": agent_balance_before }
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -1369,7 +1369,7 @@ def test_common_200_203_022():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 bal_after_fetch = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": bal_after_fetch}
+                actualDBValues = {"agent_balance": bal_after_fetch}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 

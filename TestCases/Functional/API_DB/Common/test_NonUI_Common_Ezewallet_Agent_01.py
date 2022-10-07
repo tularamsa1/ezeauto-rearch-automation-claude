@@ -90,9 +90,9 @@ def test_common_200_202_001():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if card_payment_success == True:
-                    expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
-                                         "settlement_status":"PENDING",
-                                        "payment_mode":"CARD","accountLabel": "TOPUP", "balance":agent_balance_before+original_amount}
+                    expectedAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":"AUTHORIZED",
+                                         "settle_status":"PENDING",
+                                        "pmt_mode":"CARD","account_label": "TOPUP", "balance":agent_balance_before+original_amount}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -100,9 +100,9 @@ def test_common_200_202_001():
                     result = DBProcessor.getValueFromDB(query, "closedloop")
                     bal_after_posting = float(result["balance"].iloc[0])
 
-                    actualAPIValues = {"success": card_payment_success, "cardpay_amount": amount, "status":status,
-                                       "settlement_status": settlement_status,
-                                       "payment_mode": payment_mode,"accountLabel": account_label, "balance":bal_after_posting}
+                    actualAPIValues = {"success": card_payment_success, "txn_amt": amount, "pmt_status":status,
+                                       "settle_status": settlement_status,
+                                       "pmt_mode": payment_mode,"account_label": account_label, "balance":bal_after_posting}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
 
@@ -287,11 +287,11 @@ def test_common_200_202_002():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
 
-                expectedAPIValues = {"success": True, "upipay_amount": original_amount, "status":"PENDING",
-                                    "settlement_status":"PENDING","accountLabel": "TOPUP","payment_mode":"UPI",
+                expectedAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":"PENDING",
+                                    "settle_status":"PENDING","account_label": "TOPUP","pmt_mode":"UPI",
                                       "confirm_success":False,"error_code":"EZETAP_0000703","real_code":"STOP_PAYMENT_NOT_ALLOWED_FOR_AUTHORIZED_TRANSACTION",
-                                     "confirm_amount":original_amount,"confirm_settlement_status":"SETTLED", "confirm_status":"AUTHORIZED",
-                                     "confirm_account_label":"TOPUP","confirm_payment_mode":"UPI","balance":agent_balance_before+original_amount}
+                                     "confirm_amt":original_amount,"confirm_settle_status":"SETTLED", "confirm_pmt_status":"AUTHORIZED",
+                                     "confirm_account_label":"TOPUP","confirm_pmt_mode":"UPI","balance":agent_balance_before+original_amount}
 
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -299,11 +299,11 @@ def test_common_200_202_002():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 bal_after_posting = float(result["balance"].iloc[0])
 
-                actualAPIValues = {"success": True, "upipay_amount": original_amount, "status":status,
-                                    "settlement_status":settlement_status,"accountLabel":account_label,"payment_mode":payment_mode,
+                actualAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":status,
+                                    "settle_status":settlement_status,"account_label":account_label,"pmt_mode":payment_mode,
                                       "confirm_success":confirm_upi_success,"error_code":error_code,"real_code":real_code,
-                                     "confirm_amount":confirm_amount,"confirm_settlement_status":confirm_settlement_status, "confirm_status":confirm_status,
-                                     "confirm_account_label":confirm_accountlabel,"confirm_payment_mode":confirm_payment_mode,"balance":bal_after_posting}
+                                     "confirm_amt":confirm_amount,"confirm_settle_status":confirm_settlement_status, "confirm_pmt_status":confirm_status,
+                                     "confirm_account_label":confirm_accountlabel,"confirm_pmt_mode":confirm_payment_mode,"balance":bal_after_posting}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
 
 
@@ -492,7 +492,7 @@ def test_common_200_202_003():
                 logger.debug(f"Agent Balance before Top Up : {agent_balance_before}")
                 logger.debug(f"Actual amount for Top Up  : {original_amount}")
 
-                expectedDBValues = {"Agent balance": agent_balance_before}
+                expectedDBValues = {"agent_balance": agent_balance_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -500,7 +500,7 @@ def test_common_200_202_003():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 bal_after_posting = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": bal_after_posting}
+                actualDBValues = {"agent_balance": bal_after_posting}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -622,8 +622,8 @@ def test_common_200_202_004():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if cash_payment_success == True:
-                    expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "cashpay_amount": original_amount_cashpay, "status":"AUTHORIZED",
-                                         "settlement_status":"SETTLED","account_label": "BILLPAY","clwStatus": "SUCCESS",
+                    expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "txn_amt": original_amount_cashpay, "pmt_status":"AUTHORIZED",
+                                         "settle_status":"SETTLED","account_label": "BILLPAY","clw_status": "SUCCESS",
                                          "balance":agent_balance_before - original_amount_cashpay}
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -631,8 +631,8 @@ def test_common_200_202_004():
                     result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                     agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
 
-                    actualAPIValues = {"success": cash_payment_success, "username": username, "cashpay_amount": amount, "status":status,
-                                        "settlement_status":settlement_status,"account_label": account_label,"clwStatus":clw_status,
+                    actualAPIValues = {"success": cash_payment_success, "username": username, "txn_amt": amount, "pmt_status":status,
+                                        "settle_status":settlement_status,"account_label": account_label,"clw_status":clw_status,
                                         "balance":agentbal_after_cash_payment}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -815,8 +815,8 @@ def test_common_200_202_005():
             try:
                 if refund_payment_success == True:
                     expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER,
-                                         "refundpay_amount": original_amount_refunded, "status": "REFUNDED",
-                                         "settlementStatus": "SETTLED", "accountLabel": "BILLPAY",
+                                         "txn_amt": original_amount_refunded, "pmt_status": "REFUNDED",
+                                         "settle_status": "SETTLED", "account_label": "BILLPAY",
                                          "balance": agent_balance_before + original_amount_refunded}
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -824,9 +824,9 @@ def test_common_200_202_005():
                     result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                     agentbal_after_refund = float(result_agent_bal["balance"].iloc[0])
 
-                    actualAPIValues = {"success": refund_payment_success, "username": username, "refundpay_amount": amount,
-                                       "status": status,
-                                       "settlementStatus": settlement_status, "accountLabel": account_label,
+                    actualAPIValues = {"success": refund_payment_success, "username": username, "txn_amt": amount,
+                                       "pmt_status": status,
+                                       "settle_status": settlement_status, "account_label": account_label,
                                        "balance": agentbal_after_refund}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 

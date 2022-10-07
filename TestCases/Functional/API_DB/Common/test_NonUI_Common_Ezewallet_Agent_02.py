@@ -135,7 +135,7 @@ def test_common_200_202_006():
                 logger.debug(f"Agent Balance before Refund Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for Refund  : {original_amount_refunded}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before,
+                expectedDBValues = {"agent_balance": agent_balance_before,
                                     "settlement_balance": settlement_bal_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -148,7 +148,7 @@ def test_common_200_202_006():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
+                actualDBValues = {"agent_balance": agentbal_after_cash_payment,
                                   "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -329,7 +329,7 @@ def test_common_200_202_007():
                 logger.debug(f"Agent Balance before Refund Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for Refund  : {original_amount_refunded}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before - original_amount_cashpay,
+                expectedDBValues = {"agent_balance": agent_balance_before - original_amount_cashpay,
                                     "settlement_balance": settlement_bal_before + original_amount_cashpay}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -342,7 +342,7 @@ def test_common_200_202_007():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
+                actualDBValues = {"agent_balance": agentbal_after_cash_payment,
                                   "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -509,7 +509,7 @@ def test_common_200_202_008():
                 logger.debug(f"Agent Balance before Refund Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for Refund  : {original_amount_refunded}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before,
+                expectedDBValues = {"agent_balance": agent_balance_before,
                                     "settlement_balance": settlement_bal_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -522,7 +522,7 @@ def test_common_200_202_008():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
+                actualDBValues = {"agent_balance": agentbal_after_cash_payment,
                                   "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -651,8 +651,8 @@ def test_common_200_202_009():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                    expectedAPIValues = {"success": False, "username": GlobalConstants.AGENT_USER, "cashpay_amount": higher_amount, "status":"PENDING",
-                                         "settlement_status":"PENDING","accountLabel": "BILLPAY","clwStatus": "PENDING",
+                    expectedAPIValues = {"success": False, "username": GlobalConstants.AGENT_USER, "txn_amt": higher_amount, "pmt_status":"PENDING",
+                                         "settle_status":"PENDING","account_label": "BILLPAY","clw_status": "PENDING",
                                          "api_message_title":"DECLINED","closedloop_meta":"{\"success\":\"false\",\"errorCode\":\"CLOSED_LOOP_000037\",\"errorMessage\":\"Insufficient funds for ' AGENT",
                                          "balance":agent_balance_before}
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
@@ -661,8 +661,8 @@ def test_common_200_202_009():
                     result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                     agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
 
-                    actualAPIValues = {"success": cash_payment_success, "username": username, "cashpay_amount": amount, "status":status,
-                                         "settlement_status":settlement_status,"accountLabel": account_label,"clwStatus": clw_status,
+                    actualAPIValues = {"success": cash_payment_success, "username": username, "txn_amt": amount, "pmt_status":status,
+                                         "settle_status":settlement_status,"account_label": account_label,"clw_status": clw_status,
                                          "api_message_title":apimessage_title,"closedloop_meta":re.search("{\"success\":\"false\",\"errorCode\":\"CLOSED_LOOP_000037\",\"errorMessage\":\"Insufficient funds for ' AGENT",closeloop_meta).group(),
                                          "balance":agentbal_after_cash_payment}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
@@ -688,7 +688,7 @@ def test_common_200_202_009():
                 logger.debug(f"Agent Balance before Cash Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for BILLPAY  : {higher_amount}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before,
+                expectedDBValues = {"agent_balance": agent_balance_before,
                                     "settlement_balance": settlement_bal_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -701,7 +701,7 @@ def test_common_200_202_009():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
+                actualDBValues = {"agent_balance": agentbal_after_cash_payment,
                                     "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -825,8 +825,8 @@ def test_common_200_202_010():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 if cash_payment_success == True:
-                    expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "cashpay_amount": (original_amount_cashpay+0.25), "status":"AUTHORIZED",
-                                         "settlementStatus":"SETTLED","accountLabel": "BILLPAY","clwStatus": "SUCCESS",
+                    expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "txn_amt": (original_amount_cashpay+0.25), "pmt_status":"AUTHORIZED",
+                                         "settle_status":"SETTLED","account_label": "BILLPAY","clw_status": "SUCCESS",
                                          "balance":agent_balance_before - (original_amount_cashpay+0.25)}
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -834,8 +834,8 @@ def test_common_200_202_010():
                     result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                     agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
 
-                    actualAPIValues = {"success": cash_payment_success, "username": username, "cashpay_amount": amount, "status":status,
-                                        "settlementStatus":settlement_status,"accountLabel": account_label,"clwStatus":clw_status,
+                    actualAPIValues = {"success": cash_payment_success, "username": username, "txn_amt": amount, "pmt_status":status,
+                                        "settle_status":settlement_status,"account_label": account_label,"clw_status":clw_status,
                                         "balance":agentbal_after_cash_payment}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 

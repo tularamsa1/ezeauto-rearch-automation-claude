@@ -85,9 +85,9 @@ def test_common_200_203_011():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": True, "cardpay_amount": original_amount, "status":"AUTHORIZED",
+                expectedAPIValues = {"success": True, "txn_amt": original_amount, "pmt_status":"AUTHORIZED",
                                      "account_label": "TOPUP","txn_status": "SUCCESS", "transfer_mode": "TRANSFER","merchant_id":GlobalConstants.ORG,
-                                     "fetch_amount": amount, "external_ref_id": txn_id,
+                                     "fetch_amt": amount, "external_ref_id": txn_id,
                                      "agent_id":GlobalConstants.AGENT_USER, "balance":agent_balance_before+original_amount}
                 if card_payment_success == True:
                     time.sleep(3)
@@ -108,9 +108,9 @@ def test_common_200_203_011():
                     balance_amount = float(response['response']['elements'][0]['balance'])
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                    actualAPIValues = {"success": fetch_statement_success, "cardpay_amount": amount, "status":status,
+                    actualAPIValues = {"success": fetch_statement_success, "txn_amt": amount, "pmt_status":status,
                                        "account_label": account_label, "txn_status": txn_status,
-                                       "transfer_mode": transfer_mode ,"merchant_id":merchant_id,"fetch_amount": actual_amount, "external_ref_id" : external_ref_Id,
+                                       "transfer_mode": transfer_mode ,"merchant_id":merchant_id,"fetch_amt": actual_amount, "external_ref_id" : external_ref_Id,
                                        "agent_id":agent_id, "balance":balance_amount}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -303,10 +303,10 @@ def test_common_200_203_012():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "cashpay_amount": original_amount_cashpay, "status":"AUTHORIZED",
-                                     "settlement_status":"SETTLED","account_label": "BILLPAY","clw_status": "SUCCESS",
-                                     "transaction_status": "SUCCESS", "transfer_mode": "PAYMENT","merchant_id":GlobalConstants.ORG,
-                                     "fetch_amount": amount, "external_ref_id": txn_id,
+                expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER, "txn_amt": original_amount_cashpay, "pmt_status":"AUTHORIZED",
+                                     "settle_status":"SETTLED","account_label": "BILLPAY","clw_status": "SUCCESS",
+                                     "txn_status": "SUCCESS", "transfer_mode": "PAYMENT","merchant_id":GlobalConstants.ORG,
+                                     "fetch_amt": amount, "external_ref_id": txn_id,
                                      "agent_id":GlobalConstants.AGENT_USER, "balance":agent_balance_before - original_amount_cashpay}
                 if cash_payment_success == True:
                     time.sleep(3)
@@ -327,10 +327,10 @@ def test_common_200_203_012():
                     balance_amount = float(response['response']['elements'][0]['balance'])
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                    actualAPIValues = {"success": fetch_statment_success, "username": username, "cashpay_amount": amount, "status":status,
-                                     "settlement_status":settlement_status,"account_label": account_label,"clw_status": clw_status,
-                                     "transaction_status": txn_status, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
-                                     "fetch_amount": actual_amount, "external_ref_id": external_ref_Id,
+                    actualAPIValues = {"success": fetch_statment_success, "username": username, "txn_amt": amount, "pmt_status":status,
+                                     "settle_status":settlement_status,"account_label": account_label,"clw_status": clw_status,
+                                     "txn_status": txn_status, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
+                                     "fetch_amt": actual_amount, "external_ref_id": external_ref_Id,
                                      "agent_id":agent_id, "balance":balance_amount}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -540,10 +540,10 @@ def test_common_200_203_013():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expectedAPIValues = {"success": True, "username": GlobalConstants.AGENT_USER,
-                                     "cashpay_amount": original_amount_refunded, "status": "REFUNDED",
-                                     "settlement_status": "SETTLED", "account_label": "BILLPAY",
-                                     "transaction_status": "SUCCESS", "transfer_mode": "REFUND","merchant_id":GlobalConstants.ORG,
-                                     "fetch_amount": amount, "external_ref_id": GlobalVariables.cash_txn_id,
+                                     "txn_amt": original_amount_refunded, "pmt_status": "REFUNDED",
+                                     "settle_status": "SETTLED", "account_label": "BILLPAY",
+                                     "txn_status": "SUCCESS", "transfer_mode": "REFUND","merchant_id":GlobalConstants.ORG,
+                                     "fetch_amt": amount, "external_ref_id": GlobalVariables.cash_txn_id,
                                      "agent_id": GlobalConstants.AGENT_USER,
                                      "balance": agent_balance_before + original_amount_refunded}
                 if refund_payment_success == True:
@@ -566,10 +566,10 @@ def test_common_200_203_013():
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                     actualAPIValues = {"success": fetch_statment_success, "username": username,
-                                       "cashpay_amount": amount, "status": status,
-                                       "settlement_status": settlement_status, "account_label": account_label,
-                                       "transaction_status": txn_status, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
-                                       "fetch_amount": actual_amount, "external_ref_id": external_ref_Id,
+                                       "txn_amt": amount, "pmt_status": status,
+                                       "settle_status": settlement_status, "account_label": account_label,
+                                       "txn_status": txn_status, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
+                                       "fetch_amt": actual_amount, "external_ref_id": external_ref_Id,
                                        "agent_id": agent_id, "balance": balance_amount}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -773,7 +773,7 @@ def test_common_200_203_014():
                                      "credit_acc_balance": agency_balance_before + original_withdraw_amt,
                                      "debit_acc_balance": agent_balance_before - original_withdraw_amt
                     , "agent_id": GlobalConstants.AGENT_USER, "txn_status": "SUCCESS",
-                                     "amount_withdraw": original_withdraw_amt,
+                                     "amt_withdraw": original_withdraw_amt,
                                      "bal_after_withdraw": agent_balance_before - original_withdraw_amt}
                 if withdraw_pay_success == True:
                     api_details = DBProcessor.get_api_details('Fetch_Passbook_Statement',
@@ -795,7 +795,7 @@ def test_common_200_203_014():
                     actualAPIValues = {"success": fetch_statment_success, "wallet_txn_id": actual_wallet_txn_id,
                                        "real_code": realcode, "success_code": successcode, "transfer_mode": transfer_mode,"merchant_id":merchant_id,
                                        "credit_acc_balance": credit_acc_bal, "debit_acc_balance": debit_acc_bal
-                                        , "agent_id": agent_Id, "txn_status": txn_status, "amount_withdraw": amount_withdraw,
+                                        , "agent_id": agent_Id, "txn_status": txn_status, "amt_withdraw": amount_withdraw,
                                        "bal_after_withdraw": bal_after_withdraw}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -1068,16 +1068,16 @@ def test_common_200_203_015():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": True, "topup_txn_status": "SUCCESS", "topup_transfer_mode":"TRANSFER","topup_amount":original_amount_card,
-                                     "external_ref_Id_card":card_txn_id, "bal_after_topup":agent_balance_before+original_amount_card,
-                                     "cash_txn_status":"AUTHORIZED_REFUNDED","cash_transfer_mode":"PAYMENT","external_ref_Id_cash":cash_txn_id,
-                                     "cash_agent_Id":GlobalConstants.AGENT_USER, "amount_cashpay":original_amount_cashpay,
+                expectedAPIValues = {"success": True, "topup_txn_status": "SUCCESS", "topup_transfer_mode":"TRANSFER","topup_txn_amt":original_amount_card,
+                                     "external_ref_id_card":card_txn_id, "bal_after_topup":agent_balance_before+original_amount_card,
+                                     "cash_txn_status":"AUTHORIZED_REFUNDED","cash_transfer_mode":"PAYMENT","external_ref_id_cash":cash_txn_id,
+                                     "cash_agent_id":GlobalConstants.AGENT_USER, "cash_txn_amt":original_amount_cashpay,
                                      "bal_after_cashpay":(agent_balance_before+original_amount_card) - original_amount_cashpay,
-                                     "refund_txn_status":"SUCCESS","refund_transfer_mode":"REFUND","refund_amount":original_amount_refunded,"refund_agent_id":GlobalConstants.AGENT_USER,
-                                     "externalRefId":cash_txn_id,"balance_after_refund":(((agent_balance_before+original_amount_card)-original_amount_cashpay)+original_amount_refunded),
+                                     "refund_txn_status":"SUCCESS","refund_transfer_mode":"REFUND","refund_txn_amt":original_amount_refunded,"refund_agent_id":GlobalConstants.AGENT_USER,
+                                     "external_ref_id":cash_txn_id,"balance_after_refund":(((agent_balance_before+original_amount_card)-original_amount_cashpay)+original_amount_refunded),
                                      "withdraw_wallet_txn_id":withdraw_wallet_txn_id,
                                      "withdraw_txn_status":"SUCCESS","withdraw_transfer_mode": "WITHDRAW", "withdraw_agent_Id": GlobalConstants.AGENT_USER,
-                                     "amount_withdraw" : original_withdraw_amt,
+                                     "withdraw_txn_amt" : original_withdraw_amt,
                                      "bal_after_withdraw" : ((((agent_balance_before + original_amount_card) - original_amount_cashpay)+original_amount_refunded) - original_withdraw_amt)
                                      }
 
@@ -1127,16 +1127,16 @@ def test_common_200_203_015():
 
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
-                    actualAPIValues = {"success": fetch_statment_success, "topup_txn_status": topup_txn_status, "topup_transfer_mode":topup_transfer_mode,"topup_amount":topup_amount,
-                                     "external_ref_Id_card":external_ref_Id_card, "bal_after_topup":bal_after_topup,
-                                     "cash_txn_status":cash_txn_status,"cash_transfer_mode":cash_transfer_mode,"external_ref_Id_cash":external_ref_Id_cash,
-                                     "cash_agent_Id":cash_agent_Id, "amount_cashpay":amount_cashpay,
+                    actualAPIValues = {"success": fetch_statment_success, "topup_txn_status": topup_txn_status, "topup_transfer_mode":topup_transfer_mode,"topup_txn_amt":topup_amount,
+                                     "external_ref_id_card":external_ref_Id_card, "bal_after_topup":bal_after_topup,
+                                     "cash_txn_status":cash_txn_status,"cash_transfer_mode":cash_transfer_mode,"external_ref_id_cash":external_ref_Id_cash,
+                                     "cash_agent_id":cash_agent_Id, "cash_txn_amt":amount_cashpay,
                                      "bal_after_cashpay":bal_after_cashpay, "refund_txn_status":refund_txn_status,"refund_transfer_mode":refund_transfer_mode,
-                                    "refund_amount":refund_amt,"refund_agent_id":refund_agent_Id,
-                                     "externalRefId":external_ref_Id_refund,"balance_after_refund":bal_after_refund,
+                                    "refund_txn_amt":refund_amt,"refund_agent_id":refund_agent_Id,
+                                     "external_ref_id":external_ref_Id_refund,"balance_after_refund":bal_after_refund,
                                     "withdraw_wallet_txn_id":withdraw_clw_txn_id,
                                      "withdraw_txn_status":withdraw_txn_status,"withdraw_transfer_mode": withdraw_transfer_mode, "withdraw_agent_Id": withdraw_agent_Id,
-                                     "amount_withdraw" : amount_withdraw,
+                                     "withdraw_txn_amt" : amount_withdraw,
                                      "bal_after_withdraw" : bal_after_withdraw}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 

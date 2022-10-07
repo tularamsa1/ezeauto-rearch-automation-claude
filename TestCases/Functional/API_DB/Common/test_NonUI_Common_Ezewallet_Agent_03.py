@@ -108,7 +108,7 @@ def test_common_200_202_011():
                 expectedAPIValues = {"success": False, "username": GlobalConstants.AGENT_USER,
                                      "api_message_title": "DECLINED", "error_code": "EZETAP_0000153",
                                      "error_message": "Transaction declined. Amount entered is less than minimum allowed for the transaction. Minimum Allowed: 1",
-                                     "realCode": "AMOUNT_LESS_THAN_ALLWD",
+                                     "real_code": "AMOUNT_LESS_THAN_ALLWD",
                                      "api_message_text": "EZETAP_0000153 Transaction declined. Amount entered is less than minimum allowed for the transaction. Minimum Allowed: 1",
                                      "balance": agent_balance_before}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
@@ -120,7 +120,7 @@ def test_common_200_202_011():
                 actualAPIValues = {"success": cash_payment_success, "username": username,
                                    "api_message_title": apimessage_title, "error_code": error_code,
                                    "error_message": error_message,
-                                   "realCode": real_code, "api_message_text": apimessage_text,
+                                   "real_code": real_code, "api_message_text": apimessage_text,
                                    "balance": agentbal_after_cash_payment}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -143,7 +143,7 @@ def test_common_200_202_011():
                 logger.debug(f"Agent Balance before Cash Payment : {agent_balance_before}")
                 logger.debug(f"Actual amount for BILLPAY  :{original_amount_cashpay}")
 
-                expectedDBValues = {"Agent_balance": agent_balance_before,
+                expectedDBValues = {"agent_balance": agent_balance_before,
                                     "settlement_balance": settlement_bal_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -156,7 +156,7 @@ def test_common_200_202_011():
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
                 settlementbal_after_cash_payment = float(result_settlement_bal["balance"].iloc[0])
 
-                actualDBValues = {"Agent_balance": agentbal_after_cash_payment,
+                actualDBValues = {"agent_balance": agentbal_after_cash_payment,
                                   "settlement_balance": settlementbal_after_cash_payment}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -280,9 +280,9 @@ def test_common_200_202_012():
             try:
                 if withdraw_pay_success == True:
                     expectedAPIValues = {"success": True,
-                                     "realCode": "TRANSACTION_SUCCESSFUL", "successCode": "CLOSED_LOOP_000027",
-                                     "creditAccBalance": agency_balance_before + original_withdraw_amt,
-                                     "debitAccBalance": agent_balance_before - original_withdraw_amt,
+                                     "real_code": "TRANSACTION_SUCCESSFUL", "success_code": "CLOSED_LOOP_000027",
+                                     "credit_acc_balance": agency_balance_before + original_withdraw_amt,
+                                     "debit_acc_Balance": agent_balance_before - original_withdraw_amt,
                                      "bal_after_withdraw": agent_balance_before - original_withdraw_amt}
 
                     query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -291,8 +291,8 @@ def test_common_200_202_012():
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": withdraw_pay_success,
-                                       "realCode": realcode, "successCode": successcode,
-                                       "creditAccBalance": credit_acc_bal, "debitAccBalance": debit_acc_bal,
+                                       "real_code": realcode, "success_code": successcode,
+                                       "credit_acc_balance": credit_acc_bal, "debit_acc_Balance": debit_acc_bal,
                                         "bal_after_withdraw": agent_bal_after}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -656,7 +656,7 @@ def test_common_200_202_014():
                 logger.debug(f"Agent Balance before Withdraw : {agent_balance_before}")
                 logger.debug(f"Actual amount for Withdraw  : {agent_balance_before-agent_balance_before}")
 
-                expectedDBValues = {"Agent balance": (agent_balance_before)}
+                expectedDBValues = {"agent_balance": (agent_balance_before)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
@@ -664,7 +664,7 @@ def test_common_200_202_014():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agent_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agent balance": agent_bal_after}
+                actualDBValues = {"agent_balance": agent_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 

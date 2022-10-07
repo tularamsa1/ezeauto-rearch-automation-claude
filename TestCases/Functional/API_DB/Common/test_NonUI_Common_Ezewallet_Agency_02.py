@@ -96,9 +96,9 @@ def test_common_200_201_006():
             try:
                 if withdraw_pay_success == True:
                     expectedAPIValues = {"success": True,
-                                     "realCode": "TRANSACTION_SUCCESSFUL", "successCode": "CLOSED_LOOP_000027",
-                                     "creditAccBalance": agency_balance_before + original_withdraw_amt,
-                                     "debitAccBalance": agent_balance_before - original_withdraw_amt,
+                                     "real_code": "TRANSACTION_SUCCESSFUL", "success_code": "CLOSED_LOOP_000027",
+                                     "credit_acc_balance": agency_balance_before + original_withdraw_amt,
+                                     "debit_acc_balance": agent_balance_before - original_withdraw_amt,
                                      "bal_after_withdraw": agency_balance_before + original_withdraw_amt}
 
                     query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -107,8 +107,8 @@ def test_common_200_201_006():
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": withdraw_pay_success,
-                                       "realCode": realcode, "successCode": successcode,
-                                       "creditAccBalance": credit_acc_bal, "debitAccBalance": debit_acc_bal,
+                                       "real_code": realcode, "success_code": successcode,
+                                       "credit_acc_balance": credit_acc_bal, "debit_acc_balance": debit_acc_bal,
                                         "bal_after_withdraw": agency_bal_after}
                     logger.debug(f"actualAPIValues: {actualAPIValues}")
 
@@ -331,7 +331,7 @@ def test_common_200_201_007():
                 logger.debug(f"Agency Balance before Withdraw : {agency_balance_before}")
                 logger.debug(f"Actual amount for Withdraw  : {agent_balance_before + (original_withdraw_amt+1)}")
 
-                expectedDBValues = {"Agency balance": (agency_balance_before)}
+                expectedDBValues = {"agency_balance": (agency_balance_before)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -339,7 +339,7 @@ def test_common_200_201_007():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agency_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": agency_bal_after}
+                actualDBValues = {"agency_balance": agency_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -478,7 +478,7 @@ def test_common_200_201_008():
                 logger.debug(f"Agency Balance before Withdraw : {agency_balance_before}")
                 logger.debug(f"Actual amount for Withdraw  : {agent_balance_before-agent_balance_before}")
 
-                expectedDBValues = {"Agency balance": (agency_balance_before)}
+                expectedDBValues = {"agency_balance": (agency_balance_before)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
@@ -486,7 +486,7 @@ def test_common_200_201_008():
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
                 agency_bal_after = float(result["balance"].iloc[0])
-                actualDBValues = {"Agency balance": agency_bal_after}
+                actualDBValues = {"agency_balance": agency_bal_after}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
