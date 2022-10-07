@@ -283,12 +283,16 @@ def test_common_100_103_004():
                 date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
-                    "pmt_state": "SETTLED", "rrn": str(rrn),
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid,
+                    "tid": tid,
                     "org_code": org_code_txn,
                     "auth_code": auth_code,
                     "date": date

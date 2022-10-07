@@ -332,10 +332,14 @@ def test_common_100_103_007():
                 # --------------------------------------------------------------------------------------------
                 date = date_time_converter.db_datetime(txn_posting_date)
                 logger.info(f"Started API validation for the test case : {testcase_id}")
-                expectedAPIValues = {"pmt_status": "AUTHORIZED", "txn_amt": amount,
-                                     "pmt_mode": "CNP", "pmt_state": cnp_txn_state,
-                                     "acquirer_code": cnp_txn_acquirer_code, "settle_status": txn_settle_status,
-                                     "rrn": cnp_txn_rrn, "issuer_code": txn_issuer_code,
+                expectedAPIValues = {"pmt_status": "AUTHORIZED",
+                                     "txn_amt": amount,
+                                     "pmt_mode": "CNP",
+                                     "pmt_state": cnp_txn_state,
+                                     "acquirer_code": cnp_txn_acquirer_code,
+                                     "settle_status": txn_settle_status,
+                                     "rrn": cnp_txn_rrn,
+                                     "issuer_code": txn_issuer_code,
                                      "txn_type": cnpware_txn_txn_type,
                                      "org_code": org_code,
                                      "date": date
