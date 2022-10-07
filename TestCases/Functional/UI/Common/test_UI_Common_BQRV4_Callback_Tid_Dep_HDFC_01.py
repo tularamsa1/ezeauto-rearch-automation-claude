@@ -199,7 +199,7 @@ def test_common_100_102_110():
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -252,7 +252,7 @@ def test_common_100_102_110():
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -346,7 +346,7 @@ def test_common_100_102_110():
                     "order_id": order_id,
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "payment_gateway": "HDFC",
+                    "pmt_gateway": "HDFC",
                     "upi_txn_type": "PAY_BQR",
                     "upi_bank_code": "HDFC",
                     "upi_mc_id": upi_mc_id,
@@ -412,7 +412,7 @@ def test_common_100_102_110():
                     "order_id": order_id_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
@@ -683,7 +683,7 @@ def test_common_100_102_111():
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT FAILED",
+                    "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -733,7 +733,7 @@ def test_common_100_102_111():
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -822,7 +822,7 @@ def test_common_100_102_111():
                     "settle_status": "FAILED",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "payment_gateway": "HDFC",
+                    "pmt_gateway": "HDFC",
                     "upi_txn_type": "PAY_BQR",
                     "upi_bank_code": "HDFC",
                     "upi_mc_id": upi_mc_id,
@@ -888,7 +888,7 @@ def test_common_100_102_111():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
@@ -1137,7 +1137,7 @@ def test_common_100_102_142():
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT PENDING",
+                    "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1179,7 +1179,7 @@ def test_common_100_102_142():
                     "txn_id": app_txn_id,
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1267,7 +1267,7 @@ def test_common_100_102_142():
                     "order_id": order_id,
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "payment_gateway": "HDFC",
+                    "pmt_gateway": "HDFC",
                     "mid": mid,
                     "tid": tid,
                     "bqr_pmt_state": "PENDING",
@@ -1319,7 +1319,7 @@ def test_common_100_102_142():
                     "order_id": order_id_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "bqr_pmt_state": bqr_state_db,
@@ -1593,7 +1593,7 @@ def test_common_100_102_113():
                                        "customer_name_2": customer_name_new,
                                        "payer_name_2": payer_name_new,
                                        "order_id_2": order_id,
-                                       "payment_msg_2": "PAYMENT SUCCESSFUL",
+                                       "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new,
                                        "date_2": date_and_time_new
                                        }
@@ -1672,7 +1672,7 @@ def test_common_100_102_113():
                                      "settle_status_2": app_settlement_status_new,
                                      "payer_name_2": app_payer_name_new,
                                      "order_id_2": app_order_id_new,
-                                     "payment_msg_2": app_payment_msg_new,
+                                     "pmt_msg_2": app_payment_msg_new,
                                      "auth_code_2": app_auth_code_new,
                                      "date_2": app_date_and_time_new
                                      }
@@ -1807,7 +1807,7 @@ def test_common_100_102_113():
                                       "settle_status_2": "SETTLED",
                                       "acquirer_code_2": "HDFC",
                                       "bank_code_2": "HDFC",
-                                      "payment_gateway_2": "HDFC",
+                                      "pmt_gateway_2": "HDFC",
                                       "upi_txn_type_2": "PAY_BQR",
                                       "upi_bank_code_2": "HDFC",
                                       "upi_mc_id_2": upi_mc_id,
@@ -1900,7 +1900,7 @@ def test_common_100_102_113():
                                     "settle_status_2": settlement_status_db_new,
                                     "acquirer_code_2": acquirer_code_db_new,
                                     "bank_code_2": bank_code_db_new,
-                                    "payment_gateway_2": payment_gateway_db_new,
+                                    "pmt_gateway_2": payment_gateway_db_new,
                                     "upi_txn_type_2": upi_txn_type_db_new,
                                     "upi_bank_code_2": upi_bank_code_db_new,
                                     "upi_mc_id_2": upi_mc_id_db_new,
@@ -2168,7 +2168,7 @@ def test_common_100_102_114():
                                        "customer_name_2": customer_name_new,
                                        "payer_name_2": payer_name_new,
                                        "order_id_2": order_id,
-                                       "payment_msg_2": "PAYMENT SUCCESSFUL",
+                                       "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new,
                                        "date_2": date_and_time_new
                                        }
@@ -2247,7 +2247,7 @@ def test_common_100_102_114():
                                      "settle_status_2": app_settlement_status_new,
                                      "payer_name_2": app_payer_name_new,
                                      "order_id_2": app_order_id_new,
-                                     "payment_msg_2": app_payment_msg_new,
+                                     "pmt_msg_2": app_payment_msg_new,
                                      "auth_code_2": app_auth_code_new,
                                      "date_2": app_date_and_time_new
                                      }
@@ -2382,7 +2382,7 @@ def test_common_100_102_114():
                                       "settle_status_2": "SETTLED",
                                       "acquirer_code_2": "HDFC",
                                       "bank_code_2": "HDFC",
-                                      "payment_gateway_2": "HDFC",
+                                      "pmt_gateway_2": "HDFC",
                                       "upi_txn_type_2": "PAY_BQR",
                                       "upi_bank_code_2": "HDFC",
                                       "upi_mc_id_2": upi_mc_id,
@@ -2475,7 +2475,7 @@ def test_common_100_102_114():
                                     "settle_status_2": settlement_status_db_new,
                                     "acquirer_code_2": acquirer_code_db_new,
                                     "bank_code_2": bank_code_db_new,
-                                    "payment_gateway_2": payment_gateway_db_new,
+                                    "pmt_gateway_2": payment_gateway_db_new,
                                     "upi_txn_type_2": upi_txn_type_db_new,
                                     "upi_bank_code_2": upi_bank_code_db_new,
                                     "upi_mc_id_2": upi_mc_id_db_new,
