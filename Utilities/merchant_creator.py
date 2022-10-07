@@ -17,10 +17,15 @@ def create_merchants():
     """
     This method is used to create the merchants for execution.
     """
+    create_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
     sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     sqlite_processor.update_acquisitions_to_db()
-    create_merchants_with_users()
+    if create_merchant_required == "true":
+        create_merchants_with_users()
+    else:
+        set_merchants_users_available()
+        logger.debug("Merchant creation skipped as per the user configuration.")
     sqlite_processor.update_app_users_to_db()
     sqlite_processor.update_portal_users_to_db()
     sqlite_processor.update_terminal_details_of_all_merchants()
@@ -553,3 +558,19 @@ def get_api_details_from_db(api_name: str) -> dict:
     conn.close()
     return dict_api_details
 
+
+def set_merchants_users_available():
+    """
+    This method is used to set the status of all the merchants and users as "Existed" and "Available"
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE merchants SET CreationStatus = 'Existed', Availability = 'Available';")
+        conn.commit()
+        cursor.execute("UPDATE users SET CreationStatus = 'Existed', Availability = 'Available';")
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Unable to set the status of merchants and users as available, due to error {str(e)}")

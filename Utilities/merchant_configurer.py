@@ -14,25 +14,29 @@ def configure_merchants():
     This method is used to configure all the required settings for the merchant.
     """
     try:
-        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("select * from merchants where CreationStatus = 'Created';")
-        available_merchants = cursor.fetchall()
-        if len(available_merchants) > 0:
-            clear_merchant_config_related_tables()
-            sqlite_processor.update_merchant_org_settings()
-            sqlite_processor.update_pg_details()
-            sqlite_processor.update_remotepay_settings()
-            configure_org_settings()
-            configure_bqr_settings_through_api()
-            configure_upi_settings_through_api()
-            configure_bqr_settings_through_db()
-            configure_upi_settings_through_db()
-            configure_cnp_settings_through_db()
-            configure_pg_settings_through_db()
-            refresh_db()
+        config_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
+        if config_merchant_required == "true":
+            conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("select * from merchants where CreationStatus = 'Created';")
+            available_merchants = cursor.fetchall()
+            if len(available_merchants) > 0:
+                clear_merchant_config_related_tables()
+                sqlite_processor.update_merchant_org_settings()
+                sqlite_processor.update_pg_details()
+                sqlite_processor.update_remotepay_settings()
+                configure_org_settings()
+                configure_bqr_settings_through_api()
+                configure_upi_settings_through_api()
+                configure_bqr_settings_through_db()
+                configure_upi_settings_through_db()
+                configure_cnp_settings_through_db()
+                configure_pg_settings_through_db()
+                refresh_db()
+            else:
+                logger.debug("Merchant configuration skipped since there are no new merchants created.")
         else:
-            logger.debug("Merchant configuration skipped since there are no new merchants created.")
+            logger.debug("Merchant configuration skipped as per settings done in the config.ini file.")
     except Exception as e:
         logger.error(f"Unable to configure the merchants due to error {str(e)}")
 
