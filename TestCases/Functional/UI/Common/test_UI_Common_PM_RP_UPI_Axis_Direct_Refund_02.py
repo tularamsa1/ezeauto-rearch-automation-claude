@@ -969,8 +969,7 @@ def test_common_100_103_107():
                                                                     "amount": full_refund_amount,
                                                                     "originalTransactionId": str(original_txn_id)})
             response = APIProcessor.send_request(api_details)
-            logger.debug(
-                f"Response received from refund api when refund amount is greater than original amount : {response}")
+            logger.debug(f"Response received from refund api when refund amount is greater than original amount : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id ='" + str(
                 original_txn_id) + "' order by created_time limit 1"
@@ -1283,7 +1282,7 @@ def test_common_100_103_107():
                 api_status_full_refund = response["status"]
                 api_amount_full_refund = int(response["amount"])
                 api_payment_mode_full_refund = response["paymentMode"]
-                api_rrn__full_refund = response["rrNumber"]
+                # api_rrn__full_refund = response["rrNumber"]
                 api_state_full_refund = response["states"][0]
                 api_settlement_status_full_refund = response["settlementStatus"]
                 # issuer_code_api_refunded = response["issuerCode"]
@@ -1337,7 +1336,7 @@ def test_common_100_103_107():
                     "fully_refunded_amt": float(full_refund_amount),
                     "fully_refunded_customer_name": api_customer_name_full_refund,
                     "fully_refunded_payer_name": api_payer_name_full_refund,
-                    "fully_refunded_rrn": str(fully_refunded_rrn),
+                    # "fully_refunded_rrn": str(fully_refunded_rrn),
                     "fully_refunded_acquirer_code": api_acquirer_code_full_refund,
                     "fully_refunded_txn_type": api_txn_type_full_refund,
                     "fully_refunded_mid": api_mid_full_refund,
