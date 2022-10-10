@@ -197,6 +197,7 @@ def test_common_100_102_241():
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
+                app_driver.reset()
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
