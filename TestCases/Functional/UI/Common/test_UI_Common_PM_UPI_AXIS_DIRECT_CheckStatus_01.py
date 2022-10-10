@@ -1392,7 +1392,7 @@ def test_common_100_101_135():
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT PENDING",
+                    "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1431,7 +1431,7 @@ def test_common_100_101_135():
                     "txn_id": app_txn_id,
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1512,7 +1512,7 @@ def test_common_100_101_135():
                     "settle_status": "PENDING",
                     "acquirer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "payment_gateway": "AXIS",
+                    "pmt_gateway": "AXIS",
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "AXIS_DIRECT",
                     "upi_mc_id": upi_mc_id,
@@ -1554,7 +1554,7 @@ def test_common_100_101_135():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,

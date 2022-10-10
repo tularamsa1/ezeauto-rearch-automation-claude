@@ -289,7 +289,7 @@ def test_common_100_102_246():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
                 order_id_api = response["orderNumber"]
 
