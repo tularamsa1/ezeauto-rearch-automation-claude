@@ -946,7 +946,7 @@ def test_sa_100_101_003():
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"query result for upi_merchant_config table is : {result}")
             upi_mc_id = result['id'].values[0]
