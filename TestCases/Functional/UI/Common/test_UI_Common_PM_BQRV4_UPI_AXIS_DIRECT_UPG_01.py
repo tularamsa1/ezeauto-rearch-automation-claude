@@ -1044,7 +1044,7 @@ def test_common_100_102_215():
                                                                  'transactionAmount': amount,
                                                                  'merchantId': str(pg_merchant_id),
                                                                  'creditVpa': vpa,
-                                                                 'rrn': rrn,
+                                                                 'rrn': str(rrn),
                                                                  'gatewayTransactionId': ref_id})
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")

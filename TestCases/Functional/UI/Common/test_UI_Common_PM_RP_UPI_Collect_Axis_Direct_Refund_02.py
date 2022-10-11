@@ -1278,7 +1278,7 @@ def test_common_100_103_114():
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
                 # auth_code_api_refunded = response["authCode"]
-                date_api_refunded = response["createdTime"]
+                date_api_refunded = response["postingDate"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
