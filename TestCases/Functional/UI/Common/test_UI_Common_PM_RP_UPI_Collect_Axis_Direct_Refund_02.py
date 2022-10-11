@@ -86,7 +86,7 @@ def test_common_100_103_113():
             partial_refunded_amount = 150
             full_refund_amount = 150
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -893,7 +893,7 @@ def test_common_100_103_114():
             partial_refunded_amount = 149.5
             full_refund_amount = 149.5
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -1278,7 +1278,7 @@ def test_common_100_103_114():
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
                 # auth_code_api_refunded = response["authCode"]
-                date_api_refunded = response["createdTime"]
+                date_api_refunded = response["postingDate"]
 
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,

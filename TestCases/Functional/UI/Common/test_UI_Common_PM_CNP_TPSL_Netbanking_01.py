@@ -87,7 +87,7 @@ def test_common_100_103_038():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -312,7 +312,7 @@ def test_common_100_103_038():
                                     "txn_amt": amount,
                                     "settle_status": "SETTLED",
                                     "pmt_gateway": "TPSL",
-                                    "payment_mode": "PAY LINK",
+                                    "cnpware_pmt_mode": "PAY LINK",
                                     "auth_code": txn_auth_code,
                                     # "acquirer_code":HDFC
                                     # "bank_name" NA
@@ -356,7 +356,7 @@ def test_common_100_103_038():
                                   "txn_amt": txn_amt_db,
                                   "settle_status": settle_status_db,
                                   "pmt_gateway": payment_gateway_db,
-                                  "payment_mode": payment_mode,
+                                  "cnpware_pmt_mode": payment_mode,
                                   "auth_code": cnp_txn_auth_code,
                                   "cnpware_rrn": cnp_txn_rrn,
                                   "cnpware_txn_id": app_txn_id,
@@ -505,7 +505,7 @@ def test_common_100_103_039():
             # ------------------------------------------------------------------------------------------------
             amount = 11
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -909,7 +909,7 @@ def test_common_100_103_040():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)

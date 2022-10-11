@@ -86,7 +86,7 @@ def test_common_100_103_007():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -332,10 +332,14 @@ def test_common_100_103_007():
                 # --------------------------------------------------------------------------------------------
                 date = date_time_converter.db_datetime(txn_posting_date)
                 logger.info(f"Started API validation for the test case : {testcase_id}")
-                expectedAPIValues = {"pmt_status": "AUTHORIZED", "txn_amt": amount,
-                                     "pmt_mode": "CNP", "pmt_state": cnp_txn_state,
-                                     "acquirer_code": cnp_txn_acquirer_code, "settle_status": txn_settle_status,
-                                     "rrn": cnp_txn_rrn, "issuer_code": txn_issuer_code,
+                expectedAPIValues = {"pmt_status": "AUTHORIZED",
+                                     "txn_amt": amount,
+                                     "pmt_mode": "CNP",
+                                     "pmt_state": cnp_txn_state,
+                                     "acquirer_code": cnp_txn_acquirer_code,
+                                     "settle_status": txn_settle_status,
+                                     "rrn": cnp_txn_rrn,
+                                     "issuer_code": txn_issuer_code,
                                      "txn_type": cnpware_txn_txn_type,
                                      "org_code": org_code,
                                      "date": date
@@ -578,7 +582,7 @@ def test_common_100_103_008():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
@@ -656,8 +660,10 @@ def test_common_100_103_008():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started APP validation for the test case : test_common_100_103_008")
-                expectedAppValues = {"Payment mode": "PAY LINK", "Status": "FAILED", "Amount": str(amount),
-                                     "Txn_id": Txn_id}
+                expectedAppValues = {"pmt_mode": "PAY LINK",
+                                     "pmt_status": "FAILED",
+                                     "txn_amt": str(amount),
+                                     "txn_id": Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -678,8 +684,10 @@ def test_common_100_103_008():
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
-                actualAppValues = {"Payment mode": payment_mode, "Status": payment_status.split(':')[1],
-                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
+                actualAppValues = {"pmt_mode": payment_mode,
+                                   "pmt_status": payment_status.split(':')[1],
+                                   "txn_amt": app_amount.split(' ')[1],
+                                   "txn_id": app_txn_id}
                 logger.debug(f"actualAppValues: {actualAppValues}")
 
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -697,7 +705,9 @@ def test_common_100_103_008():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started API validation for the test case : test_common_100_103_008")
-                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "CNP"}
+                expectedAPIValues = {"pmt_status": "FAILED",
+                                     "txn_amt": amount,
+                                     "pmt_mode": "CNP"}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": app_username,
@@ -710,7 +720,9 @@ def test_common_100_103_008():
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api}
+                actualAPIValues = {"pmt_status": status_api,
+                                   "txn_amt": amount_api,
+                                   "pmt_mode": payment_mode_api}
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
@@ -728,8 +740,10 @@ def test_common_100_103_008():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started DB validation for the test case : test_common_100_103_008")
-                expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
-                                    "Payment amount": amount}
+                expectedDBValues = {"pmt_status": "FAILED",
+                                    "pmt_state": "FAILED",
+                                    "pmt_mode": "CNP",
+                                    "txn_amt": amount}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
@@ -741,8 +755,10 @@ def test_common_100_103_008():
                 amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
 
-                actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
-                                  "Payment mode": payment_mode_db, "Payment amount": amount}
+                actualDBValues = {"pmt_status": status_db,
+                                  "pmt_state": state_db,
+                                  "pmt_mode": payment_mode_db,
+                                  "txn_amt": amount}
                                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -870,7 +886,7 @@ def test_common_100_103_011():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -983,8 +999,10 @@ def test_common_100_103_011():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started APP validation for the test case : test_common_100_103_011")
-                expectedAppValues = {"Payment mode": "PAY LINK", "Status": "FAILED", "Amount": str(amount),
-                                     "Txn_id": Txn_id}
+                expectedAppValues = {"pmt_mode": "PAY LINK",
+                                     "pmt_status": "FAILED",
+                                     "txn_amt": str(amount),
+                                     "txn_id": Txn_id}
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -1004,8 +1022,10 @@ def test_common_100_103_011():
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
-                actualAppValues = {"Payment mode": payment_mode, "Status": payment_status.split(':')[1],
-                                   "Amount": app_amount.split(' ')[1], "Txn_id": app_txn_id}
+                actualAppValues = {"pmt_mode": payment_mode,
+                                   "pmt_status": payment_status.split(':')[1],
+                                   "txn_amt": app_amount.split(' ')[1],
+                                   "txn_id": app_txn_id}
                 logger.debug(f"actualAppValues: {actualAppValues}")
 
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -1023,7 +1043,12 @@ def test_common_100_103_011():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started API validation for the test case : test_common_100_103_011")
-                expectedAPIValues = {"Payment Status": "FAILED", "Amount": amount, "Payment Mode": "CNP", "Payment Card Brand": "VISA","Payment Card Type": "CREDIT"}
+                expectedAPIValues = {"pmt_status": "FAILED",
+                                     "txn_amt": amount,
+                                     "pmt_mode":"CNP",
+                                     "cnp_pmt_card_brand": "VISA",
+                                     "cnp_pmt_card_type": "CREDIT"}
+
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": app_username,
@@ -1040,7 +1065,12 @@ def test_common_100_103_011():
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
                 logger.debug(f"Fetching Transaction payment Card Brand from transaction api : {payment_Card_Brand} ")
                 logger.debug(f"Fetching Transaction payment Card Type from transaction api : {payment_Card_Type} ")
-                actualAPIValues = {"Payment Status": status_api, "Amount": amount_api, "Payment Mode": payment_mode_api, "Payment Card Brand": payment_Card_Brand,"Payment Card Type": payment_Card_Type}
+                actualAPIValues = {"pmt_status": status_api,
+                                   "txn_amt": amount_api,
+                                   "pmt_mode": payment_mode_api,
+                                   "cnp_pmt_card_brand": payment_Card_Brand,
+                                   "cnp_pmt_card_type": payment_Card_Type}
+
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
@@ -1058,8 +1088,10 @@ def test_common_100_103_011():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started DB validation for the test case : test_common_100_103_011")
-                expectedDBValues = {"Payment Status": "FAILED", "Payment State": "FAILED", "Payment mode": "CNP",
-                                    "Payment amount": amount}
+                expectedDBValues = {"pmt_status": "FAILED",
+                                    "pmt_state": "FAILED",
+                                    "pmt_mode": "CNP",
+                                    "txn_amt": amount}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
@@ -1071,8 +1103,10 @@ def test_common_100_103_011():
                 amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
 
-                actualDBValues = {"Payment Status": status_db, "Payment State": state_db,
-                                  "Payment mode": payment_mode_db, "Payment amount": amount}
+                actualDBValues = {"pmt_status": status_db,
+                                  "pmt_state": state_db,
+                                  "pmt_mode": payment_mode_db,
+                                  "txn_amt": amount}
                                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -1191,7 +1225,7 @@ def test_common_100_103_013():
 
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',request_body={"amount": amount, "externalRefNumber": order_id,
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response from remote pay api : {response}")
@@ -1305,6 +1339,8 @@ def test_common_100_103_013():
             cnpware_payment_flow = result['payment_flow'].values[0]
             logger.debug(f"Query result, cnpware_payment_flow : {cnpware_payment_flow}")
 
+            cnpware_pmt_mode = result['payment_mode'].values[0]
+            logger.debug(f"Query result, cnpware_payment_flow : {cnpware_pmt_mode}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1473,7 +1509,7 @@ def test_common_100_103_013():
                                     "txn_amt": amount,
                                     "settle_status": "PENDING",
                                     "pmt_gateway": "CYBERSOURCE",
-                                    "payment_mode": "PAY LINK",
+                                    "cnpware_pmt_mode": "CNP",
                                     # "auth_code": txn_auth_code,
                                     "cnp_pmt_gateway": "CYBERSOURCE",
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
@@ -1507,7 +1543,7 @@ def test_common_100_103_013():
                                   "txn_amt": txn_amt_db,
                                   "settle_status": settle_status_db,
                                   "pmt_gateway": payment_gateway_db,
-                                  "payment_mode": payment_mode,
+                                  "cnpware_pmt_mode": cnpware_pmt_mode,
                                   # "auth_code": cnp_txn_auth_code,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
