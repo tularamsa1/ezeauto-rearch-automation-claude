@@ -55,6 +55,7 @@ def test_common_100_103_014():
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
+
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -98,7 +99,7 @@ def test_common_100_103_014():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -561,14 +562,14 @@ def test_common_100_103_015():
     TC naming code description:
     100: Payment Method
     103: RemotePay
-    014: TC_015
+    015: TC_015
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         print(
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -580,11 +581,6 @@ def test_common_100_103_015():
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        org_code = result['org_code'].values[0]
-        logger.debug(f"Query result, org_code : {org_code}")
 
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -592,12 +588,12 @@ def test_common_100_103_015():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
 
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
@@ -606,6 +602,7 @@ def test_common_100_103_015():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)--------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -625,7 +622,7 @@ def test_common_100_103_015():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -1025,11 +1022,6 @@ def test_common_100_103_016():
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        org_code = result['org_code'].values[0]
-        logger.debug(f"Query result, org_code : {org_code}")
 
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -1037,12 +1029,12 @@ def test_common_100_103_016():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
@@ -1058,7 +1050,7 @@ def test_common_100_103_016():
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -1077,7 +1069,7 @@ def test_common_100_103_016():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -1567,7 +1559,7 @@ def test_common_100_103_017():
         GlobalVariables.time_calc.setup.resume()
         print(
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -1579,11 +1571,6 @@ def test_common_100_103_017():
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        org_code = result['org_code'].values[0]
-        logger.debug(f"Query result, org_code : {org_code}")
 
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -1591,12 +1578,13 @@ def test_common_100_103_017():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
+
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
@@ -1631,7 +1619,7 @@ def test_common_100_103_017():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -2090,7 +2078,7 @@ def test_common_100_103_018():
         GlobalVariables.time_calc.setup.resume()
         print(
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -2109,18 +2097,13 @@ def test_common_100_103_018():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        org_code = result['org_code'].values[0]
-        logger.debug(f"Query result, org_code : {org_code}")
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
 
-        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting inactive", result)
-        query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC' "
-        result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
+
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
@@ -2136,6 +2119,7 @@ def test_common_100_103_018():
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -2155,7 +2139,7 @@ def test_common_100_103_018():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 

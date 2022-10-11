@@ -2767,3 +2767,113 @@ console.error: Region.jsm: "Failed to fetch region" (new Error("TIMEOUT", "resou
 Exiting due to channel error.
 Exiting due to channel error.
 Exiting due to channel error.
+1664900134074	geckodriver	INFO	Listening on 127.0.0.1:59165
+1664900134591	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "38037" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileYKu0hz"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1664900135402	Marionette	INFO	Marionette enabled
+1664900135407	Marionette	INFO	Listening on port 39467
+WebDriver BiDi listening on ws://localhost:38037
+Read port: 39467
+1664900135651	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileYKu0hz/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:38037/devtools/browser/616dfb5b-ce0f-45e6-9d40-f975cc1cd9c2
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 292: NS_ERROR_FAILURE: Should pass a non-null uri
+1664900151229	Marionette	INFO	Stopped listening on port 39467
+Sandbox: Unexpected EOF, op 0 flags 00 path /proc/cpuinfo
+1664903601849	geckodriver	INFO	Listening on 127.0.0.1:40731
+1664903602370	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "42969" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofiledbkQxy"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1664903603058	Marionette	INFO	Marionette enabled
+1664903603061	Marionette	INFO	Listening on port 36095
+WebDriver BiDi listening on ws://localhost:42969
+Read port: 36095
+1664903603294	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofiledbkQxy/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:42969/devtools/browser/0197458b-4ba9-434a-af19-a55f006dfad0
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 292: NS_ERROR_FAILURE: Should pass a non-null uri
+1664903618990	Marionette	INFO	Stopped listening on port 36095
+Sandbox: Unexpected EOF, op 0 flags 00 path /proc/cpuinfo
+1664904690761	geckodriver	INFO	Listening on 127.0.0.1:52517
+1664904691290	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "52047" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilefr28Pv"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1664904691923	Marionette	INFO	Marionette enabled
+1664904691926	Marionette	INFO	Listening on port 40569
+WebDriver BiDi listening on ws://localhost:52047
+Read port: 40569
+1664904692109	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilefr28Pv/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:52047/devtools/browser/9639d7ec-60c2-4b05-b382-f7f887bb35d9
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 292: NS_ERROR_FAILURE: Should pass a non-null uri
+1664904785049	Marionette	INFO	Stopped listening on port 40569
+Sandbox: Unexpected EOF, op 0 flags 00 path /proc/cpuinfo
+1664905010590	geckodriver	INFO	Listening on 127.0.0.1:36365
+1664905011099	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "37869" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileFaq88P"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1664905012119	Marionette	INFO	Marionette enabled
+1664905012122	Marionette	INFO	Listening on port 36191
+WebDriver BiDi listening on ws://localhost:37869
+Read port: 36191
+1664905012285	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileFaq88P/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:37869/devtools/browser/a0396c39-b96c-4f2d-8f9a-e70a13f2c583
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 292: NS_ERROR_FAILURE: Should pass a non-null uri
+1664905027181	Marionette	INFO	Stopped listening on port 36191
+1665417746082	geckodriver	INFO	Listening on 127.0.0.1:33605
+1665417746593	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "40681" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilevFBI3h"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1665417748125	Marionette	INFO	Marionette enabled
+1665417748135	Marionette	INFO	Listening on port 45571
+Read port: 45571
+WebDriver BiDi listening on ws://127.0.0.1:40681
+1665417748358	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilevFBI3h/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:40681/devtools/browser/1d4bcc61-6d06-460a-89d5-57b14f8e928b
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
+1665417959594	Marionette	INFO	Stopped listening on port 45571
+1665420455179	geckodriver	INFO	Listening on 127.0.0.1:42077
+1665420455690	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "49741" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileHhVPxt"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1665420457335	Marionette	INFO	Marionette enabled
+1665420457344	Marionette	INFO	Listening on port 43297
+Read port: 43297
+WebDriver BiDi listening on ws://127.0.0.1:49741
+1665420457591	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileHhVPxt/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:49741/devtools/browser/1341387f-f96f-48bc-b316-aa22c008e5f4
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
+1665420797716	Marionette	INFO	Stopped listening on port 43297
+1665421070192	geckodriver	INFO	Listening on 127.0.0.1:59971
+1665421070703	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "38319" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileiQAdtR"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1665421072069	Marionette	INFO	Marionette enabled
+1665421072074	Marionette	INFO	Listening on port 33539
+Read port: 33539
+WebDriver BiDi listening on ws://127.0.0.1:38319
+1665421072315	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileiQAdtR/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:38319/devtools/browser/632d6a4a-3663-4e23-9c32-a3551f8b63e3
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
+console.error: Region.jsm: "Error fetching region" (new Error("TIMEOUT", "resource://gre/modules/Region.jsm", 768))
+console.error: Region.jsm: "Failed to fetch region" (new Error("TIMEOUT", "resource://gre/modules/Region.jsm", 420))
+1665421287510	Marionette	INFO	Stopped listening on port 33539

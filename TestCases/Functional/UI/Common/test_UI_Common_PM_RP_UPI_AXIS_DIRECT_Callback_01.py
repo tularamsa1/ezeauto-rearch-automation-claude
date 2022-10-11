@@ -90,7 +90,7 @@ def test_common_100_103_080():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -528,7 +528,7 @@ def test_common_100_103_081():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -936,7 +936,7 @@ def test_common_100_103_082():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
             logger.info(f"Entered amount is: {amount}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',  # Chane api name
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',  # Chane api name
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)  # Check
@@ -1086,8 +1086,8 @@ def test_common_100_103_082():
                     "txn_amount": str(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    "customer_name": customer_name,
-                    "payer_name": payer_name,
+                    # "customer_name": customer_name,
+                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT FAILED",
                     # "rrn": str(rrn),
@@ -1115,13 +1115,13 @@ def test_common_100_103_082():
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 # app_rrn = txnHistoryPage.fetch_RRN_text()
                 # logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
-                app_customer_name = txnHistoryPage.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                # app_customer_name = txnHistoryPage.fetch_customer_name_text()
+                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txnHistoryPage.fetch_settlement_status_text()
                 logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
-                app_payer_name = txnHistoryPage.fetch_payer_name_text()
-                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                # app_payer_name = txnHistoryPage.fetch_payer_name_text()
+                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_status = app_payment_status.split(':')[1]
                 app_order_id = txnHistoryPage.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
@@ -1138,8 +1138,8 @@ def test_common_100_103_082():
                     "txn_amount": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
-                    "customer_name": app_customer_name,
-                    "payer_name": app_payer_name,
+                    # "customer_name": app_customer_name,
+                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
                     # "rrn": str(app_rrn),
@@ -1383,7 +1383,7 @@ def test_common_100_103_083():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
@@ -1839,7 +1839,7 @@ def test_common_100_103_084():
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
-            api_details = DBProcessor.get_api_details('Remotepay_Intiate',
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
 
