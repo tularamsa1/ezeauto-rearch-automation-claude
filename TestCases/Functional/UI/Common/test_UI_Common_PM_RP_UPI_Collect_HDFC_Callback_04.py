@@ -261,17 +261,17 @@ def test_common_100_103_029():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
-                expected_app_values = {"pmt_mode_original": "UPI",
-                                       "pmt_status_original": "FAILED",
-                                       "txn_amount_original": str(amount),
-                                       "settle_status_original": "FAILED",
-                                       "txn_id_original": original_txn_id,
-                                       "rrn_original": str(original_rrn),
-                                       "customer_name_original": original_customer_name,
-                                       "payer_name_original": original_payer_name,
-                                       "order_id_original": order_id,
-                                       "payment_msg_original": "PAYMENT FAILED",
-                                       "date_original": date_and_time,
+                expected_app_values = {"pmt_mode": "UPI",
+                                       "pmt_status": "FAILED",
+                                       "txn_amt": str(amount),
+                                       "settle_status": "FAILED",
+                                       "txn_id": original_txn_id,
+                                       "rrn": str(original_rrn),
+                                       "customer_name": original_customer_name,
+                                       "payer_name": original_payer_name,
+                                       "order_id": order_id,
+                                       "pmt_msg": "PAYMENT FAILED",
+                                       "date": date_and_time,
                                        }
                 logger.debug(f"expected_app_values: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -314,17 +314,17 @@ def test_common_100_103_029():
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {original_txn_id}, {app_payment_msg}")
 
-                actual_app_values = {"pmt_mode_original": app_payment_mode,
-                                    "pmt_status_original": app_payment_status,
-                                    "txn_amount_original": app_amount.split(' ')[1],
-                                    "settle_status_original": app_settlement_status,
-                                    "txn_id_original": app_txn_id,
-                                    "rrn_original": str(app_rrn),
-                                    "customer_name_original": app_customer_name,
-                                    "payer_name_original": app_payer_name,
-                                    "order_id_original": app_order_id,
-                                    "payment_msg_original": app_payment_msg,
-                                    "date_original": app_date_and_time,
+                actual_app_values = {"pmt_mode": app_payment_mode,
+                                    "pmt_status": app_payment_status,
+                                    "txn_amt": app_amount.split(' ')[1],
+                                    "settle_status": app_settlement_status,
+                                    "txn_id": app_txn_id,
+                                    "rrn": str(app_rrn),
+                                    "customer_name": app_customer_name,
+                                    "payer_name": app_payer_name,
+                                    "order_id": app_order_id,
+                                    "pmt_msg": app_payment_msg,
+                                    "date": app_date_and_time,
                                      }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -343,14 +343,14 @@ def test_common_100_103_029():
                                        "txn_amt": amount,
                                        "pmt_mode": "UPI",
                                        "pmt_state": "FAILED",
-                                       "settlement_status": "FAILED",
+                                       "settle_status": "FAILED",
                                        "acquirer_code": "HDFC",
                                        "issuer_code": "HDFC",
                                        "txn_type": "REMOTE_PAY",
                                        "mid": original_mid,
                                        "tid": original_tid,
                                        "org_code": org_code,
-                                       "date_original": date,
+                                       "date": date,
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -377,14 +377,14 @@ def test_common_100_103_029():
                                        "txn_amt": amount_api,
                                        "pmt_mode": payment_mode_api,
                                        "pmt_state": state_api,
-                                       "settlement_status": status_api,
+                                       "settle_status": status_api,
                                        "acquirer_code": acquirer_code_api,
                                        "issuer_code": issuer_code_api,
                                        "txn_type": txn_type_api,
                                        "mid": mid_api,
                                        "tid": tid_api,
                                        "org_code": orgCode_api,
-                                     "date_original":  date_time_converter.from_api_to_datetime_format(date_api)
+                                     "date":  date_time_converter.from_api_to_datetime_format(date_api)
                                      }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -404,12 +404,12 @@ def test_common_100_103_029():
                     "pmt_mode": "UPI",
                     "txn_amt": amount,
                     "upi_txn_status": "FAILED",
-                    "settlement_status": "FAILED",
+                    "settle_status": "FAILED",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "upi_txn_type_db": "COLLECT",
-                    "upi_bank_code_db": "HDFC",
-                    "upi_mc_id_db": upi_mc_id,
+                    "upi_txn_type": "COLLECT",
+                    "upi_bank_code": "HDFC",
+                    "upi_mc_id": upi_mc_id,
                     "intent_status": "ACTIVE"
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -427,13 +427,13 @@ def test_common_100_103_029():
                     "pmt_state": original_state,
                     "pmt_mode":original_payment_mode,
                     "txn_amt": amount,
-                    "settlement_status": original_settlement_status,
+                    "settle_status": original_settlement_status,
                     "acquirer_code": original_acquirer_code,
                     "bank_code": original_bank_code,
                     "upi_txn_status": upi_status_db,
-                    "upi_txn_type_db": upi_txn_type_db,
-                    "upi_bank_code_db": upi_bank_code_db,
-                    "upi_mc_id_db": upi_mc_id_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
                     "intent_status":intent_status
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -474,8 +474,8 @@ def test_common_100_103_029():
 @pytest.mark.chargeSlipVal
 def test_common_100_103_030():
     """
-    Sub Feature Code: UI_Common_PM_2_Pure_UPI_failed_callback_before_qr_expiry_HDFC_AutoRefund_Disabled
-    Sub Feature Description: Performing two pure upi failed callback via HDFC before expiry the qr when autorefund is disabled
+    Sub Feature Code: UI_Common_PM_RP_2_UPI_Collectfailed_callback_before__expiry_HDFC_AutoRefund_Enabled
+    Sub Feature Description: Performing two  UPI Collect failed callback via HDFC before expiry the  when autorefund is enabled
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -706,17 +706,17 @@ def test_common_100_103_030():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
-                expected_app_values = {"pmt_mode_original": "UPI",
-                                       "pmt_status_original": "FAILED",
-                                       "txn_amount_original": str(amount),
-                                       "settle_status_original": "FAILED",
-                                       "txn_id_original": original_txn_id,
-                                       "rrn_original": str(original_rrn),
-                                       "customer_name_original": original_customer_name,
-                                       "payer_name_original": original_payer_name,
-                                       "order_id_original": order_id,
-                                       "payment_msg_original": "PAYMENT FAILED",
-                                       "date_original": date_and_time,
+                expected_app_values = {"pmt_mode": "UPI",
+                                       "pmt_status": "FAILED",
+                                       "txn_amt": str(amount),
+                                       "settle_status": "FAILED",
+                                       "txn_id": original_txn_id,
+                                       "rrn": str(original_rrn),
+                                       "customer_name": original_customer_name,
+                                       "payer_name": original_payer_name,
+                                       "order_id": order_id,
+                                       "pmt_msg": "PAYMENT FAILED",
+                                       "date": date_and_time,
                                        }
                 logger.debug(f"expected_app_values: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -759,17 +759,17 @@ def test_common_100_103_030():
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {original_txn_id}, {app_payment_msg}")
 
-                actual_app_values = {"pmt_mode_original": app_payment_mode,
-                                    "pmt_status_original": app_payment_status,
-                                    "txn_amount_original": app_amount.split(' ')[1],
-                                    "settle_status_original": app_settlement_status,
-                                    "txn_id_original": app_txn_id,
-                                    "rrn_original": str(app_rrn),
-                                    "customer_name_original": app_customer_name,
-                                    "payer_name_original": app_payer_name,
-                                    "order_id_original": app_order_id,
-                                    "payment_msg_original": app_payment_msg,
-                                    "date_original": app_date_and_time,
+                actual_app_values = {"pmt_mode": app_payment_mode,
+                                    "pmt_status": app_payment_status,
+                                    "txn_amt": app_amount.split(' ')[1],
+                                    "settle_status": app_settlement_status,
+                                    "txn_id": app_txn_id,
+                                    "rrn": str(app_rrn),
+                                    "customer_name": app_customer_name,
+                                    "payer_name": app_payer_name,
+                                    "order_id": app_order_id,
+                                    "pmt_msg": app_payment_msg,
+                                    "date": app_date_and_time,
                                      }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -788,14 +788,14 @@ def test_common_100_103_030():
                                        "txn_amt": amount,
                                        "pmt_mode": "UPI",
                                        "pmt_state": "FAILED",
-                                       "settlement_status": "FAILED",
+                                       "settle_status": "FAILED",
                                        "acquirer_code": "HDFC",
                                        "issuer_code": "HDFC",
                                        "txn_type": "REMOTE_PAY",
                                        "mid": original_mid,
                                        "tid": original_tid,
                                        "org_code": org_code,
-                                       "date_original": date,
+                                       "date": date,
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -822,14 +822,14 @@ def test_common_100_103_030():
                                        "txn_amt": amount_api,
                                        "pmt_mode": payment_mode_api,
                                        "pmt_state": state_api,
-                                       "settlement_status": status_api,
+                                       "settle_status": status_api,
                                        "acquirer_code": acquirer_code_api,
                                        "issuer_code": issuer_code_api,
                                        "txn_type": txn_type_api,
                                        "mid": mid_api,
                                        "tid": tid_api,
                                        "org_code": orgCode_api,
-                                     "date_original":  date_time_converter.from_api_to_datetime_format(date_api)
+                                     "date":  date_time_converter.from_api_to_datetime_format(date_api)
                                      }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -849,12 +849,12 @@ def test_common_100_103_030():
                     "pmt_mode": "UPI",
                     "txn_amt": amount,
                     "upi_txn_status": "FAILED",
-                    "settlement_status": "FAILED",
+                    "settle_status": "FAILED",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "upi_txn_type_db": "COLLECT",
-                    "upi_bank_code_db": "HDFC",
-                    "upi_mc_id_db": upi_mc_id,
+                    "upi_txn_type": "COLLECT",
+                    "upi_bank_code": "HDFC",
+                    "upi_mc_id": upi_mc_id,
                     "intent_status": "ACTIVE"
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -872,13 +872,13 @@ def test_common_100_103_030():
                     "pmt_state": original_state,
                     "pmt_mode":original_payment_mode,
                     "txn_amt": amount,
-                    "settlement_status": original_settlement_status,
+                    "settle_status": original_settlement_status,
                     "acquirer_code": original_acquirer_code,
                     "bank_code": original_bank_code,
                     "upi_txn_status": upi_status_db,
-                    "upi_txn_type_db": upi_txn_type_db,
-                    "upi_bank_code_db": upi_bank_code_db,
-                    "upi_mc_id_db": upi_mc_id_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
                     "intent_status":intent_status
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -1187,17 +1187,17 @@ def test_common_100_103_031():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
-                expected_app_values = {"pmt_mode_original": "UPI",
-                                       "pmt_status_original": "FAILED",
-                                       "txn_amount_original": str(amount),
-                                       "settle_status_original": "FAILED",
-                                       "txn_id_original": original_txn_id,
-                                       "rrn_original": str(original_rrn),
-                                       "customer_name_original": original_customer_name,
-                                       "payer_name_original": original_payer_name,
-                                       "order_id_original": order_id,
-                                       "payment_msg_original": "PAYMENT FAILED",
-                                       "date_original": date_and_time,
+                expected_app_values = {"pmt_mode": "UPI",
+                                       "pmt_status": "FAILED",
+                                       "txn_amt": str(amount),
+                                       "settle_status": "FAILED",
+                                       "txn_id": original_txn_id,
+                                       "rrn": str(original_rrn),
+                                       "customer_name": original_customer_name,
+                                       "payer_name": original_payer_name,
+                                       "order_id": order_id,
+                                       "pmt_msg": "PAYMENT FAILED",
+                                       "date": date_and_time,
                                        }
                 logger.debug(f"expected_app_values: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -1240,17 +1240,17 @@ def test_common_100_103_031():
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {original_txn_id}, {app_payment_msg}")
 
-                actual_app_values = {"pmt_mode_original": app_payment_mode,
-                                    "pmt_status_original": app_payment_status,
-                                    "txn_amount_original": app_amount.split(' ')[1],
-                                    "settle_status_original": app_settlement_status,
-                                    "txn_id_original": app_txn_id,
-                                    "rrn_original": str(app_rrn),
-                                    "customer_name_original": app_customer_name,
-                                    "payer_name_original": app_payer_name,
-                                    "order_id_original": app_order_id,
-                                    "payment_msg_original": app_payment_msg,
-                                    "date_original": app_date_and_time,
+                actual_app_values = {"pmt_mode": app_payment_mode,
+                                    "pmt_status": app_payment_status,
+                                    "txn_amt": app_amount.split(' ')[1],
+                                    "settle_status": app_settlement_status,
+                                    "txn_id": app_txn_id,
+                                    "rrn": str(app_rrn),
+                                    "customer_name": app_customer_name,
+                                    "payer_name": app_payer_name,
+                                    "order_id": app_order_id,
+                                    "pmt_msg": app_payment_msg,
+                                    "date": app_date_and_time,
                                      }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1269,14 +1269,14 @@ def test_common_100_103_031():
                                        "txn_amt": amount,
                                        "pmt_mode": "UPI",
                                        "pmt_state": "FAILED",
-                                       "settlement_status": "FAILED",
+                                       "settle_status": "FAILED",
                                        "acquirer_code": "HDFC",
                                        "issuer_code": "HDFC",
                                        "txn_type": "REMOTE_PAY",
                                        "mid": original_mid,
                                        "tid": original_tid,
                                        "org_code": org_code,
-                                       "date_original": date,
+                                       "date": date,
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -1303,14 +1303,14 @@ def test_common_100_103_031():
                                        "txn_amt": amount_api,
                                        "pmt_mode": payment_mode_api,
                                        "pmt_state": state_api,
-                                       "settlement_status": status_api,
+                                       "settle_status": status_api,
                                        "acquirer_code": acquirer_code_api,
                                        "issuer_code": issuer_code_api,
                                        "txn_type": txn_type_api,
                                        "mid": mid_api,
                                        "tid": tid_api,
                                        "org_code": orgCode_api,
-                                     "date_original":  date_time_converter.from_api_to_datetime_format(date_api)
+                                     "date":  date_time_converter.from_api_to_datetime_format(date_api)
                                      }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -1330,12 +1330,12 @@ def test_common_100_103_031():
                     "pmt_mode": "UPI",
                     "txn_amt": amount,
                     "upi_txn_status": "FAILED",
-                    "settlement_status": "FAILED",
+                    "settle_status": "FAILED",
                     "acquirer_code": "HDFC",
                     "bank_code": "HDFC",
-                    "upi_txn_type_db": "COLLECT",
-                    "upi_bank_code_db": "HDFC",
-                    "upi_mc_id_db": upi_mc_id,
+                    "upi_txn_type": "COLLECT",
+                    "upi_bank_code": "HDFC",
+                    "upi_mc_id": upi_mc_id,
                     "intent_status": "EXPIRED"
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -1353,13 +1353,13 @@ def test_common_100_103_031():
                     "pmt_state": original_state,
                     "pmt_mode":original_payment_mode,
                     "txn_amt": amount,
-                    "settlement_status": original_settlement_status,
+                    "settle_status": original_settlement_status,
                     "acquirer_code": original_acquirer_code,
                     "bank_code": original_bank_code,
                     "upi_txn_status": upi_status_db,
-                    "upi_txn_type_db": upi_txn_type_db,
-                    "upi_bank_code_db": upi_bank_code_db,
-                    "upi_mc_id_db": upi_mc_id_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
                     "intent_status":intent_status
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
