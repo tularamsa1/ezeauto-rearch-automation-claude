@@ -1116,16 +1116,16 @@ def test_common_100_103_035():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                expected_app_values = {"Payment Status": "UPG_REFUNDED",
-                                       "Payment mode": "UPI",
-                                       "Payment Txn ID": txn_id_refunded,
-                                       "Payment Amt": str(amount),
-                                       "Payment Status Original": "UPG_AUTH_REFUNDED",
-                                       "Payment mode Original": "UPI",
-                                       "Payment Txn ID Original": txn_id_original,
-                                       "Payment Amt Original": str(amount),
-                                       "rrn original": str(rr_number_original),
-                                       "rrn refunded": str(rr_number_refunded)}
+                expected_app_values = {"pmt_status_2": "UPG_REFUNDED",
+                                       "pmt_mode_2": "UPI",
+                                       "txn_id_2": txn_id_refunded,
+                                       "pmt_amt_2": str(amount),
+                                       "pmt_status": "UPG_AUTH_REFUNDED",
+                                       "pmt_mode": "UPI",
+                                       "txn_id": txn_id_original,
+                                       "pmt_amt": str(amount),
+                                       "rrn": str(rr_number_original),
+                                       "rrn_2": str(rr_number_refunded)}
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
@@ -1182,16 +1182,16 @@ def test_common_100_103_035():
                 logger.debug(
                     f"Fetching Transaction amount of original txn from transaction history of MPOS app: Txn Amt = {app_payment_amt_original}")
 
-                actual_app_values = {"Payment Status": app_payment_status_refunded.split(':')[1],
-                                     "Payment mode": app_payment_mode_refunded,
-                                     "Payment Txn ID": app_txn_id_refunded,
-                                     "Payment Amt": str(app_payment_amt_refunded),
-                                     "Payment Status Original": app_payment_status_original.split(':')[1],
-                                     "Payment mode Original": app_payment_mode_original,
-                                     "Payment Txn ID Original": txn_id_original,
-                                     "Payment Amt Original": str(app_payment_amt_original),
-                                     "rrn original": str(app_rrn_original),
-                                     "rrn refunded": str(app_rrn_refunded)}
+                actual_app_values = {"pmt_status_2": app_payment_status_refunded.split(':')[1],
+                                     "pmt_mode_2": app_payment_mode_refunded,
+                                     "txn_id_2": app_txn_id_refunded,
+                                     "pmt_amt_2": str(app_payment_amt_refunded),
+                                     "pmt_status": app_payment_status_original.split(':')[1],
+                                     "pmt_mode": app_payment_mode_original,
+                                     "txn_id": txn_id_original,
+                                     "pmt_amt": str(app_payment_amt_original),
+                                     "rrn": str(app_rrn_original),
+                                     "rrn_2": str(app_rrn_refunded)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -1204,14 +1204,14 @@ def test_common_100_103_035():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values = {"Payment Status": "UPG_REFUNDED",
-                                       "Payment mode": "UPI",
-                                       "Payment Amt": str(amount),
-                                       "Payment Status Original": "UPG_AUTH_REFUNDED",
-                                       "Payment mode Original": "UPI",
-                                       "Payment Amt Original": str(amount),
+                expected_api_values = {"pmt_status_2": "UPG_REFUNDED",
+                                       "pmt_mode_2": "UPI",
+                                       "pmt_amt_2": str(amount),
+                                       "pmt_status": "UPG_AUTH_REFUNDED",
+                                       "pmt_mode": "UPI",
+                                       "pmt_amt": str(amount),
                                        # "rrn original": str(rr_number_original),
-                                       "rrn refunded": str(rr_number_refunded)}
+                                       "rrn_2": str(rr_number_refunded)}
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
                                                                         "password": app_password,
@@ -1242,14 +1242,14 @@ def test_common_100_103_035():
                 rrn_api_refunded = response["rrNumber"]
                 logger.debug(f"Fetching Transaction rrn of original txn mode from transaction api : {rrn_api_refunded}")
 
-                actual_api_values = {"Payment Status": status_api_refunded,
-                                     "Payment mode": payment_mode_api_refunded,
-                                     "Payment Amt": str(amount_api_refunded),
-                                     "Payment Status Original": status_api_orginal,
-                                     "Payment mode Original": payment_mode_api_orginal,
-                                     "Payment Amt Original": str(amount_api_original),
+                actual_api_values = {"pmt_status_2": status_api_refunded,
+                                     "pmt_mode_2": payment_mode_api_refunded,
+                                     "pmt_amt_2": str(amount_api_refunded),
+                                     "pmt_status": status_api_orginal,
+                                     "pmt_mode": payment_mode_api_orginal,
+                                     "pmt_amt": str(amount_api_original),
                                      # "rrn original": str(rrn_api_orginal),
-                                     "rrn refunded": str(rrn_api_refunded)}
+                                     "rrn_2": str(rrn_api_refunded)}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
@@ -1262,14 +1262,14 @@ def test_common_100_103_035():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"Payment Status": "UPG_REFUNDED",
-                                      "Payment mode": "UPI",
-                                      "Payment amount": amount,
-                                      "Payment State": "UPG_REFUNDED",
-                                      "Payment Status Original": "UPG_AUTH_REFUNDED",
-                                      "Amount Original": amount,
-                                      "Payment Mode Original": "UPI",
-                                      "Payment State Original": "UPG_REFUNDED"}
+                expected_db_values = {"pmt_status_2": "UPG_REFUNDED",
+                                      "pmt_mode_2": "UPI",
+                                      "pmt_amt_2": amount,
+                                      "pmt_state_2": "UPG_REFUNDED",
+                                      "pmt_status": "UPG_AUTH_REFUNDED",
+                                      "txn_amt": amount,
+                                      "pmt_mode": "UPI",
+                                      "pmt_state": "UPG_REFUNDED"}
                 #
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + txn_id_refunded + "';"
                 logger.debug(
@@ -1301,14 +1301,14 @@ def test_common_100_103_035():
                 state_db_original = result["state"].iloc[0]
                 logger.debug(f"Fetching Transaction state from DB : {state_db_original} ")
 
-                actual_db_values = {"Payment Status": status_db_refunded,
-                                    "Payment mode": payment_mode_db_refunded,
-                                    "Payment amount": amount_db_refunded,
-                                    "Payment State": state_db_refunded,
-                                    "Payment Status Original": status_db_original,
-                                    "Amount Original": amount_db_original,
-                                    "Payment Mode Original": payment_mode_db_original,
-                                    "Payment State Original": state_db_original}
+                actual_db_values = {"pmt_status_2": status_db_refunded,
+                                    "pmt_mode_2": payment_mode_db_refunded,
+                                    "pmt_amt_2": amount_db_refunded,
+                                    "pmt_state_2": state_db_refunded,
+                                    "pmt_status": status_db_original,
+                                    "txn_amt": amount_db_original,
+                                    "pmt_mode": payment_mode_db_original,
+                                    "pmt_state": state_db_original}
 
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1571,10 +1571,10 @@ def test_common_100_103_036():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values = {"Payment Status": "UPG_REFUND_PENDING",
-                                       "Amount": amount,
-                                       "Payment State": "UPG_REFUND_PENDING",
-                                       "Payment Mode": "UPI",
+                expected_api_values = {"pmt_status": "UPG_REFUND_PENDING",
+                                       "txn_amt": amount,
+                                       "pmt_state": "UPG_REFUND_PENDING",
+                                       "pmt_mode": "UPI",
                                        # "rrn": str(rrn)
                                        }
 
@@ -1593,10 +1593,10 @@ def test_common_100_103_036():
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
 
-                actual_api_values = {"Payment Status": status_api,
-                                     "Amount": amount_api,
-                                     "Payment State": state_api,
-                                     "Payment Mode": payment_mode_api,
+                actual_api_values = {"pmt_status": status_api,
+                                     "txn_amt": amount_api,
+                                     "pmt_state": state_api,
+                                     "pmt_mode": payment_mode_api,
                                      # "rrn": str(rrn_api)
                                      }
                 # ---------------------------------------------------------------------------------------------
@@ -1610,11 +1610,12 @@ def test_common_100_103_036():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"Payment Status": "UPG_REFUND_PENDING",
-                                      "Payment State": "UPG_REFUND_PENDING",
-                                      "UPI_Txn_Status": "UPG_REFUND_PENDING",
-                                      "Payment mode": "UPI",
-                                      "Payment amount": amount}
+                expected_db_values = {"pmt_status": "UPG_REFUND_PENDING",
+                                      "pmt_state": "UPG_REFUND_PENDING",
+                                      "upi_txn_status": "UPG_REFUND_PENDING",
+                                      "pmt_mode": "UPI",
+                                      "txn_amt": amount}
+
                 logger.debug(f"expectedDBValues: {expected_db_values}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + txn_id + "'"
@@ -1632,11 +1633,11 @@ def test_common_100_103_036():
                 logger.debug(f"Query result : {result}")
                 upi_status_db = result["status"].iloc[0]
 
-                actual_db_values = {"Payment Status": status_db,
-                                    "Payment State": state_db,
-                                    "Payment mode": payment_mode_db,
-                                    "Payment amount": amount_db,
-                                    "UPI_Txn_Status": upi_status_db}
+                actual_db_values = {"pmt_status": status_db,
+                                    "pmt_state": state_db,
+                                    "pmt_mode": payment_mode_db,
+                                    "txn_amt": amount_db,
+                                    "upi_txn_status": upi_status_db}
 
                 logger.debug(f"actualDBValues : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1649,9 +1650,10 @@ def test_common_100_103_036():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                expected_portal_values = {"Payment Type": "UPI",
-                                          "Payment State": "Upg Refund Pending",
-                                          "Amount": "Rs." + str(amount) + ".00"}
+                expected_portal_values = {"pmt_type": "UPI",
+                                          "pmt_state": "Upg Refund Pending",
+                                          "txn_amt": "Rs." + str(amount) + ".00"}
+
                 logger.debug(f"expectedPortalValues : {expected_portal_values}")
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
@@ -1681,9 +1683,9 @@ def test_common_100_103_036():
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
                 logger.debug(f"Fetching Username from portal : {portal_username} ")
 
-                actual_portal_values = {"Payment Type": portal_txn_type,
-                                        "Payment State": portal_state,
-                                        "Amount": portal_amt}
+                actual_portal_values = {"pmt_type": portal_txn_type,
+                                        "pmt_state": portal_state,
+                                        "txn_amt": portal_amt}
 
                 logger.debug(f"actualPortalValues : {actual_portal_values}")
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
