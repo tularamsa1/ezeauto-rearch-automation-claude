@@ -122,7 +122,7 @@ def test_common_100_102_155():
             txn_type = result['txn_type'].values[0]
             created_time = result['created_time'].values[0]
             query = "select * from bharatqr_txn where id='" + txn_id + "'"
-            logger.debug(f"Query to fetch data from upi_txn table : {query}")
+            logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
             qrcode_uri = result['qrcode_uri'].values[0]
