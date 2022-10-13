@@ -868,7 +868,7 @@ def test_common_100_101_083():
     TC naming code description:
     100: Payment Method
     101: UPI
-    082: TC082
+    083: TC083
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1645,7 +1645,7 @@ def test_common_100_101_083():
                     "pmt_gateway_3": new_txn_payment_gateway_db_2,
                     "upi_txn_type_3": new_txn_upi_txn_type_db_2,
                     "upi_bank_code_3": new_txn_upi_bank_code_db_2,
-                    "upi_mc_id_db_3": new_txn_upi_mc_id_db_2,
+                    "upi_mc_id_3": new_txn_upi_mc_id_db_2,
                     "payer_name_3": new_txn_payer_name_2_db,
                     "order_id_3": new_txn_order_id_db_2,
                     "rrn_3": str(callback_2_rrn_db),
