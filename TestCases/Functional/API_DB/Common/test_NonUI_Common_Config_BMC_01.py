@@ -5,7 +5,7 @@ from termcolor import colored
 import shutil
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -41,7 +41,11 @@ def test_common_300_304_001():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_mp_property_details')
+
+            org_code = merchant_creator.get_config_details_from_excel("BMC")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("BMC")["Username"]
+            password = merchant_creator.get_config_details_from_excel("BMC")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_mp_property_details', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -162,7 +166,7 @@ def test_common_300_304_001():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='BHOPALMUNICIPALFDC' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -217,7 +221,11 @@ def test_common_300_304_002():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_BMC_water')
+
+            org_code = merchant_creator.get_config_details_from_excel("BMC")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("BMC")["Username"]
+            password = merchant_creator.get_config_details_from_excel("BMC")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_BMC_water', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -339,7 +347,7 @@ def test_common_300_304_002():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='BHOPALMUNICIPALFDC' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -391,7 +399,11 @@ def test_common_300_304_003():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_BMC_prop')
+
+            org_code = merchant_creator.get_config_details_from_excel("BMC")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("BMC")["Username"]
+            password = merchant_creator.get_config_details_from_excel("BMC")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_BMC_prop', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -509,7 +521,7 @@ def test_common_300_304_003():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='BHOPALMUNICIPALFDC' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -563,10 +575,12 @@ def test_common_300_304_004():
             try:
                 # ------------------------------------------------------------------------------------------------
                 GlobalVariables.time_calc.execution.start()
-                print(colored(
-                    "Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),
-                    'cyan'))
-                api_details = DBProcessor.get_api_details('fetch_get_mp_property_update_details')
+                print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+
+                org_code = merchant_creator.get_config_details_from_excel("BMC")["MerchantCode"]
+                username = merchant_creator.get_config_details_from_excel("BMC")["Username"]
+                password = merchant_creator.get_config_details_from_excel("BMC")["Password"]
+                api_details = DBProcessor.get_api_details('fetch_get_mp_property_update_details', request_body={"username":username, "password":password})
                 response = APIProcessor.send_request(api_details)
                 response_data = json.dumps(response)
                 success = response['success']
@@ -686,7 +700,7 @@ def test_common_300_304_004():
 
 
             if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-                query = "select * from ca_usergroup_org_map where org_code='BHOPALMUNICIPALFDC' and is_active;"
+                query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
                 logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
                 result = DBProcessor.getValueFromDB(query, "config")
                 logger.debug(f"Query result URL: {result}")
@@ -738,7 +752,11 @@ def test_common_300_304_005():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),
                           'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_mp_water_details')
+
+            org_code = merchant_creator.get_config_details_from_excel("BMC")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("BMC")["Username"]
+            password = merchant_creator.get_config_details_from_excel("BMC")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_mp_water_details', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -857,7 +875,7 @@ def test_common_300_304_005():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='BHOPALMUNICIPALFDC' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")

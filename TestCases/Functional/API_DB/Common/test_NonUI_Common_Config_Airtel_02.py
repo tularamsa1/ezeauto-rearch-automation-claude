@@ -6,7 +6,7 @@ import shutil
 import requests
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -43,7 +43,11 @@ def test_common_300_302_006():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_postpaid_Account')
+
+            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
+            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_postpaid_Account', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -163,7 +167,7 @@ def test_common_300_302_006():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -218,7 +222,11 @@ def test_common_300_302_007():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_fixedLine_Mobile')
+
+            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
+            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_fixedLine_Mobile', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -338,7 +346,7 @@ def test_common_300_302_007():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -393,7 +401,11 @@ def test_common_300_302_008():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_fixedLine_Account')
+
+            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
+            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_fixedLine_Account', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -512,7 +524,7 @@ def test_common_300_302_008():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -565,7 +577,11 @@ def test_common_300_302_009():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_prepaid_details')
+
+            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
+            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_prepaid_details', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -672,7 +688,7 @@ def test_common_300_302_009():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
@@ -724,7 +740,11 @@ def test_common_300_302_010():
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_active_butterfly')
+
+            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
+            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_active_butterfly', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -852,7 +872,7 @@ def test_common_300_302_010():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='AIRTELULB540943' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
