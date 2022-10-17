@@ -1368,7 +1368,7 @@ def test_common_100_101_083():
                         mid_api = elements["mid"]
                         tid_api = elements["tid"]
                         txn_type_api = elements["txnType"]
-                        date_api = elements["postingDate"]
+                        date_api = elements["createdTime"]
                         rrn_api = elements["rrNumber"]
                         order_id_api = elements["orderNumber"]
 
@@ -2005,7 +2005,7 @@ def test_common_100_101_085():
                 actual_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": app_payment_status,
-                    "txn_amount": app_amount.split(' ')[1],
+                    "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
                     "order_id": app_order_id,

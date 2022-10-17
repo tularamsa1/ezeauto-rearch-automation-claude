@@ -1,3 +1,4 @@
+import pandas
 import requests
 import json
 import sqlite3
@@ -574,3 +575,4 @@ def set_merchants_users_available():
         conn.close()
     except Exception as e:
         logger.error(f"Unable to set the status of merchants and users as available, due to error {str(e)}")
+

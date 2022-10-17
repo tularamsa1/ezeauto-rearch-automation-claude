@@ -16,7 +16,7 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator, Ezewallet_Setup
+from Utilities import DirectoryCreator, Ezewallet_processor
 from Utilities import sqlite_processor,merchant_creator,DBProcessor
 from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
@@ -364,7 +364,7 @@ def executeSelectedTestCases():
 def calculateTestCasesCountForParallelExecution():
     config = configparser.ConfigParser()
     config.read(ConfigReader.read_config_paths("System", "automation_suite_path") + "/Configuration/config.ini")
-    testCasesCount = config.get("ParallelExecution", "NumberOfTestCases")
+    testCasesCount = config.get("ParallelExecution", "NumberOfThreads")
     try:
         testCasesCount = int(testCasesCount)
         if testCasesCount < 1:
@@ -396,7 +396,7 @@ def prepareTestExecutionCommand(testCasesDetailDataFrame):
 def getThreadCount():
     config = configparser.ConfigParser()
     config.read(ConfigReader.read_config_paths("System", "automation_suite_path") + "/Configuration/config.ini")
-    testCasesCount = config.get("ParallelExecution", "NumberOfTestCases")
+    testCasesCount = config.get("ParallelExecution", "NumberOfThreads")
     try:
         testCasesCount = int(testCasesCount)
         if testCasesCount < 1:
@@ -411,8 +411,8 @@ def getThreadCount():
 
 
 def prepareDevicesAndDB():
-    if str(ConfigReader.read_config("standalone_features", "config_and_ezewallet")).lower() == "true":
-        Ezewallet_Setup.db_reset()
+    if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
+        Ezewallet_processor.db_reset()
         sqlite_processor.clearAssignerTables()
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
         sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
