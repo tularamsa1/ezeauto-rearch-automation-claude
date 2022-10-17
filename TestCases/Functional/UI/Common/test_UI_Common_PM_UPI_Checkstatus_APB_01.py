@@ -68,6 +68,7 @@ def test_common_100_101_073():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -103,28 +104,35 @@ def test_common_100_101_073():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response from the check status api is : {response}")
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and id = '" + Txn_id + "';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
-            txn_id = result['id'].values[0]
-            status = result['status'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
             payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
             org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
-            posting_date = result['posting_date'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
             upi_mc_id = result['id'].values[0]
+            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
             tid = result['tid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {tid}")
             mid = result['mid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -144,7 +152,7 @@ def test_common_100_101_073():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
@@ -152,11 +160,8 @@ def test_common_100_101_073():
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    # "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -178,21 +183,15 @@ def test_common_100_101_073():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -207,12 +206,9 @@ def test_common_100_101_073():
                     "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id,
                     "rrn": str(app_rrn),
-                    # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
-                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -227,7 +223,7 @@ def test_common_100_101_073():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -237,16 +233,17 @@ def test_common_100_101_073():
                     "issuer_code": "AIRP",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
+                api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = response["paymentMode"]
@@ -259,8 +256,7 @@ def test_common_100_101_073():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -271,7 +267,6 @@ def test_common_100_101_073():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -355,7 +350,6 @@ def test_common_100_101_073():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
                 expected_portal_values = {
                     "pmt_state": "Settled", "pmt_type": "UPI",
                     "txn_amt": "Rs." + str(amount) + ".00", "username": app_username}
@@ -398,19 +392,17 @@ def test_common_100_101_073():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_charge_slip_values = {
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
                     'time': txn_time, 'AUTH CODE': ""
                 }
-                receipt_validator.perform_charge_slip_validations(txn_id,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_charge_slip_values)
+                receipt_validator.perform_charge_slip_validations(
+                    txn_id, {"username": app_username, "password": app_password}, expected_charge_slip_values)
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -468,6 +460,7 @@ def test_common_100_101_074():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -483,48 +476,55 @@ def test_common_100_101_074():
             amount = random.randint(100, 200)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('upiqrGenerate',
-                                                      request_body={"username": app_username, "password": app_password,
-                                                                    "amount": str(amount),
-                                                                    "orderNumber": str(order_id)})
+            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
+                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
+            })
             response = APIProcessor.send_request(api_details)
+            txn_id = response["txnId"]
+            logger.debug(f"Fetching txn_id from the API_OUTPUT, txn_id : {txn_id}")
 
-            Txn_id = response["txnId"]
-            logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {Txn_id}")
-
-            api_details = DBProcessor.get_api_details('stopPayment',
-                                                      request_body={"username": app_username, "password": app_password,
-                                                                    "txnId": str(Txn_id)})
+            api_details = DBProcessor.get_api_details('stopPayment', request_body={
+                "username": app_username, "password": app_password, "txnId": str(txn_id)
+            })
             APIProcessor.send_request(api_details)
-
-            api_details = DBProcessor.get_api_details('paymentStatus',
-                                                      request_body={"username": app_username, "password": app_password,
-                                                                    "txnId": str(Txn_id)})
+            logger.debug(f"response from the stopPayment api is : {response}")
+            api_details = DBProcessor.get_api_details('paymentStatus', request_body={
+                "username": app_username, "password": app_password, "txnId": str(txn_id)
+            })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response from the check status api is : {response}")
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and id = '" + Txn_id + "';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+
+            query = "select * from txn where id='" + txn_id + "';"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
-            txn_id = result['id'].values[0]
-            status = result['status'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
             payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
             org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
-            posting_date = result['posting_date'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
             upi_mc_id = result['id'].values[0]
+            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
             tid = result['tid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {tid}")
             mid = result['mid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -545,7 +545,7 @@ def test_common_100_101_074():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
@@ -553,11 +553,8 @@ def test_common_100_101_074():
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT FAILED",
-                    # "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -580,21 +577,15 @@ def test_common_100_101_074():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -609,12 +600,9 @@ def test_common_100_101_074():
                     "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id,
                     "rrn": str(app_rrn),
-                    # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
-                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -628,7 +616,7 @@ def test_common_100_101_074():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "FAILED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -638,16 +626,17 @@ def test_common_100_101_074():
                     "issuer_code": "AIRP",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
+                    "username": app_username, "password": app_password
+                })
+                logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = response["paymentMode"]
@@ -660,7 +649,6 @@ def test_common_100_101_074():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
                 date_api = response["postingDate"]
 
                 actual_api_values = {
@@ -672,7 +660,6 @@ def test_common_100_101_074():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -773,7 +760,6 @@ def test_common_100_101_074():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
         # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
@@ -789,10 +775,7 @@ def test_common_100_101_076():
     """
     Sub Feature Code: UI_Common_PM_UPI_CheckStatus_via_API_After_Expiry_APB
     Sub Feature Description: Verification of a upi txn after expiry for APB using check status api
-    TC naming code description:
-    100: Payment Method
-    101: UPI
-    076: TC76
+    TC naming code description: 100: Payment Method, 101: UPI, 076: TC76
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -833,6 +816,7 @@ def test_common_100_101_076():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -872,34 +856,40 @@ def test_common_100_101_076():
             time.sleep(61)
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn number is : {rrn}")
-            txn_id = result['id'].values[0]
-            logger.debug(f"fetched txn_id is : {txn_id}")
-            status = result['status'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
             payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
             org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
-            posting_date = result['posting_date'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
             upi_mc_id = result['id'].values[0]
+            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
             tid = result['tid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {tid}")
             mid = result['mid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {mid}")
 
-            api_details = DBProcessor.get_api_details('paymentStatus',
-                                                      request_body={"username": app_username, "password": app_password,
-                                                                    "txnId": str(txn_id)})
+            api_details = DBProcessor.get_api_details('paymentStatus', request_body={
+                "username": app_username, "password": app_password, "txnId": str(txn_id)
+            })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after sending the request for the check status : {response}")
 
@@ -923,7 +913,7 @@ def test_common_100_101_076():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "EXPIRED",
@@ -931,11 +921,8 @@ def test_common_100_101_076():
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT FAILED",
-                    # "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -955,21 +942,15 @@ def test_common_100_101_076():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -984,16 +965,12 @@ def test_common_100_101_076():
                     "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id,
                     "rrn": str(app_rrn),
-                    # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
-                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
-
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -1004,7 +981,7 @@ def test_common_100_101_076():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "EXPIRED",
                     "txn_amt": amount, "pmt_mode": "UPI",
@@ -1014,16 +991,17 @@ def test_common_100_101_076():
                     "issuer_code": "AIRP",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
+                    "username": app_username, "password": app_password
+                })
+                logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = response["paymentMode"]
@@ -1036,8 +1014,7 @@ def test_common_100_101_076():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1048,11 +1025,9 @@ def test_common_100_101_076():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1122,7 +1097,6 @@ def test_common_100_101_076():
                     "tid": tid_db
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
-
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -1149,7 +1123,6 @@ def test_common_100_101_076():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
         # -------------------------------------------End of Validation---------------------------------------------
 
     finally:

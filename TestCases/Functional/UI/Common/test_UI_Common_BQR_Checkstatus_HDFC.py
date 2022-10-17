@@ -1,10 +1,8 @@
 import random
-import shutil
 import sys
 from datetime import datetime
 from time import sleep
 import pytest
-from termcolor import colored
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -1281,12 +1279,13 @@ def test_common_100_102_085():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(posting_date)
-                expected_api_values = {"pmt_status": "PENDING","txn_amt": amount,"pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "PENDING","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "PENDING", "settle_status": "PENDING",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code,"date": date,
                                        "real_code": "BHARATQR_CHECKSTATUS_AMOUNT_MISMATCH"}
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
                                                                         "app_password": app_password,
@@ -1294,7 +1293,7 @@ def test_common_100_102_085():
                 logger.debug("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 settlement_status_api = response["settlementStatus"]
@@ -1324,11 +1323,11 @@ def test_common_100_102_085():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"txn_amt": amount,"pmt_mode": "BHARATQR","pmt_status": "PENDING",
+                expected_db_values = {"txn_amt": float(amount),"pmt_mode": "BHARATQR","pmt_status": "PENDING",
                                       "pmt_state": "PENDING","acquirer_code" : "HDFC",
                                       "mid" :mid, "tid" : tid, "pmt_gateway": "HDFC",
                                       "settle_status": "PENDING",
-                                      "bqr_pmt_state": "PENDING", "bqr_txn_amt": amount,
+                                      "bqr_pmt_state": "PENDING", "bqr_txn_amt": float(amount),
                                       "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
                                       "bqr_bank_code": "HDFC",
                                       "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
@@ -1340,7 +1339,7 @@ def test_common_100_102_085():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
+                amount_db = float(result["amount"].iloc[0])
                 payment_mode_db = result["payment_mode"].iloc[0]
                 payment_status_db = result["status"].iloc[0]
                 payment_state_db = result["state"].iloc[0]
@@ -1355,15 +1354,13 @@ def test_common_100_102_085():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 bqr_state_db = result["state"].iloc[0]
-                bqr_amount_db = int(result["txn_amount"].iloc[0])
+                bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
                 brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
                 bqr_org_code_db = result['org_code'].values[0]
-
-
 
                 actual_db_values = {"txn_amt": amount_db,"pmt_mode": payment_mode_db,
                                     "pmt_status": payment_status_db, "pmt_state": payment_state_db,

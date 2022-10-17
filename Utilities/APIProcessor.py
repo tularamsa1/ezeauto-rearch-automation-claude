@@ -56,7 +56,7 @@ def send_request(api_details):
         logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         psp_base_url = result['psp_base_url'].values[0]
-        logger.debug(f"psp_base_url from the upi_merchant_config table is : {psp_base_url}")
+        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
         url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
         resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
         update_api_details_to_report_variables(resp)
@@ -67,7 +67,7 @@ def send_request(api_details):
 
     if api_details['ApiName'] == 'callbackBQRKotakAtos' or api_details['ApiName'] == 'callbackUpiKotakAtos':
         router_ip = Base_Actions.get_environment("str_exe_env_ip")
-        url = str(url).replace('https://dev11.ezetap.com', str(protocol+"://" + router_ip + ":8002"))
+        url = str(protocol+"://" + router_ip + ":8002") + endPoint
         resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
         update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)

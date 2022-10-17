@@ -1,11 +1,9 @@
 import random
-import shutil
 import sys
 import time
 from datetime import datetime
 
 import pytest
-from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
@@ -16,7 +14,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, \
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -1047,8 +1045,7 @@ def test_common_100_101_009():
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
-                      'cyan'))
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")

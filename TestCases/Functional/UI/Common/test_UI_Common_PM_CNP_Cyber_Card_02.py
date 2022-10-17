@@ -305,7 +305,8 @@ def test_common_100_103_007():
 
                 payment_auth_code = txnHistoryPage.fetch_auth_code_text()
                 logger.info(f"Fetching txn auth code from txn history for the txn : {txn_txn_id}, {payment_auth_code}")
-                actualAppValues = {"pmt_mode": payment_mode, "pmt_status": payment_status.split(':')[1],
+                actualAppValues = {"pmt_mode": payment_mode,
+                                   "pmt_status": payment_status.split(':')[1],
                                    "txn_amt": app_amount.split(' ')[1],
                                    "txn_id": app_txn_id,
                                    "rrn": payment_rrn,
@@ -364,11 +365,16 @@ def test_common_100_103_007():
                         txnType_api = elements["txnType"]
                         orgCode_api = elements["orgCode"]
 
-                actualAPIValues = {"pmt_status": status_api, "txn_amt": amount_api,
-                                   "pmt_mode": "CNP", "pmt_state": cnp_txn_state,
-                                   "acquirer_code": acquirer_code__api, "settle_status": settlementStatus_api,
-                                   "rrn": rrNumber_api, "issuer_code": issuerCode_api,
-                                   "txn_type": txnType_api, "org_code": orgCode_api,
+                actualAPIValues = {"pmt_status": status_api,
+                                   "txn_amt": amount_api,
+                                   "pmt_mode": "CNP",
+                                   "pmt_state": cnp_txn_state,
+                                   "acquirer_code": acquirer_code__api,
+                                   "settle_status": settlementStatus_api,
+                                   "rrn": rrNumber_api,
+                                   "issuer_code": issuerCode_api,
+                                   "txn_type": txnType_api,
+                                   "org_code": orgCode_api,
                                    "date": date}
 
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
@@ -393,7 +399,6 @@ def test_common_100_103_007():
                                     "txn_amt": amount,
                                     "settle_status": "SETTLED",
                                     "pmt_gateway": "CYBERSOURCE",
-                                    "payment_mode": "CNP",
                                     "auth_code": txn_auth_code,
                                     "cnp_pmt_gateway": "CYBERSOURCE",
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
@@ -425,7 +430,6 @@ def test_common_100_103_007():
                                   "txn_amt": amount,
                                   "settle_status": settle_status_db,
                                   "pmt_gateway": payment_gateway_db,
-                                  "payment_mode": pmt_mode_db,
                                   "auth_code": cnp_txn_auth_code,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
@@ -664,6 +668,7 @@ def test_common_100_103_008():
                                      "pmt_status": "FAILED",
                                      "txn_amt": str(amount),
                                      "txn_id": Txn_id}
+
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -688,6 +693,7 @@ def test_common_100_103_008():
                                    "pmt_status": payment_status.split(':')[1],
                                    "txn_amt": app_amount.split(' ')[1],
                                    "txn_id": app_txn_id}
+
                 logger.debug(f"actualAppValues: {actualAppValues}")
 
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -708,6 +714,7 @@ def test_common_100_103_008():
                 expectedAPIValues = {"pmt_status": "FAILED",
                                      "txn_amt": amount,
                                      "pmt_mode": "CNP"}
+
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": app_username,
@@ -723,6 +730,7 @@ def test_common_100_103_008():
                 actualAPIValues = {"pmt_status": status_api,
                                    "txn_amt": amount_api,
                                    "pmt_mode": payment_mode_api}
+
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI= expectedAPIValues, actualAPI=actualAPIValues)
@@ -744,6 +752,7 @@ def test_common_100_103_008():
                                     "pmt_state": "FAILED",
                                     "pmt_mode": "CNP",
                                     "txn_amt": amount}
+
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
@@ -759,6 +768,7 @@ def test_common_100_103_008():
                                   "pmt_state": state_db,
                                   "pmt_mode": payment_mode_db,
                                   "txn_amt": amount}
+
                                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 # ---------------------------------------------------------------------------------------------
