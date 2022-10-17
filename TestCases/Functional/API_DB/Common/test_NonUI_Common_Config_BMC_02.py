@@ -5,7 +5,7 @@ from termcolor import colored
 import shutil
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, merchant_creator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, Config_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -44,9 +44,9 @@ def test_common_300_304_006():
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),
                           'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("BMC")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("BMC")["Username"]
-            password = merchant_creator.get_config_details_from_excel("BMC")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("BMC")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("BMC")["Username"]
+            password = Config_processor.get_config_details_from_excel("BMC")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_mp_water_update_details', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)

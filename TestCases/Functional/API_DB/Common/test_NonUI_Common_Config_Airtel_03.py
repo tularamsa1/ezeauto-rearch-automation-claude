@@ -6,7 +6,7 @@ from termcolor import colored
 import shutil
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, merchant_creator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, Config_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -44,9 +44,9 @@ def test_common_300_302_011():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
-            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("Airtel")["Username"]
+            password = Config_processor.get_config_details_from_excel("Airtel")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_Order_Details', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
@@ -200,9 +200,9 @@ def test_common_300_302_012():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
-            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("Airtel")["Username"]
+            password = Config_processor.get_config_details_from_excel("Airtel")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_active_mobile', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
@@ -355,9 +355,9 @@ def test_common_300_302_013():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("Airtel")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("Airtel")["Username"]
-            password = merchant_creator.get_config_details_from_excel("Airtel")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("Airtel")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("Airtel")["Username"]
+            password = Config_processor.get_config_details_from_excel("Airtel")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_active_landline', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)

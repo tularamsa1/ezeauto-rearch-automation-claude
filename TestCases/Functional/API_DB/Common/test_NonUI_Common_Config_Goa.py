@@ -8,7 +8,7 @@ from termcolor import colored
 
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, merchant_creator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, Config_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -45,9 +45,9 @@ def test_common_300_301_001():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("Goa")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("Goa")["Username"]
-            password = merchant_creator.get_config_details_from_excel("Goa")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("Goa")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("Goa")["Username"]
+            password = Config_processor.get_config_details_from_excel("Goa")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_tax_outstandingV3', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
@@ -236,9 +236,9 @@ def test_common_300_301_002():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("Goa")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("Goa")["Username"]
-            password = merchant_creator.get_config_details_from_excel("Goa")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("Goa")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("Goa")["Username"]
+            password = Config_processor.get_config_details_from_excel("Goa")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_trade_outstanding', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
@@ -387,9 +387,9 @@ def test_common_300_301_003():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
 
-            org_code = merchant_creator.get_config_details_from_excel("Goa")["MerchantCode"]
-            username = merchant_creator.get_config_details_from_excel("Goa")["Username"]
-            password = merchant_creator.get_config_details_from_excel("Goa")["Password"]
+            org_code = Config_processor.get_config_details_from_excel("Goa")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("Goa")["Username"]
+            password = Config_processor.get_config_details_from_excel("Goa")["Password"]
             api_details = DBProcessor.get_api_details('fetch_get_rental_outstanding', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
