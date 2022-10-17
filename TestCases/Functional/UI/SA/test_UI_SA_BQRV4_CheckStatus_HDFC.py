@@ -212,7 +212,7 @@ def test_sa_100_102_049():
             try:
                 date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {"Payment Status": "AUTHORIZED",
-                                       "Amount": amount, "Payment Mode": "UPI",
+                                       "Amount": float(amount), "Payment Mode": "UPI",
                                        "Payment State": "SETTLED", "rrn": str(rrn),
                                        "settlement_status": "SETTLED",
                                        "acquirer_code": "HDFC",
@@ -221,14 +221,17 @@ def test_sa_100_102_049():
                                        "auth_code": auth_code, "date": date
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
