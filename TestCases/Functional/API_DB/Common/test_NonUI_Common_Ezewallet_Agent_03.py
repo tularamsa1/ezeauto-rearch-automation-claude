@@ -9,7 +9,7 @@ from termcolor import colored
 
 from Configuration import Configuration
 from DataProvider import GlobalVariables, GlobalConstants
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, Ezewallet_Setup
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -32,11 +32,11 @@ def test_common_200_202_011():
             colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
-        agent_bal_check = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+        agent_bal_check = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
         balance = DBProcessor.getValueFromDB(agent_bal_check, "closedloop")
         agent_balance_before = float(balance["balance"].iloc[0])
 
-        settlement_bal_check = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+        settlement_bal_check = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + Ezewallet_Setup.org_code + "';"
         balance = DBProcessor.getValueFromDB(settlement_bal_check, "closedloop")
         settlement_bal_before = float(balance["balance"].iloc[0])
 
@@ -54,8 +54,8 @@ def test_common_200_202_011():
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),
                           'cyan'))
             api_details = DBProcessor.get_api_details('Cash_Collection',
-                                                      request_body={"username": GlobalConstants.AGENT_USER,
-                                                                    "password": GlobalConstants.AGENT_PASSWORD,
+                                                      request_body={"username": Ezewallet_Setup.agent_user,
+                                                                    "password": Ezewallet_Setup.agent_password,
                                                                     "amount": "0"})
 
             original_amount_cashpay = float(api_details["RequestBody"]["amount"])
@@ -105,7 +105,7 @@ def test_common_200_202_011():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expectedAPIValues = {"success": False, "username": GlobalConstants.AGENT_USER,
+                expectedAPIValues = {"success": False, "username": Ezewallet_Setup.agent_user,
                                      "api_message_title": "DECLINED", "error_code": "EZETAP_0000153",
                                      "error_message": "Transaction declined. Amount entered is less than minimum allowed for the transaction. Minimum Allowed: 1",
                                      "real_code": "AMOUNT_LESS_THAN_ALLWD",
@@ -113,7 +113,7 @@ def test_common_200_202_011():
                                      "balance": agent_balance_before}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
-                query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query_agent_bal = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
                 result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                 agentbal_after_cash_payment = float(result_agent_bal["balance"].iloc[0])
 
@@ -127,7 +127,7 @@ def test_common_200_202_011():
                 Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
 
             except Exception as e:
-                msg = "Cash Payment has been failed" + GlobalConstants.AGENT_USER
+                msg = "Cash Payment has been failed" + Ezewallet_Setup.agent_user
                 print("API Validation failed due to exception - " + str(e))
                 logger.exception(f"API Validation failed due to exception - {e}")
                 msg = msg + "\n"
@@ -147,8 +147,8 @@ def test_common_200_202_011():
                                     "settlement_balance": settlement_bal_before}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_agent_bal = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
-                query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+                query_agent_bal = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
+                query_settlement_bal = "select balance from account where account_type = 'COLLECTION_ACCOUNT' and entity_id = '" + Ezewallet_Setup.org_code + "';"
                 logger.debug(f"Query to fetch data from account table : {query_agent_bal}, {query_settlement_bal}")
                 result_agent_bal = DBProcessor.getValueFromDB(query_agent_bal, "closedloop")
                 result_settlement_bal = DBProcessor.getValueFromDB(query_settlement_bal, "closedloop")
@@ -215,11 +215,11 @@ def test_common_200_202_012():
         print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
-        agent_bal_check = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+        agent_bal_check = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
         balance = DBProcessor.getValueFromDB(agent_bal_check, "closedloop")
         agent_balance_before = float(balance["balance"].iloc[0])
 
-        agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+        agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + Ezewallet_Setup.org_code + "';"
         result = DBProcessor.getValueFromDB(agency_bal_check, "closedloop")
         agency_balance_before = float(result["balance"].iloc[0])
 
@@ -236,9 +236,9 @@ def test_common_200_202_012():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
             api_details = DBProcessor.get_api_details('Withdraw_From_Agent_Agency',
-                                                      request_body={"username": GlobalConstants.ADMIN_USER,
-                                                                    "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                    "agentId": GlobalConstants.AGENT_USER})
+                                                      request_body={"username": Ezewallet_Setup.admin_user,
+                                                                    "password": Ezewallet_Setup.admin_password,
+                                                                    "agentId": Ezewallet_Setup.agent_user})
             original_withdraw_amt = float(api_details['RequestBody']['amount'])
             response = APIProcessor.send_request(api_details)
             withdraw_pay_success = response['success']
@@ -285,7 +285,7 @@ def test_common_200_202_012():
                                      "debit_acc_Balance": agent_balance_before - original_withdraw_amt,
                                      "bal_after_withdraw": agent_balance_before - original_withdraw_amt}
 
-                    query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                    query = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
                     result = DBProcessor.getValueFromDB(query, "closedloop")
                     agent_bal_after = float(result["balance"].iloc[0])
 
@@ -302,7 +302,7 @@ def test_common_200_202_012():
                     raise Exception("Withdraw from Agent Failed")
 
             except Exception as e:
-                msg = "Withdraw has been failed" + GlobalConstants.AGENT_USER
+                msg = "Withdraw has been failed" + Ezewallet_Setup.agent_user
                 print("API Validation failed due to exception - "+str(e))
                 logger.exception(f"API Validation failed due to exception - {e}")
                 msg = msg + "\n"
@@ -319,7 +319,7 @@ def test_common_200_202_012():
                 logger.debug(f"Agent Balance before Withdraw : {agent_balance_before}")
                 logger.debug(f"Actual amount for Withdraw  : {original_withdraw_amt}")
 
-                expectedDBValues = {"clw_txn_amt":original_withdraw_amt,"clw_merchant_id":GlobalConstants.ORG,"clw_transfer_mode":"WITHDRAW",
+                expectedDBValues = {"clw_txn_amt":original_withdraw_amt,"clw_merchant_id":Ezewallet_Setup.org_code,"clw_transfer_mode":"WITHDRAW",
                                     "clw_transfer_status":"SUCCESS","clw_transfer_type":"MANUAL","clw_leg_amt_cr":original_withdraw_amt,
                                     "clw_account_entity_type_cr":"MERCHANT","clw_source_type_cr":"CREDIT","clw_leg_amt_dt":original_withdraw_amt,
                                     "clw_account_entity_type_dt":"AGENT","clw_source_type_dt":"DEBIT", "agent_balance": (agent_balance_before - original_withdraw_amt)}
@@ -351,7 +351,7 @@ def test_common_200_202_012():
                 clw_account_entity_type_dt = result_wallet_txn_leg_dt['account_entity_type'].iloc[0]
                 clw_source_type_dt = result_wallet_txn_leg_dt['source_type'].iloc[0]
 
-                query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
@@ -418,11 +418,11 @@ def test_common_200_202_013():
         print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
-        agent_bal_check = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+        agent_bal_check = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
         balance = DBProcessor.getValueFromDB(agent_bal_check, "closedloop")
         agent_balance_before = float(balance["balance"].iloc[0])
 
-        agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+        agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + Ezewallet_Setup.org_code + "';"
         result = DBProcessor.getValueFromDB(agency_bal_check, "closedloop")
         agency_balance_before = float(result["balance"].iloc[0])
 
@@ -439,15 +439,15 @@ def test_common_200_202_013():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
             api_details = DBProcessor.get_api_details('Withdraw_From_Agent_Agency',
-                                                      request_body={"username": GlobalConstants.ADMIN_USER,
-                                                                    "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                    "agentId": GlobalConstants.AGENT_USER})
+                                                      request_body={"username": Ezewallet_Setup.admin_user,
+                                                                    "password": Ezewallet_Setup.admin_password,
+                                                                    "agentId": Ezewallet_Setup.agent_user})
             original_withdraw_amt = float(api_details['RequestBody']['amount'])
 
             api_details = DBProcessor.get_api_details('Withdraw_From_Agent_Agency',
-                                                      request_body={"username": GlobalConstants.ADMIN_USER,
-                                                                    "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                    "agentId": GlobalConstants.AGENT_USER,
+                                                      request_body={"username": Ezewallet_Setup.admin_user,
+                                                                    "password": Ezewallet_Setup.admin_password,
+                                                                    "agentId": Ezewallet_Setup.agent_user,
                                                                     "amount" : agent_balance_before + (original_withdraw_amt+1)})
             response = APIProcessor.send_request(api_details)
             withdraw_pay_success = response['success']
@@ -481,7 +481,7 @@ def test_common_200_202_013():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                     expectedAPIValues = {"success": False,
-                                     "error_message": "Insufficient funds for ' AGENT " + GlobalConstants.AGENT_USER+ "'"}
+                                     "error_message": "Insufficient funds for ' AGENT " + Ezewallet_Setup.agent_user+ "'"}
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     actualAPIValues = {"success": withdraw_pay_success,
                                        "error_message": error_message}
@@ -492,7 +492,7 @@ def test_common_200_202_013():
 
 
             except Exception as e:
-                msg = "Withdraw has been failed" + GlobalConstants.AGENT_USER
+                msg = "Withdraw has been failed" + Ezewallet_Setup.agent_user
                 print("API Validation failed due to exception - "+str(e))
                 logger.exception(f"API Validation failed due to exception - {e}")
                 msg = msg + "\n"
@@ -512,7 +512,7 @@ def test_common_200_202_013():
                 expectedDBValues = {"agent_balance": (agent_balance_before)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
@@ -570,11 +570,11 @@ def test_common_200_202_014():
         print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
 
-        agent_bal_check = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+        agent_bal_check = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
         balance = DBProcessor.getValueFromDB(agent_bal_check, "closedloop")
         agent_balance_before = float(balance["balance"].iloc[0])
 
-        agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + GlobalConstants.ORG + "';"
+        agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + Ezewallet_Setup.org_code + "';"
         result = DBProcessor.getValueFromDB(agency_bal_check, "closedloop")
         agency_balance_before = float(result["balance"].iloc[0])
 
@@ -592,9 +592,9 @@ def test_common_200_202_014():
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
             api_details = DBProcessor.get_api_details('Withdraw_From_Agent_Agency',
-                                                      request_body={"username": GlobalConstants.ADMIN_USER,
-                                                                    "password": GlobalConstants.ADMIN_PASSWORD,
-                                                                    "agentId": GlobalConstants.AGENT_USER,
+                                                      request_body={"username": Ezewallet_Setup.admin_user,
+                                                                    "password": Ezewallet_Setup.admin_password,
+                                                                    "agentId": Ezewallet_Setup.agent_user,
                                                                     "amount" : agent_balance_before - agent_balance_before})
             response = APIProcessor.send_request(api_details)
             withdraw_pay_success = response['success']
@@ -639,7 +639,7 @@ def test_common_200_202_014():
 
 
             except Exception as e:
-                msg = "Withdraw has been failed" + GlobalConstants.AGENT_USER
+                msg = "Withdraw has been failed" + Ezewallet_Setup.agent_user
                 print("API Validation failed due to exception - "+str(e))
                 logger.exception(f"API Validation failed due to exception - {e}")
                 msg = msg + "\n"
@@ -659,7 +659,7 @@ def test_common_200_202_014():
                 expectedDBValues = {"agent_balance": (agent_balance_before)}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select balance from account where entity_id = '" + GlobalConstants.AGENT_USER + "';"
+                query = "select balance from account where entity_id = '" + Ezewallet_Setup.agent_user + "';"
                 logger.debug(f"Query to fetch data from account table : {query}")
                 result = DBProcessor.getValueFromDB(query, "closedloop")
                 logger.debug(f"Query result URL: {result}")
