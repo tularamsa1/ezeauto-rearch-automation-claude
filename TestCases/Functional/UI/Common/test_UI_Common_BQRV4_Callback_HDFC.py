@@ -263,20 +263,23 @@ def test_common_100_102_046():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_val.db_datetime(posting_date)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": amount,"pmt_mode": "UPI",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "UPI",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date}
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]

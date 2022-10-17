@@ -154,7 +154,7 @@ def test_common_100_102_082():
                 expected_app_values = {"pmt_mode": "UPI", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -200,7 +200,7 @@ def test_common_100_102_082():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      "customer_name": app_customer_name,"settle_status": app_settlement_status,
                                      "payer_name": app_payer_name,"order_id": app_order_id,"auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -213,21 +213,22 @@ def test_common_100_102_082():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(posting_date)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": amount,"pmt_mode": "UPI",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "UPI",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "AXIS", "issuer_code": "AXIS","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date,
                                        "refund_msg" : "Partial Refund is not supported for AXIS transactions." }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
                 rrn_api = response["rrNumber"]
@@ -260,7 +261,7 @@ def test_common_100_102_082():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"txn_amt": amount,"pmt_mode": "UPI","pmt_status": "AUTHORIZED",
+                expected_db_values = {"txn_amt": float(amount),"pmt_mode": "UPI","pmt_status": "AUTHORIZED",
                                       "pmt_state": "SETTLED","acquirer_code" : "AXIS", "bank_name" : "Axis Bank",
                                       "payer_name": payer_name, "mid" :mid, "tid" : tid, "pmt_gateway": "ATOS",
                                       "rrn" : str(rrn), "settle_status": "SETTLED","upi_pmt_status": "AUTHORIZED",
@@ -271,7 +272,7 @@ def test_common_100_102_082():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
+                amount_db = float(result["amount"].iloc[0])
                 payment_mode_db = result["payment_mode"].iloc[0]
                 payment_status_db = result["status"].iloc[0]
                 payment_state_db = result["state"].iloc[0]
