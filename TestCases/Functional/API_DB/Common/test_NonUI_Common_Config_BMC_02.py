@@ -5,7 +5,7 @@ from termcolor import colored
 import shutil
 from Configuration import Configuration
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, Config_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -43,7 +43,11 @@ def test_common_300_304_006():
             GlobalVariables.time_calc.execution.start()
             print(colored("Execution Timer startd in testcase function".center(shutil.get_terminal_size().columns, "="),
                           'cyan'))
-            api_details = DBProcessor.get_api_details('fetch_get_mp_water_update_details')
+
+            org_code = Config_processor.get_config_details_from_excel("BMC")["MerchantCode"]
+            username = Config_processor.get_config_details_from_excel("BMC")["Username"]
+            password = Config_processor.get_config_details_from_excel("BMC")["Password"]
+            api_details = DBProcessor.get_api_details('fetch_get_mp_water_update_details', request_body={"username":username, "password":password})
             response = APIProcessor.send_request(api_details)
             response_data = json.dumps(response)
             success = response['success']
@@ -152,7 +156,7 @@ def test_common_300_304_006():
 
 
         if GlobalVariables.EXCEL_TC_Execution == "Fail" or GlobalVariables.str_api_val_result == "Fail" or GlobalVariables.str_db_val_result == 'Fail':
-            query = "select * from ca_usergroup_org_map where org_code='BHOPALMUNICIPALFDC' and is_active;"
+            query = "select * from ca_usergroup_org_map where org_code='"+org_code+"' and is_active;"
             logger.debug(f"Query to fetch data from ca_usergroup_org_map table : {query}")
             result = DBProcessor.getValueFromDB(query, "config")
             logger.debug(f"Query result URL: {result}")
