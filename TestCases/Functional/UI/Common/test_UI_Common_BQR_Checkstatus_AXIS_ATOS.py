@@ -1109,7 +1109,7 @@ def test_common_100_102_202():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
-                expected_api_values = {"pmt_status": "AUTHORIZED1","txn_amt_2": float(amount_2),"pmt_mode": "BHARATQR",
+                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt_2": float(amount_2),"pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "AXIS", "issuer_code": "AXIS","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
