@@ -24,7 +24,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_037():
     """
-    :Description: Verification of a BQR Partial Refund transaction through API via YES_ATOS
+    :Description: Verification of a BQR Partial Refund transaction through portal via YES_ATOS
     :Sub Feature code: UI_Common_PM_BQR_Partial_Refund_Portal_YES_ATOS_037
     :TC naming code description: 100->Payment Method, 102->BQR, 037-> TC37                    
     """

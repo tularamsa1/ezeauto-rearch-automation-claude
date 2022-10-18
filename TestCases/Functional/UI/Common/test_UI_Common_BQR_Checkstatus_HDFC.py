@@ -1197,6 +1197,13 @@ def test_common_100_102_085():
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
+            api_details = DBProcessor.get_api_details('txnDetails',
+                                                      request_body={"username": app_username,
+                                                                    "app_password": app_password,
+                                                                    "txnId": txn_id})
+            logger.debug("API DETAILS:", api_details)
+            response = APIProcessor.send_request(api_details)
+            real_code_api = response["realCode"]
             api_details = DBProcessor.get_api_details('paymentStatus',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "txnId": txn_id})
@@ -1306,7 +1313,6 @@ def test_common_100_102_085():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 date_api = response["postingDate"]
-                real_code_api = response["realCode"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "settle_status": settlement_status_api,
