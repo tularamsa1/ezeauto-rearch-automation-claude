@@ -41,6 +41,8 @@ def validateAgainstPortal(expectedPortal, actualPortal):
                     else:
                         lst_failed_fields.append(key)
                         print(f"Expected field {key} is not available in the actual values list.")
+                        check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                             f" the actual values list.")
                         GlobalVariables.str_portal_val_result = "Fail"
                 print_validation_result(expectedPortal, actualPortal, lst_passed_fields, lst_failed_fields)
         else:
@@ -91,6 +93,8 @@ def validateAgainstAPP(expectedApp, actualApp):
                     else:
                         lst_failed_fields.append(key)
                         print(f"Expected field {key} is not available in the actual values list.")
+                        check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                             f" the actual values list.")
                         GlobalVariables.str_app_val_result = "Fail"
                 print_validation_result(expectedApp, actualApp, lst_passed_fields, lst_failed_fields)
         else:
@@ -139,6 +143,8 @@ def validationAgainstAPI(expectedAPI, actualAPI):
                     else:
                         lst_failed_fields.append(key)
                         print(f"Expected field {key} is not available in the actual values list.")
+                        check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                             f" the actual values list.")
                         GlobalVariables.str_api_val_result = "Fail"
                 print_validation_result(expectedAPI, actualAPI, lst_passed_fields, lst_failed_fields)
         else:
@@ -187,6 +193,8 @@ def validateAgainstDB(expectedDB, actualDB):
                     else:
                         lst_failed_fields.append(key)
                         print(f"Expected field {key} is not available in the actual values list.")
+                        check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                             f" the actual values list.")
                         GlobalVariables.str_db_val_result = "Fail"
                 print_validation_result(expectedDB, actualDB, lst_passed_fields, lst_failed_fields)
         else:
@@ -237,6 +245,8 @@ def validateAgainstUI(expectedUI, actualUI):
                     else:
                         lst_failed_fields.append(key)
                         print(f"Expected field {key} is not available in the actual values list.")
+                        check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                             f" the actual values list.")
                         GlobalVariables.str_ui_val_result = "Fail"
                 print_validation_result(expectedUI, actualUI, lst_passed_fields, lst_failed_fields)
         else:
