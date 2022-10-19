@@ -1596,8 +1596,8 @@ def test_common_100_103_021():
                                      "customer_name_2": app_customer_name_1,
                                      "payer_name_2": app_payer_name_1,
                                      "order_id_2": app_order_id_1,
-                                     "payment_msg_2": app_payment_msg_1,
                                      "date_2": app_date_and_time_1,
+                                     "pmt_msg_2": app_payment_msg_2,
 
                                      "pmt_mode_3": app_payment_mode_2,
                                      "pmt_status_3": app_payment_status_2,
