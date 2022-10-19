@@ -250,6 +250,12 @@ def setStylesForExcel():
                 sheet.cell(row, column).fill = PatternFill(start_color='90EE90', end_color='90EE90', fill_type='solid')
             elif sheet.cell(row, column).value == "Fail":
                 sheet.cell(row, column).fill = PatternFill(start_color='FF6347', end_color='FF6347', fill_type='solid')
+            elif sheet.cell(row, column).value == "N/A":
+                sheet.cell(row, column).fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')
+            elif sheet.cell(row, column).value == "DNE":
+                sheet.cell(row, column).fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')
+            elif sheet.cell(row, column).value == "EVD":
+                sheet.cell(row, column).fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')
 
     for i in range(2, sheet.max_row + 1):
         colNum_overallStatus = ExcelProcessor.getColumnNumberFromName("", sheet, 'OverAll Results')
