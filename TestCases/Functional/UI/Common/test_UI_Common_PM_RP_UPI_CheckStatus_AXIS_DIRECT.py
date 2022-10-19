@@ -757,8 +757,8 @@ def test_common_100_103_079():
 @pytest.mark.appVal
 def test_common_100_103_085():
     """
-    UI_Common_PM_RP_UPI_Failed_Via_CheckStatus_HDFC
-    Verification of a Remote Pay failed UPI txn via HDFC using check status
+    UI_Common_PM_RP_upi_Checkstatus_Amount_Mismatch_AXIS_DIRECT
+    Verification a Remote Pay upi checkstatus using amount mismatch
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -814,7 +814,7 @@ def test_common_100_103_085():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             logger.info("Test Case Execution Started for the test case : test_com_100_103_006")
-            amount = 999
+            amount = 260
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
@@ -867,7 +867,6 @@ def test_common_100_103_085():
                 order_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
             txn_id = result['id'].values[0]
             status = result['status'].values[0]
             customer_name = result['customer_name'].values[0]
@@ -1139,7 +1138,7 @@ def test_common_100_103_085():
 @pytest.mark.appVal
 def test_common_100_103_115():
     """
-    UI_Common_PM_RP_RP_UPI_CheckStatus_After_timeout_AXIS_DIRECT
+    UI_Common_PM_RP_UPI_CheckStatus_After_timeout_AXIS_DIRECT
     Verification of a Remote Pay upi txn after timeout for Axis Direct using check status
     TC naming code description:
     100: Payment Method
@@ -1158,6 +1157,9 @@ def test_common_100_103_115():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
+        app_username = "6548522513"
+        app_password = "A123457"
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
@@ -1196,7 +1198,7 @@ def test_common_100_103_115():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             logger.info("Test Case Execution Started for the test case : test_com_100_103_006")
-            amount = 999
+            amount = 10
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
@@ -1249,7 +1251,6 @@ def test_common_100_103_115():
                 order_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
             txn_id = result['id'].values[0]
             status = result['status'].values[0]
             customer_name = result['customer_name'].values[0]
@@ -1297,15 +1298,15 @@ def test_common_100_103_115():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                                 "pmt_mode": "UPI",
-                                "pmt_status": "PENDING",
+                                "pmt_status": "FAILED",
                                 "txn_amt": str(amount),
-                                "settle_status": "PENDING",
+                                "settle_status": "FAILED",
                                 "txn_id": txn_id,
                                 # "rrn": str(rrn),
-                                "customer_name": customer_name,
+                                # "customer_name": customer_name,
                                 # "payer_name": payer_name,
                                 "order_id": order_id,
-                                "payment_msg": "PAYMENT PENDING",
+                                "payment_msg": "PAYMENT FAILED",
                                 "date": date_and_time
                                      }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1327,10 +1328,10 @@ def test_common_100_103_115():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                # app_customer_name = txn_history_page.fetch_customer_name_text()
+                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                # logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
                 # app_payer_name = txn_history_page.fetch_payer_name_text()
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
@@ -1348,7 +1349,7 @@ def test_common_100_103_115():
                                 "txn_amt": app_amount.split(' ')[1],
                                 "txn_id": app_txn_id,
                                 # "rrn": str(app_rrn),
-                                "customer_name": app_customer_name,
+                                # "customer_name": app_customer_name,
                                 "settle_status": app_settlement_status,
                                 # "payer_name": app_payer_name,
                                 "order_id": app_order_id,
@@ -1368,12 +1369,12 @@ def test_common_100_103_115():
                 try:
                     date = date_time_converter.db_datetime(created_time)
                     expected_api_values = {
-                        "pmt_status": "PENDING",
+                        "pmt_status": "FAILED",
                         "txn_amt": amount,
                         "pmt_mode": "UPI",
-                        "pmt_state": "PENDING",
+                        "pmt_state": "FAILED",
                         # "rrn": str(rrn),
-                        "settle_status": "PENDING",
+                        "settle_status": "FAILED",
                         # "acquirer_code": "AXIS",
                         # "issuer_code": "AXIS",
                         "txn_type": txn_type,
@@ -1436,12 +1437,12 @@ def test_common_100_103_115():
                 logger.info(f"Started DB validation for the test case : {testcase_id}")
                 try:
                     expected_db_values = {
-                        "pmt_status": "PENDING",
-                        "pmt_state": "PENDING",
+                        "pmt_status": "FAILED",
+                        "pmt_state": "FAILED",
                         "pmt_mode": "UPI",
                         "txn_amt": amount,
-                        "upi_txn_status": "PENDING",
-                        "settle_status": "PENDING",
+                        "upi_txn_status": "FAILED",
+                        "settle_status": "FAILED",
                         "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                         "upi_bank_code": "AXIS_DIRECT",
                         "upi_mc_id": upi_mc_id,

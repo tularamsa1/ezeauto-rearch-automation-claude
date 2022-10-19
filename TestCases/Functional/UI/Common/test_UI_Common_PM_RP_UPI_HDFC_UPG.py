@@ -171,6 +171,7 @@ def test_common_100_103_049():
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from callback api is : {response}")
 
+            time.sleep(5)
             query = ("select * from invalid_pg_request where request_id ='" + payment_intent_id + "';")
             logger.info(f"Query for invalid request is: {query}")
             q_result = DBProcessor.getValueFromDB(query)

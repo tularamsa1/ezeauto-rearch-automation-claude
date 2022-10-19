@@ -73,6 +73,17 @@ def test_common_100_103_077():
                                                                portal_un=portal_username,
                                                                portal_pw=portal_password, payment_gateway='CYBERSOURCE')
 
+        query = "update remotepay_setting set setting_value=2 where setting_name='rmpayBumpTime' and org_code='" + org_code + "';"
+        logger.debug(f"Query to update remote pay settings is : {query}")
+        result = DBProcessor.setValueToDB(query)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+
+        logger.info(f"In finally, remote pay setting is: {result}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -104,10 +115,11 @@ def test_common_100_103_077():
 
             response = APIProcessor.send_request(api_details)
             paymentLinkUrl = response['paymentLink']
+            payment_intent_id = response.get('paymentIntentId')
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             logger.info("Initiating a Remote pay Link")
 
-            query = "select * from payment_intent where setting_name='expire_by_time' and org_code='" + org_code + "'"
+            query = "select * from payment_intent where org_code='" + org_code + "' and id ='" + payment_intent_id + "'"
             logger.debug(f"Query to fetch bumptime from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             intent_expiry_time = result['expire_by_time'].values[0]
@@ -117,13 +129,13 @@ def test_common_100_103_077():
             query = "select * from remotepay_setting where setting_name='rmpayBumpTime' and org_code='" + org_code + "'"
             logger.debug(f"Query to fetch bumptime from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            bump_time = result['setting_value'].values[0]
+            bump_time = int(result['setting_value'].values[0])
             logger.debug(f"Query result, bumptime : {bump_time}")
 
             query = "select * from remotepay_setting where setting_name='remotePayExpTime' and org_code='" + org_code + "'"
             logger.debug(f"Query to fetch expiry time from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            expiry_time = result['setting_value'].values[0]
+            expiry_time = int(result['setting_value'].values[0])
             logger.debug(f"Query result, expiry time : {expiry_time}")
             wait_time = (60 * (bump_time - expiry_time))
             time.sleep((wait_time + 2))
@@ -132,15 +144,11 @@ def test_common_100_103_077():
                 ui_driver.get(paymentLinkUrl)
                 logger.info("Remote pay Link initiation completed and opening in a browser")
 
-
-
-
-
             query = "select * from remotepay_setting where setting_name='rmpayBumpTime' and org_code='" + org_code + "'"
             logger.debug(f"Query to fetch bumptime from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            org_code = result['setting_value'].values[0]
-            logger.debug(f"Query result, bumptime : {org_code}")
+            bumptime = result['setting_value'].values[0]
+            logger.debug(f"Query result, bumptime : {bumptime}")
 
 
 
@@ -163,7 +171,14 @@ def test_common_100_103_077():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        query = "update remotepay_setting set setting_value=15 where setting_name='rmpayBumpTime' and org_code='" + org_code + "';"
+        logger.debug(f"Query to update remote pay settings is : {query}")
+        result = DBProcessor.setValueToDB(query)
         logger.info(f"In finally, remote pay setting is: {result}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -171,8 +186,8 @@ def test_common_100_103_077():
 @pytest.mark.apiVal
 def test_common_100_103_090():
     """
-    Sub Feature Code: UI_Common_PM_CNP_Cyber_bumpCount_CnpSettigs
-    Sub Feature Description: Verification of the bump count via cnp link.
+    Sub Feature Code: UI_Common_PM_CNP_Cyber_bumpTime_CnpSettigs
+    Sub Feature Description: Verification the bump time via cnp link.
     TC naming code description:
     100: Payment Method
     103: RemotePay
