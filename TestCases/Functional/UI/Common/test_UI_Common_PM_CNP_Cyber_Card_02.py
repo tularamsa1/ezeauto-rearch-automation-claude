@@ -609,12 +609,12 @@ def test_common_100_103_008():
 
             # remotePayTxn.clickOnSubmitButton()
 
-            # actualFailedMessage = str(remotePayTxn.failedScreenMessage())
-            # logger.info(f"After txn message is:  : {actualFailedMessage}")
-            # if ExpectedfailedMessage == actualFailedMessage:
-            #     pass
-            # else:
-            #     print("Failed Message is not matching")
+            actualFailedMessage = str(remotePayTxn.failedScreenMessage())
+            logger.info(f"After txn message is:  : {actualFailedMessage}")
+            if ExpectedfailedMessage == actualFailedMessage:
+                pass
+            else:
+                print("Failed Message is not matching")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")

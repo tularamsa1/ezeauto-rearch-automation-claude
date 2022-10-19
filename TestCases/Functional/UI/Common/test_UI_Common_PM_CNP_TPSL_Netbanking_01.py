@@ -519,7 +519,7 @@ def test_common_100_103_039():
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
             remote_pay_txn.remote_pay_proceed_netbanking()
-            time.sleep(30)
+            # time.sleep(30)
 
             remote_pay_txn.wait_for_failed_message()
             failed_message = str(remote_pay_txn.failedScreenMessage())
@@ -725,7 +725,7 @@ def test_common_100_103_039():
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_gateway": "TPSL",
                                     "payment_mode": "PAY LINK",
-                                    "auth_code": "None",
+                                    "auth_code": "0",
                                     # "acquirer_code":HDFC
                                     # "bank_name" NA
                                     # "payer_name" NA

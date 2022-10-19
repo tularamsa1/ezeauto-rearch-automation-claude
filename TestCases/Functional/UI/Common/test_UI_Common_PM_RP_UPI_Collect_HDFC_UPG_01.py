@@ -156,7 +156,7 @@ def test_common_100_103_033():
             logger.debug(f"Query result from txn_id : {txn_type}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Query result from txn_id : {auth_code}")
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             logger.debug(f"Query result from txn_id : {posting_date}")
 
             query = "select * from upi_merchant_config where org_code ='" + str(
@@ -266,7 +266,7 @@ def test_common_100_103_033():
                     "settle_status": "SETTLED",
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": "CHARGE", "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     "auth_code": auth_code,
                     "date": date
