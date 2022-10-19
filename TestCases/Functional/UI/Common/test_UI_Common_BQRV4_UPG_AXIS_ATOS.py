@@ -246,7 +246,7 @@ def test_common_100_102_147():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 #auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
@@ -617,7 +617,7 @@ def test_common_100_102_148():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 #auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,

@@ -554,6 +554,7 @@ def test_common_100_102_038():
                                        "order_id": order_id, "msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
+                app_driver.reset()
                 login_page = LoginPage(app_driver)
                 logger.debug(f"Loging in again with user name : {app_username}")
                 login_page.perform_login(app_username, app_password)

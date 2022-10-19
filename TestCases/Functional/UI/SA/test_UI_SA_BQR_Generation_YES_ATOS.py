@@ -7,8 +7,9 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, receipt_validator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
+
 logger = EzeAutoLogger(__name__)
 
 
@@ -16,9 +17,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_102_028():
     """
-    :Description: Verification of a BQRV4 QR Generation Success through SA via YES_ATOS
-    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_YES_ATOS_80
-    :TC naming code description: 100->Payment Method, 102->BQR, 028-> TC028
+    :Description: Verification of a BQRV4 QR Generation Success through SA via HDFC
+    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_HDFC
+    :TC naming code description: 100->Payment Method, 102->BQR, 010-> TC010
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -108,12 +109,12 @@ def test_sa_100_102_028():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_app_values = {"Payment Screen text": "Scan QR code using"}
+                expected_app_values = {"pmt_msg": "Scan QR code using"}
 
                 text = payment_page.validate_upi_bqr_payment_screen()
                 app_driver.reset()
 
-                actual_app_values = {"Payment Screen text": text}
+                actual_app_values = {"pmt_msg": text}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -275,12 +276,12 @@ def test_sa_100_102_029():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_app_values = {"Payment Screen text": "Payment Failed"}
+                expected_app_values = {"pmt_msg": "Payment Failed"}
 
                 text = paymentPage.fetch_payment_status()
                 app_driver.reset()
 
-                actual_app_values = {"Payment Screen text": text}
+                actual_app_values = {"pmt_msg": text}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:

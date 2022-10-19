@@ -247,7 +247,7 @@ def test_common_100_102_019():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 #auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
@@ -1740,14 +1740,14 @@ def test_common_100_102_023():
                 date_and_time_2 = date_time_converter.to_app_format(created_time_refunded)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "UPG_AUTH_REFUNDED",
                                        "txn_amt": str(amount),"settle_status": "SETTLED",
-                                       "txn_id": txn_id, #"rrn": str(rrn),
+                                       "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id": external_ref, "msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "UPG_REFUNDED",
                                        "txn_amt_2": str(amount), "settle_status_2": "SETTLED",
-                                       "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
+                                       "txn_id_2": txn_id_refunded, #"rrn_2": str(rrn_refunded),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id_2": external_ref, "msg_2": "PAYMENT SUCCESSFUL",
                                        # "auth_code": auth_code,
