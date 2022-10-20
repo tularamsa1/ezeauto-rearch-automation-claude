@@ -156,7 +156,7 @@ def test_common_100_102_210():
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,
-                                       "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -202,7 +202,7 @@ def test_common_100_102_210():
                                      "customer_name": app_customer_name,"settle_status": app_settlement_status,
                                      #"payer_name": app_payer_name,
                                      "order_id": app_order_id,"auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -244,7 +244,7 @@ def test_common_100_102_210():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,

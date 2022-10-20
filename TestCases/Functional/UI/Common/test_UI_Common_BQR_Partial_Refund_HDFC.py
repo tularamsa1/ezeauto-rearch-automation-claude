@@ -1253,11 +1253,11 @@ def test_common_100_102_138():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}, {customer_name}, {payer_name}")
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
             refund_amount = amount-100.50
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1275,9 +1275,9 @@ def test_common_100_102_138():
             txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['posting_date'].values[0]
+            created_time_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
+                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {created_time_refunded}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1298,8 +1298,8 @@ def test_common_100_102_138():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_refunded)
+                date_and_time = date_time_converter.to_app_format(created_time)
+                refund_date_and_time = date_time_converter.to_app_format(created_time_refunded)
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED",
                     "pmt_status_2": "STATUS:REFUNDED",
@@ -1419,8 +1419,8 @@ def test_common_100_102_138():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                refund_date = date_time_converter.db_datetime(posting_date_refunded)
+                date = date_time_converter.db_datetime(created_time)
+                refund_date = date_time_converter.db_datetime(created_time_refunded)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "pmt_status_2": "REFUNDED",
@@ -1699,7 +1699,7 @@ def test_common_100_102_138():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_refunded)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN':"" ,
                                    'BASE AMOUNT:': "Rs." + "{:.2f}".format(refund_amount),
                                    'date': txn_date,'time': txn_time}
@@ -1818,11 +1818,11 @@ def test_common_100_102_139():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}, {customer_name}, {payer_name}")
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
             refund_amount = amount-100
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1840,9 +1840,9 @@ def test_common_100_102_139():
             txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['posting_date'].values[0]
+            created_time_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
+                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {created_time_refunded}")
 
             full_refund_amount = 100
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1860,9 +1860,9 @@ def test_common_100_102_139():
             txn_id_refunded_2 = result["id"].iloc[0]
             auth_code_refunded_2 = result['auth_code'].values[0]
             rrn_refunded_2 = result['rr_number'].iloc[0]
-            posting_date_refunded_2 = result['posting_date'].values[0]
+            created_time_refunded_2 = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for current merchant:"
-            f"{auth_code_refunded_2}, {rrn_refunded_2}, {txn_id_refunded_2}, {posting_date_refunded_2}")
+            f"{auth_code_refunded_2}, {rrn_refunded_2}, {txn_id_refunded_2}, {created_time_refunded_2}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1883,9 +1883,9 @@ def test_common_100_102_139():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_refunded)
-                refund_date_and_time_2 = date_time_converter.to_app_format(posting_date_refunded_2)
+                date_and_time = date_time_converter.to_app_format(created_time)
+                refund_date_and_time = date_time_converter.to_app_format(created_time_refunded)
+                refund_date_and_time_2 = date_time_converter.to_app_format(created_time_refunded_2)
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
@@ -2047,9 +2047,9 @@ def test_common_100_102_139():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                refund_date = date_time_converter.db_datetime(posting_date_refunded)
-                refund_date_2 = date_time_converter.db_datetime(posting_date_refunded_2)
+                date = date_time_converter.db_datetime(created_time)
+                refund_date = date_time_converter.db_datetime(created_time_refunded)
+                refund_date_2 = date_time_converter.db_datetime(created_time_refunded_2)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED_REFUNDED",
                     "pmt_status_2": "REFUNDED",
@@ -2110,7 +2110,7 @@ def test_common_100_102_139():
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
-                date_api_original = response["postingDate"]
+                date_api_original = response["createdTime"]
                 order_id_original= response["orderNumber"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -2129,7 +2129,7 @@ def test_common_100_102_139():
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                date_api_refunded = response["postingDate"]
+                date_api_refunded = response["createdTime"]
                 order_id_refunded = response["orderNumber"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -2148,7 +2148,7 @@ def test_common_100_102_139():
                 mid_api_refunded_2 = response["mid"]
                 tid_api_refunded_2 = response["tid"]
                 txn_type_api_refunded_2 = response["txnType"]
-                date_api_refunded_2 = response["postingDate"]
+                date_api_refunded_2 = response["createdTime"]
                 order_id_refunded_2 = response["orderNumber"]
 
 
@@ -2430,7 +2430,7 @@ def test_common_100_102_139():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_refunded)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN':"" ,
                                    'BASE AMOUNT:': "Rs." + str(refund_amount) + ".00",  'date': txn_date,'time': txn_time}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,
@@ -2549,11 +2549,11 @@ def test_common_100_102_140():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}, {customer_name}, {payer_name}")
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
             refund_amount = amount-100
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
@@ -2582,9 +2582,9 @@ def test_common_100_102_140():
             txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
-            posting_date_refunded = result['posting_date'].values[0]
+            created_time_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
+                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {created_time_refunded}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -2605,8 +2605,8 @@ def test_common_100_102_140():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_refunded)
+                date_and_time = date_time_converter.to_app_format(created_time)
+                refund_date_and_time = date_time_converter.to_app_format(created_time_refunded)
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED",
                     "pmt_status_2": "STATUS:REFUNDED",
@@ -2726,8 +2726,8 @@ def test_common_100_102_140():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                refund_date = date_time_converter.db_datetime(posting_date_refunded)
+                date = date_time_converter.db_datetime(created_time)
+                refund_date = date_time_converter.db_datetime(created_time_refunded)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "pmt_status_2": "REFUNDED",
@@ -3008,7 +3008,7 @@ def test_common_100_102_140():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_refunded)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN':"" ,
                                    'BASE AMOUNT:': "Rs." + str(refund_amount)+ ".00",  'date': txn_date,'time': txn_time}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,

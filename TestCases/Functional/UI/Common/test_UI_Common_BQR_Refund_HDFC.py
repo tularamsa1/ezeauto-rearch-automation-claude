@@ -1310,7 +1310,7 @@ def test_common_100_102_083():
                     #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
@@ -1322,7 +1322,7 @@ def test_common_100_102_083():
                     #"customer_name_2": customer_name_new_2,
                     #"payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT FAILED",
+                    "pmt_msg_2": "PAYMENT FAILED",
                     #"auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -1411,7 +1411,7 @@ def test_common_100_102_083():
                                      "settle_status": app_settlement_status,
                                      #"payer_name": app_payer_name,
                                      "order_id": app_order_id,
-                                     "payment_msg": app_payment_msg,
+                                     "pmt_msg": app_payment_msg,
                                      "auth_code": app_auth_code,
                                      "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new_2,
@@ -1423,7 +1423,7 @@ def test_common_100_102_083():
                                      "settle_status_2": app_settlement_status_new_2,
                                      #"payer_name_2": app_payer_name_new_2,
                                      "order_id_2": app_order_id_new_2,
-                                     "payment_msg_2": app_payment_msg_new_2,
+                                     "pmt_msg_2": app_payment_msg_new_2,
                                      #"auth_code_2": app_auth_code_new_2,
                                      "date_2": app_date_and_time_new_2
                                      }
@@ -1876,7 +1876,7 @@ def test_common_100_102_084():
                     #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
@@ -1888,7 +1888,7 @@ def test_common_100_102_084():
                     #"customer_name_2": customer_name_new_2,
                     #"payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     #"auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -1977,7 +1977,7 @@ def test_common_100_102_084():
                                      "settle_status": app_settlement_status,
                                      #"payer_name": app_payer_name,
                                      "order_id": app_order_id,
-                                     "payment_msg": app_payment_msg,
+                                     "pmt_msg": app_payment_msg,
                                      "auth_code": app_auth_code,
                                      "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new_2,
@@ -1989,7 +1989,7 @@ def test_common_100_102_084():
                                      "settle_status_2": app_settlement_status_new_2,
                                      #"payer_name_2": app_payer_name_new_2,
                                      "order_id_2": app_order_id_new_2,
-                                     "payment_msg_2": app_payment_msg_new_2,
+                                     "pmt_msg_2": app_payment_msg_new_2,
                                      #"auth_code_2": app_auth_code_new_2,
                                      "date_2": app_date_and_time_new_2
                                      }

@@ -121,7 +121,7 @@ def test_common_100_102_136():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['created_time'].values[0]
+            created_time = result['created_time'].values[0]
             external_ref = result['external_ref'].values[0]
 
             query = ("select * from invalid_pg_request where request_id ='" + pid + "';")
@@ -131,7 +131,7 @@ def test_common_100_102_136():
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date_upg = result['created_time'].values[0]
+            created_time_upg = result['created_time'].values[0]
             rrn_upg = result['rr_number'].iloc[0]
             external_ref_upg = result['external_ref'].values[0]
             # ------------------------------------------------------------------------------------------------
@@ -154,8 +154,8 @@ def test_common_100_102_136():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                date_and_time_2 = date_time_converter.to_app_format(posting_date_upg)
+                date_and_time = date_time_converter.to_app_format(created_time)
+                date_and_time_2 = date_time_converter.to_app_format(created_time_upg)
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "STATUS:PENDING",
@@ -163,7 +163,7 @@ def test_common_100_102_136():
                     "txn_id": txn_id,
                     "txn_amt": str(amount),
                     "order_id": external_ref,
-                    "payment_msg": "PAYMENT PENDING",
+                    "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
                     "pmt_status_2": "STATUS:UPG_AUTHORIZED",
@@ -240,7 +240,7 @@ def test_common_100_102_136():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_status_2": app_payment_status_new,
                     "pmt_mode_2": app_payment_mode_new,
@@ -266,8 +266,8 @@ def test_common_100_102_136():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date = date_time_converter.db_datetime(posting_date)
-                date_2 = date_time_converter.db_datetime(posting_date_upg)
+                date = date_time_converter.db_datetime(created_time)
+                date_2 = date_time_converter.db_datetime(created_time_upg)
                 expected_api_values = {
                     "pmt_status": "PENDING",
                     "txn_amt": float(amount),"pmt_mode": "BHARATQR",
@@ -330,7 +330,7 @@ def test_common_100_102_136():
                 mid_api_new = response["mid"]
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -384,7 +384,7 @@ def test_common_100_102_136():
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "YES",
                     "bank_code_2": "YES",
-                    "payment_gateway_2": "ATOS",
+                    "pmt_gateway_2": "ATOS",
                     "mid_2": mid,
                     "tid_2": tid,
                     "ipr_pmt_mode": "BHARATQR",
@@ -501,7 +501,7 @@ def test_common_100_102_136():
                     "settle_status_2": settlement_status_db_new,
                     "acquirer_code_2": acquirer_code_db_new,
                     "bank_code_2": bank_code_db_new,
-                    "payment_gateway_2": payment_gateway_db_new,
+                    "pmt_gateway_2": payment_gateway_db_new,
                     "mid_2": mid_db_new,
                     "tid_2": tid_db_new,
                     "ipr_pmt_mode": ipr_payment_mode,

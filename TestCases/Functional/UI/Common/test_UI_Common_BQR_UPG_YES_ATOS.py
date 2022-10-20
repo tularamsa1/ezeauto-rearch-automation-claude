@@ -148,7 +148,7 @@ def test_common_100_102_040():
                                        "txn_amt": str(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        #"customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref,"msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": external_ref,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -198,7 +198,7 @@ def test_common_100_102_040():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -242,7 +242,7 @@ def test_common_100_102_040():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 #auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
@@ -522,7 +522,7 @@ def test_common_100_102_041():
                                        "txn_amt": str(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        #"customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref,"msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": external_ref,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -572,7 +572,7 @@ def test_common_100_102_041():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -616,7 +616,7 @@ def test_common_100_102_041():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 #auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
                                      "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
@@ -918,14 +918,14 @@ def test_common_100_102_042():
                                        "txn_amt": str(amount),"settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref, "msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": external_ref, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "UPG_REFUNDED",
                                        "txn_amt_2": str(amount), "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
                                        # "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id_2": external_ref, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "order_id_2": external_ref, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        # "auth_code": auth_code,
                                        "date_2": date_and_time_2
                                        }
@@ -1007,7 +1007,7 @@ def test_common_100_102_042():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time,
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_refunded,
                                      "pmt_status_2": payment_status_refunded.split(':')[1],
                                      "txn_amt_2": app_amount_refunded.split(' ')[1],
@@ -1016,7 +1016,7 @@ def test_common_100_102_042():
                                      "settle_status_2": app_settlement_status_refunded,
                                      "order_id_2": app_order_id_refunded,
                                      # "auth_code": app_auth_code,
-                                     "msg_2": app_payment_msg_refunded,
+                                     "pmt_msg_2": app_payment_msg_refunded,
                                      "date_2": app_date_and_time_refunded
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1424,14 +1424,14 @@ def test_common_100_102_043():
                                        "txn_amt": str(amount),"settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref, "msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": external_ref, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "UPG_REFUNDED",
                                        "txn_amt_2": str(amount), "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
                                        # "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id_2": external_ref, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "order_id_2": external_ref, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        # "auth_code": auth_code,
                                        "date_2": date_and_time_2
                                        }
@@ -1513,7 +1513,7 @@ def test_common_100_102_043():
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
                                      "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time,
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_refunded,
                                      "pmt_status_2": payment_status_refunded.split(':')[1],
                                      "txn_amt_2": app_amount_refunded.split(' ')[1],
@@ -1522,7 +1522,7 @@ def test_common_100_102_043():
                                      "settle_status_2": app_settlement_status_refunded,
                                      "order_id_2": app_order_id_refunded,
                                      # "auth_code": app_auth_code,
-                                     "msg_2": app_payment_msg_refunded,
+                                     "pmt_msg_2": app_payment_msg_refunded,
                                      "date_2": app_date_and_time_refunded
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
