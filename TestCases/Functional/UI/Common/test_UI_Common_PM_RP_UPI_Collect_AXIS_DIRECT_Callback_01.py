@@ -29,7 +29,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_103_127():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Success_Via_UPI_CollectCallback_Axis_Direct
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_Success_Via_UPI_Collect_Callback_Axis_Direct
     Sub Feature Description: Verification of a Remote Pay successful pure upi txn via AXIS_DIRECT using callback
     Sub Feature Code: UI_Common_PM_UPI_Collect_success_callback_before_expiry_AutoRefund_Enabled_Axis_Direct
     Sub Feature Description: Performing a  UPI Collect success callback via Axis_Direct before expiry when auto refund is enabled

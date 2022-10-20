@@ -29,7 +29,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_103_014():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_Pure_UPI_Callback_HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_Pure_UPI_Collect_Callback_HDFC
     Sub Feature Description: Verification of a Remote Pay successful pure upi txn via HDFC using callback
     Sub Feature Code: UI_Common_PM_UPI_Collect_success_callback_before_expiry_AutoRefund_Enabled_HDFC //Discuss with team
     Sub Feature Description: Performing a  UPI Collect success callback via HDFC before expiry when auto refund is enabled
