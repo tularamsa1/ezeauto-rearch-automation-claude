@@ -158,7 +158,7 @@ def test_common_100_102_188():
                     #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -212,7 +212,7 @@ def test_common_100_102_188():
                     "settle_status": app_settlement_status,
                     #"payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -304,7 +304,7 @@ def test_common_100_102_188():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "payment_gateway": "ATOS_TLE",
+                    "pmt_gateway": "ATOS_TLE",
                     "mid": mid,
                     "tid": tid,
                     "order_id": order_id,
@@ -358,7 +358,7 @@ def test_common_100_102_188():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "order_id": order_id_db,
@@ -601,7 +601,7 @@ def test_common_100_102_189():
                     #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -655,7 +655,7 @@ def test_common_100_102_189():
                     "settle_status": app_settlement_status,
                     #"payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
@@ -751,7 +751,7 @@ def test_common_100_102_189():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "bank_code": "AXIS",
-                    "payment_gateway": "ATOS_TLE",
+                    "pmt_gateway": "ATOS_TLE",
                     "mid": mid,
                     "tid": tid,
                     "order_id": order_id,
@@ -806,7 +806,7 @@ def test_common_100_102_189():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
+                    "pmt_gateway": payment_gateway_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "order_id": order_id_db,
@@ -1039,7 +1039,7 @@ def test_common_100_102_210():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
-                                       "order_id": order_id,"msg": "PAYMENT FAILED",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -1074,7 +1074,7 @@ def test_common_100_102_210():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id,
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)

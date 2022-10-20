@@ -153,7 +153,7 @@ def test_common_100_102_209():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "PENDING","txn_amt": str(amount),
                                        "settle_status": "PENDING","txn_id": txn_id,
-                                       "order_id": order_id,"msg": "PAYMENT PENDING",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT PENDING",
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -188,7 +188,7 @@ def test_common_100_102_209():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id,
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
