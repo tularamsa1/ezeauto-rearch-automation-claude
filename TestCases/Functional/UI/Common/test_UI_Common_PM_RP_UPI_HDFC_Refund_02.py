@@ -582,7 +582,7 @@ def test_common_100_103_056():
                     "upi_mc_id_2": original_upi_mc_id,
                     "mid": original_mid,
                     "tid": original_tid,
-                    "mide_2": original_mid,
+                    "mid_2": original_mid,
                     "tid_2": original_tid,
 
                     "pmt_status_3": "REFUNDED",
@@ -704,7 +704,7 @@ def test_common_100_103_056():
                     "mid": mid_db_original,
                     "tid": tid_db_original,
                     "mid_2": mid_db_refunded,
-                    "tid_2ss": tid_db_refunded,
+                    "tid_2s": tid_db_refunded,
 
                     "pmt_status_3": status_db_full_refund,
                     "pmt_state_3": state_db_full_refund,
@@ -714,7 +714,7 @@ def test_common_100_103_056():
                     "settle_status_3": settlement_status_db_full_refund,
                     "acquirer_code_3": acquirer_code_db_full_refund,
                     "upi_txn_type_3": upi_txn_type_db_full_refund,
-                    "upi_bank_code_#": bank_code_db_full_refund,
+                    "upi_bank_code_3": bank_code_db_full_refund,
                     "upi_mc_id_3": upi_mc_id_db_full_refund,
                     "mid_3": mid_db_full_refund,
                     "tid_3": tid_db_full_refund,

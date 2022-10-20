@@ -1159,8 +1159,8 @@ def test_common_100_102_015():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_083():
     """
-    :Description: Verification of a BQRV4 BQR Refund failed transaction through API via YES ATOS
-    :Subfeature code: UI_Common_BQRV4_BQR_Refund_Failed_via_API_YES_ATOS
+    :Description: Verification of a BQRV4 BQR Refund failed transaction through API via HDFC HDFC
+    :Subfeature code: UI_Common_BQRV4_BQR_Refund_Failed_via_API_HDFC
     :TC naming code description:100->Payment Method, 102->BQR, 083-> TC083
     """
     try:
@@ -1187,7 +1187,7 @@ def test_common_100_102_083():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='YES', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -1204,7 +1204,7 @@ def test_common_100_102_083():
         logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
-                                                        "status = 'ACTIVE' and bank_code='YES'"
+                                                        "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
@@ -1307,7 +1307,7 @@ def test_common_100_102_083():
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    "customer_name": customer_name,
+                    #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT SUCCESSFUL",
@@ -1319,7 +1319,7 @@ def test_common_100_102_083():
                     "settle_status_2": "FAILED",
                     "txn_id_2": txn_id_new_2,
                     #"rrn_2": str(rrn_new_2),
-                    "customer_name_2": customer_name_new_2,
+                    #"customer_name_2": customer_name_new_2,
                     #"payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
                     "payment_msg_2": "PAYMENT FAILED",
@@ -1352,8 +1352,8 @@ def test_common_100_102_083():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                # app_customer_name = txn_history_page.fetch_customer_name_text()
+                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
@@ -1383,9 +1383,9 @@ def test_common_100_102_083():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id_new_2}, {app_txn_id_new_2}")
                 app_amount_new_2 = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id_new_2}, {app_amount_new_2}")
-                app_customer_name_new_2 = txn_history_page.fetch_customer_name_text()
-                logger.info(
-                f"Fetching txn customer name from txn history for the txn : {txn_id_new_2}, {app_customer_name_new_2}")
+                # app_customer_name_new_2 = txn_history_page.fetch_customer_name_text()
+                # logger.info(
+                # f"Fetching txn customer name from txn history for the txn : {txn_id_new_2}, {app_customer_name_new_2}")
                 app_settlement_status_new_2 = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id_new_2}, {app_settlement_status_new_2}")
@@ -1407,7 +1407,7 @@ def test_common_100_102_083():
                                      "txn_amt": app_amount.split(' ')[1],
                                      "txn_id": app_txn_id,
                                      "rrn": str(app_rrn),
-                                     "customer_name": app_customer_name,
+                                     #"customer_name": app_customer_name,
                                      "settle_status": app_settlement_status,
                                      #"payer_name": app_payer_name,
                                      "order_id": app_order_id,
@@ -1419,7 +1419,7 @@ def test_common_100_102_083():
                                      "txn_amt_2": app_amount_new_2.split(' ')[1],
                                      "txn_id_2": app_txn_id_new_2,
                                      #"rrn_2": str(app_rrn_new_2),
-                                     "customer_name_2": app_customer_name_new_2,
+                                     #"customer_name_2": app_customer_name_new_2,
                                      "settle_status_2": app_settlement_status_new_2,
                                      #"payer_name_2": app_payer_name_new_2,
                                      "order_id_2": app_order_id_new_2,
@@ -1446,8 +1446,8 @@ def test_common_100_102_083():
                     "txn_amt": float(amount), "pmt_mode": "BHARATQR",
                     "pmt_state": "SETTLED", "rrn": str(rrn),
                     "settle_status": "SETTLED",
-                    "acquirer_code": "YES",
-                    "issuer_code": "YES",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
                     "txn_type": "CHARGE", "mid": mid, "tid": tid,
                     "org_code": org_code,
                     "auth_code": auth_code,
@@ -1458,7 +1458,7 @@ def test_common_100_102_083():
                     "pmt_state_2": "FAILED",
                     #"rrn_2": str(rrn_new_2),
                     "settle_status_2": "FAILED",
-                    "acquirer_code_2": "YES",
+                    "acquirer_code_2": "HDFC",
                     #"issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
                     #"mid_2": mid, "tid_2": tid,
@@ -1561,9 +1561,9 @@ def test_common_100_102_083():
                     "pmt_mode": "BHARATQR",
                     "txn_amt": float(amount),
                     "settle_status": "SETTLED",
-                    "acquirer_code": "YES",
-                    "bank_code": "YES",
-                    "pmt_gateway": "ATOS",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "HDFC",
                     "mid": mid,
                     "tid": tid,
                     "order_id": order_id,
@@ -1571,7 +1571,7 @@ def test_common_100_102_083():
                     "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
                     "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
-                    "bqr_bank_code": "YES",
+                    "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
                     "pmt_status_2": "FAILED",
@@ -1579,9 +1579,9 @@ def test_common_100_102_083():
                     "pmt_mode_2": "BHARATQR",
                     "txn_amt_2": float(amount),
                     "settle_status_2": "FAILED",
-                    "acquirer_code_2": "YES",
+                    "acquirer_code_2": "HDFC",
                     #"bank_code_2": "HDFC",
-                    "payment_gateway_2": "ATOS",
+                    "payment_gateway_2": "HDFC",
                     #"mid_2": mid,
                     #"tid_2": tid,
                     "order_id_2": order_id,
@@ -1725,8 +1725,8 @@ def test_common_100_102_083():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_084():
     """
-    :Description: Verification of a BQRV4 BQR Refund posted transaction through API via YES ATOS
-    :Subfeature code: UI_Common_BQRV4_BQR_Refund_Posted_via_API_YES_ATOS
+    :Description: Verification of a BQRV4 BQR Refund posted transaction through API via HDFC ATOS
+    :Subfeature code: UI_Common_BQRV4_BQR_Refund_Posted_via_API_HDFC
     :TC naming code description:100->Payment Method, 102->BQR, 084-> TC084
     """
     try:
@@ -1753,7 +1753,7 @@ def test_common_100_102_084():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='YES', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -1770,7 +1770,7 @@ def test_common_100_102_084():
         logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
-                                                        "status = 'ACTIVE' and bank_code='YES'"
+                                                        "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
@@ -1873,7 +1873,7 @@ def test_common_100_102_084():
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    "customer_name": customer_name,
+                    #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT SUCCESSFUL",
@@ -1884,8 +1884,8 @@ def test_common_100_102_084():
                     "txn_amt_2": str(amount),
                     "settle_status_2": "REVPENDING",
                     "txn_id_2": txn_id_new_2,
-                    "rrn_2": str(rrn_new_2),
-                    "customer_name_2": customer_name_new_2,
+                    #"rrn_2": str(rrn_new_2),
+                    #"customer_name_2": customer_name_new_2,
                     #"payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
                     "payment_msg_2": "PAYMENT SUCCESSFUL",
@@ -1918,8 +1918,8 @@ def test_common_100_102_084():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                #app_customer_name = txn_history_page.fetch_customer_name_text()
+                #logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
@@ -1949,9 +1949,9 @@ def test_common_100_102_084():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id_new_2}, {app_txn_id_new_2}")
                 app_amount_new_2 = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id_new_2}, {app_amount_new_2}")
-                app_customer_name_new_2 = txn_history_page.fetch_customer_name_text()
-                logger.info(
-                f"Fetching txn customer name from txn history for the txn : {txn_id_new_2}, {app_customer_name_new_2}")
+                #app_customer_name_new_2 = txn_history_page.fetch_customer_name_text()
+                #logger.info(
+                #f"Fetching txn customer name from txn history for the txn : {txn_id_new_2}, {app_customer_name_new_2}")
                 app_settlement_status_new_2 = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id_new_2}, {app_settlement_status_new_2}")
@@ -1964,16 +1964,16 @@ def test_common_100_102_084():
                 app_order_id_new_2 = txn_history_page.fetch_order_id_text()
                 logger.info(
                     f"Fetching txn order_id from txn history for the txn : {txn_id_new_2}, {app_order_id_new_2}")
-                app_rrn_new_2 = txn_history_page.fetch_RRN_text()
-                logger.info(
-                  f"Fetching txn_id from txn history for the txn : {txn_id_new_2}, {app_rrn_new_2}")  # behavior is diff on both emulator and device (Number/NUMBER)
+                #app_rrn_new_2 = txn_history_page.fetch_RRN_text()
+                #logger.info(
+                 # f"Fetching txn_id from txn history for the txn : {txn_id_new_2}, {app_rrn_new_2}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
                 actual_app_values = {"pmt_mode": payment_mode,
                                      "pmt_status": payment_status.split(':')[1],
                                      "txn_amt": app_amount.split(' ')[1],
                                      "txn_id": app_txn_id,
                                      "rrn": str(app_rrn),
-                                     "customer_name": app_customer_name,
+                                     #"customer_name": app_customer_name,
                                      "settle_status": app_settlement_status,
                                      #"payer_name": app_payer_name,
                                      "order_id": app_order_id,
@@ -1984,8 +1984,8 @@ def test_common_100_102_084():
                                      "pmt_status_2": payment_status_new_2.split(':')[1],
                                      "txn_amt_2": app_amount_new_2.split(' ')[1],
                                      "txn_id_2": app_txn_id_new_2,
-                                     "rrn_2": str(app_rrn_new_2),
-                                     "customer_name_2": app_customer_name_new_2,
+                                     #"rrn_2": str(app_rrn_new_2),
+                                     #"customer_name_2": app_customer_name_new_2,
                                      "settle_status_2": app_settlement_status_new_2,
                                      #"payer_name_2": app_payer_name_new_2,
                                      "order_id_2": app_order_id_new_2,
@@ -2012,8 +2012,8 @@ def test_common_100_102_084():
                     "txn_amt": float(amount), "pmt_mode": "BHARATQR",
                     "pmt_state": "SETTLED", "rrn": str(rrn),
                     "settle_status": "SETTLED",
-                    "acquirer_code": "YES",
-                    "issuer_code": "YES",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
                     "txn_type": "CHARGE", "mid": mid, "tid": tid,
                     "org_code": org_code,
                     "auth_code": auth_code,
@@ -2022,9 +2022,9 @@ def test_common_100_102_084():
                     "pmt_status_2": "REFUND_POSTED",
                     "txn_amt_2": float(amount), "pmt_mode_2": "BHARATQR",
                     "pmt_state_2": "REFUND_INITIATED",
-                    "rrn_2": str(rrn_new_2),
+                    #"rrn_2": str(rrn_new_2),
                     "settle_status_2": "REVPENDING",
-                    "acquirer_code_2": "YES",
+                    "acquirer_code_2": "HDFC",
                     #"issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
                     #"mid_2": mid, "tid_2": tid,
@@ -2071,7 +2071,7 @@ def test_common_100_102_084():
                 amount_api_new_2 = float(response["amount"])
                 payment_mode_api_new_2 = response["paymentMode"]
                 state_api_new_2 = response["states"][0]
-                rrn_api_new_2 = response["rrNumber"]
+                #rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
                 #issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
@@ -2098,7 +2098,7 @@ def test_common_100_102_084():
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
-                    "rrn_2": str(rrn_api_new_2),
+                    #"rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
                     #"issuer_code_2": issuer_code_api_new_2,
@@ -2127,9 +2127,9 @@ def test_common_100_102_084():
                     "pmt_mode": "BHARATQR",
                     "txn_amt": float(amount),
                     "settle_status": "SETTLED",
-                    "acquirer_code": "YES",
-                    "bank_code": "YES",
-                    "payment_gateway": "ATOS",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "payment_gateway": "HDFC",
                     "mid": mid,
                     "tid": tid,
                     "order_id": order_id,
@@ -2137,7 +2137,7 @@ def test_common_100_102_084():
                     "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
                     "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
-                    "bqr_bank_code": "YES",
+                    "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
                     "pmt_status_2": "REFUND_POSTED",
@@ -2145,9 +2145,9 @@ def test_common_100_102_084():
                     "pmt_mode_2": "BHARATQR",
                     "txn_amt_2": float(amount),
                     "settle_status_2": "REVPENDING",
-                    "acquirer_code_2": "YES",
+                    "acquirer_code_2": "HDFC",
                     #"bank_code_2": "HDFC",
-                    "payment_gateway_2": "ATOS",
+                    "payment_gateway_2": "HDFC",
                     #"mid_2": mid,
                     #"tid_2": tid,
                     "order_id_2": order_id,

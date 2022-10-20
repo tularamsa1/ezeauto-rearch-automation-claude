@@ -79,7 +79,7 @@ def test_common_100_103_049():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -171,6 +171,7 @@ def test_common_100_103_049():
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from callback api is : {response}")
 
+            time.sleep(5)
             query = ("select * from invalid_pg_request where request_id ='" + payment_intent_id + "';")
             logger.info(f"Query for invalid request is: {query}")
             q_result = DBProcessor.getValueFromDB(query)
@@ -588,7 +589,7 @@ def test_common_100_103_050():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")

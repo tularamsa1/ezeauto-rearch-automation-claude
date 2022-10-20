@@ -1359,7 +1359,6 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     updateExcel_With_Deselect_And_Broken()
-    setStylesForExcel()
     print("Session teardown level")
 
     # Added on Apr 11
@@ -1367,4 +1366,3 @@ def pytest_sessionfinish(session, exitstatus):
     updateExcel_With_RerunAttempts()
 
     ssh.close()
-    # appium_service.stop()

@@ -27,7 +27,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_102_112():
     """
     Sub Feature Code: UI_Common_BQRV4_UPI_Success_Checkstatus_TID_Dep_HDFC
-    Sub Feature Description: Verification of a BQRV4 successful CHeck status HDFC Tid Dep using callback
+    Sub Feature Description: Verification of a BQRV4 successful CHeck status HDFC Tid Dep
     TC naming code description: 100: Payment Method, 112: BQRV4, 112: TC112
     """
     try:

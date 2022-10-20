@@ -156,7 +156,7 @@ def test_common_100_103_033():
             logger.debug(f"Query result from txn_id : {txn_type}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Query result from txn_id : {auth_code}")
-            posting_date = result['posting_date'].values[0]
+            posting_date = result['created_time'].values[0]
             logger.debug(f"Query result from txn_id : {posting_date}")
 
             query = "select * from upi_merchant_config where org_code ='" + str(
@@ -266,7 +266,7 @@ def test_common_100_103_033():
                     "settle_status": "SETTLED",
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": "CHARGE", "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     "auth_code": auth_code,
                     "date": date
@@ -543,7 +543,7 @@ def test_common_100_103_034():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1013,7 +1013,7 @@ def test_common_100_103_035():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1439,7 +1439,7 @@ def test_common_100_103_036():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1760,7 +1760,7 @@ def test_common_100_103_037():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -2236,3 +2236,5 @@ def test_common_100_103_037():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
+
+
