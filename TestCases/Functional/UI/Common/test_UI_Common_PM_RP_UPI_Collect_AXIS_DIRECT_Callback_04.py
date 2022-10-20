@@ -720,13 +720,13 @@ def test_common_100_103_147():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amount": str(amount),
+                    "txn_amt": str(amount),
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     # "customer_name": original_customer_name,
                     # "payer_name": original_payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT FAILED",
+                    "pmt_msg": "PAYMENT FAILED",
                     # "rrn": str(original_rrn),
                     "date": date_and_time
                 }
@@ -773,13 +773,13 @@ def test_common_100_103_147():
                 actual_app_values = {
                     "pmt_mode": app_payment_mode,
                     "pmt_status": app_payment_status,
-                    "txn_amount": app_amount.split(' ')[1],
+                    "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
                     # "customer_name": app_customer_name,
                     # "payer_name": app_payer_name,
                     "order_id": app_order_id,
-                    "payment_msg": app_payment_msg,
+                    "pmt_msg": app_payment_msg,
                     # "rrn": str(app_rrn),
                     "date": app_date_and_time
                 }
