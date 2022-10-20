@@ -28,8 +28,8 @@ class BasePage:
     def perform_sendkeys(self, locator, value, time = 45):
         WebDriverWait(self.driver, 45).until(EC.visibility_of_element_located(locator)).send_keys(value)
 
-    def wait_for_element(self, locator, time = 45):
-        return WebDriverWait(self.driver, time).until(EC.presence_of_element_located(locator))
+    def wait_for_element(self, locator, time = 60):
+        return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))
 
     def wait_for_visibility_of_Element(self, locator, time = 45):
         return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))

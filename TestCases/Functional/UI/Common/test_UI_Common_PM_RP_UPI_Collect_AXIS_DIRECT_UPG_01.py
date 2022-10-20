@@ -1529,9 +1529,8 @@ def test_common_100_103_098():
 @pytest.mark.appVal
 def test_common_100_103_099():
     """
-    Sub Feature Code: UI_Common_PM_UPI_Refund_UPG_AUTHORIZED_via_API_when_UPGRefund_&_UPGAutoRefund_Disabled_AXIS_DIRECT
-    Sub Feature Description: Performing a upg authorized txn using pure upi success callback when upg refund and upg autorefund disabled
-    auto refund disabled and refund the same using api
+    Sub Feature Code: UI_Common_PM_RP_UPI_Collect_UPG_REFUNDED_VIA_Axis_Direct_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled_REFUND_via_API
+    Sub Feature Description:  Performing a upg txn using success callback when upg refund and upg autorefund is enabled and refund the same txn using api
     TC naming code description:
     100: Payment Method
     103: Remote Pay
@@ -1838,7 +1837,7 @@ def test_common_100_103_099():
                     "txn_amt": amount,
                     "pmt_mode": "UPI",
                     "pmt_state": "UPG_REFUNDED",
-                    "rrn": str(rrn),
+                    # "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     # "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
@@ -1912,7 +1911,7 @@ def test_common_100_103_099():
                 amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = elements["paymentMode"]
                 state_api = elements["states"][0]
-                rrn_api = elements["rrNumber"]
+                # rrn_api = elements["rrNumber"]
                 settlement_status_api = elements["settlementStatus"]
                 issuer_code_api = elements["issuerCode"]
                 # acquirer_code_api = response["acquirerCode"]
@@ -1950,7 +1949,7 @@ def test_common_100_103_099():
                     "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
                     "pmt_state": state_api,
-                    "rrn": str(rrn_api),
+                    # "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     # "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
