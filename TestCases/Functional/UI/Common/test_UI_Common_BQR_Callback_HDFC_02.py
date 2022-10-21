@@ -825,13 +825,14 @@ def test_common_100_102_086():
                 auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
 
-                api_details = DBProcessor.get_api_details('paymentStatus',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for api details api is : {response} ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
@@ -853,15 +854,15 @@ def test_common_100_102_086():
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "pmt_status_new": status_api_new, "txn_amt_new": amount_api_new,
-                                     "pmt_mode_new": payment_mode_api_new,
-                                     "pmt_state_new": state_api_new, "rrn_new": str(rrn_api_new),
-                                     "settle_status_new": settlement_status_api_new,
-                                     "acquirer_code_new": acquirer_code_api_new,
-                                     "issuer_code_new": issuer_code_api_new, "mid_new": mid_api_new,
-                                     "txn_type_new": txn_type_api_new, "tid_new": tid_api_new,
-                                     "auth_code_new": auth_code_api_new, "org_code_new": org_code_api_new,
-                                     "date_new": date_time_converter.from_api_to_datetime_format(date_api_new),
+                                     "pmt_status_2": status_api_new, "txn_amt_2": amount_api_new,
+                                     "pmt_mode_2": payment_mode_api_new,
+                                     "pmt_state_2": state_api_new, "rrn_2": str(rrn_api_new),
+                                     "settle_status_2": settlement_status_api_new,
+                                     "acquirer_code_2": acquirer_code_api_new,
+                                     "issuer_code_2": issuer_code_api_new, "mid_2": mid_api_new,
+                                     "txn_type_2": txn_type_api_new, "tid_2": tid_api_new,
+                                     "auth_code_2": auth_code_api_new, "org_code_2": org_code_api_new,
+                                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new),
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)

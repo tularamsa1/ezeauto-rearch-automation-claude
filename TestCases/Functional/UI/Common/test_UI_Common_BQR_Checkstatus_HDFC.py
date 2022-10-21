@@ -1199,7 +1199,7 @@ def test_common_100_102_085():
             logger.debug(f"Fetching Transaction id from db query : {txn_id} ")
             api_details = DBProcessor.get_api_details('txnDetails',
                                                       request_body={"username": app_username,
-                                                                    "app_password": app_password,
+                                                                    "password": app_password,
                                                                     "txnId": txn_id})
             logger.debug("API DETAILS:", api_details)
             response = APIProcessor.send_request(api_details)
