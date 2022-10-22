@@ -1191,12 +1191,13 @@ def test_common_100_102_032():
                 auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
 
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "app_password": app_password,
-                                                                        "txnId": txn_id_new})
-                logger.debug("API DETAILS:", api_details)
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
