@@ -308,7 +308,7 @@ def getDevicesList():
 def start_emulators(number_of_emulators_to_start):
     currently_not_started_avds = get_the_list_of_currently_not_started_avds()
 
-    for i in range(number_of_emulators_to_start):
+    for i in range(number_of_emulators_to_start+1):
         if currently_not_started_avds:
             avd_name = currently_not_started_avds.pop(0)  # pop will remove that avd_name from the avds list also
             logger.debug(f"Trying to start emulator with avd name '{avd_name}'")
