@@ -704,7 +704,7 @@ def test_common_100_103_056():
                     "mid": mid_db_original,
                     "tid": tid_db_original,
                     "mid_2": mid_db_refunded,
-                    "tid_2s": tid_db_refunded,
+                    "tid_2": tid_db_refunded,
 
                     "pmt_status_3": status_db_full_refund,
                     "pmt_state_3": state_db_full_refund,
