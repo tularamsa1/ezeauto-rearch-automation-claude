@@ -459,7 +459,7 @@ def test_common_100_103_136():
                     "txn_type_2": new_txn_type,
                     "mid_2": new_txn_mid,
                     "tid_2": new_txn_tid,
-                    "code_2": new_txn_org_code,
+                    "org_code_2": new_txn_org_code,
                     "date_2": new_date,
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
