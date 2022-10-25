@@ -1566,8 +1566,8 @@ def test_common_100_103_099():
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "false"
-        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
@@ -1637,13 +1637,7 @@ def test_common_100_103_099():
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"query result : {result}")
             txn_id = result['txn_id'].iloc[0]
-            query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch transaction id from database : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            org_code_txn = result['org_code'].values[0]
-            txn_type = result['txn_type'].values[0]
-            posting_date = result['posting_date'].values[0]
-            external_ref = result['external_ref'].values[0]
+            logger.info(f"tampered txn id is:{txn_id}")
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "amount": amount,
@@ -1663,6 +1657,14 @@ def test_common_100_103_099():
             logger.debug(f"query result, refund_posting_date : {refund_posting_date} ")
             refund_external_ref = result['external_ref'].values[0]
             logger.debug(f"query result, refund_external_ref : {refund_external_ref} ")
+
+            query = "select * from txn where id = '" + txn_id + "';"
+            logger.debug(f"Query to fetch transaction id from database : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            org_code_txn = result['org_code'].values[0]
+            txn_type = result['txn_type'].values[0]
+            posting_date = result['posting_date'].values[0]
+            external_ref = result['external_ref'].values[0]
 
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
@@ -1840,7 +1842,7 @@ def test_common_100_103_099():
                     # "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     # "acquirer_code": "AXIS",
-                    "issuer_code": "AXIS",
+                    # "issuer_code": "AXIS",
                     "txn_type": txn_type,
                     "mid": mid,
                     "tid": tid,
@@ -1862,97 +1864,61 @@ def test_common_100_103_099():
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                #
-                # api_details = DBProcessor.get_api_details('txnlist',
-                #                                           request_body={"username": app_username,
-                #                                                         "password": app_password,})
-                # logger.debug(f"API DETAILS for original_txn_id : {api_details}")
-                # response = APIProcessor.send_request(api_details)
-                # responseInList = response["txns"]
-                # logger.debug(f"Response received for transaction details api is : {responseInList}")
-                #
-                # for elements in responseInList:
-                #     if elements["txnId"] == txn_id:
 
-
-                api_details = DBProcessor.get_api_details('txnDetails',
+                api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": refund_txn_id})
-                print("API DETAILS for original_txn_id:", api_details)
+                                                                        "password": app_password, })
+                logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
-
-                elements = APIProcessor.send_request(api_details)
-                refund_status_api = elements["status"]
-                refund_amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
-                refund_payment_mode_api = elements["paymentMode"]
-                refund_state_api = elements["states"][0]
-                refund_settlement_status_api = elements["settlementStatus"]
+                responseInList = response["txns"]
+                logger.debug(f"Response received for transaction details api is : {responseInList}")
+                for elements in responseInList:
+                    if elements["txnId"] == refund_txn_id:
+                        refund_status_api = elements["status"]
+                        refund_amount_api = int(
+                            elements["amount"])  # actual=345.00, expected should be in the same format
+                        refund_payment_mode_api = elements["paymentMode"]
+                        refund_state_api = elements["states"][0]
+                        refund_settlement_status_api = elements["settlementStatus"]
                         # refund_issuer_code_api = response["issuerCode"]
-                refund_acquirer_code_api = elements["acquirerCode"]
-                refund_orgCode_api = elements["orgCode"]
-                refund_mid_api = elements["mid"]
-                refund_tid_api = elements["tid"]
-                refund_txn_type_api = elements["txnType"]
-                refund_date_api = elements["postingDate"]
+                        refund_acquirer_code_api = elements["acquirerCode"]
+                        refund_orgCode_api = elements["orgCode"]
+                        refund_mid_api = elements["mid"]
+                        refund_tid_api = elements["tid"]
+                        refund_txn_type_api = elements["txnType"]
+                        refund_date_api = elements["postingDate"]
 
-
-                api_details = DBProcessor.get_api_details('txnDetails',
+                api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                print("API DETAILS for original_txn_id:", api_details)
+                                                                        "password": app_password, })
+                logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
-                status_api = elements["status"]
-                amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
-                payment_mode_api = elements["paymentMode"]
-                state_api = elements["states"][0]
-                # rrn_api = elements["rrNumber"]
-                settlement_status_api = elements["settlementStatus"]
-                issuer_code_api = elements["issuerCode"]
-                # acquirer_code_api = response["acquirerCode"]
-                orgCode_api = elements["orgCode"]
-                mid_api = elements["mid"]
-                tid_api = elements["tid"]
-                txn_type_api = elements["txnType"]
-                date_api = elements["postingDate"]
-
-                # api_details = DBProcessor.get_api_details('txnlist',
-                #                                           request_body={"username": app_username,
-                #                                                         "password": app_password, })
-                # logger.debug(f"API DETAILS for original_txn_id : {api_details}")
-                # response = APIProcessor.send_request(api_details)
-                # responseInList = response["txns"]
-                # logger.debug(f"Response received for transaction details api is : {responseInList}")
-                #
-                # for elements in responseInList:
-                #     if elements["txnId"] == refund_txn_id:
-                #         refund_status_api = elements["status"]
-                #         refund_amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
-                #         refund_payment_mode_api = elements["paymentMode"]
-                #         refund_state_api = elements["states"][0]
-                #         refund_settlement_status_api = elements["settlementStatus"]
-                #         # refund_issuer_code_api = response["issuerCode"]
-                #         refund_acquirer_code_api = elements["acquirerCode"]
-                #         refund_orgCode_api = elements["orgCode"]
-                #         refund_mid_api = elements["mid"]
-                #         refund_tid_api = elements["tid"]
-                #         refund_txn_type_api = elements["txnType"]
-                #         refund_date_api = elements["postingDate"]
+                responseInList = response["txns"]
+                logger.debug(f"Response received for transaction details api is : {responseInList}")
+                for elements in responseInList:
+                    if elements["txnId"] == txn_id:
+                        status_api = elements["status"]
+                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        payment_mode_api = elements["paymentMode"]
+                        state_api = elements["states"][0]
+                        # rrn_api = elements["rrNumber"]
+                        settlement_status_api = elements["settlementStatus"]
+                        # issuer_code_api = elements["issuerCode"]
+                        # acquirer_code_api = response["acquirerCode"]
+                        orgCode_api = elements["orgCode"]
+                        mid_api = elements["mid"]
+                        tid_api = elements["tid"]
+                        txn_type_api = elements["txnType"]
+                        date_api = elements["postingDate"]
 
                 actual_api_values = {
                     "pmt_status": status_api,
                     "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
                     "pmt_state": state_api,
-                    # "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     # "acquirer_code": acquirer_code_api,
-                    "issuer_code": issuer_code_api,
+                    # "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api,
                     "mid": mid_api,
                     "tid": tid_api,

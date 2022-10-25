@@ -340,7 +340,7 @@ def test_common_100_103_067():
                     "rrn_3": str(callback_2_rrn),
                     "customer_name_3": new_txn_customer_name_2,
                     "payer_name_3": new_txn_payer_name_2,
-                    "order_id_": order_id,
+                    "order_id_3": order_id,
                     "pmt_msg_3": "PAYMENT SUCCESSFUL",
                     "date_3": new_txn_date_and_time_2,
 
