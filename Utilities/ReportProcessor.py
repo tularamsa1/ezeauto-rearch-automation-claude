@@ -8,6 +8,7 @@ from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
+from TestCases import conftest
 from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
 from Utilities import DirectoryCreator
@@ -74,17 +75,19 @@ def get_Log_Collection_Time():
     # Converting time duration to milliseconds
     # GlobalVariables.EXCEL_LogCollTime = Val_Time_Sec * 1000
 
-def createStatusTable():
-    apiVal = GlobalVariables.str_api_val_result
-    dbVal = GlobalVariables.str_db_val_result
-    portalVal = GlobalVariables.str_portal_val_result
-    appVal = GlobalVariables.str_app_val_result
-    uiVal = GlobalVariables.str_ui_val_result
-    chargeslip_val = GlobalVariables.str_chargeslip_val_result
 
+def createStatusTable():
+    if GlobalVariables.EXCEL_TC_Execution == 'Fail':
+        conftest.set_dne_status()
+    api_val = "Fail" if GlobalVariables.str_api_val_result=="Failed" else GlobalVariables.str_api_val_result
+    db_val = "Fail" if GlobalVariables.str_db_val_result=="Failed" else GlobalVariables.str_db_val_result
+    portal_val = "Fail" if GlobalVariables.str_portal_val_result=="Failed" else GlobalVariables.str_portal_val_result
+    app_val = "Fail" if GlobalVariables.str_app_val_result=="Failed" else GlobalVariables.str_app_val_result
+    ui_val = "Fail" if GlobalVariables.str_ui_val_result=="Failed" else GlobalVariables.str_ui_val_result
+    chargeslip_val = "Fail" if GlobalVariables.str_chargeslip_val_result=="Failed" else GlobalVariables.str_chargeslip_val_result
 
     get_TC_Val_Time()
-    print("portalVal: ", portalVal)
+    print("portalVal: ", portal_val)
     print("")
     print("")
 
@@ -92,31 +95,11 @@ def createStatusTable():
     myTable = PrettyTable(["Validation Type", "Validation Status"])
     myTable.title = 'Validation Details'
 
-    if apiVal == "Failed":
-        myTable.add_row(["API Validation", "Fail"])
-    else:
-        myTable.add_row(["API Validation", apiVal])
-
-    if dbVal == "Failed":
-        myTable.add_row(["DB Validation", "Fail"])
-    else:
-        myTable.add_row(["DB Validation", dbVal])
-
-    if portalVal == "Failed":
-        myTable.add_row(["Portal Validation", "Fail"])
-    else:
-        myTable.add_row(["Portal Validation", portalVal])
-
-    if appVal == "Failed":
-        myTable.add_row(["App Validation", "Fail"])
-    else:
-        myTable.add_row(["App Validation", appVal])
-
-    if uiVal == "Failed":
-        myTable.add_row(["UI Validation", "Fail"])
-    else:
-        myTable.add_row(["UI Validation", uiVal])
-
+    myTable.add_row(["API Validation", api_val])
+    myTable.add_row(["DB Validation", db_val])
+    myTable.add_row(["Portal Validation", portal_val])
+    myTable.add_row(["App Validation", app_val])
+    myTable.add_row(["UI Validation", ui_val])
     myTable.add_row(["Charge Slip Validation", chargeslip_val])
 
     myTable.align = 'l'
@@ -178,18 +161,18 @@ def createStatusTable():
     
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
-        if GlobalVariables.bool_ss_portal_val == "Passed" or portalVal == 'Pass':
+        if GlobalVariables.bool_ss_portal_val == "Passed" or portal_val == 'Pass':
             portalSS = 'Yes'
-        if GlobalVariables.bool_ss_app_val == "Passed" or appVal == 'Pass':
+        if GlobalVariables.bool_ss_app_val == "Passed" or app_val == 'Pass':
             appSS = 'Yes'
         if chargeslip_val == "Pass":
             chargeslipSS = "Yes"
 
     if Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
-        if GlobalVariables.bool_ss_portal_val == "Failed" or portalVal == 'Failed':
+        if GlobalVariables.bool_ss_portal_val == "Failed" or portal_val == 'Fail':
             portalSS = 'Yes'
 
-        if GlobalVariables.bool_ss_app_val == "Failed" or appVal == 'Failed':
+        if GlobalVariables.bool_ss_app_val == "Failed" or app_val == 'Fail':
             appSS = 'Yes'
 
         if chargeslip_val == "Fail":  
