@@ -523,8 +523,8 @@ def test_common_100_101_122():
                     "upi_mc_id_2": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    "mid_2": mid,
-                    "tid_2": tid,
+                    # "mid_2": mid,
+                    # "tid_2": tid,
                     "order_id": order_id,
                     "order_id_2": order_id,
                 }
@@ -612,8 +612,8 @@ def test_common_100_101_122():
                     "upi_mc_id_2": upi_mc_id_db_refunded,
                     "mid": mid_db_original,
                     "tid": tid_db_original,
-                    "mid_2": mid_db_refunded,
-                    "tid_2": tid_db_refunded,
+                    # "mid_2": mid_db_refunded,
+                    # "tid_2": tid_db_refunded,
                     "order_id": order_id_db_original,
                     "order_id_2": order_id_db_refunded,
                 }
