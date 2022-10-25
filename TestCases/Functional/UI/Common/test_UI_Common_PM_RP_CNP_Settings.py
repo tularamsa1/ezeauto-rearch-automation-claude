@@ -171,7 +171,7 @@ def test_common_100_103_077():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        query = "update remotepay_setting set setting_value=15 where setting_name='rmpayBumpTime' and org_code='" + org_code + "';"
+        query = "update remotepay_setting set setting_value=15 where setting_name='rmpayBumpCount' and org_code='" + org_code + "';"
         logger.debug(f"Query to update remote pay settings is : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.info(f"In finally, remote pay setting is: {result}")
