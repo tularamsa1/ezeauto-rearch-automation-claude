@@ -1400,8 +1400,8 @@ def test_common_100_101_123():
                     "upi_mc_id_2": upi_mc_id,
                     "upi_mc_id_3": upi_mc_id,
                     "mid": mid, "tid": tid,
-                    "mid_2": mid, "tid_2": tid,
-                    "mid_3": mid, "tid_3": tid,
+                    # "mid_2": mid, "tid_2": tid,
+                    # "mid_3": mid, "tid_3": tid,
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "order_id_3": order_id,
@@ -1525,8 +1525,8 @@ def test_common_100_101_123():
                     "upi_mc_id_2": partial_refund_upi_mc_id_db_1,
                     "upi_mc_id_3": partial_refund_upi_mc_id_db_2,
                     "mid": mid_db, "tid": tid_db,
-                    "mid_2": partial_refund_mid_db_1, "tid_2": partial_refund_tid_db_1,
-                    "mid_3": partial_refund_mid_db_2, "tid_3": partial_refund_tid_db_2,
+                    # "mid_2": partial_refund_mid_db_1, "tid_2": partial_refund_tid_db_1,
+                    # "mid_3": partial_refund_mid_db_2, "tid_3": partial_refund_tid_db_2,
                     "order_id": order_id_db,
                     "order_id_2": partial_refund_order_id_db_1,
                     "order_id_3": partial_refund_order_id_db_2,
@@ -2110,8 +2110,8 @@ def test_common_100_101_124():
                     "upi_mc_id_2": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    "mid_2": mid,
-                    "tid_2": tid,
+                    # "mid_2": mid,
+                    # "tid_2": tid,
                 }
 
                 logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
@@ -2197,8 +2197,8 @@ def test_common_100_101_124():
                     "upi_mc_id_2": upi_mc_id_db_refunded,
                     "mid": mid_db_original,
                     "tid": tid_db_original,
-                    "mid_2": mid_db_refunded,
-                    "tid_2": tid_db_refunded,
+                    # "mid_2": mid_db_refunded,
+                    # "tid_2": tid_db_refunded,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
@@ -2768,8 +2768,8 @@ def test_common_100_101_125():
                     "upi_mc_id_2": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    "mid_2": mid,
-                    "tid_2": tid,
+                    # "mid_2": mid,
+                    # "tid_2": tid,
                 }
 
                 logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
@@ -2855,8 +2855,8 @@ def test_common_100_101_125():
                     "upi_mc_id_2": upi_mc_id_db_refunded,
                     "mid": mid_db_original,
                     "tid": tid_db_original,
-                    "mid_2": mid_db_refunded,
-                    "tid_2": tid_db_refunded,
+                    # "mid_2": mid_db_refunded,
+                    # "tid_2": tid_db_refunded,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
