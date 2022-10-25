@@ -134,9 +134,9 @@ def test_common_100_102_089():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['created_time'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -156,10 +156,10 @@ def test_common_100_102_089():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
-                                       "order_id": order_id,"msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -199,7 +199,7 @@ def test_common_100_102_089():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,"auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -212,7 +212,7 @@ def test_common_100_102_089():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
@@ -357,7 +357,7 @@ def test_common_100_102_089():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                    'date': txn_date, 'time': txn_time,'AUTH CODE': auth_code}
@@ -496,9 +496,9 @@ def test_common_100_102_090():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -518,10 +518,10 @@ def test_common_100_102_090():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "FAILED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
-                                       "order_id": order_id,"msg": "PAYMENT FAILED",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -556,7 +556,7 @@ def test_common_100_102_090():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id,
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -569,7 +569,7 @@ def test_common_100_102_090():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {"pmt_status": "FAILED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "FAILED","settle_status": "FAILED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
@@ -596,7 +596,7 @@ def test_common_100_102_090():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
@@ -837,9 +837,9 @@ def test_common_100_102_091():
             logger.debug(f"Fetching API Response for call back : {response}")
             query = "select * from txn where id = '" + txn_id + "';"
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"Fetching posting_date from database for "
-                         f"current merchant:{posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from database for "
+                         f"current merchant:{created_time}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -859,10 +859,10 @@ def test_common_100_102_091():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
-                                       "order_id": order_id,"msg": "PAYMENT FAILED",
+                                       "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -897,7 +897,7 @@ def test_common_100_102_091():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id,
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id,
-                                     "msg": app_payment_msg, "date": app_date_and_time}
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -910,7 +910,7 @@ def test_common_100_102_091():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {"pmt_status": "EXPIRED","txn_amt": float(amount),"pmt_mode": "BHARATQR",
                                        "pmt_state": "EXPIRED","settle_status": "FAILED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC","txn_type": "CHARGE",
@@ -936,7 +936,7 @@ def test_common_100_102_091():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
@@ -1177,9 +1177,9 @@ def test_common_100_102_095():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
@@ -1194,8 +1194,8 @@ def test_common_100_102_095():
             txn_id_new = result["id"].iloc[0]
             auth_code_new = result['auth_code'].values[0]
             rrn_new = result['rr_number'].iloc[0]
-            posting_date_new = result['posting_date'].values[0]
-            logger.debug(f"Fetching new txn_id, auth_code, rrn, posting_date, customer name and payer name"
+            posting_date_new = result['created_time'].values[0]
+            logger.debug(f"Fetching new txn_id, auth_code, rrn, created_time, customer name and payer name"
                 f" from database for current merchant:{txn_id_new}, {auth_code_new}, {rrn_new}, {posting_date_new}")
 
             # ------------------------------------------------------------------------------------------------
@@ -1216,16 +1216,16 @@ def test_common_100_102_095():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(posting_date_new)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),
                                        "settle_status": "SETTLED", "txn_id": txn_id, "rrn": str(rrn),
-                                       "order_id": order_id, "msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
                                        "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
-                                       "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1293,13 +1293,13 @@ def test_common_100_102_095():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id, "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time,
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new, "pmt_status_2": payment_status_new.split(':')[1],
                                      "txn_amt_2": app_amount_new.split(' ')[1],
                                      "txn_id_2": app_txn_id_new, "rrn_2": str(app_rrn_new),
                                      "settle_status_2": app_settlement_status_new,
                                      "order_id_2": app_order_id_new, "auth_code_2": app_auth_code_new,
-                                     "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
+                                     "pmt_msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -1312,7 +1312,7 @@ def test_common_100_102_095():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 date_new = date_time_converter.db_datetime(posting_date_new)
                 expected_api_values = {"pmt_status": "AUTHORIZED", "txn_amt": float(amount), "pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn), "settle_status": "SETTLED",
@@ -1350,7 +1350,7 @@ def test_common_100_102_095():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1374,7 +1374,7 @@ def test_common_100_102_095():
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
                 device_serial_api_new = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api, "pmt_mode": payment_mode_api,
@@ -1562,7 +1562,7 @@ def test_common_100_102_095():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time,
                                    'AUTH CODE': auth_code}
@@ -1714,9 +1714,9 @@ def test_common_100_102_096():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
@@ -1731,9 +1731,9 @@ def test_common_100_102_096():
             txn_id_new = result["id"].iloc[0]
             auth_code_new = result['auth_code'].values[0]
             rrn_new = result['rr_number'].iloc[0]
-            posting_date_new = result['posting_date'].values[0]
-            logger.debug(f"Fetching new txn_id, auth_code, rrn, posting_date, customer name and payer name"
-                f" from database for current merchant:{txn_id_new}, {auth_code_new}, {rrn_new}, {posting_date_new}")
+            created_time_new = result['created_time'].values[0]
+            logger.debug(f"Fetching new txn_id, auth_code, rrn, created_time, customer name and payer name"
+                f" from database for current merchant:{txn_id_new}, {auth_code_new}, {rrn_new}, {created_time_new}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1753,16 +1753,16 @@ def test_common_100_102_096():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
-                date_and_time_new = date_time_converter.to_app_format(posting_date_new)
+                date_and_time = date_time_converter.to_app_format(created_time)
+                date_and_time_new = date_time_converter.to_app_format(created_time_new)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),
                                        "settle_status": "SETTLED", "txn_id": txn_id, "rrn": str(rrn),
-                                       "order_id": order_id, "msg": "PAYMENT SUCCESSFUL",
+                                       "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
                                        "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
-                                       "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",
+                                       "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1827,13 +1827,13 @@ def test_common_100_102_096():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      "settle_status": app_settlement_status,
                                      "order_id": app_order_id, "auth_code": app_auth_code,
-                                     "msg": app_payment_msg, "date": app_date_and_time,
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new, "pmt_status_2": payment_status_new.split(':')[1],
                                      "txn_amt_2": app_amount_new.split(' ')[1],
                                      "txn_id_2": app_txn_id_new, "rrn_2": str(app_rrn_new),
                                      "settle_status_2": app_settlement_status_new,
                                      "order_id_2": app_order_id_new, "auth_code_2": app_auth_code_new,
-                                     "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
+                                     "pmt_msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -1846,8 +1846,8 @@ def test_common_100_102_096():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
-                date_new = date_time_converter.db_datetime(posting_date_new)
+                date = date_time_converter.db_datetime(created_time)
+                date_new = date_time_converter.db_datetime(created_time_new)
                 expected_api_values = {"pmt_status": "AUTHORIZED", "txn_amt": float(amount), "pmt_mode": "BHARATQR",
                                        "pmt_state": "SETTLED", "rrn": str(rrn), "settle_status": "SETTLED",
                                        "acquirer_code": "HDFC", "issuer_code": "HDFC", "txn_type": "CHARGE",
@@ -1885,7 +1885,7 @@ def test_common_100_102_096():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -1909,7 +1909,7 @@ def test_common_100_102_096():
                 tid_api_new = response["tid"]
                 txn_type_api_new = response["txnType"]
                 auth_code_api_new = response["authCode"]
-                date_api_new = response["postingDate"]
+                date_api_new = response["createdTime"]
                 device_serial_api_new = response["deviceSerial"]
 
                 actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api, "pmt_mode": payment_mode_api,
@@ -2098,7 +2098,7 @@ def test_common_100_102_096():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time,
                                    'AUTH CODE': auth_code}

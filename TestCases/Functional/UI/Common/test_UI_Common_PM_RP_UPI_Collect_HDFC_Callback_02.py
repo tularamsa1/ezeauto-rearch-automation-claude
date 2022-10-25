@@ -2231,10 +2231,10 @@ def test_common_100_103_022():
 
             if org_setting_value:
                 logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
-                time.sleep(3 + (org_setting_value * 60))
+                time.sleep(10 + (org_setting_value * 60))
             else:
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
-                time.sleep(3 + (setting_value * 60))
+                time.sleep(10 + (setting_value * 60))
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -2739,7 +2739,7 @@ def test_common_100_103_022():
                 actual_api_values = {"pmt_status": status_api,
                                      "txn_amt": amount_api,
                                      "pmt_mode": payment_mode_api,
-                                     "pmt_state_1": state_api,
+                                     "pmt_state": state_api,
                                      "settle_status": settlement_status_api,
                                      "acquirer_code": acquirer_code_api,
                                      "issuer_code": issuer_code_api,

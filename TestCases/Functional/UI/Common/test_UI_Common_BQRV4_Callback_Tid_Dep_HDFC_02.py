@@ -195,6 +195,7 @@ def test_common_100_102_115():
             result = DBProcessor.getValueFromDB(query)
             txn_id_new_2 = result['id'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
+            rrn_new_2 = result['rr_number'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
             modified_date_new_2 = result['created_time'].values[0]
