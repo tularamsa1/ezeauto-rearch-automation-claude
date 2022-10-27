@@ -547,9 +547,23 @@ def test_common_100_103_005():
                 order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            Txn_id = result['id'].values[0]
-            logger.debug(f"Query result, Txn_id : {Txn_id}")
+            txn_id = result['id'].values[0]
+            rrn = result['rr_number'].values[0]
+            created_time = result['created_time'].values[0]
+            status = result['status'].values[0]
+            customer_name = result['customer_name'].values[0]
+            payer_name = result['payer_name'].values[0]
+            mid = result['mid'].values[0]
+            tid = result['tid'].values[0]
+            org_code_txn = result['org_code'].values[0]
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"Fetching txn_id, rrn and status from the txn table : txn_id : {txn_id}, status : {status}")
 
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            upi_mc_id = result['id'].values[0]
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -595,10 +609,19 @@ def test_common_100_103_005():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info(f"Started APP validation for the test case : {testcase_id}")
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expectedAppValues = {"pmt_mode": "UPI",
                                      "pmt_status": "FAILED",
                                      "txn_amt": str(amount),
-                                     "txn_id": Txn_id}
+                                     "settle_status": "FAILED",
+                                     "txn_id": txn_id,
+                                     # "rrn": str(rrn),
+                                     "customer_name": customer_name,
+                                     "payer_name": payer_name,
+                                     "order_id": order_id,
+                                     "payment_msg": "PAYMENT FAILED",
+                                     "date": date_and_time
+                                     }
 
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -609,20 +632,44 @@ def test_common_100_103_005():
                 homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
-                txnHistoryPage = TransHistoryPage(app_driver)
-                txnHistoryPage.click_on_transaction_by_order_id(order_id)
-                payment_status = txnHistoryPage.fetch_txn_status_text()
-                logger.info(f"Fetching status from txn history for the txn : {Txn_id}, {payment_status}")
-                payment_mode = txnHistoryPage.fetch_txn_type_text()
-                logger.info(f"Fetching payment mode from txn history for the txn : {Txn_id}, {payment_mode}")
-                app_txn_id = txnHistoryPage.fetch_txn_id_text()
-                logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
-                app_amount = txnHistoryPage.fetch_txn_amount_text()
-                logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_order_id(order_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_rrn = txn_history_page.fetch_RRN_text()
+                # logger.info(
+                #     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
                 actualAppValues = {"pmt_mode": payment_mode,
                                    "pmt_status": payment_status.split(':')[1],
                                    "txn_amt": app_amount.split(' ')[1],
-                                   "txn_id": app_txn_id}
+                                   "txn_id": app_txn_id,
+                                   # "rrn": str(app_rrn),
+                                   "customer_name": app_customer_name,
+                                   "settle_status": app_settlement_status,
+                                   "payer_name": app_payer_name,
+                                   "order_id": app_order_id,
+                                   "payment_msg": app_payment_msg,
+                                   "date": app_date_and_time
+                                   }
 
                 logger.debug(f"actualAppValues: {actualAppValues}")
 
@@ -643,25 +690,59 @@ def test_common_100_103_005():
                 # --------------------------------------------------------------------------------------------
                 logger.info(f"Started API validation for the test case : {testcase_id}")
                 logger.info("Api Validation Started for the test case : test_common_100_103_005")
+                date = date_time_converter.db_datetime(created_time)
                 expectedAPIValues = {"pmt_status": "FAILED",
                                      "txn_amt": amount,
-                                     "pmt_mode": "UPI"}
+                                     "pmt_mode": "UPI",
+                                    "pmt_state": "FAILED",
+                                    # "rrn": str(rrn),
+                                    "settle_status": "FAILED",
+                                    "acquirer_code": "HDFC",
+                                    "issuer_code": "HDFC",
+                                    "txn_type": txn_type,
+                                    "mid": mid,
+                                    "tid": tid,
+                                    "org_code": org_code_txn,
+                                    "date": date
+                                     }
 
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
                 api_details = DBProcessor.get_api_details('txnDetails', request_body={"username": app_username,
                                                                                       "password": app_password,
-                                                                                      "txnId": Txn_id})
+                                                                                      "txnId": txn_id})
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
                 amount_api = response["amount"]
                 payment_mode_api = response["paymentMode"]
-                logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
-                logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
-                logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
+                state_api = response["states"][0]
+                # rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                date_api = response["postingDate"]
+                # logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
+                # logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
+                # logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
+
                 actualAPIValues = {"pmt_status": status_api,
                                    "txn_amt": amount_api,
-                                   "pmt_mode": payment_mode_api}
+                                   "pmt_mode": payment_mode_api,
+                                   "pmt_state": state_api,
+                                    # "rrn": str(rrn_api),
+                                    "settle_status": settlement_status_api,
+                                    "acquirer_code": acquirer_code_api,
+                                    "issuer_code": issuer_code_api,
+                                    "txn_type": txn_type_api,
+                                    "mid": mid_api,
+                                    "tid": tid_api,
+                                    "org_code": orgCode_api,
+                                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                                     }
 
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -685,24 +766,44 @@ def test_common_100_103_005():
                                     "pmt_state": "FAILED",
                                     "pmt_mode": "UPI",
                                     "txn_amt": amount,
-                                    "txn_type": "COLLECT"}
+                                    "upi_txn_status": "FAILED",
+                                    "settle_status": "FAILED",
+                                    "acquirer_code": "HDFC",
+                                    "bank_code": "HDFC",
+                                    "upi_txn_type": "COLLECT",
+                                    "upi_bank_code": "HDFC",
+                                    "upi_mc_id": upi_mc_id,
+                                    "pmt_intent_status": "ACTIVE"
+                                    }
+
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                query = "select * from txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
+                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 state_db = result["state"].iloc[0]
+                acquirer_code_db = result["acquirer_code"].iloc[0]
+                bank_code_db = result["bank_code"].iloc[0]
+                settlement_status_db = result["settlement_status"].iloc[0]
 
-                query = "select txn_type from upi_txn where txn_id='" + Txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result1 = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result1}")
-                txnType_db1 = result1["txn_type"].iloc[0]
+                query = "select * from payment_intent where id='" + payment_intent_id + "'"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                payment_intent_status = result["status"].iloc[0]
+
+                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].iloc[0]
+                upi_txn_type_db = result["txn_type"].iloc[0]
+                upi_bank_code_db = result["bank_code"].iloc[0]
+                upi_mc_id_db = result["upi_mc_id"].iloc[0]
                 # payment_mode_db = result["payment_mode"].iloc[0]
                 # amount_db1 = int(result["amount"].iloc[0])
                 # state_db = result["state"].iloc[0]
@@ -711,7 +812,14 @@ def test_common_100_103_005():
                                   "pmt_state": state_db,
                                   "pmt_mode": payment_mode_db,
                                   "txn_amt": amount_db,
-                                  "txn_type": txnType_db1}
+                                  "upi_txn_status": upi_status_db,
+                                  "settle_status": settlement_status_db,
+                                  "acquirer_code": acquirer_code_db,
+                                  "bank_code": bank_code_db,
+                                  "upi_txn_type": upi_txn_type_db,
+                                  "upi_bank_code": upi_bank_code_db,
+                                  "upi_mc_id": upi_mc_id_db,
+                                  "pmt_intent_status": payment_intent_status}
 
                 # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -749,7 +857,7 @@ def test_common_100_103_005():
                 homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
-                portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
+                portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(txn_id)
                 portalType = portalValuesDict['Type']
                 portalStatus = portalValuesDict['Status']
                 portalAmount = portalValuesDict['Total Amount']
