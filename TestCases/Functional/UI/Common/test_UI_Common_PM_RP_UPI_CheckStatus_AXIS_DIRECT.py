@@ -688,6 +688,7 @@ def test_common_100_103_079():
                     bank_code_db = result["bank_code"].iloc[0]
                     settlement_status_db = result["settlement_status"].iloc[0]
 
+
                     query = "select * from payment_intent where id='" + payment_intent_id + "'"
                     result = DBProcessor.getValueFromDB(query)
                     logger.debug(f"Query result : {result}")

@@ -978,19 +978,15 @@ def test_common_100_103_032():
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {original_txn_id}, {app_date_and_time}")
                 app_settlement_status = transactions_history_page.fetch_settlement_status_text()
-                logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {original_txn_id}, {app_settlement_status}")
+                logger.info(f"Fetching txn settlement_status from txn history for the txn : {original_txn_id}, {app_settlement_status}")
                 app_customer_name = transactions_history_page.fetch_customer_name_text()
-                logger.info(
-                    f"Fetching txn customer name from txn history for the txn : {original_txn_id}, {app_customer_name}")
+                logger.info(f"Fetching txn customer name from txn history for the txn : {original_txn_id}, {app_customer_name}")
                 app_payer_name = transactions_history_page.fetch_payer_name_text()
-                logger.info(
-                    f"Fetching txn payer name from txn history for the txn : {original_txn_id}, {app_payer_name}")
+                logger.info(f"Fetching txn payer name from txn history for the txn : {original_txn_id}, {app_payer_name}")
                 app_order_id = transactions_history_page.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {original_txn_id}, {app_order_id}")
                 app_payment_msg = transactions_history_page.fetch_txn_payment_msg_text()
-                logger.info(
-                    f"Fetching txn status msg from txn history for the txn : {original_txn_id}, {app_payment_msg}")
+                logger.info(f"Fetching txn status msg from txn history for the txn : {original_txn_id}, {app_payment_msg}")
 
                 actual_app_values = {"pmt_mode": app_payment_mode,
                                      "pmt_status": app_payment_status,
