@@ -225,6 +225,7 @@ def test_common_100_103_001():
                 app_date_and_time = txnHistoryPage.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
 
+
                 actualAppValues = {"pmt_mode": payment_mode,
                                    "pmt_status": payment_status.split(':')[1],
                                    "txn_amt": app_amount.split(' ')[1], #santo's implementation needs to be added
@@ -521,6 +522,8 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Query result, db date from db : {posting_date}")
+            txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
 
             query = "select * from cnp_txn where txn_id='" + Txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -529,6 +532,11 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
             logger.debug(f"Query result, cnp_txn_rrn : {cnp_txn_rrn}")
             cnp_txn_state = result['state'].values[0]
             logger.debug(f"Query result, cnp_txn_state : {cnp_txn_state}")
+            cnp_txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
+            cnp_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_gateway}")
+            cnp_payment_flow = result['payment_flow'].values[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -592,9 +600,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 payment_orderId = txnHistoryPage.fetch_order_id_text()
                 logger.info(f"Fetching txn orderId from txn history for the txn : {Txn_id}, {payment_orderId}")
                 payment_status_msg = txnHistoryPage.fetch_txn_payment_msg_text()
-                logger.info(
-                    f"Fetching txn status message from txn history for the txn : {Txn_id}, {payment_status_msg}")
-
+                logger.info(f"Fetching txn status message from txn history for the txn : {Txn_id}, {payment_status_msg}")
                 actualAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
                                      "txn_amt": app_amount.split(' ')[1],
@@ -635,6 +641,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
 
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username, "password": app_password})
                 response = APIProcessor.send_request(api_details)
+                logger.info(f"response from api details : {api_details}")
                 responseInList = response["txns"]
                 status_api = ''
                 amount_api = ''
@@ -682,8 +689,11 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                                     "settle_status": "FAILED",
                                     "pmt_gateway": "CYBERSOURCE",
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
-                                    "cnpware_pmt_gateway": "CYBERSOURCE",
+                                    # "cnpware_pmt_gateway": "CYBERSOURCE",
                                     "cnpware_pmt_flow": "REMOTEPAY",
+                                    "auth_code": txn_auth_code,
+                                    "cnp_pmt_gateway": "CYBERSOURCE",
+                                    "pmt_flow": "REMOTEPAY",
                                     "pmt_intent_status": "ACTIVE"
                                     }
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -718,6 +728,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
                 cnpware_payment_flow = result['payment_flow'].values[0]
 
+
                 actualDBValues = {"pmt_status": pmt_status_db,
                                     "pmt_state": pmt_state_db,
                                     "pmt_mode": pmt_mode_db,
@@ -725,8 +736,11 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                                     "settle_status":settle_status_db,
                                     "pmt_gateway":payment_gateway_db,
                                     "cnpware_pmt_gateway": cnpware_payment_gateway,
-                                    "cnpware_pmt_gateway": cnpware_payment_gateway,
+                                    # "cnpware_pmt_gateway": cnpware_payment_gateway,
                                     "cnpware_pmt_flow":cnpware_payment_flow,
+                                    "auth_code": cnp_txn_auth_code,
+                                    "cnp_pmt_gateway": cnp_payment_gateway,
+                                    "pmt_flow": cnp_payment_flow,
                                     "pmt_intent_status": payment_intent_status
                                   }
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -959,6 +973,7 @@ def test_common_100_103_010():
             response = APIProcessor.send_request(api_details)
             portal_driver = TestSuiteSetup.initialize_portal_driver()
             paymentLinkUrl = response['paymentLink']
+            payment_intent_id = response.get('paymentIntentId')
             externalRef = response.get('externalRefNumber')
             portal_driver.get(paymentLinkUrl)
             remotePayTxn = remotePayTxnPage(portal_driver)
@@ -1018,14 +1033,23 @@ def test_common_100_103_010():
             logger.debug(f"Query result, db date from db : {posting_date}")
             txn_state = result['state'].values[0]
             logger.debug(f"Query result, db txn_state from db : {txn_state}")
+            txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
 
-            query1 = "select rr_number,org_code from cnp_txn where txn_id='" + Txn_id + "';"
+            query1 = "select * from cnp_txn where txn_id='" + Txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query1}")
-            result = DBProcessor.getValueFromDB(query)
+            result = DBProcessor.getValueFromDB(query1)
             rrn = result['rr_number'].values[0]
             org_code = result['org_code'].values[0]
             logger.debug(f"Query result, rrn : {rrn}")
             logger.debug(f"Query result, org code is : {org_code}")
+            cnp_txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
+            cnp_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_gateway}")
+            cnpware_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
+            cnp_payment_flow = result['payment_flow'].values[0]
 
     #         # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1195,7 +1219,13 @@ def test_common_100_103_010():
                                     "cnp_pmt_status": "PAYMENT_FAILED",
                                     "cnp_pmt_state": "FAILED",
                                     "cnp_pmt_card_brand": "VISA",
-                                    "cnp_pmt_card_type": "CREDIT"}
+                                    "cnp_pmt_card_type": "CREDIT",
+                                    "auth_code": txn_auth_code,
+                                    "cnp_pmt_gateway": "CYBERSOURCE",
+                                    "cnpware_pmt_gateway": "CYBERSOURCE",
+                                    "pmt_flow": "REMOTEPAY",
+                                    "pmt_intent_status": "ACTIVE"
+                                    }
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -1239,6 +1269,11 @@ def test_common_100_103_010():
                 logger.debug(f"Query result from cnp_txn, payment_card_brand : {payment_card_brand_cnp_txn}")
                 logger.debug(f"Query result from cnp_txn, payment_card_type : {payment_card_type_cnp_txn}")
 
+                query = "select * from payment_intent where id='" + payment_intent_id + "'"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                payment_intent_status = result["status"].iloc[0]
+
                 actualDBValues = {"pmt_status": status_db,
                                   "pmt_state": state_db,
                                   "pmt_mode": payment_mode_db,
@@ -1255,7 +1290,13 @@ def test_common_100_103_010():
                                   "cnp_pmt_status": payment_status_cnp_txn,
                                   "cnp_pmt_state": state_cnp_txn,
                                   "cnp_pmt_card_brand": payment_card_brand_cnp_txn,
-                                  "cnp_pmt_card_type": payment_card_type_cnp_txn}
+                                  "cnp_pmt_card_type": payment_card_type_cnp_txn,
+                                  "auth_code": cnp_txn_auth_code,
+                                  "cnp_pmt_gateway": cnp_payment_gateway,
+                                  "cnpware_pmt_gateway": cnpware_payment_gateway,
+                                  "pmt_flow": cnp_payment_flow,
+                                  "pmt_intent_status": payment_intent_status
+                                  }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -1519,6 +1560,8 @@ def test_common_100_103_012():
             payment_mode_cnp_txn = result['payment_mode'].values[0]
             payment_gateway_cnp_txn = result['payment_gateway'].values[0]
             org_code_cnp_txn = result['org_code'].values[0]
+            cnpware_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
             logger.debug(f"fetched rrn from txn table is : {rrn}")
             logger.debug(f"Query result, rrn_cnp_txn : {rrn_cnp_txn}")
             logger.debug(f"Query result, acquirer_code_cnp_txn : {acquirer_code_cnp_txn}")
@@ -1528,6 +1571,7 @@ def test_common_100_103_012():
             logger.debug(f"Query result, payment_mode_cnp_txn : {payment_mode_cnp_txn}")
             logger.debug(f"Query result, payment_gateway_cnp_txn : {payment_gateway_cnp_txn}")
             logger.debug(f"Query result, org_code_cnp_txn : {org_code_cnp_txn}")
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
