@@ -94,6 +94,9 @@ def create_users_for_merchant(merchant_code):
             user_name = user_creation_api_body["name"]
             payload = json.dumps(user_creation_api_body)
             logger.debug(payload)
+            cursor.execute(f"SELECT MerchantCode from users WHERE Name = '{user_name}' limit 1;")
+            org_code = cursor.fetchone()[0]
+            url = url.replace('EZETAP', org_code)
             response = requests.request("POST", url, headers=headers, data=payload)
             logger.debug(response.text)
             result = json.loads(response.text)
