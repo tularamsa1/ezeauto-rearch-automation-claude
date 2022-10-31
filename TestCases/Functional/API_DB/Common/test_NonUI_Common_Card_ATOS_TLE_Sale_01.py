@@ -79,8 +79,6 @@ def test_common_100_104_001():
             else:
                 logger.error("Card payment Failed")
 
-
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -102,7 +100,7 @@ def test_common_100_104_001():
                 if confirm_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
-                                        "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
                                          "txn_type":"CHARGE", "acq_code":"AXIS"}
