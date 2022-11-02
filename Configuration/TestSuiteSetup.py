@@ -16,7 +16,7 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator, Ezewallet_processor
+from Utilities import DirectoryCreator, Ezewallet_processor, card_processor
 from Utilities import sqlite_processor,merchant_creator,DBProcessor
 from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
@@ -420,6 +420,7 @@ def prepareDevicesAndDB():
         merchant_creator.create_merchants_with_users()
         sqlite_processor.update_app_users_to_db()
         sqlite_processor.update_portal_users_to_db()
+        card_processor.update_card_bin_details()
     else:
         global devices, appiumServerCount
         devices = getDevicesList()
