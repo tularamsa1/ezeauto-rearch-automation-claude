@@ -106,6 +106,12 @@ def test_common_100_103_078():
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
             remotePayUpiTxn.clickOnRemotePayProceed()
 
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            upi_mc_id = result['id'].values[0]
+
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
@@ -119,22 +125,9 @@ def test_common_100_103_078():
             tid = result['tid'].values[0]
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
-            logger.debug(f"Fetching txn_id, rrn and status from the txn table : txn_id : {txn_id}, status : {status}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            Txn_id = result['id'].values[0]
             created_time = result['created_time'].values[0]
-            logger.debug(f"Query result, Txn_id : {Txn_id}")
-            logger.debug(f"Query result, date_time : {created_time}")
+            logger.debug(f"results from the txn table : txn_id : {txn_id}, status : {status},customer_name : {customer_name}, payer_name : {payer_name},"
+                         f"mid : {mid},tid : {tid},org_code_txn : {org_code_txn},txn_type : {txn_type},created_time : {created_time}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"

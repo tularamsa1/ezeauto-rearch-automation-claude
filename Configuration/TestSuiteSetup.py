@@ -16,7 +16,7 @@ from selenium import webdriver
 
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator, Ezewallet_processor
+from Utilities import DirectoryCreator, Ezewallet_processor, card_processor
 from Utilities import sqlite_processor,merchant_creator,DBProcessor
 from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
@@ -308,7 +308,7 @@ def getDevicesList():
 def start_emulators(number_of_emulators_to_start):
     currently_not_started_avds = get_the_list_of_currently_not_started_avds()
 
-    for i in range(number_of_emulators_to_start):
+    for i in range(number_of_emulators_to_start+1):
         if currently_not_started_avds:
             avd_name = currently_not_started_avds.pop(0)  # pop will remove that avd_name from the avds list also
             logger.debug(f"Trying to start emulator with avd name '{avd_name}'")
@@ -420,6 +420,7 @@ def prepareDevicesAndDB():
         merchant_creator.create_merchants_with_users()
         sqlite_processor.update_app_users_to_db()
         sqlite_processor.update_portal_users_to_db()
+        card_processor.update_card_bin_details()
     else:
         global devices, appiumServerCount
         devices = getDevicesList()

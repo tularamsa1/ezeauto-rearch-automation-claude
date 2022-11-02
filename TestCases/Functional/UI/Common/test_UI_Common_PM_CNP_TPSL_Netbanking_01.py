@@ -740,6 +740,7 @@ def test_common_100_103_039():
                                     "cnp_pmt_gateway": "TPSL",
                                     "cnpware_pmt_gateway": "TPSL",
                                     "cnpware_pmt_flow": "REMOTEPAY",
+                                    "pmt_intent_status": "ACTIVE"
                                     }
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -771,6 +772,11 @@ def test_common_100_103_039():
                 cnpware_payment_gateway = result['payment_gateway'].values[0]
                 cnpware_payment_flow = result['payment_flow'].values[0]
 
+                query = "select * from payment_intent where id='" + payment_intent_id + "'"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                payment_intent_status = result["status"].iloc[0]
+
                 actualDBValues = {"pmt_status": pmt_status_db,
                                   "pmt_state": pmt_state_db,
                                   "pmt_mode": pmt_mode_db,
@@ -788,6 +794,7 @@ def test_common_100_103_039():
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
+                                  "pmt_intent_status": payment_intent_status
                                   }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -1182,6 +1189,8 @@ def test_common_100_103_040():
                                     "cnp_pmt_gateway": "TPSL",
                                     "cnpware_pmt_gateway": "TPSL",
                                     "cnpware_pmt_flow": "REMOTEPAY",
+                                    "auth_code": txn_auth_code,
+                                    "pmt_intent_status": "ACTIVE"
                                     # "pmt_intent_status": "COMPLETED" NA
                                     }
 
@@ -1222,6 +1231,8 @@ def test_common_100_103_040():
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
                                   # "pmt_intent_status": payment_intent_status
+                                  "auth_code": cnp_txn_auth_code,
+                                  "pmt_intent_status": payment_intent_status
                                   }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")

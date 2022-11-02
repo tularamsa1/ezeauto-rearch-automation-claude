@@ -593,6 +593,7 @@ def test_common_100_103_008():
             logger.info(f"Response from cnp intiate api is: {response}")
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             paymentLinkUrl = response['paymentLink']
+            payment_intent_id = response.get('paymentIntentId')
             externalRef = response.get('externalRefNumber')
             logger.info("Initiating a Remote pay Link")
             ui_driver.get(paymentLinkUrl)
@@ -620,12 +621,39 @@ def test_common_100_103_008():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
+            txn_customer_name = result['customer_name'].values[0]
+            logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
+            txn_settle_status = result['settlement_status'].values[0]
+            logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Query result, db date from db : {posting_date}")
+            txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
+
             query = "select rr_number from cnp_txn where txn_id='"+Txn_id+"';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"Query result, Txn_id : {Txn_id}")
             logger.debug(f"Query result, rrn : {rrn}")
+
+
+            query = "select * from cnp_txn where txn_id='" + Txn_id + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            cnp_txn_state = result['state'].values[0]
+            logger.debug(f"Query result, cnp_txn_state : {cnp_txn_state}")
+            cnp_txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
+            cnp_payment_flow = result['payment_flow'].values[0]
+            logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_flow}")
+            cnp_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_gateway}")
+
+            query = "select * from payment_intent where id='" + payment_intent_id + "'"
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result : {result}")
+            payment_intent_status = result["status"].iloc[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -662,12 +690,19 @@ def test_common_100_103_008():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started APP validation for the test case : test_common_100_103_008")
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
                                      "txn_amt": str(amount),
-                                     "txn_id": Txn_id}
+                                     "txn_id": Txn_id,
+                                     "customer_name": txn_customer_name,
+                                     "settle_status": txn_settle_status,
+                                     "date": date_and_time,
+                                     "order_id": order_id,
+                                     "msg": "PAYMENT FAILED",
+                                     }
 
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -689,10 +724,29 @@ def test_common_100_103_008():
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                payment_customer_name = txnHistoryPage.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {Txn_id}, {payment_customer_name}")
+                payment_settlement_status = txnHistoryPage.fetch_settlement_status_text()
+                logger.info(f"Fetching txn settlement status from txn history for the txn : {Txn_id}, {payment_settlement_status}")
+                payment_settlement_status = txnHistoryPage.fetch_settlement_status_text()
+                logger.info(f"Fetching txn settlement status from txn history for the txn : {Txn_id}, {payment_settlement_status}")
+                app_date_and_time = txnHistoryPage.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {Txn_id}, {app_date_and_time}")
+                payment_orderId = txnHistoryPage.fetch_order_id_text()
+                logger.info(f"Fetching txn orderId from txn history for the txn : {Txn_id}, {payment_orderId}")
+                payment_status_msg = txnHistoryPage.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status message from txn history for the txn : {Txn_id}, {payment_status_msg}")
+
                 actualAppValues = {"pmt_mode": payment_mode,
                                    "pmt_status": payment_status.split(':')[1],
                                    "txn_amt": app_amount.split(' ')[1],
-                                   "txn_id": app_txn_id}
+                                   "txn_id": app_txn_id,
+                                   "customer_name": payment_customer_name,
+                                   "settle_status": payment_settlement_status,
+                                   "date": app_date_and_time,
+                                   "order_id": payment_orderId,
+                                   "msg": payment_status_msg,
+                                   }
 
                 logger.debug(f"actualAppValues: {actualAppValues}")
 
@@ -709,11 +763,20 @@ def test_common_100_103_008():
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             try:
+                date = date_time_converter.db_datetime(posting_date)
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started API validation for the test case : test_common_100_103_008")
                 expectedAPIValues = {"pmt_status": "FAILED",
                                      "txn_amt": amount,
-                                     "pmt_mode": "CNP"}
+                                     "pmt_mode": "CNP",
+                                     "pmt_state": "FAILED",
+                                     "acquirer_code": "HDFC",
+                                     "settle_status": "FAILED",
+                                     "issuer_code": "HDFC",
+                                     "txn_type": "REMOTE_PAY",
+                                     "org_code": org_code,
+                                     "date": date
+                                     }
 
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -724,12 +787,34 @@ def test_common_100_103_008():
                 status_api = response["status"]
                 amount_api = response["amount"]
                 payment_mode_api = response["paymentMode"]
+
+                api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
+                                                                                   "password": app_password})
+                response = APIProcessor.send_request(api_details)
+                responseInList = response["txns"]
+                for elements in responseInList:
+                    if elements["txnId"] == Txn_id:
+                        acquirer_code__api = elements["acquirerCode"]
+                        settlementStatus_api = elements["settlementStatus"]
+                        issuerCode_api = elements["issuerCode"]
+                        txnType_api = elements["txnType"]
+                        orgCode_api = elements["orgCode"]
+                        date_api = elements["postingDate"]
+
                 logger.debug(f"Fetching Transaction status from transaction api : {status_api} ")
                 logger.debug(f"Fetching Transaction amount from transaction api : {amount_api} ")
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
                 actualAPIValues = {"pmt_status": status_api,
                                    "txn_amt": amount_api,
-                                   "pmt_mode": payment_mode_api}
+                                   "pmt_mode": payment_mode_api,
+                                   "pmt_state": cnp_txn_state,
+                                   "acquirer_code": acquirer_code__api,
+                                   "settle_status": settlementStatus_api,
+                                   "issuer_code": issuerCode_api,
+                                   "txn_type": txnType_api,
+                                   "org_code": orgCode_api,
+                                   "date": date_time_converter.from_api_to_datetime_format(date_api)
+                                   }
 
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -751,11 +836,19 @@ def test_common_100_103_008():
                 expectedDBValues = {"pmt_status": "FAILED",
                                     "pmt_state": "FAILED",
                                     "pmt_mode": "CNP",
-                                    "txn_amt": amount}
+                                    "txn_amt": amount,
+                                    "settle_status": "FAILED",
+                                    "pmt_gateway": "CYBERSOURCE",
+                                    "auth_code": txn_auth_code,
+                                    "cnp_pmt_gateway": "CYBERSOURCE",
+                                    "cnpware_pmt_gateway": "CYBERSOURCE",
+                                    "pmt_flow": "REMOTEPAY",
+                                    "pmt_intent_status": "ACTIVE"
+                                    }
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                query = "select * from txn where id='" + Txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -763,11 +856,27 @@ def test_common_100_103_008():
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
+                settle_status_db = result["settlement_status"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+
+                query = "select * from cnpware_txn where txn_id='" + Txn_id + "';"
+                logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+                result = DBProcessor.getValueFromDB(query, "cnpware")
+                cnpware_payment_gateway = result['payment_gateway'].values[0]
+                logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
 
                 actualDBValues = {"pmt_status": status_db,
                                   "pmt_state": state_db,
                                   "pmt_mode": payment_mode_db,
-                                  "txn_amt": amount}
+                                  "txn_amt": amount,
+                                  "settle_status": settle_status_db,
+                                  "pmt_gateway": payment_gateway_db,
+                                  "auth_code": cnp_txn_auth_code,
+                                  "cnp_pmt_gateway": cnp_payment_gateway,
+                                  "cnpware_pmt_gateway": cnpware_payment_gateway,
+                                  "pmt_flow": cnp_payment_flow,
+                                  "pmt_intent_status": payment_intent_status
+                                  }
 
                                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -903,6 +1012,7 @@ def test_common_100_103_011():
             response = APIProcessor.send_request(api_details)
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             paymentLinkUrl = response['paymentLink']
+            payment_intent_id = response.get('paymentIntentId')
             externalRef = response.get('externalRefNumber')
             logger.info("Initiating a Remote pay Link")
             ui_driver.get(paymentLinkUrl)
@@ -947,10 +1057,10 @@ def test_common_100_103_011():
 
             if org_setting_value:
                 logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
-                time.sleep(3 + (org_setting_value * 60))
+                time.sleep(10 + (org_setting_value * 60))
             else:
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
-                time.sleep(3 + (setting_value * 60))
+                time.sleep(10 + (setting_value * 60))
 
             remotePayTxn = remotePayTxnPage(ui_driver)
             remotePayTxn.clickOnSubmitButton()
@@ -967,12 +1077,37 @@ def test_common_100_103_011():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             Txn_id = result['id'].values[0]
-            query = "select rr_number from cnp_txn where txn_id='"+Txn_id+"';"
+            txn_customer_name = result['customer_name'].values[0]
+            logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
+            txn_settle_status = result['settlement_status'].values[0]
+            logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
+            txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Query result, db date from db : {posting_date}")
+
+            query = "select * from cnp_txn where txn_id='" + Txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"Query result, Txn_id : {Txn_id}")
             logger.debug(f"Query result, rrn : {rrn}")
+            cnp_txn_state = result['state'].values[0]
+            logger.debug(f"Query result, cnp_txn_state : {cnp_txn_state}")
+            cnp_txn_acquirer_code = result['acquirer_code'].values[0]
+            logger.debug(f"Query result, cnp_txn_acquirer_code : {cnp_txn_acquirer_code}")
+            cnp_txn_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
+            cnp_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnp_payment_gateway : {cnp_payment_gateway}")
+            cnp_payment_flow = result['payment_flow'].values[0]
+
+            query = "select * from cnpware_txn where txn_id='" + Txn_id + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query, "cnpware")
+            cnpware_payment_gateway = result['payment_gateway'].values[0]
+            logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
+
 
     #         # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1007,12 +1142,19 @@ def test_common_100_103_011():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
+                date_and_time = date_time_converter.to_app_format(posting_date)
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started APP validation for the test case : test_common_100_103_011")
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
                                      "txn_amt": str(amount),
-                                     "txn_id": Txn_id}
+                                     "txn_id": Txn_id,
+                                     "order_id": order_id,
+                                     "msg": "PAYMENT FAILED",
+                                     "customer_name": txn_customer_name,
+                                     "settle_status": txn_settle_status,
+                                     "date": date_and_time
+                                     }
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -1032,10 +1174,27 @@ def test_common_100_103_011():
                 logger.info(f"Fetching txn_id from txn history for the txn : {Txn_id}, {app_txn_id}")
                 app_amount = txnHistoryPage.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {Txn_id}, {app_amount}")
+                payment_orderId = txnHistoryPage.fetch_order_id_text()
+                logger.info(f"Fetching txn orderId from txn history for the txn : {Txn_id}, {payment_orderId}")
+                payment_status_msg = txnHistoryPage.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status message from txn history for the txn : {Txn_id}, {payment_status_msg}")
+                payment_customer_name = txnHistoryPage.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {Txn_id}, {payment_customer_name}")
+                payment_settlement_status = txnHistoryPage.fetch_settlement_status_text()
+                logger.info(f"Fetching txn settlement status from txn history for the txn : {Txn_id}, {payment_settlement_status}")
+                app_date_and_time = txnHistoryPage.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {Txn_id}, {app_date_and_time}")
+
                 actualAppValues = {"pmt_mode": payment_mode,
                                    "pmt_status": payment_status.split(':')[1],
                                    "txn_amt": app_amount.split(' ')[1],
-                                   "txn_id": app_txn_id}
+                                   "txn_id": app_txn_id,
+                                   "order_id": payment_orderId,
+                                   "msg": payment_status_msg,
+                                   "customer_name": payment_customer_name,
+                                   "settle_status": payment_settlement_status,
+                                   "date": app_date_and_time
+                                   }
                 logger.debug(f"actualAppValues: {actualAppValues}")
 
                 Validator.validateAgainstAPP(expectedApp=expectedAppValues, actualApp=actualAppValues)
@@ -1053,11 +1212,20 @@ def test_common_100_103_011():
             try:
                 # --------------------------------------------------------------------------------------------
                 logger.info("Started API validation for the test case : test_common_100_103_011")
+                date = date_time_converter.db_datetime(posting_date)
                 expectedAPIValues = {"pmt_status": "FAILED",
                                      "txn_amt": amount,
                                      "pmt_mode":"CNP",
                                      "cnp_pmt_card_brand": "VISA",
-                                     "cnp_pmt_card_type": "CREDIT"}
+                                     "cnp_pmt_card_type": "CREDIT",
+                                     "pmt_state": "FAILED",
+                                     "acquirer_code": "HDFC",
+                                     "settle_status": "FAILED",
+                                     "issuer_code": "HDFC",
+                                     "txn_type": "REMOTE_PAY",
+                                     "org_code": org_code,
+                                     "date": date
+                                     }
 
                 logger.debug(f"expectedAPIValues: {expectedAPIValues}")
 
@@ -1075,11 +1243,36 @@ def test_common_100_103_011():
                 logger.debug(f"Fetching Transaction payment mode from transaction api : {payment_mode_api} ")
                 logger.debug(f"Fetching Transaction payment Card Brand from transaction api : {payment_Card_Brand} ")
                 logger.debug(f"Fetching Transaction payment Card Type from transaction api : {payment_Card_Type} ")
+
+                api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
+                                                                                   "password": app_password})
+                response = APIProcessor.send_request(api_details)
+                responseInList = response["txns"]
+                payment_mode_api = ''
+                for elements in responseInList:
+                    if elements["txnId"] == Txn_id:
+                        status_api = elements["status"]
+                        amount_api = int(elements["amount"])  # Not a correct way of doing it.
+                        acquirer_code__api = elements["acquirerCode"]
+                        settlementStatus_api = elements["settlementStatus"]
+                        issuerCode_api = elements["issuerCode"]
+                        txnType_api = elements["txnType"]
+                        orgCode_api = elements["orgCode"]
+                        date_api = elements["postingDate"]
+
                 actualAPIValues = {"pmt_status": status_api,
                                    "txn_amt": amount_api,
-                                   "pmt_mode": payment_mode_api,
+                                   "pmt_mode": "CNP",
                                    "cnp_pmt_card_brand": payment_Card_Brand,
-                                   "cnp_pmt_card_type": payment_Card_Type}
+                                   "cnp_pmt_card_type": payment_Card_Type,
+                                   "pmt_state": cnp_txn_state,
+                                   "acquirer_code": acquirer_code__api,
+                                   "settle_status": settlementStatus_api,
+                                   "issuer_code": issuerCode_api,
+                                   "txn_type": txnType_api,
+                                   "org_code": orgCode_api,
+                                   "date": date_time_converter.from_api_to_datetime_format(date_api)
+                                   }
 
                 logger.debug(f"actualAPIValues: {actualAPIValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -1101,10 +1294,18 @@ def test_common_100_103_011():
                 expectedDBValues = {"pmt_status": "FAILED",
                                     "pmt_state": "FAILED",
                                     "pmt_mode": "CNP",
-                                    "txn_amt": amount}
+                                    "txn_amt": amount,
+                                    "settle_status": "FAILED",
+                                    "pmt_gateway": "CYBERSOURCE",
+                                    "auth_code": txn_auth_code,
+                                    "cnp_pmt_gateway": "CYBERSOURCE",
+                                    "cnpware_pmt_gateway": "CYBERSOURCE",
+                                    "pmt_flow": "REMOTEPAY",
+                                    "pmt_intent_status": "ACTIVE"
+                                    }
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query = "select state,status,amount,payment_mode,external_ref from txn where id='" + Txn_id + "'"
+                query = "select * from txn where id='" + Txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -1112,11 +1313,26 @@ def test_common_100_103_011():
                 payment_mode_db = result["payment_mode"].iloc[0]
                 amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
+                settle_status_db = result["settlement_status"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+
+                query = "select * from payment_intent where id='" + payment_intent_id + "'"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                payment_intent_status = result["status"].iloc[0]
 
                 actualDBValues = {"pmt_status": status_db,
                                   "pmt_state": state_db,
                                   "pmt_mode": payment_mode_db,
-                                  "txn_amt": amount}
+                                  "txn_amt": amount,
+                                  "settle_status": settle_status_db,
+                                  "pmt_gateway": payment_gateway_db,
+                                  "auth_code": cnp_txn_auth_code,
+                                  "cnp_pmt_gateway": cnp_payment_gateway,
+                                  "cnpware_pmt_gateway": cnpware_payment_gateway,
+                                  "pmt_flow": cnp_payment_flow,
+                                  "pmt_intent_status": payment_intent_status
+                                  }
                                   # "Payment amount": amount_db, "UPI_Txn_Status": upi_status_db}
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 # ---------------------------------------------------------------------------------------------
@@ -1150,12 +1366,6 @@ def test_common_100_103_011():
                 homePagePortal.click_switch_button(str(org_code))
                 homePagePortal.perform_merchant_verfication()
                 homePagePortal.click_transaction_search_menu()
-                # logger.info("Clearing the text")
-                # homePagePortal.perform_clear_txt()
-                # logger.info("text cleared")
-                # homePagePortal.perform_txn_count_search(3)
-                # homePagePortal.perform_txn_search()
-                # homePagePortal.perform_txn_search()
                 portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(Txn_id)
                 portalType = portalValuesDict['Type']

@@ -414,7 +414,7 @@ def test_common_100_103_136():
                     "txn_id_2": new_app_txn_id,
                     "customer_name_2": new_app_customer_name,
                     "payer_name_2": new_app_payer_name,
-                    "order_id": new_app_order_id,
+                    "order_id_2": new_app_order_id,
                     "pmt_msg_2": new_app_payment_msg,
                     "rrn_2": str(new_app_rrn),
                     "date_2": new_app_date_and_time,
@@ -459,7 +459,7 @@ def test_common_100_103_136():
                     "txn_type_2": new_txn_type,
                     "mid_2": new_txn_mid,
                     "tid_2": new_txn_tid,
-                    "code_2": new_txn_org_code,
+                    "org_code_2": new_txn_org_code,
                     "date_2": new_date,
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
