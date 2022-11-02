@@ -41,6 +41,7 @@ def appium_driver(request):
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
         "noReset": "false",
+        "isHeadless":"ture",
         "autoGrantPermissions": "true",
         "newCommandTimeout": 7000,
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",

@@ -1057,10 +1057,10 @@ def test_common_100_103_011():
 
             if org_setting_value:
                 logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
-                time.sleep(3 + (org_setting_value * 60))
+                time.sleep(10 + (org_setting_value * 60))
             else:
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
-                time.sleep(3 + (setting_value * 60))
+                time.sleep(10 + (setting_value * 60))
 
             remotePayTxn = remotePayTxnPage(ui_driver)
             remotePayTxn.clickOnSubmitButton()
