@@ -4097,142 +4097,115 @@ console.error: "Error during quit-application-granted: [Exception... \"File erro
 1666091388197	Marionette	INFO	Stopped listening on port 37721
 console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
 Sandbox: Unexpected EOF, op 0 flags 00 path /proc/cpuinfo
-1666336754065	geckodriver	INFO	Listening on 127.0.0.1:39967
-1666336754567	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "34249" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileyRo9NK"
-[GFX1-]: glxtest: VA-API test failed: missing or old libva-drm library.
+1666843747272	geckodriver	INFO	Listening on 127.0.0.1:51961
+1666843747788	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "56107" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilePwVOiP"
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
-1666336755330	Marionette	INFO	Marionette enabled
-1666336755333	Marionette	INFO	Listening on port 42189
-Read port: 42189
-WebDriver BiDi listening on ws://127.0.0.1:34249
-1666336755438	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileyRo9NK/search.json.mozlz4", (void 0)))
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-DevTools listening on ws://127.0.0.1:34249/devtools/browser/ede29054-99f6-4a2c-a2c3-a40d97dec9c7
+1666843749167	Marionette	INFO	Marionette enabled
+1666843749174	Marionette	INFO	Listening on port 43701
+Read port: 43701
+WebDriver BiDi listening on ws://127.0.0.1:56107
+1666843749367	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilePwVOiP/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:56107/devtools/browser/7b4c8a63-2f68-48ea-a918-fe2c9704e3d1
 JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
-1666336983985	geckodriver	INFO	Listening on 127.0.0.1:46725
-1666336984489	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "50629" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileRaLWY3"
-[GFX1-]: glxtest: VA-API test failed: missing or old libva-drm library.
+1666843820892	Marionette	INFO	Stopped listening on port 43701
+1666936775784	geckodriver	INFO	Listening on 127.0.0.1:45027
+1666936776304	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "40467" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileF8e9DK"
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
-1666336985265	Marionette	INFO	Marionette enabled
-1666336985270	Marionette	INFO	Listening on port 38619
-Read port: 38619
-WebDriver BiDi listening on ws://127.0.0.1:50629
-1666336985365	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileRaLWY3/search.json.mozlz4", (void 0)))
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-DevTools listening on ws://127.0.0.1:50629/devtools/browser/c7de4d07-56de-489e-95ec-21c666297162
+1666936781750	Marionette	INFO	Marionette enabled
+1666936781755	Marionette	INFO	Listening on port 34283
+Read port: 34283
+WebDriver BiDi listening on ws://127.0.0.1:40467
+1666936781904	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileF8e9DK/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:40467/devtools/browser/421ee471-c36f-40bf-a32b-64a4c85227f6
 JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
-console.error: services.settings: 
-  main/pioneer-study-addons-v1 Signature failed  InvalidSignatureError: Invalid content signature (main/pioneer-study-addons-v1)
-console.error: services.settings: 
-  main/pioneer-study-addons-v1 local data was corrupted
-console.warn: services.settings: main/pioneer-study-addons-v1 Signature verified failed. Retry from scratch
-console.error: services.settings: 
-  main/pioneer-study-addons-v1 Signature failed again InvalidSignatureError: Invalid content signature (main/pioneer-study-addons-v1)
-console.error: services.settings: 
-  Message: InvalidSignatureError: Invalid content signature (main/pioneer-study-addons-v1)
-  Stack:
-    InvalidSignatureError@resource://services-settings/RemoteSettingsClient.jsm:169:5
-_validateCollectionSignature@resource://services-settings/RemoteSettingsClient.jsm:977:13
-
-console.error: services.settings: 
-  main/doh-providers Signature failed  InvalidSignatureError: Invalid content signature (main/doh-providers)
-console.error: services.settings: 
-  main/doh-providers local data was corrupted
-console.warn: services.settings: main/doh-providers Signature verified failed. Retry from scratch
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-console.error: "Error during quit-application-granted: [Exception... \"File error: Not found\"  nsresult: \"0x80520012 (NS_ERROR_FILE_NOT_FOUND)\"  location: \"JS frame :: resource:///modules/BrowserGlue.jsm :: _onQuitApplicationGranted/tasks< :: line 2009\"  data: no]"
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-console.error: "Error during quit-application-granted: [Exception... \"File error: Not found\"  nsresult: \"0x80520012 (NS_ERROR_FILE_NOT_FOUND)\"  location: \"JS frame :: resource:///modules/BrowserGlue.jsm :: _onQuitApplicationGranted/tasks< :: line 2009\"  data: no]"
-1666337128348	Marionette	INFO	Stopped listening on port 42189
-1666337128348	Marionette	INFO	Stopped listening on port 38619
-console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
-console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+1666936823209	Marionette	INFO	Stopped listening on port 34283
+1666940178143	geckodriver	INFO	Listening on 127.0.0.1:37271
+1666940178633	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "52121" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilecDObn2"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1666940179569	Marionette	INFO	Marionette enabled
+1666940179576	Marionette	INFO	Listening on port 41505
+Read port: 41505
+WebDriver BiDi listening on ws://127.0.0.1:52121
+1666940179764	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilecDObn2/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:52121/devtools/browser/78f9f6c6-6ea5-4180-b778-2ca7df427d0a
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
+1666940256697	Marionette	INFO	Stopped listening on port 41505
+1666943254405	geckodriver	INFO	Listening on 127.0.0.1:36171
+1666943254938	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "37993" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileNfaRO1"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1666943255606	Marionette	INFO	Marionette enabled
+1666943255609	Marionette	INFO	Listening on port 40097
+Read port: 40097
+WebDriver BiDi listening on ws://127.0.0.1:37993
+1666943255723	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileNfaRO1/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37993/devtools/browser/d71424e2-09ee-448a-9561-229484b130c9
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
+1666943328725	Marionette	INFO	Stopped listening on port 40097
 Sandbox: Unexpected EOF, op 0 flags 00 path /proc/cpuinfo
-1666693637135	geckodriver	INFO	Listening on 127.0.0.1:60323
-1666693637637	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "44453" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilelVTmC4"
-[GFX1-]: glxtest: VA-API test failed: missing or old libva-drm library.
+1666944053342	geckodriver	INFO	Listening on 127.0.0.1:38413
+1666944053868	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "37771" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileD0wfi5"
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
-1666693638364	Marionette	INFO	Marionette enabled
-1666693638367	Marionette	INFO	Listening on port 37365
-Read port: 37365
-WebDriver BiDi listening on ws://127.0.0.1:44453
-1666693638477	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilelVTmC4/search.json.mozlz4", (void 0)))
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-DevTools listening on ws://127.0.0.1:44453/devtools/browser/d02955ec-d3e6-4c5f-a827-86645ce059e2
+1666944054503	Marionette	INFO	Marionette enabled
+1666944054507	Marionette	INFO	Listening on port 41105
+Read port: 41105
+WebDriver BiDi listening on ws://127.0.0.1:37771
+1666944054641	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileD0wfi5/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37771/devtools/browser/c1804d21-c664-46ed-8de9-de58c85183f9
 JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
-1666693788861	geckodriver	INFO	Listening on 127.0.0.1:50585
-1666693789367	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "48609" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilecBQ7XP"
-[GFX1-]: glxtest: VA-API test failed: missing or old libva-drm library.
-ATTENTION: default value of option mesa_glthread overridden by environment.
-ATTENTION: default value of option mesa_glthread overridden by environment.
-ATTENTION: default value of option mesa_glthread overridden by environment.
-ATTENTION: default value of option mesa_glthread overridden by environment.
-1666693789971	Marionette	INFO	Marionette enabled
-1666693789973	Marionette	INFO	Listening on port 42879
-WebDriver BiDi listening on ws://127.0.0.1:48609
-Read port: 42879
-1666693790153	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilecBQ7XP/search.json.mozlz4", (void 0)))
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-DevTools listening on ws://127.0.0.1:48609/devtools/browser/ae61ac09-dd38-492e-b70e-92a9496b608c
-JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-console.error: "Error during quit-application-granted: [Exception... \"File error: Not found\"  nsresult: \"0x80520012 (NS_ERROR_FILE_NOT_FOUND)\"  location: \"JS frame :: resource:///modules/BrowserGlue.jsm :: _onQuitApplicationGranted/tasks< :: line 2009\"  data: no]"
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-1666693949299	Marionette	INFO	Stopped listening on port 42879
-console.error: "Error during quit-application-granted: [Exception... \"File error: Not found\"  nsresult: \"0x80520012 (NS_ERROR_FILE_NOT_FOUND)\"  location: \"JS frame :: resource:///modules/BrowserGlue.jsm :: _onQuitApplicationGranted/tasks< :: line 2009\"  data: no]"
-1666693949300	Marionette	INFO	Stopped listening on port 37365
-console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
-console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+1666944129390	Marionette	INFO	Stopped listening on port 41105
 Sandbox: Unexpected EOF, op 0 flags 00 path /proc/cpuinfo
-1666703331089	geckodriver	INFO	Listening on 127.0.0.1:57119
-1666703331596	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "49655" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilej96870"
-[GFX1-]: glxtest: VA-API test failed: missing or old libva-drm library.
+1667033212894	geckodriver	INFO	Listening on 127.0.0.1:52577
+1667033213389	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "55805" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileeGbMDQ"
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
-1666703332461	Marionette	INFO	Marionette enabled
-1666703332465	Marionette	INFO	Listening on port 43523
-Read port: 43523
-WebDriver BiDi listening on ws://127.0.0.1:49655
-1666703332561	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilej96870/search.json.mozlz4", (void 0)))
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-DevTools listening on ws://127.0.0.1:49655/devtools/browser/6c0282b3-1690-4e60-8429-044ef7f56b8e
+1667033214732	Marionette	INFO	Marionette enabled
+1667033214738	Marionette	INFO	Listening on port 37781
+Read port: 37781
+WebDriver BiDi listening on ws://127.0.0.1:55805
+1667033214955	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileeGbMDQ/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:55805/devtools/browser/3c913cbd-7b12-4698-8ba0-36361d0454ee
 JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-console.error: "Error during quit-application-granted: [Exception... \"File error: Not found\"  nsresult: \"0x80520012 (NS_ERROR_FILE_NOT_FOUND)\"  location: \"JS frame :: resource:///modules/BrowserGlue.jsm :: _onQuitApplicationGranted/tasks< :: line 2009\"  data: no]"
-1666703752555	Marionette	INFO	Stopped listening on port 43523
-console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
-1666703778015	geckodriver	INFO	Listening on 127.0.0.1:52761
-1666703778521	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "39963" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileLoLfC4"
-[GFX1-]: glxtest: VA-API test failed: missing or old libva-drm library.
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+1667033345900	geckodriver	INFO	Listening on 127.0.0.1:44837
+1667033346416	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "38745" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilepBNz2w"
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
-1666703779404	Marionette	INFO	Marionette enabled
-1666703779412	Marionette	INFO	Listening on port 44679
-Read port: 44679
-WebDriver BiDi listening on ws://127.0.0.1:39963
-1666703779526	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileLoLfC4/search.json.mozlz4", (void 0)))
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-DevTools listening on ws://127.0.0.1:39963/devtools/browser/a3a7f7a3-6b99-4d45-a45f-0d010b469442
-Missing chrome or resource URL: resource://gre/modules/UpdateListener.sys.mjs
-console.error: "Error during quit-application-granted: [Exception... \"File error: Not found\"  nsresult: \"0x80520012 (NS_ERROR_FILE_NOT_FOUND)\"  location: \"JS frame :: resource:///modules/BrowserGlue.jsm :: _onQuitApplicationGranted/tasks< :: line 2009\"  data: no]"
-1666703850782	Marionette	INFO	Stopped listening on port 44679
-console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+1667033347144	Marionette	INFO	Marionette enabled
+1667033347150	Marionette	INFO	Listening on port 40515
+Read port: 40515
+WebDriver BiDi listening on ws://127.0.0.1:38745
+1667033347321	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilepBNz2w/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:38745/devtools/browser/e162acf8-b5ef-44c8-a0fe-7eb066bc3a7e
+JavaScript error: resource://gre/modules/URIFixup.jsm, line 307: NS_ERROR_FAILURE: Should pass a non-null uri
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.

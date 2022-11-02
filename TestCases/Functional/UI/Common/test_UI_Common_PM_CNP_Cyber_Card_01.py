@@ -128,6 +128,21 @@ def test_common_100_103_001():
             logger.debug(f"Query result, txn_issuer_code : {txn_issuer_code}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Query result, db date from db : {posting_date}")
+            txn_terminal_info_id = result['terminal_info_id'].values[0]
+            logger.debug(f"Query result, tid from db : {txn_terminal_info_id}")
+
+            query = "select * from merchant_pg_config where org_code = '" + str(org_code) + "' and payment_gateway = 'CYBERSOURCE'"
+            logger.debug(f"Query to fetch tid from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            tid_settings = result['tid'].values[0]
+            logger.info(f"tid from setting is: {tid_settings}")
+
+            query = "select * from terminal_info where tid='" + str(tid_settings) + "';"
+            logger.debug(f"Query to fetch id from the termial info table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            terminal_info_id = result['id'].values[0]
+            logger.info(f"id from setting is: {tid_settings}")
+
 
             query = "select * from cnp_txn where txn_id='"+txn_id+"';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -313,7 +328,9 @@ def test_common_100_103_001():
                                     "cnp_pmt_gateway":"CYBERSOURCE",
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
                                     "pmt_flow":"REMOTEPAY",
-                                    "pmt_intent_status": "COMPLETED"
+                                    "pmt_intent_status": "COMPLETED",
+                                    "tid":txn_terminal_info_id
+
                                     }
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -345,7 +362,8 @@ def test_common_100_103_001():
                                     "cnp_pmt_gateway": cnp_payment_gateway,
                                     "cnpware_pmt_gateway": cnpware_payment_gateway,
                                     "pmt_flow":cnp_payment_flow,
-                                    "pmt_intent_status": payment_intent_status
+                                    "pmt_intent_status": payment_intent_status,
+                                    "tid":terminal_info_id
                                   }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -394,7 +412,7 @@ def test_common_100_103_001():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 logger.info(f"date and time is: {txn_date},{txn_time}")
                 #Python naming convention
-                expectedValues = {'CARD TYPE': 'VISA',
+                expectedValues = { 'CARD TYPE': 'VISA',
                                     'merchant_ref_no': 'Ref # ' + str(order_id),
                                     'RRN': str(cnp_txn_rrn),
                                     'BASE AMOUNT:': "Rs." + str(amount) + ".00",
@@ -464,7 +482,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = True, cnpwareLog = True, middlewareLog = False)
+        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = True, middlewareLog = False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
