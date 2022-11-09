@@ -490,7 +490,6 @@ def method_setup(request):
         android_utilities.set_report_variables()
         ss_on_failure(request)
         ss_on_success(request)
-        log_on_success_1(request)
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
@@ -559,15 +558,11 @@ def method_setup(request):
         #     GlobalVariables.appDriver.quit()
         #     GlobalVariables.appDriver = ''
         revert_excel_global_variables()
-
-        GlobalVariables.time_calc.log_collection.end()
-        print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns,"="), 'cyan'))
-
         GlobalVariables.time_calc.teardown.end()
         print(colored("Teardown Timer ended in 'fin' -> 'method_setup' fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        GlobalVariables.time_calc.save()
-        print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        # GlobalVariables.time_calc.save()
+        # print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
     request.addfinalizer(fin)
 
@@ -1037,10 +1032,8 @@ def ss_on_success(request):
 
 @pytest.fixture(scope='function')
 def log_on_success(request):
-    pass
+    yield
 
-
-def log_on_success_1(request):
     if GlobalVariables.time_calc.log_collection.is_started and GlobalVariables.time_calc.log_collection.is_paused:
         GlobalVariables.time_calc.log_collection.resume()
         print(colored("Log Collection resumed in 'log_on_success' function of conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -1358,13 +1351,13 @@ def log_on_success_1(request):
 
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-    #
-    # GlobalVariables.time_calc.log_collection.end()
-    # print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-    #
-    # GlobalVariables.time_calc.save()
-    # GlobalVariables.time_calc = None
-    # print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+    GlobalVariables.time_calc.log_collection.end()
+    print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="),'cyan'))
+
+    GlobalVariables.time_calc.save()
+    GlobalVariables.time_calc = None
+    print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="),'cyan'))
 
 
 def pytest_sessionstart(session):
