@@ -241,6 +241,7 @@ def updatingHighLevelReportAfterEachTCS():
             timer += 1
             time.sleep(1)
 
+
 def set_dne_status():
     if ConfigReader.read_config("Validations", "api_validation").lower() == "true" and 'apiVal' in GlobalVariables.tc_markers:
         GlobalVariables.str_api_val_result = 'DNE'
@@ -487,7 +488,9 @@ def method_setup(request):
 
         print("Function teardown level")
         android_utilities.set_report_variables()
-
+        ss_on_failure(request)
+        ss_on_success(request)
+        log_on_success_1(request)
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
@@ -556,11 +559,15 @@ def method_setup(request):
         #     GlobalVariables.appDriver.quit()
         #     GlobalVariables.appDriver = ''
         revert_excel_global_variables()
+
+        GlobalVariables.time_calc.log_collection.end()
+        print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+
         GlobalVariables.time_calc.teardown.end()
         print(colored("Teardown Timer ended in 'fin' -> 'method_setup' fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        # GlobalVariables.time_calc.save()
-        # print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        GlobalVariables.time_calc.save()
+        print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
     request.addfinalizer(fin)
 
@@ -609,8 +616,6 @@ def ui_driver(request):
 
     GlobalVariables.time_calc.setup.pause()
     print(colored("Setup Timer paused in ui_driver function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
-
 
 
 @pytest.fixture(scope="function")
@@ -668,6 +673,44 @@ def isBothRerunNotEnabled():
     if ConfigReader.read_config("Validations","bool_rerun_at_the_end").lower() == "false" and ConfigReader.read_config("Validations","bool_rerun_immediately").lower() == "false":
         return True
     return False
+
+
+def ss_on_failure(request):
+    item = request.node
+    if item.rep_call.failed:
+        if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
+                          attachment_type=AttachmentType.PNG)
+            GlobalVariables.bool_ss_app_val = 'Passed'
+
+        if GlobalVariables.bool_ss_portal_val == 'Failed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
+                          attachment_type=AttachmentType.PNG)
+            GlobalVariables.bool_ss_portal_val = 'Passed'
+
+        if GlobalVariables.str_chargeslip_val_result == "Fail" and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
+        if GlobalVariables.portalDriver != '':
+            # GlobalVariables.portalDriver.quit()
+            GlobalVariables.portalDriver.close()
+            GlobalVariables.portalDriver = ''
+            # variables.successApp = False
+
+        if GlobalVariables.appDriver != '':
+            GlobalVariables.appDriver.quit()
+            GlobalVariables.appDriver = ''
+            # variables.appSS = False
+
+        if GlobalVariables.charge_slip_driver != '':
+            GlobalVariables.charge_slip_driver.quit()
+            GlobalVariables.charge_slip_driver = ''
+
+        GlobalVariables.bool_ss_portal_val = "N/A"
+        GlobalVariables.bool_ss_app_val = "N/A"
 
 
 def log_on_failure(request):
@@ -732,7 +775,6 @@ def log_on_failure(request):
                     q2_logs = LogProcessor.fetch_q2_logs()
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
 
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
@@ -950,18 +992,27 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
-        if GlobalVariables.bool_ss_app_val == 'Failed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
+    GlobalVariables.time_calc.log_collection.pause()
+    print(colored("Log Collection Timer paused in 'log on failure' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+
+
+def ss_on_success(request):
+    item = request.node
+    if item.rep_call.passed:
+        if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_app_val = 'Passed'
 
-        if GlobalVariables.bool_ss_portal_val == 'Failed' and GlobalVariables.portalDriver != ''and Base_Actions.is_ss_capture_required("bool_capt_ss_fail") == "True":
+        if GlobalVariables.bool_ss_portal_val == 'Passed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
                           attachment_type=AttachmentType.PNG)
             GlobalVariables.bool_ss_portal_val = 'Passed'
 
-        if GlobalVariables.str_chargeslip_val_result == "Fail" and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
-                "bool_capt_ss_fail") == "True":
+        if GlobalVariables.str_chargeslip_val_result == "Pass" and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
 
@@ -982,14 +1033,14 @@ def log_on_failure(request):
 
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
-    GlobalVariables.time_calc.log_collection.pause()
-    print(colored("Log Collection Timer paused in 'log on failure' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
 
 @pytest.fixture(scope='function')
 def log_on_success(request):
-    yield
+    pass
 
+
+def log_on_success_1(request):
     if GlobalVariables.time_calc.log_collection.is_started and GlobalVariables.time_calc.log_collection.is_paused:
         GlobalVariables.time_calc.log_collection.resume()
         print(colored("Log Collection resumed in 'log_on_success' function of conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -1305,51 +1356,15 @@ def log_on_success(request):
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
-        if GlobalVariables.bool_ss_app_val == 'Passed' and GlobalVariables.appDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
-            allure.attach(GlobalVariables.appDriver.get_screenshot_as_png(), name="app_screen",
-                          attachment_type=AttachmentType.PNG)
-            GlobalVariables.bool_ss_app_val = 'Passed'
-
-        if GlobalVariables.bool_ss_portal_val == 'Passed' and GlobalVariables.portalDriver != '' and Base_Actions.is_ss_capture_required("bool_capt_ss_pass") == "True":
-            allure.attach(GlobalVariables.portalDriver.get_screenshot_as_png(), name="portal_page",
-                          attachment_type=AttachmentType.PNG)
-            GlobalVariables.bool_ss_portal_val = 'Passed'
-
-        if GlobalVariables.str_chargeslip_val_result == "Pass" and GlobalVariables.charge_slip_driver != '' and Base_Actions.is_ss_capture_required(
-                "bool_capt_ss_pass") == "True":
-            allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
-                          attachment_type=AttachmentType.PNG)
-
-        if GlobalVariables.portalDriver != '':
-            # GlobalVariables.portalDriver.quit()
-            GlobalVariables.portalDriver.close()
-            GlobalVariables.portalDriver = ''
-            # variables.successApp = False
-
-        if GlobalVariables.appDriver != '':
-            GlobalVariables.appDriver.quit()
-            GlobalVariables.appDriver = ''
-            # variables.appSS = False
-
-        if GlobalVariables.charge_slip_driver != '':
-            GlobalVariables.charge_slip_driver.quit()
-            GlobalVariables.charge_slip_driver = ''
-
-        GlobalVariables.bool_ss_portal_val = "N/A"
-        GlobalVariables.bool_ss_app_val = "N/A"
-
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
-
-    GlobalVariables.time_calc.log_collection.end()
-    print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
-
-    GlobalVariables.time_calc.save()
-    GlobalVariables.time_calc = None
-    print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
+    #
+    # GlobalVariables.time_calc.log_collection.end()
+    # print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+    #
+    # GlobalVariables.time_calc.save()
+    # GlobalVariables.time_calc = None
+    # print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
 
 def pytest_sessionstart(session):
