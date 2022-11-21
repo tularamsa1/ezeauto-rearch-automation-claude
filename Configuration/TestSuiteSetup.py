@@ -523,5 +523,3 @@ def initialize_app_driver(request):
     function_end_time = datetime.datetime.now()
     print("Time taken for appium driver initialization is : ", str(function_end_time-function_start_time))
     return GlobalVariables.appDriver
-
-
