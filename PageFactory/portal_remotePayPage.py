@@ -15,8 +15,11 @@ class remotePayTxnPage(BasePage):
     lbl_cardCvv = (By.XPATH, "//input[@placeholder='Enter CVV']")
 
     btn_debitClickAndExpand = (By.XPATH, "//mat-panel-title[contains(text(),'Debit Card')]")
-    ddl_debitCardExpiryMonth = (By.XPATH, "//mat-expansion-panel[1]//div[1]/div[3]/div[1]/select[1]")
-    ddl_debitCardExpiryYear = (By.XPATH, "//mat-expansion-panel[1]//div[1]/div[4]/div[1]/select[1]")
+    # ddl_debitCardExpiryMonth = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[1]/div[2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[3]/div[1]/select[1]")
+    ddl_debitCardExpiryMonth = (By.XPATH, "//body/my-app/app-duplicate-app/div/div[1]/div/div[1]/mat-accordion/div/div[2]/mat-expansion-panel/div/div/div/div[3]/div/select")
+    ddl_debitCardExpiryYear = (By.XPATH, "//body/my-app/app-duplicate-app/div/div[1]/div/div[1]/mat-accordion/div/div[2]/mat-expansion-panel/div/div/div/div[4]/div/select")
+    # ddl_debitCardExpiryYear = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[1]/div[2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[4]/div[1]/select[1]")
+
 
     btn_proceedToPay = (By.XPATH, "//button[contains(text(),'Proceed to pay')]")
     btn_submitButton = (By.XPATH, "//input[@value='Submit']")
