@@ -71,6 +71,9 @@ def test_common_100_103_001():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        query = "update terminal_dependency_config set terminal_dependent_enabled=0 where org_code ='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
         # ---------------------------------------------------------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
@@ -1033,10 +1036,10 @@ def test_common_100_103_010():
 
             if org_setting_value:
                 logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
-                time.sleep(3 + (org_setting_value * 60))
+                time.sleep(10 + (org_setting_value * 60))
             else:
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
-                time.sleep(3 + (setting_value * 60))
+                time.sleep(10 + (setting_value * 60))
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")

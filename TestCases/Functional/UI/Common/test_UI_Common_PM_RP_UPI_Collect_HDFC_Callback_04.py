@@ -106,9 +106,7 @@ def test_common_100_103_029():
                 remote_pay_upi_collect_txn.clickOnRemotePayUpiCollectVpaValidation()
                 logger.info("VPA validation completed.")
                 remote_pay_upi_collect_txn.clickOnRemotePayUpiCollectProceed()
-
-            logger.info("starting first callback")
-            logger.info("fetching pg merchant id and vps from the upi_merchant_config table to perform the 1st upi callback")
+                time.sleep(5)
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"

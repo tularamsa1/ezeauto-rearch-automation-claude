@@ -1554,7 +1554,7 @@ def test_common_100_103_060():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is started.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -1586,10 +1586,10 @@ def test_common_100_103_060():
 
             if org_setting_value:
                 logger.info(f"Waiting for timeout attempt time: {org_setting_value} min.")
-                time.sleep(3 + (org_setting_value * 60))
+                time.sleep(10 + (org_setting_value * 60))
             else:
                 logger.info(f"Waiting for timeout for Ezetap org time: {org_setting_value} min.")
-                time.sleep(3 + (setting_value * 60))
+                time.sleep(10 + (setting_value * 60))
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
