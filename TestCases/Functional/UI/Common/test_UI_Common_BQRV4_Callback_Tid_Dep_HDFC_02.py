@@ -1539,6 +1539,7 @@ def test_common_100_102_117():
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_new_3 = result['id'].values[0]
+            rrn_new_3 = result['rr_number'].values[0]
             customer_name_new_3 = result['customer_name'].values[0]
             payer_name_new_3 = result['payer_name'].values[0]
             auth_code_new_3 = result['auth_code'].values[0]
@@ -1586,7 +1587,7 @@ def test_common_100_102_117():
                                        "txn_amt_3": str(amount),
                                        "settle_status_3": "SETTLED",
                                        "txn_id_3": txn_id_new_3,
-                                       "rrn_3": str(rrn_new_2),
+                                       "rrn_3": str(rrn_new_3),
                                        "customer_name_3": customer_name_new_3,
                                        "payer_name_3": payer_name_new_3,
                                        "order_id_3": order_id,
@@ -1754,7 +1755,7 @@ def test_common_100_102_117():
                                        "device_serial_2": str(device_serial),
                                        "pmt_status_3": "AUTHORIZED",
                                        "txn_amt_3": float(amount), "pmt_mode_3": "UPI",
-                                       "pmt_state_3": "SETTLED", "rrn_3": str(rrn_new_2),
+                                       "pmt_state_3": "SETTLED", "rrn_3": str(rrn_new_3),
                                        "settle_status_3": "SETTLED",
                                        "acquirer_code_3": "HDFC",
                                        "issuer_code_3": "HDFC",
