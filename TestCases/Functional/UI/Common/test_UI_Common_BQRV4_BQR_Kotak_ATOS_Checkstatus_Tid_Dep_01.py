@@ -29,7 +29,7 @@ def test_common_100_102_258():
     """
     Sub Feature Code: UI_Common_BQRV4_BQR_Success_Checkstatus_KOTAK_ATOS_Tid_Dep
     Sub Feature Description: Verification of a successful bqr txn using BQRV4 BQR Success Checkstatus via Kotak_ATOS Tid Dep
-    TC naming code description:100: Payment Method, 102: BQRV4, 237: TC237
+    TC naming code description:100: Payment Method, 102: BQRV4, 258: TC258
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -63,7 +63,7 @@ def test_common_100_102_258():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
-                "org_code ='" + org_code + "' and acquirer_code='KOTAK' and payment_gateway='KOTAK_WL'"
+                "org_code ='" + org_code + "' and acquirer_code='KOTAK' and payment_gateway='KOTAK_ATOS'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -79,14 +79,6 @@ def test_common_100_102_258():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
-
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
-        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
 
         query = "select * from bharatqr_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
@@ -126,13 +118,7 @@ def test_common_100_102_258():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
             amount = random.randint(501, 1000)
-            #amount = random.choice([i for i in range(1, 100) if i not in [45, 46]])
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             logger.debug(f"initiating upi qr for the amount of {amount}")
@@ -204,7 +190,6 @@ def test_common_100_102_258():
                     "txn_id": txn_id,
                     "rrn": str(rrn),
                     "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
@@ -239,15 +224,13 @@ def test_common_100_102_258():
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
-                    f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
+                    f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
@@ -257,7 +240,6 @@ def test_common_100_102_258():
                     "rrn": str(app_rrn),
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
-                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
@@ -350,14 +332,10 @@ def test_common_100_102_258():
                     "pmt_state": "SETTLED",
                     "pmt_mode": "BHARATQR",
                     "txn_amt": amount,
-                    # "upi_txn_status": "AUTHORIZED",
                     "settle_status": "SETTLED",
                     "acquirer_code": "KOTAK",
                     "bank_code": "KOTAK",
                     "pmt_gateway": "KOTAK_ATOS",
-                    # "upi_txn_type": "PAY_BQR",
-                    # "upi_bank_code": "KOTAK_WL",
-                    # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
                     "device_serial": str(device_serial),
@@ -368,7 +346,6 @@ def test_common_100_102_258():
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    # "bqr_merchant_pan": merchant_pan,
                     "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
@@ -392,15 +369,6 @@ def test_common_100_102_258():
                 mid_db = result['mid'].values[0]
                 device_serial_db = result['device_serial'].values[0]
 
-                # query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # upi_status_db = result["status"].iloc[0]
-                # upi_txn_type_db = result["txn_type"].iloc[0]
-                # upi_bank_code_db = result["bank_code"].iloc[0]
-                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -413,7 +381,6 @@ def test_common_100_102_258():
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
                 bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
 
@@ -422,14 +389,10 @@ def test_common_100_102_258():
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    # "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "upi_txn_type": upi_txn_type_db,
-                    # "upi_bank_code": upi_bank_code_db,
-                    # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "device_serial": str(device_serial_db),
@@ -440,7 +403,6 @@ def test_common_100_102_258():
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
                     "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
@@ -464,7 +426,6 @@ def test_common_100_102_258():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
                 logger.debug(
                     f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
@@ -532,10 +493,7 @@ def test_common_100_102_259():
     """
     Sub Feature Code: UI_Common_BQRV4_BQR_Failed_Via_API_CheckStatus_KOTAK_ATOS_Tid_Dep
     Sub Feature Description: Performing a failed bqr txn via BQRV4 KOTAK ATOS using check status api Tid Dep
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    259: TC259
+    TC naming code description: 100-> Payment Method, 102->BQRV4, 259->TC259
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -569,7 +527,7 @@ def test_common_100_102_259():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
-                "org_code ='" + org_code + "' and acquirer_code='KOTAK' and payment_gateway='KOTAK_WL'"
+                "org_code ='" + org_code + "' and acquirer_code='KOTAK' and payment_gateway='KOTAK_ATOS'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -585,14 +543,6 @@ def test_common_100_102_259():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
-
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
-        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
 
         query = "select * from bharatqr_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
@@ -706,12 +656,8 @@ def test_common_100_102_259():
                     "txn_amt": str(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    # "rrn": str(rrn),
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT FAILED",
-                    # "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -729,41 +675,28 @@ def test_common_100_102_259():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
-                # app_rrn = txn_history_page.fetch_RRN_text()
-                # logger.info(
-                #     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
                     "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id,
-                    # "rrn": str(app_rrn),
-                    # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
-                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -783,15 +716,12 @@ def test_common_100_102_259():
                     "pmt_status": "FAILED",
                     "txn_amt": amount, "pmt_mode": "BHARATQR",
                     "pmt_state": "FAILED",
-                    # "rrn": str(rrn),
                     "settle_status": "FAILED",
                     "acquirer_code": "KOTAK",
                     "issuer_code": "KOTAK",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
                     "date": date,
-                    # "customer_name": customer_name,
                     "payer_name": payer_name,
                     "device_serial": str(device_serial)
                 }
@@ -808,7 +738,6 @@ def test_common_100_102_259():
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
-                #rrn_api = response["rrNumber"]
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
@@ -816,9 +745,7 @@ def test_common_100_102_259():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                #customer_name_api = response["customerName"]
                 payer_name_api = response["payerName"]
-                #auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
@@ -826,15 +753,12 @@ def test_common_100_102_259():
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
                     "pmt_state": state_api,
-                    # "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": org_code_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    # "customer_name": customer_name_api,
                     "payer_name": payer_name_api,
                     "device_serial": str(device_serial_api)
                 }
@@ -855,14 +779,10 @@ def test_common_100_102_259():
                     "pmt_state": "FAILED",
                     "pmt_mode": "BHARATQR",
                     "txn_amt": amount,
-                    # "upi_txn_status": "FAILED",
                     "settle_status": "FAILED",
                     "acquirer_code": "KOTAK",
                     "bank_code": "KOTAK",
                     "pmt_gateway": "KOTAK_ATOS",
-                    # "upi_txn_type": "PAY_BQR",
-                    # "upi_bank_code": "KOTAK_WL",
-                    # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
                     "device_serial": str(device_serial),
@@ -886,7 +806,7 @@ def test_common_100_102_259():
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                amount_db = int(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
                 acquirer_code_db = result["acquirer_code"].iloc[0]
@@ -895,15 +815,6 @@ def test_common_100_102_259():
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
                 device_serial_db = result['device_serial'].values[0]
-
-                # query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # upi_status_db = result["status"].iloc[0]
-                # upi_txn_type_db = result["txn_type"].iloc[0]
-                # upi_bank_code_db = result["bank_code"].iloc[0]
-                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
@@ -926,14 +837,10 @@ def test_common_100_102_259():
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    # "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "upi_txn_type": upi_txn_type_db,
-                    # "upi_bank_code": upi_bank_code_db,
-                    # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "device_serial": str(device_serial_db),
@@ -1018,10 +925,7 @@ def test_common_100_102_260():
     """
     Sub Feature Code: UI_Common_BQRV4_BQR_Check_Status_via_API_After_Expiry_KOTAK_ATOS_Tid_Dep
     Sub Feature Description: Performing a expired bqr txn via BQRV4 KOTAK_ATOS when qr is generated by App and check status via api Tid Dep
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    260: TC260
+    TC naming code description: 100-> Payment Method, 102->BQRV4, 260->TC260
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1063,7 +967,7 @@ def test_common_100_102_260():
         logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where " \
-                "org_code ='" + org_code + "' and acquirer_code='KOTAK' and payment_gateway='KOTAK_WL'"
+                "org_code ='" + org_code + "' and acquirer_code='KOTAK' and payment_gateway='KOTAK_ATOS'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
 
@@ -1079,14 +983,6 @@ def test_common_100_102_260():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
-
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
-        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
 
         query = "select * from bharatqr_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
@@ -1138,9 +1034,7 @@ def test_common_100_102_260():
             logger.debug(f"Response revived for QR generation is : {response}")
             txn_id = str(response["txnId"])
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
-
             time.sleep(60)
-
             query = "select * from bharatqr_txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1201,12 +1095,8 @@ def test_common_100_102_260():
                     "txn_amt": str(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    # "rrn": str(rrn),
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT FAILED",
-                    # "auth_code": auth_code,
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1225,41 +1115,28 @@ def test_common_100_102_260():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # app_payer_name = txn_history_page.fetch_payer_name_text()
-                # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
-                # app_rrn = txn_history_page.fetch_RRN_text()
-                # logger.info(
-                #     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
                     "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id,
-                    # "rrn": str(app_rrn),
-                    # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
-                    # "payer_name": app_payer_name,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
-                    # "auth_code": app_auth_code,
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -1279,19 +1156,16 @@ def test_common_100_102_260():
                     "pmt_status": "EXPIRED",
                     "txn_amt": amount, "pmt_mode": "BHARATQR",
                     "pmt_state": "EXPIRED",
-                    # "rrn": str(rrn),
                     "settle_status": "FAILED",
                     "acquirer_code": "KOTAK",
                     "issuer_code": "KOTAK",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
                     "date": date,
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
                     "device_serial": str(device_serial)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for original txn : {api_details}")
@@ -1300,10 +1174,9 @@ def test_common_100_102_260():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                amount_api = int(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
-                # rrn_api = response["rrNumber"]
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
@@ -1311,26 +1184,19 @@ def test_common_100_102_260():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
-                # customer_name_api = response["customerName"]
-                # payer_name_api = response["payerName"]
                 device_serial_api = response["deviceSerial"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
                     "pmt_state": state_api,
-                    # "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    # "customer_name": customer_name_api,
-                    # "payer_name": payer_name_api,
                     "device_serial": str(device_serial_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -1350,14 +1216,10 @@ def test_common_100_102_260():
                     "pmt_state": "EXPIRED",
                     "pmt_mode": "BHARATQR",
                     "txn_amt": amount,
-                    # "upi_txn_status": "FAILED",
                     "settle_status": "FAILED",
                     "acquirer_code": "KOTAK",
                     "bank_code": "KOTAK",
                     "pmt_gateway": "KOTAK_ATOS",
-                    # "upi_txn_type": "PAY_BQR",
-                    # "upi_bank_code": "KOTAK_WL",
-                    # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
                     "device_serial": str(device_serial),
@@ -1368,7 +1230,6 @@ def test_common_100_102_260():
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    # "bqr_merchant_pan": merchant_pan,
                     "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
@@ -1391,15 +1252,6 @@ def test_common_100_102_260():
                 mid_db = result['mid'].values[0]
                 device_serial_db = result['device_serial'].values[0]
 
-                # query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # upi_status_db = result["status"].iloc[0]
-                # upi_txn_type_db = result["txn_type"].iloc[0]
-                # upi_bank_code_db = result["bank_code"].iloc[0]
-                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1412,7 +1264,6 @@ def test_common_100_102_260():
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
                 bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
 
@@ -1421,14 +1272,10 @@ def test_common_100_102_260():
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    # "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "upi_txn_type": upi_txn_type_db,
-                    # "upi_bank_code": upi_bank_code_db,
-                    # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
                     "device_serial": str(device_serial_db),
@@ -1439,7 +1286,6 @@ def test_common_100_102_260():
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
                     "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
