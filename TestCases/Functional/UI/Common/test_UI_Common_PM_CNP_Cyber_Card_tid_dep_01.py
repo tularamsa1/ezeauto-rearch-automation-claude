@@ -68,9 +68,9 @@ def test_common_100_103_149():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled = 1 where org_code ='" + org_code + "';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled = 1 where org_code ='" + org_code + "' and payment_gateway = 'CYBERSOURCE' and payment_mode = 'CNP';"
         result = DBProcessor.setValueToDB(query)
-        logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
+        logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
@@ -550,9 +550,9 @@ def test_common_100_103_150():
 
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled = 1 where org_code ='" + org_code + "';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled = 1 where org_code ='" + org_code + "' and payment_gateway = 'CYBERSOURCE' and payment_mode = 'CNP';"
         result = DBProcessor.setValueToDB(query)
-        logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
+        logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
