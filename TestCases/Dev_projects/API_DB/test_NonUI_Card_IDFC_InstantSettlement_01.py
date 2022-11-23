@@ -42,6 +42,7 @@ def test_idfc_settlement_01():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -109,7 +110,7 @@ def test_idfc_settlement_01():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -266,6 +267,8 @@ def test_idfc_settlement_02():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -333,7 +336,7 @@ def test_idfc_settlement_02():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":True, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -494,6 +497,8 @@ def test_idfc_settlement_03():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -561,7 +566,7 @@ def test_idfc_settlement_03():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":True, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -722,6 +727,8 @@ def test_idfc_settlement_04():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -789,7 +796,7 @@ def test_idfc_settlement_04():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":True, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -951,6 +958,8 @@ def test_idfc_settlement_05():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1018,7 +1027,7 @@ def test_idfc_settlement_05():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":True, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -1180,6 +1189,8 @@ def test_idfc_settlement_06():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1247,7 +1258,7 @@ def test_idfc_settlement_06():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":True, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
