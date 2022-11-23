@@ -651,8 +651,8 @@ def test_common_200_202_009():
 
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                    expectedAPIValues = {"success": False, "username": Ezewallet_processor.agent_user, "txn_amt": higher_amount, "pmt_status":"PENDING",
-                                         "settle_status":"PENDING","account_label": "BILLPAY","clw_status": "PENDING",
+                    expectedAPIValues = {"success": False, "username": Ezewallet_processor.agent_user, "txn_amt": higher_amount, "pmt_status":"FAILED",
+                                         "settle_status":"FAILED","account_label": "BILLPAY","clw_status": "FAILED",
                                          "api_message_title":"DECLINED","closedloop_meta":"{\"success\":\"false\",\"errorCode\":\"CLOSED_LOOP_000037\",\"errorMessage\":\"Insufficient funds for ' AGENT",
                                          "balance":agent_balance_before}
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
