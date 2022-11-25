@@ -17,14 +17,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_07():
+def test_D100_D101_013():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMVCTLS_DEBIT_VISA
-        Sub Feature Description: API that performs EMVCTLS IDFC instanct settlement txn using DEBIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_DEBIT_VISA
+        Sub Feature Description: API that performs IDFC instant settlement txn using MSR DEBIT VISA card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        013: TC013
     """
 
     try:
@@ -42,6 +42,8 @@ def test_idfc_settlement_07():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -54,7 +56,7 @@ def test_idfc_settlement_07():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -92,8 +94,8 @@ def test_idfc_settlement_07():
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"Swipe with PIN ByPass",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -221,18 +223,17 @@ def test_idfc_settlement_07():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_08():
+def test_D100_D101_014():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMVCTLS_DEBIT_MASTER_CARD
-        Sub Feature Description: API that performs EMVCTLS IDFC instanct settlement txn using DEBIT MASTER_CARD card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_DEBIT_MASTER
+        Sub Feature Description: API that performs IDFC instant settlement txn using MSR DEBIT MASTER card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        014: TC014
     """
 
     try:
@@ -250,6 +251,8 @@ def test_idfc_settlement_08():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -262,7 +265,7 @@ def test_idfc_settlement_08():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -300,8 +303,8 @@ def test_idfc_settlement_08():
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"Swipe with PIN ByPass",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -430,18 +433,17 @@ def test_idfc_settlement_08():
 
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_09():
+def test_D100_D101_015():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMVCTLS_DEBIT_RUPAY
-        Sub Feature Description: API that performs EMVCTLS IDFC instant settlement txn using DEBIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_DEBIT_RUPAY
+        Sub Feature Description: API that performs IDFC instant settlement txn using MSR DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        015: TC015
     """
 
     try:
@@ -459,6 +461,8 @@ def test_idfc_settlement_09():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -471,7 +475,7 @@ def test_idfc_settlement_09():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -509,8 +513,8 @@ def test_idfc_settlement_09():
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"Swipe with PIN ByPass",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -642,14 +646,14 @@ def test_idfc_settlement_09():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_10():
+def test_D100_D101_016():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMVCTLS_CREDIT_VISA
-        Sub Feature Description: API that performs EMVCTLS IDFC instanct settlement txn using CREDIT VISA card via IDFC_FDC
-        TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_CREDIT_VISA
+        Sub Feature Description: API that performs IDFC instant settlement txn using MSR CREDIT VISA card via IDFC_FDC
+       TC naming code description:
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        016: TC016
     """
 
     try:
@@ -667,6 +671,8 @@ def test_idfc_settlement_10():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -679,7 +685,7 @@ def test_idfc_settlement_10():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -717,8 +723,8 @@ def test_idfc_settlement_10():
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"Swipe with PIN ByPass",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -846,18 +852,17 @@ def test_idfc_settlement_10():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_11():
+def test_D100_D101_017():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMVCTLS_CREDIT_MASTER_CARD
-        Sub Feature Description: API that performs EMVCTLS IDFC instanct settlement txn using CREDIT MASTER_CARD card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_CREDIT_MASTER
+        Sub Feature Description: API that performs IDFC instant settlement txn using MSR CREDIT MASTER card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        017: TC017
     """
 
     try:
@@ -875,6 +880,8 @@ def test_idfc_settlement_11():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -887,7 +894,7 @@ def test_idfc_settlement_11():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -925,8 +932,8 @@ def test_idfc_settlement_11():
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"Swipe with PIN ByPass",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -1055,18 +1062,17 @@ def test_idfc_settlement_11():
 
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_12():
+def test_D100_D101_018():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMVCTLS_CREDIT_RUPAY
-        Sub Feature Description: API that performs EMVCTLS IDFC instant settlement txn using CREDIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_CREDIT_RUPAY
+        Sub Feature Description: API that performs IDFC instant settlement txn using MSR CREDIT RUPAY card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        018: TC018
     """
 
     try:
@@ -1084,6 +1090,8 @@ def test_idfc_settlement_12():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1096,7 +1104,7 @@ def test_idfc_settlement_12():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -1134,8 +1142,8 @@ def test_idfc_settlement_12():
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"Swipe with PIN ByPass",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])

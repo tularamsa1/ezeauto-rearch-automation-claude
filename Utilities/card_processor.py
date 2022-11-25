@@ -160,12 +160,43 @@ def update_card_bin_details():
         logger.warning(f"Unable to update the bin number due to error {str(e)}")
 
 
+def update_invalid_merchant_account_details(org_code: str):
+    try:
+        query = f"UPDATE merchant_account_details set account_number = '21480649120' where org_code = '{org_code}';"
+        logger.debug(f"Query for updating merchant_account_details of {org_code} in merchant_account_details table: {query}")
+        result = DBProcessor.setValueToDB(query)
+        if DBProcessor.set_value_to_db_query_passed(result):
+            logger.debug(f"account number of: {org_code} is successfully updated to the system")
+        else:
+            logger.debug(f"account number of: {org_code} is not updated to the system")
+    except Exception as e:
+        logger.error(f"Unable to update account details of : {org_code} to the system due to error {str(e)}")
 
 
+def update_valid_merchant_account_details(org_code: str):
+    try:
+        query = f"UPDATE merchant_account_details set account_number = '21480649121' where org_code = '{org_code}';"
+        logger.debug(f"Query for updating merchant_account_details of {org_code} in merchant_account_details table: {query}")
+        result = DBProcessor.setValueToDB(query)
+        if DBProcessor.set_value_to_db_query_passed(result):
+            logger.debug(f"account number of: {org_code} is successfully updated to the system")
+        else:
+            logger.debug(f"account number of: {org_code} is not updated to the system")
+    except Exception as e:
+        logger.error(f"Unable to update account details of : {org_code} to the system due to error {str(e)}")
 
 
-
-
+def update_idfc_paymentApi_read_timeout(prop_value: str):
+    try:
+        query = f"UPDATE ezetap_properties set prop_value = '{prop_value}' where prop_key = 'idfcPaymentApiReadTimeout';"
+        logger.debug(f"Query for updating idfc_paymentApi_read_timeout properties: {query}")
+        result = DBProcessor.setValueToDB(query)
+        if DBProcessor.set_value_to_db_query_passed(result):
+            logger.debug(f"account number of: IDFC read timeout property is successfully updated to the system as {prop_value} sec")
+        else:
+            logger.debug(f"account number of: IDFC read timeout property is not updated to the system as {prop_value} sec")
+    except Exception as e:
+        logger.error(f"Unable to update timeout property details to the system due to error {str(e)}")
 
 
 
