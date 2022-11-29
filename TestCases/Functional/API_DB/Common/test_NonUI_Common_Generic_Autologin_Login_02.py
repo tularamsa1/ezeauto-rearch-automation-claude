@@ -42,14 +42,6 @@ def test_common_400_401_006():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -105,6 +97,11 @@ def test_common_400_401_006():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -214,15 +211,6 @@ def test_common_400_401_007():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -276,6 +264,11 @@ def test_common_400_401_007():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -380,15 +373,6 @@ def test_common_400_401_008():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -444,6 +428,11 @@ def test_common_400_401_008():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -550,15 +539,6 @@ def test_common_400_401_009():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -612,6 +592,11 @@ def test_common_400_401_009():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -726,16 +711,6 @@ def test_common_400_401_010():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -791,6 +766,11 @@ def test_common_400_401_010():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:

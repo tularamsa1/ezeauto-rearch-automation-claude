@@ -26,7 +26,7 @@ def test_common_400_401_015():
         400: Generic functions
         401: Autologin
         015: TC015
-     """
+    """
 
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -55,12 +55,6 @@ def test_common_400_401_015():
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         resultFromDB = DBProcessor.getValueFromDB(query)
 
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
@@ -126,6 +120,11 @@ def test_common_400_401_015():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -188,10 +187,10 @@ def test_common_400_401_015():
             else:
                 logger.error(f"Login Failed, expected to be success")
 
-                GlobalVariables.EXCEL_TC_Execution = "Pass"
-                GlobalVariables.time_calc.execution.pause()
-                logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-                logger.info(f"Execution is completed for the test case : {testcase_id}")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -275,15 +274,6 @@ def test_common_400_401_016():
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         resultFromDB = DBProcessor.getValueFromDB(query)
 
-
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -351,6 +341,11 @@ def test_common_400_401_016():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -419,10 +414,10 @@ def test_common_400_401_016():
             else:
                 logger.error(f"Login Failed, expected to be success")
 
-                GlobalVariables.EXCEL_TC_Execution = "Pass"
-                GlobalVariables.time_calc.execution.pause()
-                logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-                logger.info(f"Execution is completed for the test case : {testcase_id}")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -507,15 +502,6 @@ def test_common_400_401_017():
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         resultFromDB = DBProcessor.getValueFromDB(query)
 
-
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -580,6 +566,11 @@ def test_common_400_401_017():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -644,10 +635,10 @@ def test_common_400_401_017():
             else:
                 logger.error(f"Login Failed, expected to be success")
 
-                GlobalVariables.EXCEL_TC_Execution = "Pass"
-                GlobalVariables.time_calc.execution.pause()
-                logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-                logger.info(f"Execution is completed for the test case : {testcase_id}")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -737,15 +728,6 @@ def test_common_400_401_018():
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         resultFromDB = DBProcessor.getValueFromDB(query)
 
-
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -813,6 +795,11 @@ def test_common_400_401_018():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -878,10 +865,10 @@ def test_common_400_401_018():
             else:
                 logger.error(f"Login Failed, expected to be success")
 
-                GlobalVariables.EXCEL_TC_Execution = "Pass"
-                GlobalVariables.time_calc.execution.pause()
-                logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-                logger.info(f"Execution is completed for the test case : {testcase_id}")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -1045,6 +1032,11 @@ def test_common_400_401_019():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+                                                   config_log=False, closedloop_log=False, q2_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
@@ -1110,10 +1102,10 @@ def test_common_400_401_019():
             else:
                 logger.error(f"Login Failed, expected to be success")
 
-                GlobalVariables.EXCEL_TC_Execution = "Pass"
-                GlobalVariables.time_calc.execution.pause()
-                logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-                logger.info(f"Execution is completed for the test case : {testcase_id}")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
