@@ -151,7 +151,7 @@ def test_common_100_103_078():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -521,7 +521,7 @@ def test_common_100_103_079():
                 expected_app_values = {
                                 "pmt_mode": "UPI",
                                 "pmt_status": "FAILED",
-                                "txn_amt": str(amount),
+                                "txn_amt": str(amount)+".00",
                                 "settle_status": "FAILED",
                                 "txn_id": txn_id,
                                 "rrn": str(rrn),
@@ -909,7 +909,7 @@ def test_common_100_103_085():
                 expected_app_values = {
                                 "pmt_mode": "UPI",
                                 "pmt_status": "PENDING",
-                                "txn_amt": str(amount),
+                                "txn_amt": str(amount)+".00",
                                 "settle_status": "PENDING",
                                 "txn_id": txn_id,
                                 # "rrn": str(rrn),
@@ -1293,7 +1293,7 @@ def test_common_100_103_115():
                 expected_app_values = {
                                 "pmt_mode": "UPI",
                                 "pmt_status": "FAILED",
-                                "txn_amt": str(amount),
+                                "txn_amt": str(amount)+".00",
                                 "settle_status": "FAILED",
                                 "txn_id": txn_id,
                                 # "rrn": str(rrn),

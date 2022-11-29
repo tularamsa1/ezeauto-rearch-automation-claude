@@ -161,7 +161,7 @@ def test_common_100_102_195():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,
@@ -531,13 +531,13 @@ def test_common_100_102_196():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
-                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt_2": str(amount),
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt": str(amount)+".00",
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new, "rrn_2": str(rrn_new),
                                        "customer_name_2": customer_name_new,
                                        #"payer_name_2": payer_name_new,
@@ -1055,11 +1055,11 @@ def test_common_100_102_197():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
-                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt_2": str(amount),
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new, "rrn_2": str(rrn_new),
                                        "customer_name_2": customer_name_new,
                                        #"payer_name_2": payer_name_new,
@@ -1588,19 +1588,19 @@ def test_common_100_102_198():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
                 date_and_time_new_3 = date_time_converter.to_app_format(created_time_new_3)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
-                                       "txn_amt_2": str(amount),
+                                       "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new, "rrn_2": str(rrn_new),
                                        "customer_name_2": customer_name_new,
                                        #"payer_name_2": payer_name_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new,
                                        "pmt_mode_3": "BHARAT QR", "pmt_status_3": "AUTHORIZED",
-                                       "txn_amt_3": str(amount),
+                                       "txn_amt_3": str(amount)+".00",
                                        "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_3,
                                        "rrn_3": str(rrn_new_3),
                                        "customer_name_3": customer_name_new_3,
@@ -2264,7 +2264,7 @@ def test_common_100_102_199():
                     "pmt_status": "STATUS:PENDING",
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time,
@@ -2272,7 +2272,7 @@ def test_common_100_102_199():
                     "pmt_status_2": "STATUS:UPG_AUTHORIZED",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_upg,
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "rrn_2": str(rrn_upg),
                     "order_id_2": external_ref_upg,
                     "payment_msg_2": "PAYMENT SUCCESSFUL",

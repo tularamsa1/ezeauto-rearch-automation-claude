@@ -261,7 +261,7 @@ def test_common_100_103_029():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "rrn": str(original_rrn),
@@ -706,7 +706,7 @@ def test_common_100_103_030():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "rrn": str(original_rrn),
@@ -1187,7 +1187,7 @@ def test_common_100_103_031():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "rrn": str(original_rrn),

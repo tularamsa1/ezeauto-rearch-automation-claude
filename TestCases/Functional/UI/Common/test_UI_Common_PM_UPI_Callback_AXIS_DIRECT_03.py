@@ -248,7 +248,7 @@ def test_common_100_101_061():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(callback_1_rrn),
@@ -259,7 +259,7 @@ def test_common_100_101_061():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "rrn_2": str(callback_2_rrn),

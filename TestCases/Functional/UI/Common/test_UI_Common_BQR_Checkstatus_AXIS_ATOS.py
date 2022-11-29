@@ -160,7 +160,7 @@ def test_common_100_102_200():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,
@@ -545,10 +545,10 @@ def test_common_100_102_201():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED", "date": date_and_time,
-                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt_2": str(amount),
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new, "rrn_2": str(rrn),
                                        "customer_name_2": customer_name_new,
                                        #"payer_name_2": payer_name_new,
@@ -1046,7 +1046,7 @@ def test_common_100_102_202():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount_2),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount_2)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,

@@ -167,7 +167,7 @@ def test_sa_100_101_035():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -574,7 +574,7 @@ def test_sa_100_101_036():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -964,7 +964,7 @@ def test_sa_100_101_037():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -1351,7 +1351,7 @@ def test_sa_100_101_044():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,

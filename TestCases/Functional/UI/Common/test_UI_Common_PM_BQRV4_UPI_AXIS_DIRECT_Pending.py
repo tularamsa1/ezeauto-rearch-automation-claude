@@ -193,7 +193,7 @@ def test_common_100_102_223():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "PENDING",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     # "rrn": str(rrn),

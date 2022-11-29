@@ -178,7 +178,7 @@ def test_common_100_102_152():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -655,7 +655,7 @@ def test_common_100_102_154():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -1104,7 +1104,7 @@ def test_common_100_102_157():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "PENDING",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -1520,7 +1520,7 @@ def test_common_100_102_158():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,

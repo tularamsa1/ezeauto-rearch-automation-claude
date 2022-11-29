@@ -189,13 +189,13 @@ def test_common_100_102_126():
             try:
                 date_and_time = date_time_converter.to_app_format(created_date)
                 date_and_time_new = date_time_converter.to_app_format(created_date_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "UPI",
                                        "pmt_status_2": "AUTHORIZED",
-                                       "txn_amt_2": str(amount),
+                                       "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_new,
                                        "rrn_2": str(rrn),
@@ -738,13 +738,13 @@ def test_common_100_102_127():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "UPI",
                                        "pmt_status_2": "REFUND_PENDING",
-                                       "txn_amt_2": str(amount),
+                                       "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_new,
                                        "rrn_2": str(rrn),
@@ -1316,13 +1316,13 @@ def test_common_100_102_128():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 date_and_time_new = date_time_converter.to_app_format(modified_date_new)
                 date_and_time_new_3 = date_time_converter.to_app_format(modified_date_new_3)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "UPI",
                                        "pmt_status_2": "AUTHORIZED",
-                                       "txn_amt_2": str(amount),
+                                       "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_new,
                                        "rrn_2": str(rrn),
@@ -1334,7 +1334,7 @@ def test_common_100_102_128():
                                        "date_2": date_and_time_new,
                                        "pmt_mode_3": "UPI",
                                        "pmt_status_3": "AUTHORIZED",
-                                       "txn_amt_3": str(amount),
+                                       "txn_amt_3": str(amount)+".00",
                                        "settle_status_3": "SETTLED",
                                        "txn_id_3": txn_id_new_3,
                                        "rrn_3": str(rrn_new_2),
@@ -2064,13 +2064,13 @@ def test_common_100_102_129():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 date_and_time_new = date_time_converter.to_app_format(modified_date_new)
                 date_and_time_new_3 = date_time_converter.to_app_format(modified_date_new_3)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "UPI",
                                        "pmt_status_2": "REFUND_PENDING",
-                                       "txn_amt_2": str(amount),
+                                       "txn_amt_2": str(amount)+".00",
                                        "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_new,
                                        "rrn_2": str(rrn),
@@ -2082,7 +2082,7 @@ def test_common_100_102_129():
                                        "date_2": date_and_time_new,
                                        "pmt_mode_3": "UPI",
                                        "pmt_status_3": "REFUND_PENDING",
-                                       "txn_amt_3": str(amount),
+                                       "txn_amt_3": str(amount)+".00",
                                        "settle_status_3": "SETTLED",
                                        "txn_id_3": txn_id_new_3,
                                        "rrn_3": str(rrn_new_2),
@@ -2789,7 +2789,7 @@ def test_common_100_102_130():
                     "pmt_status": "UPG_AUTHORIZED",
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",

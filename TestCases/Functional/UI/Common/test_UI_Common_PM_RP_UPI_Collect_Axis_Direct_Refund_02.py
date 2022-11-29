@@ -214,7 +214,7 @@ def test_common_100_103_113():
                     "settle_status_2": "SETTLED",
                     "txn_id": original_txn_id,
                     "txn_id_2": partially_refunded_txn_id,
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "txn_amt_2": str(partial_refunded_amount),
                     "customer_name": original_customer_name,
                     "customer_name_2": original_customer_name,
@@ -972,7 +972,7 @@ def test_common_100_103_114():
             logger.debug(f"Fetching partially_refunded_txn_type from db query : {partially_refunded_txn_type} ")
             partially_refunded_rrn = result['rr_number'].iloc[0]
             logger.debug(f"Fetching partially_refunded_rrn from db query : {partially_refunded_rrn} ")
-            partially_refunded_posting_date = result['posting_date'].values[0]
+            partially_refunded_posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching partially_refunded_posting_date from db query: {partially_refunded_posting_date} ")
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1027,7 +1027,7 @@ def test_common_100_103_114():
                     "settle_status_2": "SETTLED",
                     "txn_id": original_txn_id,
                     "txn_id_2": partially_refunded_txn_id,
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "txn_amt_2": str(partial_refunded_amount),
                     "customer_name": original_customer_name,
                     "customer_name_2": original_customer_name,

@@ -194,7 +194,7 @@ def test_common_100_103_001():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00"+".00",
                                      "txn_id": txn_id,
                                      "rrn":cnp_txn_rrn,
                                      "order_id":order_id,
@@ -582,7 +582,7 @@ def test_common_100_103_002(): #Make sure to add the test case name as same as t
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": Txn_id,
                                      "order_id": order_id,
                                      "msg": "PAYMENT FAILED",
@@ -1020,11 +1020,11 @@ def test_common_100_103_010():
                 print(e)
 
             query1 = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = 'EZETAP'"
-            logger.debug(f"Timeout for Ezetap is : {query1}")
+            logger.debug(f"Timeout for Ezetap org is : {query1}")
             try:
                 defaultValue = DBProcessor.getValueFromDB(query1)
                 setting_value = int(defaultValue['setting_value'].values[0])
-                logger.info(f"max upi attempt is: {setting_value}")
+                logger.info(f"upi Timeout is: {setting_value}")
             except NameError as e:
                 setting_value = None
                 print(e)
@@ -1093,12 +1093,12 @@ def test_common_100_103_010():
                 logger.info(f"Started APP validation for the test case : {testcase_id}")
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": Txn_id,
                                      "order_id": order_id,
                                      "msg": "PAYMENT FAILED",
                                      "customer_name": txn_customer_name,
-                                     "settle_status": txn_settle_status,
+                                     "settle_status": "FAILED",
                                      "date": date_and_time
                                      }
                 logger.debug(f"expectedAppValues: {expectedAppValues}")
@@ -1615,7 +1615,7 @@ def test_common_100_103_012():
                                      "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
                                      "pmt_mode": "PAY LINK",
                                      "txn_id": original_txn_id,
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "rrn": str(original_rrn_cnp_txn),
                                      "order_id": order_id,
                                      "msg": "PAYMENT VOIDED/REFUNDED",
@@ -1626,7 +1626,7 @@ def test_common_100_103_012():
                                     "pmt_status_2": "STATUS:REFUNDED",
                                     "pmt_mode_2": "PAY LINK",
                                     "txn_id_2": txn_id_after_refund,
-                                    "txn_amt_2": str(amount),
+                                    "txn_amt_2": str(amount)+".00",
                                     "rrn_2": str(rrn_cnp_txn),
                                     "order_id_2": order_id,
                                      "msg_2": "PAYMENT VOIDED/REFUNDED",
@@ -1756,7 +1756,7 @@ def test_common_100_103_012():
                                        "pmt_mode_2": "CNP",
                                        "settle_status": "SETTLED",
                                        "settle_status_2": "SETTLED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "txn_amt_2": str(amount),
                                        "customer_name": customer_name,
                                        "customer_name_2": customer_name_2,

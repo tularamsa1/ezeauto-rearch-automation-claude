@@ -255,7 +255,7 @@ def test_common_100_101_103():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": original_txn_id,
                     "order_id": order_id,
@@ -265,7 +265,7 @@ def test_common_100_101_103():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_PENDING",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id,
                     # "new_txn_customer_name_2": new_txn_customer_name_2,
