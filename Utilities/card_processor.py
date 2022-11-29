@@ -199,4 +199,14 @@ def update_idfc_paymentApi_read_timeout(prop_value: str):
         logger.error(f"Unable to update timeout property details to the system due to error {str(e)}")
 
 
-
+def update_idfc_paymentApi_write_timeout(prop_value: str):
+    try:
+        query = f"UPDATE ezetap_properties set prop_value = '{prop_value}' where prop_key = 'idfcPaymentApiWriteTimeout';"
+        logger.debug(f"Query for updating idfc_paymentApi_write_timeout properties: {query}")
+        result = DBProcessor.setValueToDB(query)
+        if DBProcessor.set_value_to_db_query_passed(result):
+            logger.debug(f"account number of: IDFC write timeout property is successfully updated to the system as {prop_value} sec")
+        else:
+            logger.debug(f"account number of: IDFC write timeout property is not updated to the system as {prop_value} sec")
+    except Exception as e:
+        logger.error(f"Unable to update timeout property details to the system due to error {str(e)}")

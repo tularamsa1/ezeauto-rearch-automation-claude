@@ -16,10 +16,10 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_038():
+def test_D100_D101_056():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_DEBIT_VISA
-        Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV DEBIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_DEBIT_VISA
+        Sub Feature Description: API that performs Failed inquiry on IS settlement when IS call is Timeout for EMV DEBIT VISA card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
@@ -45,8 +45,10 @@ def test_D100_D101_038():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_paymentApi_read_timeout('1')
+        card_processor.update_idfc_paymentApi_write_timeout('1')
+
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -172,16 +174,16 @@ def test_D100_D101_038():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
-                                    "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_inquiry_error_code":"ENQ007",
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -256,14 +258,14 @@ def test_D100_D101_038():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_039():
+def test_D100_D101_057():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_DEBIT_MASTER
-        Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV DEBIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_DEBIT_MASTER
+        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV DEBIT MASTER card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        039: TC039
+        057: TC057
     """
 
     try:
@@ -286,7 +288,9 @@ def test_D100_D101_039():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_idfc_paymentApi_read_timeout('1')
+        card_processor.update_idfc_paymentApi_write_timeout('1')
+
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -412,16 +416,16 @@ def test_D100_D101_039():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
-                                    "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_inquiry_error_code":"ENQ007",
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -496,14 +500,14 @@ def test_D100_D101_039():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_040():
+def test_D100_D101_058():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_DEBIT_RUPAY
-        Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV DEBIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_DEBIT_RUPAY
+        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        040: TC040
+        058: TC058
     """
 
     try:
@@ -526,7 +530,9 @@ def test_D100_D101_040():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_idfc_paymentApi_read_timeout('1')
+        card_processor.update_idfc_paymentApi_write_timeout('1')
+
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -652,16 +658,16 @@ def test_D100_D101_040():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
-                                    "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_inquiry_error_code":"ENQ007",
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -735,14 +741,14 @@ def test_D100_D101_040():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_041():
+def test_D100_D101_059():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_CREDIT_VISA
-        Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV CREDIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_CREDIT_VISA
+        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV CREDIT VISA card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        041: TC041
+        059: TC059
     """
 
     try:
@@ -765,7 +771,9 @@ def test_D100_D101_041():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_idfc_paymentApi_read_timeout('1')
+        card_processor.update_idfc_paymentApi_write_timeout('1')
+
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -891,16 +899,16 @@ def test_D100_D101_041():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
-                                    "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_inquiry_error_code":"ENQ007",
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -975,14 +983,14 @@ def test_D100_D101_041():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_042():
+def test_D100_D101_060():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_CREDIT_MASTER
-        Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV CREDIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_CREDIT_MASTER
+        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV CREDIT MASTER card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        042: TC042
+        060: TC060
     """
 
     try:
@@ -1005,7 +1013,9 @@ def test_D100_D101_042():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_idfc_paymentApi_read_timeout('1')
+        card_processor.update_idfc_paymentApi_write_timeout('1')
+
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -1131,16 +1141,16 @@ def test_D100_D101_042():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
-                                    "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_inquiry_error_code":"ENQ007",
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1215,14 +1225,14 @@ def test_D100_D101_042():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_043():
+def test_D100_D101_061():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_CREDIT_RUPAY
-        Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV CREDIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_CREDIT_RUPAY
+        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV CREDIT RUPAY card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        043: TC043
+        061: TC061
     """
 
     try:
@@ -1245,7 +1255,9 @@ def test_D100_D101_043():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_idfc_paymentApi_read_timeout('1')
+        card_processor.update_idfc_paymentApi_write_timeout('1')
+
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -1371,16 +1383,16 @@ def test_D100_D101_043():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
-                                    "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_inquiry_error_code":"ENQ007",
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
