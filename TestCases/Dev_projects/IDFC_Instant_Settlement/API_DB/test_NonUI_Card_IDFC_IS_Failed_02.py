@@ -17,14 +17,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_13():
+def test_D100_D101_026():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_DEBIT_VISA
-        Sub Feature Description: API that performs IDFC instant settlement txn using MSR DEBIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_FAILED_InstantSettlement_EMVCTLS_DEBIT_VISA
+        Sub Feature Description: API that performs IS Failed CTLS IDFC instant settlement txn using DEBIT VISA card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        026: TC026
     """
 
     try:
@@ -42,6 +42,8 @@ def test_idfc_settlement_13():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -54,7 +56,7 @@ def test_idfc_settlement_13():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -67,7 +69,10 @@ def test_idfc_settlement_13():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-            time.sleep(10)
+            if card_payment_success == True:
+                time.sleep(10)
+            else:
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -87,13 +92,12 @@ def test_idfc_settlement_13():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if card_payment_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"Swipe with PIN ByPass",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -124,8 +128,6 @@ def test_idfc_settlement_13():
 
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-                else:
-                    logger.error("card Payment is Failed")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -141,16 +143,16 @@ def test_idfc_settlement_13():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
-                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_resp_desc":"FAILED","is_error_code":"PAY005",
+                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -224,14 +226,14 @@ def test_idfc_settlement_13():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_14():
+def test_D100_D101_027():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_DEBIT_MASTER
-        Sub Feature Description: API that performs IDFC instant settlement txn using MSR DEBIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_FAILED_InstantSettlement_EMVCTLS_DEBIT_MASTER
+        Sub Feature Description: API that performs IS Failed CTLS IDFC instant settlement txn using DEBIT MASTER card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        027: TC027
     """
 
     try:
@@ -249,6 +251,8 @@ def test_idfc_settlement_14():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -261,7 +265,7 @@ def test_idfc_settlement_14():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -274,7 +278,10 @@ def test_idfc_settlement_14():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-            time.sleep(10)
+            if card_payment_success == True:
+                time.sleep(10)
+            else:
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -294,13 +301,12 @@ def test_idfc_settlement_14():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if card_payment_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"Swipe with PIN ByPass",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -331,8 +337,6 @@ def test_idfc_settlement_14():
 
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-                else:
-                    logger.error("card Payment is Failed")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -348,16 +352,16 @@ def test_idfc_settlement_14():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
-                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_resp_desc":"FAILED","is_error_code":"PAY005",
+                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -428,18 +432,17 @@ def test_idfc_settlement_14():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_15():
+def test_D100_D101_028():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_DEBIT_RUPAY
-        Sub Feature Description: API that performs IDFC instant settlement txn using MSR DEBIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_FAILED_InstantSettlement_EMVCTLS_DEBIT_RUPAY
+        Sub Feature Description: API that performs IS Failed CTLS IDFC instant settlement txn using DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        028: TC028
     """
 
     try:
@@ -457,6 +460,8 @@ def test_idfc_settlement_15():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -469,7 +474,7 @@ def test_idfc_settlement_15():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -482,7 +487,10 @@ def test_idfc_settlement_15():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-            time.sleep(10)
+            if card_payment_success == True:
+                time.sleep(10)
+            else:
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -502,13 +510,12 @@ def test_idfc_settlement_15():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if card_payment_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"Swipe with PIN ByPass",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -539,8 +546,6 @@ def test_idfc_settlement_15():
 
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-                else:
-                    logger.error("card Payment is Failed")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -556,16 +561,16 @@ def test_idfc_settlement_15():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
-                                    "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
+                                    "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
-                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_resp_desc":"FAILED","is_error_code":"PAY005",
+                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -640,14 +645,14 @@ def test_idfc_settlement_15():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_16():
+def test_D100_D101_029():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_CREDIT_VISA
-        Sub Feature Description: API that performs IDFC instant settlement txn using MSR CREDIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_FAILED_InstantSettlement_EMVCTLS_CREDIT_VISA
+        Sub Feature Description: API that performs IS Failed CTLS IDFC instant settlement txn using CREDIT VISA card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        029: TC029
     """
 
     try:
@@ -665,6 +670,8 @@ def test_idfc_settlement_16():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -677,7 +684,7 @@ def test_idfc_settlement_16():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -690,7 +697,10 @@ def test_idfc_settlement_16():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-            time.sleep(10)
+            if card_payment_success == True:
+                time.sleep(10)
+            else:
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -710,13 +720,12 @@ def test_idfc_settlement_16():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if card_payment_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"Swipe with PIN ByPass",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -747,8 +756,6 @@ def test_idfc_settlement_16():
 
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-                else:
-                    logger.error("card Payment is Failed")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -764,16 +771,16 @@ def test_idfc_settlement_16():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
-                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_resp_desc":"FAILED","is_error_code":"PAY005",
+                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -847,14 +854,14 @@ def test_idfc_settlement_16():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_17():
+def test_D100_D101_030():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_CREDIT_MASTER
-        Sub Feature Description: API that performs IDFC instant settlement txn using MSR CREDIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_FAILED_InstantSettlement_EMVCTLS_CREDIT_MASTER
+        Sub Feature Description: API that performs IS Failed CTLS IDFC instant settlement txn using CREDIT MASTER card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        030: TC030
     """
 
     try:
@@ -872,6 +879,8 @@ def test_idfc_settlement_17():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -884,7 +893,7 @@ def test_idfc_settlement_17():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -897,7 +906,10 @@ def test_idfc_settlement_17():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-            time.sleep(10)
+            if card_payment_success == True:
+                time.sleep(10)
+            else:
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -917,13 +929,12 @@ def test_idfc_settlement_17():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if card_payment_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"Swipe with PIN ByPass",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -954,8 +965,6 @@ def test_idfc_settlement_17():
 
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-                else:
-                    logger.error("card Payment is Failed")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -971,16 +980,16 @@ def test_idfc_settlement_17():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
-                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_resp_desc":"FAILED","is_error_code":"PAY005",
+                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1051,18 +1060,17 @@ def test_idfc_settlement_17():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_idfc_settlement_18():
+def test_D100_D101_031():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_MSR_CREDIT_RUPAY
-        Sub Feature Description: API that performs IDFC instant settlement txn using MSR CREDIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_FAILED_InstantSettlement_EMVCTLS_CREDIT_RUPAY
+        Sub Feature Description: API that performs IS Failed CTLS IDFC instant settlement txn using CREDIT RUPAY card via IDFC_FDC
         TC naming code description:
-        100: Payment Method
-        104: CARD
-        091: TC091
+        D100: Dev Projects
+        D101: IDFC Instant Settlement
+        031: TC031
     """
 
     try:
@@ -1080,6 +1088,8 @@ def test_idfc_settlement_18():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
@@ -1092,7 +1102,7 @@ def test_idfc_settlement_18():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("IDFC_MSR_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("IDFC_EMVCTLS_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
                                                                     "username":app_username,
@@ -1105,7 +1115,10 @@ def test_idfc_settlement_18():
             #
             response = APIProcessor.send_request(api_details)
             card_payment_success = response['success']
-            time.sleep(10)
+            if card_payment_success == True:
+                time.sleep(10)
+            else:
+                logger.error("Card payment Failed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1125,13 +1138,12 @@ def test_idfc_settlement_18():
             bin_no = card_processor.get_device_data_details(card_details['Ezetap Device Data'])['CLEAR_PAN'][0:6]
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                if card_payment_success == True:
                     expectedAPIValues = {"success": True, "txn_amt": float(original_amount), "pmt_mode":"CARD",
                                          "pmt_status":"AUTHORIZED",
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
-                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"Swipe with PIN ByPass",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":True, "refundable":False}
+                                         "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"CTLS",
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(response['amount'])
@@ -1162,8 +1174,6 @@ def test_idfc_settlement_18():
 
 
                     Validator.validationAgainstAPI(expectedAPI=expectedAPIValues, actualAPI=actualAPIValues)
-                else:
-                    logger.error("card Payment is Failed")
 
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1179,16 +1189,16 @@ def test_idfc_settlement_18():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                     "pmt_card_bin":bin_no,
-                                    "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
+                                    "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
-                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_resp_desc":"FAILED","is_error_code":"PAY005",
+                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_FAILED"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"

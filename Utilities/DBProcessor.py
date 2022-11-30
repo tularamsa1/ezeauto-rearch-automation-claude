@@ -354,3 +354,48 @@ def set_value_to_db_query_passed(query_result: str) -> bool:
         return True
     else:
         return False
+
+
+def delete_value_from_db(query, db_name="ezetap_demo") -> str:
+    """
+        This method is for running the DML query on the database.
+        This takes database name and query as parameters.
+        :return: string
+        """
+    envi = ConfigReader.read_config("environment", "str_exe_env")
+    try:
+        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+    except Exception as e:
+        logger.warning(e)
+        ssh_private_key_password = None
+
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        ssh_address_or_host=envi.lower(),
+        remote_bind_address=('localhost', 3306),
+        ssh_private_key_password=ssh_private_key_password
+    )
+
+    tunnel.start()
+    try:
+        dict_db_credentials = get_db_credentials_from_excel()
+        logger.info(
+            f"Trying to connect to {db_name} db with username '{dict_db_credentials['username']}' and password '{dict_db_credentials['password']}'")
+        db_name_in_environment = get_db_name_from_excel(db_name)
+        conn = pymysql.connect(host='localhost', user=dict_db_credentials['username'],
+                               passwd=dict_db_credentials['password'], database=db_name_in_environment,
+                               port=tunnel.local_bind_port)
+        mycursor = conn.cursor()
+        try:
+            mycursor.execute(query)
+            conn.commit()
+        except:
+            print("Running Delete query failed..!")
+            logger.error("Running Delete query failed..!")
+
+        data = str(mycursor.rowcount) + ",record(s) affected"
+        conn.close()
+        tunnel.close()
+    except:
+        print("Not able to connect to Database for running delete query")
+        logger.error("Not able to connect to Database for running delete query")
+    return data

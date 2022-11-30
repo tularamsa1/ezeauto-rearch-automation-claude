@@ -1,4 +1,7 @@
+import sqlite3
+
 from Configuration.TestSuiteSetup import logger
+from DataProvider import GlobalConstants
 from Utilities import DBProcessor, APIProcessor
 
 
@@ -175,3 +178,45 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     logger.debug(f"API details  : {orgsettings_apidetails_autoLoginEnable} ")
     response = APIProcessor.send_request(orgsettings_apidetails_autoLoginEnable)
     logger.debug(f"Response received for setting autoLoginByTokenEnabled as False is : {response}")
+
+
+def revert_config_FC(portal_username, portal_password):
+    """
+    This method is to delete the static_qr data from staticqr_intent table and upi_merchant_config data which is having
+    following pg_merchant_ids: 'V0$E_ID$MNTR$3gv6aUTnwrN742','V0$E_ID$MNTR$agO6RXqbLMNUMV','V0$E_ID$MNTR$hnea1t9qrvjGUV'
+    FC: FREE_CHARGE(Payment Gateway)
+    """
+    config_ids = []
+    conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * from merchants;")
+    merchants = cursor.fetchall()
+    automation_merchants = []
+    for merchant in merchants:
+        automation_merchants.append(merchant[0])
+    automation_merchants = str(tuple(automation_merchants))
+    logger.debug(f"automation merchants are : {automation_merchants}")
+    query = "select id from upi_merchant_config where pgMerchantId in ('V0$E_ID$MNTR$3gv6aUTnwrN742', " \
+            "'V0$E_ID$MNTR$agO6RXqbLMNUMV', 'V0$E_ID$MNTR$hnea1t9qrvjGUV');"
+    logger.debug(f"Query to fetch id from the upi_merchant_config for which upi_bank_code is "
+                 f"AXIS_FC : {query}")
+    result = DBProcessor.getValueFromDB(query)
+    logger.debug(f"Result for the query '{query}' is : {result} ")
+    for i in range(int(len(result))):
+        config_ids.append(result['id'].values[i])
+    config_ids = str(tuple(config_ids))
+
+    query = "delete from staticqr_intent where config_id in " + config_ids + ";"
+    result = DBProcessor.delete_value_from_db(query)
+    logger.debug(f"Result for the query '{query}' is : {result} ")
+
+    query = "delete from upi_merchant_config where pgMerchantId in ('V0$E_ID$MNTR$3gv6aUTnwrN742', " \
+            "'V0$E_ID$MNTR$agO6RXqbLMNUMV', 'V0$E_ID$MNTR$hnea1t9qrvjGUV') and org_code not in " + \
+            automation_merchants + "; "
+    result = DBProcessor.delete_value_from_db(query)
+    logger.debug(f"Result for the query '{query}' is : {result} ")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                          "password": portal_password})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting precondition DB refresh is : {response}")
