@@ -1191,7 +1191,6 @@ def test_D100_D101_006():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_paymentApi_read_timeout('20')
 
 
         GlobalVariables.setupCompletedSuccessfully = True
