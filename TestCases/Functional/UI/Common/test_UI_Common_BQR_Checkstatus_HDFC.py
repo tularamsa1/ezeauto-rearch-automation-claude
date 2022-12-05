@@ -169,7 +169,7 @@ def test_common_100_102_004():
                                        "txn_amt": str(amount),"settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
-                                       "auth_code": auth_code, "date": date_and_time, "Logout Result": "Success"}
+                                       "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
