@@ -5,6 +5,7 @@ from time import sleep
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
+from PageFactory.App_AccountPage import AccountPage
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
@@ -168,7 +169,7 @@ def test_common_100_102_004():
                                        "txn_amt": str(amount),"settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
-                                       "auth_code": auth_code, "date": date_and_time}
+                                       "auth_code": auth_code, "date": date_and_time, "Logout Result": "Success"}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
@@ -203,12 +204,31 @@ def test_common_100_102_004():
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
+                logger.info(f"Starting the steps for logging out")
+                account_page = AccountPage(app_driver)
+
+                txn_history_page.click_back_Btn_transaction_details()
+                txn_history_page.click_back_Btn()
+                home_page.click_account_menu()
+                account_page.click_on_logout()
+
+                logger.info(f"Clicked on Signout button")
+
+                element = login_page.validate_login_page()
+                logout = ''
+                if element:
+                    logout = "Success"
+                    logger.info(f"Logout done successfully")
+                else:
+                    logout = "Failure"
+                    logger.error(f"Logout failed")
+
                 actual_app_values = {"pmt_mode": payment_mode, "pmt_status": payment_status.split(':')[1],
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id,
                                      "rrn": str(app_rrn),
                                      "settle_status": app_settlement_status,
-                                     "order_id": app_order_id,"auth_code": app_auth_code,
-                                     "pmt_msg": app_payment_msg, "date": app_date_and_time}
+                                     "order_id": app_order_id, "auth_code": app_auth_code,
+                                     "pmt_msg": app_payment_msg, "date": app_date_and_time, "Logout Result": logout}
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
