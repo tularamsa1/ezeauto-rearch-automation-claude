@@ -5,7 +5,7 @@ from DataProvider import GlobalConstants
 from Utilities import DBProcessor, APIProcessor
 
 
-def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_mode=None):
+def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_mode=None, bank_code_bqr=None):
     if payment_mode == "CNP":
         query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
@@ -40,6 +40,8 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
         query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='" + bank_code + "'"
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
+
+        if bank_code in ["ICICI_DIRECT", "AXIS_DIRECT"]: bank_code = bank_code_bqr
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='" + bank_code + "'"
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
