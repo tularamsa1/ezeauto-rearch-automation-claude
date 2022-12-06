@@ -8,7 +8,8 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import ResourceAssigner, DBProcessor, APIProcessor, ConfigReader, Validator, date_time_converter
+from Utilities import ResourceAssigner, DBProcessor, APIProcessor, ConfigReader, Validator, date_time_converter, \
+    receipt_validator
 
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
@@ -17,11 +18,15 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPIRefund_01():
+@pytest.mark.chargeSlipVal
+def test_common_100_108_005():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing full UPI refund for staticQR with HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Full_Refund_Via_HDFC
+    Sub Feature Description: Verifying full BQRV4 UPI static qr refund using api for HDFC
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
+    005: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -119,7 +124,6 @@ def test_common_staticQR_UPIRefund_01():
 
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
 
-            ############################################################ START ################
             rrn = random.randint(11111110, 99999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
@@ -169,7 +173,7 @@ def test_common_staticQR_UPIRefund_01():
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
-            created_time_orig_txn = result["created_time"].iloc[0]
+            created_time_orig_txn = result["created_time"].values[0]
 
             logger.debug(
                 f"preparing the request payload data to trigger the unified refund for UPI")
@@ -197,7 +201,7 @@ def test_common_staticQR_UPIRefund_01():
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
-            created_time_second_txn = result["created_time"].iloc[0]
+            created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -219,14 +223,12 @@ def test_common_staticQR_UPIRefund_01():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
-                # date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
+                date_new = date_time_converter.db_datetime(created_time_orig_txn)
+                date_new_2 = date_time_converter.db_datetime(created_time_second_txn)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED_REFUNDED",
-                    "txn_amt": float(amount),
-                    "pmt_mode": "UPI",
-                    "pmt_state": "REFUNDED",
-                    "rrn": str(rrn),
+                    "txn_amt": float(amount), "pmt_mode": "UPI",
+                    "pmt_state": "REFUNDED", "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
@@ -234,14 +236,12 @@ def test_common_staticQR_UPIRefund_01():
                     "mid": db_bqr_config_mid,
                     "tid": db_bqr_config_tid,
                     "org_code": org_code,
-                    # "date": date_orig_txn,
-
-
+                    "auth_code": auth_code,
+                    "date": date_new,
+                    # "order_id": order_id,
                     "pmt_status_2": "REFUNDED",
-                    "txn_amt_2": float(amount),
-                    "pmt_mode_2": "UPI",
-                    "pmt_state_2": "REFUNDED",
-                    "rrn_2": str(rrn_new_2),
+                    "txn_amt_2": float(amount), "pmt_mode_2": "UPI",
+                    "pmt_state_2": "REFUNDED", "rrn_2": str(rrn_new_2),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
@@ -249,13 +249,14 @@ def test_common_staticQR_UPIRefund_01():
                     "tid_2": db_bqr_config_tid,
                     "org_code_2": org_code,
                     "auth_code_2": auth_code_new_2,
-                    # "date_2": date_second_txn
+                    "date_2": date_new_2,
+                    # "order_id_2": order_id
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
+
                 api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password})
+                                                    request_body={"username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction list api is : {response}")
@@ -291,7 +292,6 @@ def test_common_staticQR_UPIRefund_01():
                 state_api_new_2 = response["states"][0]
                 rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
-                # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
                 orgCode_api_new_2 = response["orgCode"]
                 mid_api_new_2 = response["mid"]
@@ -305,30 +305,27 @@ def test_common_staticQR_UPIRefund_01():
                     "pmt_status": status_api,
                     "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api,
-                    "rrn": str(rrn_api),
+                    "pmt_state": state_api, "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api,
-                    "mid": mid_api,
-                    "tid": tid_api,
+                    "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "pmt_status_2": status_api_new_2,
-                    "txn_amt_2": amount_api_new_2,
+                    "auth_code": auth_code_api,
+                    # "order_id": order_id_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
-                    "pmt_state_2": state_api_new_2,
-                    "rrn_2": str(rrn_api_new_2),
+                    "pmt_state_2": state_api_new_2, "rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
-                    "txn_type_2": txn_type_api_new_2,
-                    "mid_2": mid_api_new_2,
-                    "tid_2": tid_api_new_2,
+                    "txn_type_2": txn_type_api_new_2, "mid_2": mid_api_new_2, "tid_2": tid_api_new_2,
                     "org_code_2": orgCode_api_new_2,
                     "auth_code_2": auth_code_api_new_2,
-                    # "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2)
-                }
+                    # "order_id_2": order_id_api_new_2,
+                    "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
+                    }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -353,11 +350,10 @@ def test_common_staticQR_UPIRefund_01():
                     "upi_txn_status": "AUTHORIZED_REFUNDED",
                     "upi_txn_type": "STATIC_QR",
                     "upi_bank_code": "HDFC",
-                    # "upi_mc_id": db_upi_config_merchant_id,
+                    # "upi_mc_id": upi_mc_id,
                     "mid": db_bqr_config_mid,
                     "tid": db_bqr_config_tid,
                     # "order_id": order_id,
-
                     "pmt_status_2": "REFUNDED",
                     "pmt_state_2": "REFUNDED",
                     "pmt_mode_2": "UPI",
@@ -370,10 +366,10 @@ def test_common_staticQR_UPIRefund_01():
                     "upi_bank_code_2": "HDFC",
                     # "upi_mc_id_2": upi_mc_id,
                     "mid_2": db_bqr_config_mid,
-                    "tid_2": db_bqr_config_tid
-                    # "order_id_2": order_id,
+                    "tid_2": db_bqr_config_tid,
+                    # "order_id_2": order_id
 
-                }
+                     }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from txn where id='" + orig_txn_id + "'"
@@ -401,6 +397,7 @@ def test_common_staticQR_UPIRefund_01():
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
+
                 query = "select * from txn where id='" + second_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -411,7 +408,6 @@ def test_common_staticQR_UPIRefund_01():
                 state_db_new_2 = result["state"].iloc[0]
                 payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
                 acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
                 settlement_status_db_new_2 = result["settlement_status"].iloc[0]
                 tid_db_new_2 = result['tid'].values[0]
                 mid_db_new_2 = result['mid'].values[0]
@@ -442,7 +438,6 @@ def test_common_staticQR_UPIRefund_01():
                     "mid": mid_db,
                     "tid": tid_db,
                     # "order_id": order_id_db,
-
                     "pmt_status_2": status_db_new_2,
                     "pmt_state_2": state_db_new_2,
                     "pmt_mode_2": payment_mode_db_new_2,
@@ -457,7 +452,7 @@ def test_common_staticQR_UPIRefund_01():
                     "mid_2": mid_db_new_2,
                     "tid_2": tid_db_new_2,
                     # "order_id_2": order_id_db_new_2,
-                }
+                    }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -466,12 +461,12 @@ def test_common_staticQR_UPIRefund_01():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-            # -----------------------------------------Start of App Validation---------------------------------
+        # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
-                # date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
+                date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
+                date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
 
                 expected_app_values = {
                     "pmt_mode": "UPI",
@@ -485,7 +480,7 @@ def test_common_staticQR_UPIRefund_01():
                     # "order_id": order_id,
                     "pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "auth_code": auth_code,
-                    # "date": date_and_time,
+                    "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUNDED",
                     "txn_amt_2": str(amount)+".00",
@@ -497,7 +492,7 @@ def test_common_staticQR_UPIRefund_01():
                     # "order_id_2": order_id,
                     "payment_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "auth_code_2": auth_code_new_2,
-                    # "date_2": date_and_time_new_2
+                    "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -591,7 +586,7 @@ def test_common_staticQR_UPIRefund_01():
                                      # "order_id": app_order_id,
                                      "pmt_msg": app_payment_msg,
                                      "auth_code": app_auth_code,
-                                     # "date": app_date_and_time,
+                                     "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new_2,
                                      "pmt_status_2": payment_status_new_2.split(':')[1],
                                      "txn_amt_2": app_amount_new_2.split(' ')[1],
@@ -603,7 +598,7 @@ def test_common_staticQR_UPIRefund_01():
                                      # "order_id_2": app_order_id_new_2,
                                      "payment_msg_2": app_payment_msg_new_2,
                                      "auth_code_2": app_auth_code_new_2,
-                                     # "date_2": app_date_and_time_new_2
+                                     "date_2": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
@@ -613,6 +608,23 @@ def test_common_staticQR_UPIRefund_01():
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
             # -----------------------------------------End of App Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_second_txn)
+                expected_values = {
+                    'PAID BY:': 'UPI', 'RRN': str(rrn_new_2), 'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date, 'time': txn_time,
+                }
+                receipt_validator.perform_charge_slip_validations(second_txn_id,
+                                                                  {"username": app_username,
+                                                                   "password": app_password},
+                                                                  expected_values)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -626,11 +638,15 @@ def test_common_staticQR_UPIRefund_01():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPIRefund_02():
+@pytest.mark.chargeSlipVal
+def test_common_100_108_006():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing partial UPI refund for staticQR with HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Partial_Refund_Via_HDFC
+    Sub Feature Description: Verifying an BQRV4 upi static QR partial refund via HDFC
     TC naming code description:
+    100: Payment method
+    108: BQRV4 static QR
+    006: testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -776,7 +792,7 @@ def test_common_staticQR_UPIRefund_02():
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
-            created_time_orig_txn = result["created_time"].iloc[0]
+            created_time_orig_txn = result["created_time"].values[0]
 
             logger.debug(
                 f"preparing the request payload data to trigger the unified refund for UPI")
@@ -806,7 +822,7 @@ def test_common_staticQR_UPIRefund_02():
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
-            created_time_second_txn = result["created_time"].iloc[0]
+            created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -828,36 +844,60 @@ def test_common_staticQR_UPIRefund_02():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
-                # date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
+                date_new = date_time_converter.db_datetime(created_time_orig_txn)
+                date_new_2 = date_time_converter.db_datetime(created_time_second_txn)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
-                    "pmt_status_2": "REFUNDED",
-                    "pmt_state": "SETTLED",
-                    "pmt_state_2": "REFUNDED",
-                    "pmt_mode": "UPI",
-                    "pmt_mode_2": "UPI",
+                    "txn_amt": float(amount), "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED", "rrn": str(rrn),
                     "settle_status": "SETTLED",
-                    "settle_status_2": "SETTLED",
-                    "amt": float(amount),
-                    "amt_2": float(refund_amount),
-                    # "order_id": order_id,
-                    # "order_id_2": order_id,
-                    "rrn": str(rrn),
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
-                    "txn_type": "CHARGE",
-                    "mid": db_bqr_config_mid, "tid": db_bqr_config_tid,
+                    "txn_type": "CHARGE", "mid": db_bqr_config_mid, "tid": db_bqr_config_tid,
                     "org_code": org_code,
+                    "auth_code": auth_code,
+                    "date": date_new,
+                    # "order_id": order_id,
+                    "pmt_status_2": "REFUNDED",
+                    "txn_amt_2": float(refund_amount),
+                    "pmt_mode_2": "UPI",
+                    "pmt_state_2": "REFUNDED",
+                    "rrn_2": str(rrn_new_2),
+                    "settle_status_2": "SETTLED",
                     "acquirer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
-                    "mid_2": db_bqr_config_mid, "tid_2": db_bqr_config_tid,
+                    "mid_2": db_bqr_config_mid,
+                    "tid_2": db_bqr_config_tid,
                     "org_code_2": org_code,
-                    "auth_code": auth_code,
-                    # "date": date, "date_2": refund_date
+                    "auth_code_2": auth_code_new_2,
+                    "date_2": date_new_2,
+                    # "order_id_2": order_id
                 }
+                logger.debug(f"expected_api_values: {expected_api_values}")
 
-                logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                    request_body={"username": app_username, "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == orig_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                auth_code_api = response["authCode"]
+                date_api = response["createdTime"]
+                order_id_api = response["orderNumber"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -865,73 +905,48 @@ def test_common_staticQR_UPIRefund_02():
                 logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction list api is : {response}")
-                response = [x for x in response["txns"] if x["txnId"] == orig_txn_id][0]
-                logger.debug(f"Response after filtering data of current txn is : {response}")
-                status_api_original = response["status"]
-                amount_api_original = float(response["amount"])
-                payment_mode_api_original = response["paymentMode"]
-                rrn_api_original = response["rrNumber"]
-                state_api_original = response["states"][0]
-                settlement_status_api_original = response["settlementStatus"]
-                issuer_code_api_original = response["issuerCode"]
-                acquirer_code_api_original = response["acquirerCode"]
-                org_code_api_original = response["orgCode"]
-                mid_api_original = response["mid"]
-                tid_api_original = response["tid"]
-                txn_type_api_original = response["txnType"]
-                auth_code_api_original = response["authCode"]
-                date_api_original = response["createdTime"]
-                order_id_original = response["orderNumber"]
-
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password})
-                logger.debug(f"API DETAILS for original txn : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction details api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == second_txn_id][0]
-                status_api_refunded = response["status"]
-                amount_api_refunded = float(response["amount"])
-                payment_mode_api_refunded = response["paymentMode"]
-                state_api_refunded = response["states"][0]
-                settlement_status_api_refunded = response["settlementStatus"]
-                acquirer_code_api_refunded = response["acquirerCode"]
-                org_code_api_refunded = response["orgCode"]
-                mid_api_refunded = response["mid"]
-                tid_api_refunded = response["tid"]
-                txn_type_api_refunded = response["txnType"]
-                date_api_refunded = response["createdTime"]
-                order_id_refunded = response["orderNumber"]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api_new_2 = response["status"]
+                amount_api_new_2 = float(response["amount"])
+                payment_mode_api_new_2 = response["paymentMode"]
+                state_api_new_2 = response["states"][0]
+                rrn_api_new_2 = response["rrNumber"]
+                settlement_status_api_new_2 = response["settlementStatus"]
+                acquirer_code_api_new_2 = response["acquirerCode"]
+                orgCode_api_new_2 = response["orgCode"]
+                mid_api_new_2 = response["mid"]
+                tid_api_new_2 = response["tid"]
+                txn_type_api_new_2 = response["txnType"]
+                auth_code_api_new_2 = response["authCode"]
+                date_api_new_2 = response["createdTime"]
+                order_id_api_new_2 = response["orderNumber"]
 
                 actual_api_values = {
-                    "pmt_status": status_api_original,
-                    "pmt_status_2": status_api_refunded,
-                    "pmt_state": state_api_original,
-                    "pmt_state_2": state_api_refunded,
-                    "pmt_mode": payment_mode_api_original,
-                    "pmt_mode_2": payment_mode_api_refunded,
-                    "settle_status": settlement_status_api_original,
-                    "settle_status_2": settlement_status_api_refunded,
-                    "amt": amount_api_original,
-                    "amt_2": amount_api_refunded,
-                    # "order_id": order_id_original,
-                    # "order_id_2": order_id_refunded,
-                    "rrn": str(rrn_api_original),
-                    "acquirer_code": acquirer_code_api_original,
-                    "issuer_code": issuer_code_api_original,
-                    "txn_type": txn_type_api_original,
-                    "mid": mid_api_original, "tid": tid_api_original,
-                    "org_code": org_code_api_original,
-                    "acquirer_code_2": acquirer_code_api_refunded,
-                    "txn_type_2": txn_type_api_refunded,
-                    "mid_2": mid_api_refunded, "tid_2": tid_api_refunded,
-                    "org_code_2": org_code_api_refunded,
-                    "auth_code": auth_code_api_original,
-                    # "date": date_time_converter.from_api_to_datetime_format(date_api_original),
-                    # "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded)
-                }
+                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "org_code": orgCode_api,
+                    "auth_code": auth_code_api,
+                    # "order_id": order_id_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
+                    "pmt_mode_2": payment_mode_api_new_2,
+                    "pmt_state_2": state_api_new_2, "rrn_2": str(rrn_api_new_2),
+                    "settle_status_2": settlement_status_api_new_2,
+                    "acquirer_code_2": acquirer_code_api_new_2,
+                    "txn_type_2": txn_type_api_new_2, "mid_2": mid_api_new_2, "tid_2": tid_api_new_2,
+                    "org_code_2": orgCode_api_new_2,
+                    "auth_code_2": auth_code_api_new_2,
+                    # "order_id_2": order_id_api_new_2,
+                    "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
+                    }
+                logger.debug(f"actual_api_values: {actual_api_values}")
 
-                logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -944,126 +959,121 @@ def test_common_staticQR_UPIRefund_02():
             try:
                 expected_db_values = {
                     "pmt_status": "AUTHORIZED",
-                    "pmt_status_2": "REFUNDED",
                     "pmt_state": "SETTLED",
-                    "pmt_state_2": "REFUNDED",
                     "pmt_mode": "UPI",
-                    "pmt_mode_2": "UPI",
-                    "amt": float(amount),
-                    "amt_2": float(refund_amount),
+                    "txn_amt": float(amount),
                     "settle_status": "SETTLED",
-                    "settle_status_2": "SETTLED",
                     "acquirer_code": "HDFC",
-                    "acquirer_code_2": "HDFC",
                     "bank_code": "HDFC",
-                    "pmt_gateway": "HDFC",
-                    "pmt_gateway_2": "HDFC",
+                    "payment_gateway": "HDFC",
+                    "upi_txn_status": "AUTHORIZED",
+                    "upi_txn_type": "STATIC_QR",
+                    "upi_bank_code": "HDFC",
+                    # "upi_mc_id": upi_mc_id,
                     "mid": db_bqr_config_mid,
                     "tid": db_bqr_config_tid,
+                    # "order_id": order_id,
+                    "pmt_status_2": "REFUNDED",
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_mode_2": "UPI",
+                    "txn_amt_2": float(refund_amount),
+                    "settle_status_2": "SETTLED",
+                    "acquirer_code_2": "HDFC",
+                    "payment_gateway_2": "HDFC",
+                    "upi_txn_status_2": "REFUNDED",
+                    "upi_txn_type_2": "REFUND",
+                    "upi_bank_code_2": "HDFC",
+                    # "upi_mc_id_2": upi_mc_id,
                     "mid_2": db_bqr_config_mid,
                     "tid_2": db_bqr_config_tid,
+                    # "order_id_2": order_id,
+
                 }
-
-                logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
-
-                query = "select * from txn where id='" + second_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_refunded = result["status"].iloc[0]
-                payment_mode_db_refunded = result["payment_mode"].iloc[0]
-                amount_db_refunded = float(result["amount"].iloc[0])
-                state_db_refunded = result["state"].iloc[0]
-                payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
-                acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                tid_db_refunded = result['tid'].values[0]
-                mid_db_refunded = result['mid'].values[0]
+                logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from txn where id='" + orig_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                status_db_original = result["status"].iloc[0]
-                payment_mode_db_original = result["payment_mode"].iloc[0]
-                amount_db_original = float(result["amount"].iloc[0])
-                state_db_original = result["state"].iloc[0]
-                payment_gateway_db_original = result["payment_gateway"].iloc[0]
-                acquirer_code_db_original = result["acquirer_code"].iloc[0]
-                bank_code_db_original = result["bank_code"].iloc[0]
-                settlement_status_db_original = result["settlement_status"].iloc[0]
-                tid_db_original = result['tid'].values[0]
-                mid_db_original = result['mid'].values[0]
+                status_db = result["status"].iloc[0]
+                payment_mode_db = result["payment_mode"].iloc[0]
+                amount_db = float(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+                acquirer_code_db = result["acquirer_code"].iloc[0]
+                bank_code_db = result["bank_code"].iloc[0]
+                settlement_status_db = result["settlement_status"].iloc[0]
+                tid_db = result['tid'].values[0]
+                mid_db = result['mid'].values[0]
+                order_id_db = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where id='" + orig_txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + orig_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].iloc[0]
+                upi_txn_type_db = result["txn_type"].iloc[0]
+                upi_bank_code_db = result["bank_code"].iloc[0]
+                upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                query = "select * from txn where id='" + second_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_status_db = result["status_desc"].iloc[0]
-                # bqr_state_db = result["state"].iloc[0]
-                # bqr_amount_db = float(result["txn_amount"].iloc[0])
-                # bqr_txn_type_db = result["txn_type"].iloc[0]
-                # brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                # bqr_bank_code_db = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                # bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
-                # bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                # bqr_rrn_db = result['rrn'].values[0]
-                # bqr_org_code_db = result['org_code'].values[0]
+                status_db_new_2 = result["status"].iloc[0]
+                payment_mode_db_new_2 = result["payment_mode"].iloc[0]
+                amount_db_new_2 = float(result["amount"].iloc[0])
+                state_db_new_2 = result["state"].iloc[0]
+                payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
+                acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
+                # bank_code_db_new_2 = result["bank_code"].iloc[0]
+                settlement_status_db_new_2 = result["settlement_status"].iloc[0]
+                tid_db_new_2 = result['tid'].values[0]
+                mid_db_new_2 = result['mid'].values[0]
+                order_id_db_new_2 = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where id='" + second_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
+                query = "select * from upi_txn where txn_id='" + second_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_state_db_refunded = result["state"].iloc[0]
-                # bqr_amount_db_refunded = float(result["txn_amount"].iloc[0])
-                # bqr_txn_type_db_refunded = result["txn_type"].iloc[0]
-                # bqr_bank_code_db_refunded = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db_refunded = result["merchant_config_id"].iloc[0]
-                # bqr_txn_primary_id_db_refunded = result["transaction_primary_id"].iloc[0]
-                # bqr_org_code_db_refunded = result['org_code'].values[0]
+                upi_status_db_new_2 = result["status"].iloc[0]
+                upi_txn_type_db_new_2 = result["txn_type"].iloc[0]
+                upi_bank_code_db_new_2 = result["bank_code"].iloc[0]
+                upi_mc_id_db_new_2 = result["upi_mc_id"].iloc[0]
 
                 actual_db_values = {
-                    "pmt_status": status_db_original,
-                    "pmt_status_2": status_db_refunded,
-                    "pmt_state": state_db_original,
-                    "pmt_state_2": state_db_refunded,
-                    "pmt_mode": payment_mode_db_original,
-                    "pmt_mode_2": payment_mode_db_refunded,
-                    "amt": amount_db_original,
-                    "amt_2": amount_db_refunded,
-                    "settle_status": settlement_status_db_original,
-                    "settle_status_2": settlement_status_db_refunded,
-                    "acquirer_code": acquirer_code_db_original,
-                    "acquirer_code_2": acquirer_code_db_refunded,
-                    "bank_code": bank_code_db_original,
-                    "pmt_gateway": payment_gateway_db_original,
-                    "pmt_gateway_2": payment_gateway_db_refunded,
-                    "mid": mid_db_original,
-                    "tid": tid_db_original,
-                    "mid_2": mid_db_refunded,
-                    "tid_2": tid_db_refunded,
-                    # "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
-                    # "bqr_txn_amt": bqr_amount_db,
-                    # "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
-                    # "bqr_bank_code": bqr_bank_code_db,
-                    # "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                    # "bqr_txn_primary_id": bqr_txn_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
-                    # "bqr_rrn": bqr_rrn_db, "bqr_org_code": bqr_org_code_db,
-                    # # "bqr_pmt_status_2": bqr_status_db_refunded,
-                    # "bqr_pmt_state_2": bqr_state_db_refunded,
-                    # "bqr_txn_amt_2": bqr_amount_db_refunded,
-                    # "bqr_txn_type_2": bqr_txn_type_db_refunded,
-                    # # "brq_terminal_info_id_2": brq_terminal_info_id_db_refunded,
-                    # "bqr_bank_code_2": bqr_bank_code_db_refunded,
-                    # "bqr_merchant_config_id_2": bqr_merchant_config_id_db_refunded,
-                    # "bqr_txn_primary_id_2": bqr_txn_primary_id_db_refunded,
-                    # # "bqr_merchant_pan_2": bqr_merchant_pan_db_refunded,
-                    # "bqr_org_code_2": bqr_org_code_db_refunded,
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "payment_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    # "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db,
+                    # "order_id": order_id_db,
+                    "pmt_status_2": status_db_new_2,
+                    "pmt_state_2": state_db_new_2,
+                    "pmt_mode_2": payment_mode_db_new_2,
+                    "txn_amt_2": amount_db_new_2,
+                    "upi_txn_status_2": upi_status_db_new_2,
+                    "settle_status_2": settlement_status_db_new_2,
+                    "acquirer_code_2": acquirer_code_db_new_2,
+                    "payment_gateway_2": payment_gateway_db_new_2,
+                    "upi_txn_type_2": upi_txn_type_db_new_2,
+                    "upi_bank_code_2": upi_bank_code_db_new_2,
+                    # "upi_mc_id_2": upi_mc_id_db_new_2,
+                    "mid_2": mid_db_new_2,
+                    "tid_2": tid_db_new_2,
+                    # "order_id_2": order_id_db_new_2,
                 }
+                logger.debug(f"actual_db_values : {actual_db_values}")
 
-                logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -1074,8 +1084,8 @@ def test_common_staticQR_UPIRefund_02():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
-                # date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
+                date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
+                date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
 
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED",
@@ -1094,8 +1104,8 @@ def test_common_staticQR_UPIRefund_02():
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "rrn": str(rrn),
                     "auth_code": auth_code,
-                    # "date": date_and_time,
-                    # "date_2": refund_date_and_time
+                    "date": date_and_time,
+                    "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
 
@@ -1185,8 +1195,8 @@ def test_common_staticQR_UPIRefund_02():
                     "pmt_msg_2": payment_msg_refunded,
                     "rrn": str(app_rrn_original),
                     "auth_code": app_auth_code_original,
-                    # "date": app_date_and_time,
-                    # "date_2": app_date_and_time_refunded
+                    "date": app_date_and_time,
+                    "date_2": app_date_and_time_refunded
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
@@ -1195,6 +1205,24 @@ def test_common_staticQR_UPIRefund_02():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
             # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_second_txn)
+                expected_values = {
+                    'PAID BY:': 'UPI', 'RRN': str(rrn_new_2), 'BASE AMOUNT:': "Rs." + str(refund_amount) + ".00",
+                    'date': txn_date, 'time': txn_time,
+                }
+                receipt_validator.perform_charge_slip_validations(second_txn_id,
+                                                                  {"username": app_username,
+                                                                   "password": app_password},
+                                                                  expected_values)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -1209,11 +1237,14 @@ def test_common_staticQR_UPIRefund_02():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPIRefund_03():
+def test_common_100_108_007():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing UPI refund_posted for staticQR with HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Refund_Posted_Via_HDFC
+    Sub Feature Description: Verifying BQRV4 static QR upi refund posted via HDFC
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
+    007: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1359,7 +1390,7 @@ def test_common_staticQR_UPIRefund_03():
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
-            created_time_orig_txn = result["created_time"].iloc[0]
+            created_time_orig_txn = result["created_time"].values[0]
 
             logger.debug(
                 f"preparing the request payload data to trigger the unified refund for UPI")
@@ -1388,7 +1419,7 @@ def test_common_staticQR_UPIRefund_03():
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
-            created_time_second_txn = result["created_time"].iloc[0]
+            created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1410,8 +1441,8 @@ def test_common_staticQR_UPIRefund_03():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
-                # date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
+                date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
+                date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": float(amount),
@@ -1426,7 +1457,7 @@ def test_common_staticQR_UPIRefund_03():
                     "tid": db_bqr_config_tid,
                     "org_code": org_code,
                     "auth_code": auth_code,
-                    # "date": date_new,
+                    "date": date_orig_txn,
                     # "order_id": order_id,
                     "pmt_status_2": "REFUND_POSTED",
                     "txn_amt_2": float(amount),
@@ -1436,7 +1467,7 @@ def test_common_staticQR_UPIRefund_03():
                     "acquirer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "org_code_2": org_code,
-                    # "date_2": date_new_2,
+                    "date_2": date_second_txn,
                     # "order_id_2": order_id
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -1495,7 +1526,7 @@ def test_common_staticQR_UPIRefund_03():
                     "org_code": orgCode_api,
                     "auth_code": auth_code_api,
                     # "order_id": order_id_api,
-                    # "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
@@ -1504,7 +1535,7 @@ def test_common_staticQR_UPIRefund_03():
                     "txn_type_2": txn_type_api_new_2,
                     "org_code_2": orgCode_api_new_2,
                     # "order_id_2": order_id_api_new_2,
-                    # "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
+                    "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -1520,108 +1551,119 @@ def test_common_staticQR_UPIRefund_03():
             try:
                 expected_db_values = {
                     "pmt_status": "AUTHORIZED",
-                    "pmt_state": "SETTLED",
-                    "pmt_mode": "UPI",
-                    "txn_amt": float(amount),
-                    "settle_status": "SETTLED",
-                    "acquirer_code": "HDFC",
-                    "bank_code": "HDFC",
-                    "payment_gateway": "HDFC",
-                    "mid": db_bqr_config_mid,
-                    "tid": db_bqr_config_tid,
-                    # "order_id": order_id,
-                    # "bqr_pmt_status": "INITIATED BY UPI",
-                    # "bqr_pmt_state": "SETTLED",
-                    # "bqr_txn_amt": float(amount),
-                    # "bqr_txn_type": "DYNAMIC_QR",
-                    # "brq_terminal_info_id": terminal_info_id,
-                    # "bqr_bank_code": "HDFC",
-                    # "bqr_merchant_config_id": bqr_mc_id,
-                    # "bqr_txn_primary_id": txn_id,
-                    # "bqr_org_code": org_code,
                     "pmt_status_2": "REFUND_POSTED",
                     "pmt_state_2": "REFUND_INITIATED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
-                    "txn_amt_2": float(amount),
+                    "txn_amt": amount,
+                    "txn_amt_2": amount,
+                    # "order_id": order_id,
+                    # "order_id_2": order_id,
+                    "upi_txn_status": "AUTHORIZED",
+                    "upi_txn_status_2": "REFUND_POSTED",
+                    "settle_status": "SETTLED",
                     "settle_status_2": "REVPENDING",
+                    "acquirer_code": "HDFC",
                     "acquirer_code_2": "HDFC",
-                    "payment_gateway_2": "HDFC",
-                    # "order_id_2": order_id
-
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "HDFC",
+                    "pmt_gateway_2": "HDFC",
+                    "upi_txn_type": "STATIC_QR",
+                    "upi_txn_type_2": "REFUND",
+                    "upi_bank_code": "HDFC",
+                    "upi_bank_code_2": "HDFC",
+                    # "upi_mc_id": upi_mc_id,
+                    # "upi_mc_id_2": upi_mc_id,
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_config_tid,
                 }
-                logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + orig_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = float(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                order_id_db = result['external_ref'].values[0]
-
-                query = "select * from upi_txn where id='" + orig_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                # bqr_state_db = result["state"].iloc[0]
-                # bqr_amount_db = float(result["txn_amount"].iloc[0])
-                # bqr_txn_type_db = result["txn_type"].iloc[0]
-                # brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                # bqr_bank_code_db = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                # bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
-                # bqr_org_code_db = result['org_code'].values[0]
+                logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
 
                 query = "select * from txn where id='" + second_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                status_db_new_2 = result["status"].iloc[0]
-                payment_mode_db_new_2 = result["payment_mode"].iloc[0]
-                amount_db_new_2 = float(result["amount"].iloc[0])
-                state_db_new_2 = result["state"].iloc[0]
-                payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
-                acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                settlement_status_db_new_2 = result["settlement_status"].iloc[0]
-                order_id_db_new_2 = result['external_ref'].values[0]
+                status_db_refunded = result["status"].iloc[0]
+                payment_mode_db_refunded = result["payment_mode"].iloc[0]
+                amount_db_refunded = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                state_db_refunded = result["state"].iloc[0]
+                payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
+                acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
+                bank_code_db_refunded = result["bank_code"].iloc[0]
+                settlement_status_db_refunded = result["settlement_status"].iloc[0]
+                # tid_db_refunded = result['tid'].values[0]
+                # mid_db_refunded = result['mid'].values[0]
+                order_id_db_original = result['external_ref'].values[0]
+
+                query = "select * from upi_txn where txn_id='" + second_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db_refunded = result["status"].iloc[0]
+                upi_txn_type_db_refunded = result["txn_type"].iloc[0]
+                upi_bank_code_db_refunded = result["bank_code"].iloc[0]
+                upi_mc_id_db_refunded = result["upi_mc_id"].iloc[0]
+
+                query = "select * from txn where id='" + orig_txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db_original = result["status"].iloc[0]
+                payment_mode_db_original = result["payment_mode"].iloc[0]
+                amount_db_original = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                state_db_original = result["state"].iloc[0]
+                payment_gateway_db_original = result["payment_gateway"].iloc[0]
+                acquirer_code_db_original = result["acquirer_code"].iloc[0]
+                bank_code_db_original = result["bank_code"].iloc[0]
+                settlement_status_db_original = result["settlement_status"].iloc[0]
+                tid_db_original = result['tid'].values[0]
+                mid_db_original = result['mid'].values[0]
+                order_id_db_refunded = result['external_ref'].values[0]
+
+                query = "select * from upi_txn where txn_id='" + orig_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db_original = result["status"].iloc[0]
+                upi_txn_type_db_original = result["txn_type"].iloc[0]
+                upi_bank_code_db_original = result["bank_code"].iloc[0]
+                upi_mc_id_db_original = result["upi_mc_id"].iloc[0]
 
                 actual_db_values = {
-                    "pmt_status": status_db,
-                    "pmt_state": state_db,
-                    "pmt_mode": payment_mode_db,
-                    "txn_amt": amount_db,
-                    "settle_status": settlement_status_db,
-                    "acquirer_code": acquirer_code_db,
-                    "bank_code": bank_code_db,
-                    "payment_gateway": payment_gateway_db,
-                    "mid": mid_db,
-                    "tid": tid_db,
-                    # "order_id": order_id_db,
-                    # "bqr_pmt_state": bqr_state_db,
-                    # "bqr_txn_amt": bqr_amount_db,
-                    # "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
-                    # "bqr_bank_code": bqr_bank_code_db,
-                    # "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                    # "bqr_txn_primary_id": bqr_txn_primary_id_db,
-                    # "bqr_org_code": bqr_org_code_db,
-                    "pmt_status_2": status_db_new_2,
-                    "pmt_state_2": state_db_new_2,
-                    "pmt_mode_2": payment_mode_db_new_2,
-                    "txn_amt_2": amount_db_new_2,
-                    "settle_status_2": settlement_status_db_new_2,
-                    "acquirer_code_2": acquirer_code_db_new_2,
-                    "payment_gateway_2": payment_gateway_db_new_2,
-                    # "order_id_2": order_id_db_new_2
+                    "pmt_status": status_db_original,
+                    "pmt_status_2": status_db_refunded,
+                    "pmt_state": state_db_original,
+                    "pmt_state_2": state_db_refunded,
+                    "pmt_mode": payment_mode_db_original,
+                    "pmt_mode_2": payment_mode_db_refunded,
+                    "txn_amt": amount_db_original,
+                    "txn_amt_2": amount_db_refunded,
+                    # "order_id": order_id_db_original,
+                    # "order_id_2": order_id_db_refunded,
+                    "upi_txn_status": upi_status_db_original,
+                    "upi_txn_status_2": upi_status_db_refunded,
+                    "settle_status": settlement_status_db_original,
+                    "settle_status_2": settlement_status_db_refunded,
+                    "acquirer_code": acquirer_code_db_original,
+                    "acquirer_code_2": acquirer_code_db_refunded,
+                    "bank_code": bank_code_db_original,
+                    "pmt_gateway": payment_gateway_db_original,
+                    "pmt_gateway_2": payment_gateway_db_refunded,
+                    "upi_txn_type": upi_txn_type_db_original,
+                    "upi_txn_type_2": upi_txn_type_db_refunded,
+                    "upi_bank_code": upi_bank_code_db_original,
+                    "upi_bank_code_2": upi_bank_code_db_refunded,
+                    # "upi_mc_id": upi_mc_id_db_original,
+                    # "upi_mc_id_2": upi_mc_id_db_refunded,
+                    "mid": mid_db_original,
+                    "tid": tid_db_original
                 }
-                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
@@ -1629,12 +1671,12 @@ def test_common_staticQR_UPIRefund_03():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-            # -----------------------------------------Start of App Validation---------------------------------
+        # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
-                # date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
+                date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
+                date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
 
                 expected_app_values = {
                     "pmt_mode": "UPI",
@@ -1643,24 +1685,16 @@ def test_common_staticQR_UPIRefund_03():
                     "settle_status": "SETTLED",
                     "txn_id": orig_txn_id,
                     "rrn": str(rrn),
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name,
-                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
-                    # "date": date_and_time,
+                    "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_POSTED",
                     "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "REVPENDING",
                     "txn_id_2": second_txn_id,
-                    # "rrn_2": str(rrn_new_2),
-                    # "customer_name_2": customer_name_new_2,
-                    # "payer_name_2": payer_name_new_2,
-                    # "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT SUCCESSFUL",
-                    # "auth_code_2": auth_code_new_2,
-                    # "date_2": date_and_time_new_2
+                    "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -1746,25 +1780,17 @@ def test_common_staticQR_UPIRefund_03():
                                      "txn_amt": app_amount.split(' ')[1],
                                      "txn_id": app_txn_id,
                                      "rrn": str(app_rrn),
-                                     # "customer_name": app_customer_name,
                                      "settle_status": app_settlement_status,
-                                     # "payer_name": app_payer_name,
-                                     # "order_id": app_order_id,
                                      "pmt_msg": app_payment_msg,
                                      "auth_code": app_auth_code,
-                                     # "date": app_date_and_time,
+                                     "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new_2,
                                      "pmt_status_2": payment_status_new_2.split(':')[1],
                                      "txn_amt_2": app_amount_new_2.split(' ')[1],
                                      "txn_id_2": app_txn_id_new_2,
-                                     # "rrn_2": str(app_rrn_new_2),
-                                     # "customer_name_2": app_customer_name_new_2,
                                      "settle_status_2": app_settlement_status_new_2,
-                                     # "payer_name_2": app_payer_name_new_2,
-                                     # "order_id_2": app_order_id_new_2,
                                      "pmt_msg_2": app_payment_msg_new_2,
-                                     # "auth_code_2": app_auth_code_new_2,
-                                     # "date_2": app_date_and_time_new_2
+                                     "date_2": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
@@ -1787,11 +1813,14 @@ def test_common_staticQR_UPIRefund_03():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPIRefund_04():
+def test_common_100_108_008():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing UPI failed refund for staticQR with HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Refund_Failed_Via_HDFC
+    Sub Feature Description: Verifying BQRV4 UPI static QR refund failed via HDFC
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
+    008: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1937,7 +1966,7 @@ def test_common_staticQR_UPIRefund_04():
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
-            created_time_orig_txn = result["created_time"].iloc[0]
+            created_time_orig_txn = result["created_time"].values[0]
 
             logger.debug(
                 f"preparing the request payload data to trigger the unified refund for UPI")
@@ -1966,7 +1995,7 @@ def test_common_staticQR_UPIRefund_04():
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
-            created_time_second_txn = result["created_time"].iloc[0]
+            created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1988,8 +2017,8 @@ def test_common_staticQR_UPIRefund_04():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
-                # date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
+                date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
+                date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": float(amount),
@@ -2004,7 +2033,7 @@ def test_common_staticQR_UPIRefund_04():
                     "tid": db_bqr_config_tid,
                     "org_code": org_code,
                     "auth_code": auth_code,
-                    # "date": date_new,
+                    "date": date_orig_txn,
                     # "order_id": order_id,
                     "pmt_status_2": "FAILED",
                     "txn_amt_2": float(amount),
@@ -2018,7 +2047,7 @@ def test_common_staticQR_UPIRefund_04():
                     # "mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code,
                     # "auth_code_2": auth_code_new_2,
-                    # "date_2": date_new_2,
+                    "date_2": date_second_txn,
                     # "order_id_2": order_id
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -2082,7 +2111,7 @@ def test_common_staticQR_UPIRefund_04():
                     "org_code": orgCode_api,
                     "auth_code": auth_code_api,
                     # "order_id": order_id_api,
-                    # "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
@@ -2095,7 +2124,7 @@ def test_common_staticQR_UPIRefund_04():
                     "org_code_2": orgCode_api_new_2,
                     # "auth_code_2": auth_code_api_new_2,
                     # "order_id_2": order_id_api_new_2,
-                    # "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
+                    "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -2111,118 +2140,117 @@ def test_common_staticQR_UPIRefund_04():
             try:
                 expected_db_values = {
                     "pmt_status": "AUTHORIZED",
-                    "pmt_state": "SETTLED",
-                    "pmt_mode": "UPI",
-                    "txn_amt": float(amount),
-                    "settle_status": "SETTLED",
-                    "acquirer_code": "HDFC",
-                    "bank_code": "HDFC",
-                    "pmt_gateway": "HDFC",
-                    "mid": db_bqr_config_mid,
-                    "tid": db_bqr_config_tid,
-                    # "order_id": order_id,
-                    # "bqr_pmt_status": "INITIATED BY UPI",
-                    # "bqr_pmt_state": "SETTLED",
-                    # "bqr_txn_amt": float(amount),
-                    # "bqr_txn_type": "DYNAMIC_QR",
-                    # "brq_terminal_info_id": terminal_info_id,
-                    # "bqr_bank_code": "HDFC",
-                    # "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
-                    # "bqr_org_code": org_code,
                     "pmt_status_2": "FAILED",
                     "pmt_state_2": "FAILED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
-                    "txn_amt_2": float(amount),
-                    "settle_status_2": "FAILED",
-                    "acquirer_code_2": "HDFC",
-                    # "bank_code_2": "HDFC",
-                    "payment_gateway_2": "HDFC",
-                    # "mid_2": mid,
-                    # "tid_2": tid,
+                    "txn_amt": amount,
+                    "txn_amt_2": amount,
+                    # "order_id": order_id,
                     # "order_id_2": order_id,
-
+                    "upi_txn_status": "AUTHORIZED",
+                    "upi_txn_status_2": "FAILED",
+                    "settle_status": "SETTLED",
+                    "settle_status_2": "FAILED",
+                    "acquirer_code": "HDFC",
+                    "acquirer_code_2": "HDFC",
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "HDFC",
+                    "pmt_gateway_2": "HDFC",
+                    "upi_txn_type": "STATIC_QR",
+                    "upi_txn_type_2": "REFUND",
+                    "upi_bank_code": "HDFC",
+                    "upi_bank_code_2": "HDFC",
+                    # "upi_mc_id": upi_mc_id,
+                    # "upi_mc_id_2": upi_mc_id,
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_config_tid,
                 }
-                logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + orig_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = float(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                order_id_db = result['external_ref'].values[0]
-
-                query = "select * from upi_txn where id='" + orig_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                # bqr_status_db = result["status_desc"].iloc[0]
-                # bqr_state_db = result["state"].iloc[0]
-                # bqr_amount_db = float(result["txn_amount"].iloc[0])
-                # bqr_txn_type_db = result["txn_type"].iloc[0]
-                # brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                # bqr_bank_code_db = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                # bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
-                # bqr_org_code_db = result['org_code'].values[0]
+                logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
 
                 query = "select * from txn where id='" + second_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                status_db_new_2 = result["status"].iloc[0]
-                payment_mode_db_new_2 = result["payment_mode"].iloc[0]
-                amount_db_new_2 = float(result["amount"].iloc[0])
-                state_db_new_2 = result["state"].iloc[0]
-                payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
-                acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
-                settlement_status_db_new_2 = result["settlement_status"].iloc[0]
-                # tid_db_new_2 = result['tid'].values[0]
-                # mid_db_new_2 = result['mid'].values[0]
-                order_id_db_new_2 = result['external_ref'].values[0]
+                status_db_refunded = result["status"].iloc[0]
+                payment_mode_db_refunded = result["payment_mode"].iloc[0]
+                amount_db_refunded = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                state_db_refunded = result["state"].iloc[0]
+                payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
+                acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
+                bank_code_db_refunded = result["bank_code"].iloc[0]
+                settlement_status_db_refunded = result["settlement_status"].iloc[0]
+                order_id_db_original = result['external_ref'].values[0]
+
+                query = "select * from upi_txn where txn_id='" + second_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db_refunded = result["status"].iloc[0]
+                upi_txn_type_db_refunded = result["txn_type"].iloc[0]
+                upi_bank_code_db_refunded = result["bank_code"].iloc[0]
+                upi_mc_id_db_refunded = result["upi_mc_id"].iloc[0]
+
+                query = "select * from txn where id='" + orig_txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db_original = result["status"].iloc[0]
+                payment_mode_db_original = result["payment_mode"].iloc[0]
+                amount_db_original = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                state_db_original = result["state"].iloc[0]
+                payment_gateway_db_original = result["payment_gateway"].iloc[0]
+                acquirer_code_db_original = result["acquirer_code"].iloc[0]
+                bank_code_db_original = result["bank_code"].iloc[0]
+                settlement_status_db_original = result["settlement_status"].iloc[0]
+                tid_db_original = result['tid'].values[0]
+                mid_db_original = result['mid'].values[0]
+                order_id_db_refunded = result['external_ref'].values[0]
+
+                query = "select * from upi_txn where txn_id='" + orig_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db_original = result["status"].iloc[0]
+                upi_txn_type_db_original = result["txn_type"].iloc[0]
+                upi_bank_code_db_original = result["bank_code"].iloc[0]
+                upi_mc_id_db_original = result["upi_mc_id"].iloc[0]
 
                 actual_db_values = {
-                    "pmt_status": status_db,
-                    "pmt_state": state_db,
-                    "pmt_mode": payment_mode_db,
-                    "txn_amt": amount_db,
-                    "settle_status": settlement_status_db,
-                    "acquirer_code": acquirer_code_db,
-                    "bank_code": bank_code_db,
-                    "pmt_gateway": payment_gateway_db,
-                    "mid": mid_db,
-                    "tid": tid_db,
-                    # "order_id": order_id_db,
-                    # "bqr_pmt_status": bqr_status_db,
-                    # "bqr_pmt_state": bqr_state_db,
-                    # "bqr_txn_amt": bqr_amount_db,
-                    # "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
-                    # "bqr_bank_code": bqr_bank_code_db,
-                    # "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                    # "bqr_txn_primary_id": bqr_txn_primary_id_db,
-                    # "bqr_org_code": bqr_org_code_db,
-                    "pmt_status_2": status_db_new_2,
-                    "pmt_state_2": state_db_new_2,
-                    "pmt_mode_2": payment_mode_db_new_2,
-                    "txn_amt_2": amount_db_new_2,
-                    "settle_status_2": settlement_status_db_new_2,
-                    "acquirer_code_2": acquirer_code_db_new_2,
-                    # "bank_code_2": bank_code_db_new_2,
-                    "payment_gateway_2": payment_gateway_db_new_2,
-                    # "mid_2": mid_db_new_2,
-                    # "tid_2": tid_db_new_2,
-                    # "order_id_2": order_id_db_new_2,
+                    "pmt_status": status_db_original,
+                    "pmt_status_2": status_db_refunded,
+                    "pmt_state": state_db_original,
+                    "pmt_state_2": state_db_refunded,
+                    "pmt_mode": payment_mode_db_original,
+                    "pmt_mode_2": payment_mode_db_refunded,
+                    "txn_amt": amount_db_original,
+                    "txn_amt_2": amount_db_refunded,
+                    # "order_id": order_id_db_original,
+                    # "order_id_2": order_id_db_refunded,
+                    "upi_txn_status": upi_status_db_original,
+                    "upi_txn_status_2": upi_status_db_refunded,
+                    "settle_status": settlement_status_db_original,
+                    "settle_status_2": settlement_status_db_refunded,
+                    "acquirer_code": acquirer_code_db_original,
+                    "acquirer_code_2": acquirer_code_db_refunded,
+                    "bank_code": bank_code_db_original,
+                    "pmt_gateway": payment_gateway_db_original,
+                    "pmt_gateway_2": payment_gateway_db_refunded,
+                    "upi_txn_type": upi_txn_type_db_original,
+                    "upi_txn_type_2": upi_txn_type_db_refunded,
+                    "upi_bank_code": upi_bank_code_db_original,
+                    "upi_bank_code_2": upi_bank_code_db_refunded,
+                    # "upi_mc_id": upi_mc_id_db_original,
+                    # "upi_mc_id_2": upi_mc_id_db_refunded,
+                    "mid": mid_db_original,
+                    "tid": tid_db_original,
                 }
-                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
@@ -2234,8 +2262,8 @@ def test_common_staticQR_UPIRefund_04():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
-                # date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
+                date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
+                date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
 
                 expected_app_values = {
                     "pmt_mode": "UPI",
@@ -2249,7 +2277,7 @@ def test_common_staticQR_UPIRefund_04():
                     # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
-                    # "date": date_and_time,
+                    "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "FAILED",
                     "txn_amt_2": str(amount)+".00",
@@ -2261,7 +2289,7 @@ def test_common_staticQR_UPIRefund_04():
                     # "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT FAILED",
                     # "auth_code_2": auth_code_new_2,
-                    # "date_2": date_and_time_new_2
+                    "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -2353,7 +2381,7 @@ def test_common_staticQR_UPIRefund_04():
                                      # "order_id": app_order_id,
                                      "pmt_msg": app_payment_msg,
                                      "auth_code": app_auth_code,
-                                     # "date": app_date_and_time,
+                                     "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_new_2,
                                      "pmt_status_2": payment_status_new_2.split(':')[1],
                                      "txn_amt_2": app_amount_new_2.split(' ')[1],
@@ -2365,7 +2393,7 @@ def test_common_staticQR_UPIRefund_04():
                                      # "order_id_2": app_order_id_new_2,
                                      "pmt_msg_2": app_payment_msg_new_2,
                                      # "auth_code_2": app_auth_code_new_2,
-                                     # "date_2": app_date_and_time_new_2
+                                     "date_2": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
@@ -2390,11 +2418,15 @@ def test_common_staticQR_UPIRefund_04():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPIRefund_05():
+@pytest.mark.chargeSlipVal
+def test_common_100_108_009():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing UPI refund with decimal value for staticQR with HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Refund_With_Decimal_Via_HDFC
+    Sub Feature Description: Verifying BQRV4 static QR upi refund with decimal value using api for IDFC
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
+    009: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2540,7 +2572,7 @@ def test_common_staticQR_UPIRefund_05():
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
-            created_time_orig_txn = result["created_time"].iloc[0]
+            created_time_orig_txn = result["created_time"].values[0]
 
             logger.debug(
                 f"preparing the request payload data to trigger the unified refund for UPI")
@@ -2570,7 +2602,7 @@ def test_common_staticQR_UPIRefund_05():
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
-            created_time_second_txn = result["created_time"].iloc[0]
+            created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2592,8 +2624,8 @@ def test_common_staticQR_UPIRefund_05():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
-                # date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
+                date_orig_txn = date_time_converter.db_datetime(created_time_orig_txn)
+                date_second_txn = date_time_converter.db_datetime(created_time_second_txn)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "pmt_status_2": "REFUNDED",
@@ -2618,7 +2650,7 @@ def test_common_staticQR_UPIRefund_05():
                     "mid_2": db_bqr_config_mid, "tid_2": db_bqr_config_tid,
                     "org_code_2": org_code,
                     "auth_code": auth_code,
-                    # "date": date, "date_2": refund_date
+                    "date": date_orig_txn, "date_2": date_second_txn
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -2691,8 +2723,8 @@ def test_common_staticQR_UPIRefund_05():
                     "mid_2": mid_api_refunded, "tid_2": tid_api_refunded,
                     "org_code_2": org_code_api_refunded,
                     "auth_code": auth_code_api_original,
-                    # "date": date_time_converter.from_api_to_datetime_format(date_api_original),
-                    # "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded)
+                    "date": date_time_converter.from_api_to_datetime_format(date_api_original),
+                    "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded)
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
@@ -2708,126 +2740,121 @@ def test_common_staticQR_UPIRefund_05():
             try:
                 expected_db_values = {
                     "pmt_status": "AUTHORIZED",
-                    "pmt_status_2": "REFUNDED",
                     "pmt_state": "SETTLED",
-                    "pmt_state_2": "REFUNDED",
                     "pmt_mode": "UPI",
-                    "pmt_mode_2": "UPI",
-                    "amt": float(amount),
-                    "amt_2": float(refund_amount),
+                    "txn_amt": float(amount),
                     "settle_status": "SETTLED",
-                    "settle_status_2": "SETTLED",
                     "acquirer_code": "HDFC",
-                    "acquirer_code_2": "HDFC",
                     "bank_code": "HDFC",
-                    "pmt_gateway": "HDFC",
-                    "pmt_gateway_2": "HDFC",
+                    "payment_gateway": "HDFC",
+                    "upi_txn_status": "AUTHORIZED",
+                    "upi_txn_type": "STATIC_QR",
+                    "upi_bank_code": "HDFC",
+                    # "upi_mc_id": upi_mc_id,
                     "mid": db_bqr_config_mid,
                     "tid": db_bqr_config_tid,
+                    # "order_id": order_id,
+                    "pmt_status_2": "REFUNDED",
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_mode_2": "UPI",
+                    "txn_amt_2": float(refund_amount),
+                    "settle_status_2": "SETTLED",
+                    "acquirer_code_2": "HDFC",
+                    "payment_gateway_2": "HDFC",
+                    "upi_txn_status_2": "REFUNDED",
+                    "upi_txn_type_2": "REFUND",
+                    "upi_bank_code_2": "HDFC",
+                    # "upi_mc_id_2": upi_mc_id,
                     "mid_2": db_bqr_config_mid,
                     "tid_2": db_bqr_config_tid,
+                    # "order_id_2": order_id,
+
                 }
-
-                logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
-
-                query = "select * from txn where id='" + second_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_refunded = result["status"].iloc[0]
-                payment_mode_db_refunded = result["payment_mode"].iloc[0]
-                amount_db_refunded = float(result["amount"].iloc[0])
-                state_db_refunded = result["state"].iloc[0]
-                payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
-                acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                tid_db_refunded = result['tid'].values[0]
-                mid_db_refunded = result['mid'].values[0]
+                logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from txn where id='" + orig_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                status_db_original = result["status"].iloc[0]
-                payment_mode_db_original = result["payment_mode"].iloc[0]
-                amount_db_original = float(result["amount"].iloc[0])
-                state_db_original = result["state"].iloc[0]
-                payment_gateway_db_original = result["payment_gateway"].iloc[0]
-                acquirer_code_db_original = result["acquirer_code"].iloc[0]
-                bank_code_db_original = result["bank_code"].iloc[0]
-                settlement_status_db_original = result["settlement_status"].iloc[0]
-                tid_db_original = result['tid'].values[0]
-                mid_db_original = result['mid'].values[0]
+                status_db = result["status"].iloc[0]
+                payment_mode_db = result["payment_mode"].iloc[0]
+                amount_db = float(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+                acquirer_code_db = result["acquirer_code"].iloc[0]
+                bank_code_db = result["bank_code"].iloc[0]
+                settlement_status_db = result["settlement_status"].iloc[0]
+                tid_db = result['tid'].values[0]
+                mid_db = result['mid'].values[0]
+                order_id_db = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where id='" + orig_txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + orig_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].iloc[0]
+                upi_txn_type_db = result["txn_type"].iloc[0]
+                upi_bank_code_db = result["bank_code"].iloc[0]
+                upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                query = "select * from txn where id='" + second_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_status_db = result["status_desc"].iloc[0]
-                # bqr_state_db = result["state"].iloc[0]
-                # bqr_amount_db = float(result["txn_amount"].iloc[0])
-                # bqr_txn_type_db = result["txn_type"].iloc[0]
-                # brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                # bqr_bank_code_db = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                # bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
-                # bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                # bqr_rrn_db = result['rrn'].values[0]
-                # bqr_org_code_db = result['org_code'].values[0]
+                status_db_new_2 = result["status"].iloc[0]
+                payment_mode_db_new_2 = result["payment_mode"].iloc[0]
+                amount_db_new_2 = float(result["amount"].iloc[0])
+                state_db_new_2 = result["state"].iloc[0]
+                payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
+                acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
+                # bank_code_db_new_2 = result["bank_code"].iloc[0]
+                settlement_status_db_new_2 = result["settlement_status"].iloc[0]
+                tid_db_new_2 = result['tid'].values[0]
+                mid_db_new_2 = result['mid'].values[0]
+                order_id_db_new_2 = result['external_ref'].values[0]
 
-                query = "select * from upi_txn where id='" + second_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
+                query = "select * from upi_txn where txn_id='" + second_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_state_db_refunded = result["state"].iloc[0]
-                # bqr_amount_db_refunded = float(result["txn_amount"].iloc[0])
-                # bqr_txn_type_db_refunded = result["txn_type"].iloc[0]
-                # bqr_bank_code_db_refunded = result["bank_code"].iloc[0]
-                # bqr_merchant_config_id_db_refunded = result["merchant_config_id"].iloc[0]
-                # bqr_txn_primary_id_db_refunded = result["transaction_primary_id"].iloc[0]
-                # bqr_org_code_db_refunded = result['org_code'].values[0]
+                upi_status_db_new_2 = result["status"].iloc[0]
+                upi_txn_type_db_new_2 = result["txn_type"].iloc[0]
+                upi_bank_code_db_new_2 = result["bank_code"].iloc[0]
+                upi_mc_id_db_new_2 = result["upi_mc_id"].iloc[0]
 
                 actual_db_values = {
-                    "pmt_status": status_db_original,
-                    "pmt_status_2": status_db_refunded,
-                    "pmt_state": state_db_original,
-                    "pmt_state_2": state_db_refunded,
-                    "pmt_mode": payment_mode_db_original,
-                    "pmt_mode_2": payment_mode_db_refunded,
-                    "amt": amount_db_original,
-                    "amt_2": amount_db_refunded,
-                    "settle_status": settlement_status_db_original,
-                    "settle_status_2": settlement_status_db_refunded,
-                    "acquirer_code": acquirer_code_db_original,
-                    "acquirer_code_2": acquirer_code_db_refunded,
-                    "bank_code": bank_code_db_original,
-                    "pmt_gateway": payment_gateway_db_original,
-                    "pmt_gateway_2": payment_gateway_db_refunded,
-                    "mid": mid_db_original,
-                    "tid": tid_db_original,
-                    "mid_2": mid_db_refunded,
-                    "tid_2": tid_db_refunded,
-                    # "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
-                    # "bqr_txn_amt": bqr_amount_db,
-                    # "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
-                    # "bqr_bank_code": bqr_bank_code_db,
-                    # "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                    # "bqr_txn_primary_id": bqr_txn_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
-                    # "bqr_rrn": bqr_rrn_db, "bqr_org_code": bqr_org_code_db,
-                    # # "bqr_pmt_status_2": bqr_status_db_refunded,
-                    # "bqr_pmt_state_2": bqr_state_db_refunded,
-                    # "bqr_txn_amt_2": bqr_amount_db_refunded,
-                    # "bqr_txn_type_2": bqr_txn_type_db_refunded,
-                    # # "brq_terminal_info_id_2": brq_terminal_info_id_db_refunded,
-                    # "bqr_bank_code_2": bqr_bank_code_db_refunded,
-                    # "bqr_merchant_config_id_2": bqr_merchant_config_id_db_refunded,
-                    # "bqr_txn_primary_id_2": bqr_txn_primary_id_db_refunded,
-                    # # "bqr_merchant_pan_2": bqr_merchant_pan_db_refunded,
-                    # "bqr_org_code_2": bqr_org_code_db_refunded,
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "payment_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    # "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db,
+                    # "order_id": order_id_db,
+                    "pmt_status_2": status_db_new_2,
+                    "pmt_state_2": state_db_new_2,
+                    "pmt_mode_2": payment_mode_db_new_2,
+                    "txn_amt_2": amount_db_new_2,
+                    "upi_txn_status_2": upi_status_db_new_2,
+                    "settle_status_2": settlement_status_db_new_2,
+                    "acquirer_code_2": acquirer_code_db_new_2,
+                    "payment_gateway_2": payment_gateway_db_new_2,
+                    "upi_txn_type_2": upi_txn_type_db_new_2,
+                    "upi_bank_code_2": upi_bank_code_db_new_2,
+                    # "upi_mc_id_2": upi_mc_id_db_new_2,
+                    "mid_2": mid_db_new_2,
+                    "tid_2": tid_db_new_2,
+                    # "order_id_2": order_id_db_new_2,
                 }
+                logger.debug(f"actual_db_values : {actual_db_values}")
 
-                logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -2838,8 +2865,8 @@ def test_common_staticQR_UPIRefund_05():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
-                # date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
+                date_and_time = date_time_converter.to_app_format(created_time_orig_txn)
+                date_and_time_new_2 = date_time_converter.to_app_format(created_time_second_txn)
 
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED",
@@ -2858,8 +2885,8 @@ def test_common_staticQR_UPIRefund_05():
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "rrn": str(rrn),
                     "auth_code": auth_code,
-                    # "date": date_and_time,
-                    # "date_2": refund_date_and_time
+                    "date": date_and_time,
+                    "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
 
@@ -2949,8 +2976,8 @@ def test_common_staticQR_UPIRefund_05():
                     "pmt_msg_2": payment_msg_refunded,
                     "rrn": str(app_rrn_original),
                     "auth_code": app_auth_code_original,
-                    # "date": app_date_and_time,
-                    # "date_2": app_date_and_time_refunded
+                    "date": app_date_and_time,
+                    "date_2": app_date_and_time_refunded
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
@@ -2959,6 +2986,24 @@ def test_common_staticQR_UPIRefund_05():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
             # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_second_txn)
+                expected_values = {
+                    'PAID BY:': 'UPI', 'RRN': str(rrn_new_2), 'BASE AMOUNT:': "Rs." + str(refund_amount) + "0",
+                    'date': txn_date, 'time': txn_time,
+                }
+                receipt_validator.perform_charge_slip_validations(second_txn_id,
+                                                                  {"username": app_username,
+                                                                   "password": app_password},
+                                                                  expected_values)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
