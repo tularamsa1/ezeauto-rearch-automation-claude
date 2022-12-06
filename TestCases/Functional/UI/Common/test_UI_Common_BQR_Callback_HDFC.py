@@ -1226,7 +1226,7 @@ def test_common_100_102_012():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(posting_date_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
@@ -1727,7 +1727,7 @@ def test_common_100_102_013():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(modified_date_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
