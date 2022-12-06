@@ -11,11 +11,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_staticQR_generation():
+def test_common_100_108_001():
     """
-    Sub Feature Code: UI_Common_PM_StaticQR_Generation_Success_Via_HDFC
-    Sub Feature Description: Performing static QR generation success via HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_StaticQR_Generation_Success_Via_HDFC
+    Sub Feature Description: Verifying static QR generation via HDFC
     TC naming code description:
+    100: payment method
+    108: BQRV4 Static QR
+    001: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -213,11 +216,14 @@ def test_common_staticQR_generation():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_common_staticQR_Regeneration():
+def test_common_100_108_002():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing static QR Regeneration success via HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_StaticQR_Regeneration_Via_HDFC
+    Sub Feature Description: Verifying static QR regeneration via HDFC
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
+    002: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -330,7 +336,7 @@ def test_common_staticQR_Regeneration():
                     else:
                         continue
 
-                # Regenrating static qr with another user for same org
+                # Regenerating static qr with another user for same org
                 api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
                     "username": portal_username,
                     "password": portal_password,

@@ -7,7 +7,8 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import ResourceAssigner, DBProcessor, APIProcessor, ConfigReader, Validator, date_time_converter
+from Utilities import ResourceAssigner, DBProcessor, APIProcessor, ConfigReader, Validator, date_time_converter, \
+    receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -16,11 +17,15 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPICallback_01():
+@pytest.mark.chargeSlipVal
+def test_common_100_108_003():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing UPI callback for staticQR with autorefund enabled
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Callback_Success_AutoRefund_Enabled_Via_HDFC
+    Sub Feature Description: Verifying upi success callback via HDFC when autorefund is enabled
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
+    003: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -129,7 +134,6 @@ def test_common_staticQR_UPICallback_01():
             res_generateqr_tid = response["tid"]
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
 
-            ############################################################ START ################
             rrn = random.randint(11111110, 99999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
@@ -185,8 +189,6 @@ def test_common_staticQR_UPICallback_01():
             db_txn_payment_mode = result["payment_mode"].iloc[0]
             db_txn_external_ref = result["external_ref"].iloc[0]
             db_txn_created_time = result['created_time'].values[0]
-
-            ############################################################################
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -288,84 +290,101 @@ def test_common_staticQR_UPICallback_01():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-            # -----------------------------------------Start of App Validation---------------------------------
-            if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-                logger.info(f"Started APP validation for the test case : {testcase_id}")
-                try:
-                    date_and_time = date_time_converter.to_app_format(db_txn_created_time)
-                    expected_app_values = {
-                        "pmt_mode": "UPI",
-                        "pmt_status": "AUTHORIZED",
-                        "txn_amt": str("%.2f" % amount),
-                        "settle_status": "SETTLED",
-                        "txn_id": db_txn_id,
-                        "rrn": str(rrn),
-                        "customer_name": "Test Payer",
-                        "payer_name": "Test Payer",
-                        "order_id": db_txn_external_ref,
-                        "pmt_msg": "PAYMENT SUCCESSFUL",
-                        "date": date_and_time
-                    }
-                    logger.debug(f"expected_app_values: {expected_app_values}")
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                date_and_time = date_time_converter.to_app_format(db_txn_created_time)
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str("%.2f" % amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": db_txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": "Test Payer",
+                    "payer_name": "Test Payer",
+                    "order_id": db_txn_external_ref,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
 
-                    app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                    logger.info(
-                        f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-                    login_page = LoginPage(app_driver)
-                    login_page.perform_login(app_username, app_password)
-                    home_page = HomePage(app_driver)
-                    home_page.wait_for_navigation_to_load()
-                    home_page.wait_for_home_page_load()
-                    home_page.check_home_page_logo()
-                    home_page.click_on_history()
-                    txn_history_page = TransHistoryPage(app_driver)
-                    txn_history_page.click_on_transaction_by_txn_id(db_txn_id)
-                    payment_status = txn_history_page.fetch_txn_status_text()
-                    logger.info(f"Fetching status from txn history for the txn : {db_txn_id}, {payment_status}")
-                    app_date_and_time = txn_history_page.fetch_date_time_text()
-                    logger.info(f"Fetching date from txn history for the txn : {db_txn_id}, {app_date_and_time}")
-                    payment_mode = txn_history_page.fetch_txn_type_text()
-                    logger.info(f"Fetching payment mode from txn history for the txn : {db_txn_id}, {payment_mode}")
-                    app_txn_id = txn_history_page.fetch_txn_id_text()
-                    logger.info(f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_txn_id}")
-                    app_amount = txn_history_page.fetch_txn_amount_text()
-                    logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id}, {app_amount}")
-                    app_customer_name = txn_history_page.fetch_customer_name_text()
-                    logger.info(f"Fetching txn customer name from txn history for the txn : {db_txn_id}, {app_customer_name}")
-                    app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                    logger.info(
-                        f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_customer_name}")
-                    app_payer_name = txn_history_page.fetch_payer_name_text()
-                    logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
-                    app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
-                    logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
-                    app_order_id = txn_history_page.fetch_order_id_text()
-                    logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
-                    app_rrn = txn_history_page.fetch_RRN_text()
-                    logger.info(
-                        f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                login_page = LoginPage(app_driver)
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(db_txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {db_txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {db_txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {db_txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {db_txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
+                app_rrn = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
 
-                    actual_app_values = {
-                        "pmt_mode": payment_mode,
-                        "pmt_status": payment_status.split(':')[1],
-                        "txn_amt": app_amount.split(' ')[1],
-                        "txn_id": app_txn_id,
-                        "rrn": str(app_rrn),
-                        "customer_name": app_customer_name,
-                        "settle_status": app_settlement_status,
-                        "payer_name": app_payer_name,
-                        "order_id": app_order_id,
-                        "pmt_msg": app_payment_msg,
-                        "date": app_date_and_time
-                    }
-                    logger.debug(f"actual_app_values: {actual_app_values}")
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
 
-                    Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
-                except Exception as e:
-                    Configuration.perform_app_val_exception(testcase_id, e)
-                logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of App Validation---------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(db_txn_created_time)
+                expected_values = {
+                    'PAID BY:': 'UPI', 'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date, 'time': txn_time,
+                }
+                receipt_validator.perform_charge_slip_validations(db_txn_id,
+                                                                  {"username": app_username,
+                                                                   "password": app_password},
+                                                                  expected_values)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -379,11 +398,14 @@ def test_common_staticQR_UPICallback_01():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_staticQR_UPICallback_02():
+@pytest.mark.chargeSlipVal
+def test_common_100_108_004():
     """
-    Sub Feature Code:
-    Sub Feature Description: Performing UPI callback for staticQR with autorefund disabled
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_StaticQR_Callback_Success_AutoRefund_Disabled_Via_HDFC
+    Sub Feature Description: Verifying upi success callback via HDFC when autorefund is disabled
     TC naming code description:
+    100: Payment method
+    108: BQRV4 Static QR
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -492,7 +514,6 @@ def test_common_staticQR_UPICallback_02():
             res_generateqr_tid = response["tid"]
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
 
-            ############################################################ START ################
             rrn = random.randint(11111110, 99999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
@@ -548,8 +569,6 @@ def test_common_staticQR_UPICallback_02():
             db_txn_payment_mode = result["payment_mode"].iloc[0]
             db_txn_external_ref = result["external_ref"].iloc[0]
             db_txn_created_time = result['created_time'].values[0]
-
-            ############################################################################
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -651,83 +670,101 @@ def test_common_staticQR_UPICallback_02():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-            # -----------------------------------------Start of App Validation---------------------------------
-            if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-                logger.info(f"Started APP validation for the test case : {testcase_id}")
-                try:
-                    date_and_time = date_time_converter.to_app_format(db_txn_created_time)
-                    expected_app_values = {
-                        "pmt_mode": "UPI",
-                        "pmt_status": "AUTHORIZED",
-                        "txn_amt": str("%.2f" % amount),
-                        "settle_status": "SETTLED",
-                        "txn_id": db_txn_id,
-                        "rrn": str(rrn),
-                        "customer_name": "Test Payer",
-                        "payer_name": "Test Payer",
-                        "order_id": db_txn_external_ref,
-                        "pmt_msg": "PAYMENT SUCCESSFUL",
-                        "date": date_and_time
-                    }
-                    logger.debug(f"expected_app_values: {expected_app_values}")
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                date_and_time = date_time_converter.to_app_format(db_txn_created_time)
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str("%.2f" % amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": db_txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": "Test Payer",
+                    "payer_name": "Test Payer",
+                    "order_id": db_txn_external_ref,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
 
-                    app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                    logger.info(
-                        f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-                    login_page = LoginPage(app_driver)
-                    login_page.perform_login(app_username, app_password)
-                    home_page = HomePage(app_driver)
-                    home_page.wait_for_navigation_to_load()
-                    home_page.wait_for_home_page_load()
-                    home_page.check_home_page_logo()
-                    home_page.click_on_history()
-                    txn_history_page = TransHistoryPage(app_driver)
-                    txn_history_page.click_on_transaction_by_txn_id(db_txn_id)
-                    payment_status = txn_history_page.fetch_txn_status_text()
-                    logger.info(f"Fetching status from txn history for the txn : {db_txn_id}, {payment_status}")
-                    app_date_and_time = txn_history_page.fetch_date_time_text()
-                    logger.info(f"Fetching date from txn history for the txn : {db_txn_id}, {app_date_and_time}")
-                    payment_mode = txn_history_page.fetch_txn_type_text()
-                    logger.info(f"Fetching payment mode from txn history for the txn : {db_txn_id}, {payment_mode}")
-                    app_txn_id = txn_history_page.fetch_txn_id_text()
-                    logger.info(f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_txn_id}")
-                    app_amount = txn_history_page.fetch_txn_amount_text()
-                    logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id}, {app_amount}")
-                    app_customer_name = txn_history_page.fetch_customer_name_text()
-                    logger.info(f"Fetching txn customer name from txn history for the txn : {db_txn_id}, {app_customer_name}")
-                    app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                    logger.info(
-                        f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_customer_name}")
-                    app_payer_name = txn_history_page.fetch_payer_name_text()
-                    logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
-                    app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
-                    logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
-                    app_order_id = txn_history_page.fetch_order_id_text()
-                    logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
-                    app_rrn = txn_history_page.fetch_RRN_text()
-                    logger.info(
-                        f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                login_page = LoginPage(app_driver)
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(db_txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {db_txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {db_txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {db_txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {db_txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
+                app_rrn = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
 
-                    actual_app_values = {
-                        "pmt_mode": payment_mode,
-                        "pmt_status": payment_status.split(':')[1],
-                        "txn_amt": app_amount.split(' ')[1],
-                        "txn_id": app_txn_id,
-                        "rrn": str(app_rrn),
-                        "customer_name": app_customer_name,
-                        "settle_status": app_settlement_status,
-                        "payer_name": app_payer_name,
-                        "order_id": app_order_id,
-                        "pmt_msg": app_payment_msg,
-                        "date": app_date_and_time
-                    }
-                    logger.debug(f"actual_app_values: {actual_app_values}")
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
 
-                    Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
-                except Exception as e:
-                    Configuration.perform_app_val_exception(testcase_id, e)
-                logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of App Validation---------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(db_txn_created_time)
+                expected_values = {
+                    'PAID BY:': 'UPI', 'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date, 'time': txn_time,
+                }
+                receipt_validator.perform_charge_slip_validations(db_txn_id,
+                                                                  {"username": app_username,
+                                                                   "password": app_password},
+                                                                  expected_values)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
