@@ -74,11 +74,14 @@ def test_common_100_108_005():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -102,10 +105,9 @@ def test_common_100_108_005():
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
             # Delete existing staticQR entry from staticqr_intent table
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
-            # Call Generate Static
-            # QR API
+            # Call Generate Static QR API
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
                 "username": portal_username,
                 "password": portal_password,
@@ -694,11 +696,14 @@ def test_common_100_108_006():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -722,7 +727,7 @@ def test_common_100_108_006():
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
             # Delete existing staticQR entry from staticqr_intent table
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
             # Call Generate Static QR API
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
@@ -1292,11 +1297,14 @@ def test_common_100_108_007():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -1320,7 +1328,7 @@ def test_common_100_108_007():
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
             # Delete existing staticQR entry from staticqr_intent table
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
             # Call Generate Static QR API
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
@@ -1868,11 +1876,14 @@ def test_common_100_108_008():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -1896,7 +1907,7 @@ def test_common_100_108_008():
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
             # Delete existing staticQR entry from staticqr_intent table
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
             # Call Generate Static QR API
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
@@ -2474,11 +2485,14 @@ def test_common_100_108_009():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -2502,7 +2516,7 @@ def test_common_100_108_009():
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
             # Delete existing staticQR entry from staticqr_intent table
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
             # Call Generate Static QR API
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
