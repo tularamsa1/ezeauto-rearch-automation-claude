@@ -1,5 +1,9 @@
+import random
+import string
 import sys
 import pytest
+import requests
+import json
 
 from Configuration import testsuite_teardown, Configuration
 from DataProvider import GlobalVariables
@@ -9,7 +13,6 @@ from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.apiVal
 @pytest.mark.dbVal
 def test_common_100_108_001():
     """
@@ -108,12 +111,7 @@ def test_common_100_108_001():
                 "merchantVpa": db_upi_config_vpa
             })
             response = APIProcessor.send_request(api_details)
-            res_generateqr_success = response["success"]
-            res_generateqr_username = response["username"]
             res_generateqr_publish_id = response["publishId"]
-            res_generateqr_org_code = response["merchantCode"]
-            res_generateqr_mid = response["mid"]
-            res_generateqr_tid = response["tid"]
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -131,30 +129,6 @@ def test_common_100_108_001():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-        # -----------------------------------------Start of API Validation------------------------------------
-        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            logger.info(f"Started API validation for the test case : {testcase_id}")
-            try:
-                # --------------------------------------------------------------------------------------------
-                expected_api_values = {"success": True,
-                                       "username": portal_username,
-                                       "mid": db_bqr_config_mid,
-                                       "tid": db_bqr_conig_tid,
-                                       "merchantCode": org_code
-                                       }
-
-                actual_api_values = {"success": res_generateqr_success,
-                                     "username": res_generateqr_username,
-                                     "mid": res_generateqr_mid,
-                                     "tid": res_generateqr_tid,
-                                     "merchantCode": res_generateqr_org_code
-                                    }
-                # ---------------------------------------------------------------------------------------------
-                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
-            except Exception as e:
-                Configuration.perform_api_val_exception(testcase_id, e)
-            logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of API Validation---------------------------------------
 
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
@@ -217,7 +191,6 @@ def test_common_100_108_001():
         Configuration.executeFinallyBlock(testcase_id)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.apiVal
 @pytest.mark.dbVal
 def test_common_100_108_002():
     """
@@ -319,30 +292,93 @@ def test_common_100_108_002():
             response = APIProcessor.send_request(api_details)
             res_generateqr_publish_id =  response["publishId"]
 
-            # Validate first username from staticqr_intent table
-            query = "select user_name from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
+            # # Validate first username from staticqr_intent table
+            # query = "select user_name from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
+            # result = DBProcessor.getValueFromDB(query)
+            # logger.debug(f"Query result : {result}")
+            #
+            # db_staticqrIntent_user_name = result["user_name"].iloc[0]
+            #
+            # if db_staticqrIntent_user_name == app_username:
+            #     logger.info(f"staticqr_intent table has entry with user_name : {app_username}")
+            #
+            #     # Get second user from same org to regenerate qr code
+            #     query = "select username from org_employee where org_code ='" + str(org_code) + "';"
+            #     logger.debug(f"Query to fetch users of an org from the DB : {query}")
+            #     result = DBProcessor.getValueFromDB(query)
+            #
+            #     for user in result.index:
+            #         if result['username'][user]!= app_username:
+            #             second_app_username = result['username'][user]
+            #             logger.info(f"Selected another user from same org to create static qr : {second_app_username}")
+            #             break
+            #         else:
+            #             continue
+
+            query = "select username from org_employee where org_code='" + str(org_code) + "';"
+            logger.debug(f"Query to fetch all user under the {org_code} org_code from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result : {result}")
+            is_user_required = False
+            second_app_username = ''
+            for i in range(len(result)):
+                if result['username'][i] == app_username:
+                    is_user_required = True
+                    logger.debug(f"user creation is required")
+                    continue
+                else:
+                    is_user_required = False
+                    second_app_username = result['username'][i]
+                    logger.debug(f"user creation is not required")
+                    break
+            if is_user_required: # Create a new user via API
+                second_app_username = str(random.randint(1000000000, 9999999999))
+                name = "EzeAuto" + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
+                api_details = DBProcessor.get_api_details('createUser', request_body={
+                    "mobileNumber": second_app_username,
+                    "name": name,
+                    "roles": [
+                        "ROLE_CLADMIN", "ROLE_CLAGENTPORTAL", "ROLE_CLAGENTVOID",
+                        "ROLE_CLAGENT", "ROLE_CLAGENT_REFUND", "ROLE_CLREFUND"
+                    ],
+                    "userPassword": "A123456",
+                    "userToken": second_app_username,
+                    "username": portal_username,
+                    "password": portal_password
+                })
+                payload = api_details['RequestBody']
+                endPoint = api_details['EndPoint']
+                method = api_details['Method']
+                headers = api_details['Header']
+                url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+                url = url.replace('EZETAP', org_code)
+                resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+                APIProcessor.update_api_details_to_report_variables(resp)
+                response = json.loads(resp.text)
+                logger.debug(f"response received for createUser api is : {response}")
+                if response["success"]:
+                    # Regenerating static qr with another user for same org
+                    api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
+                        "username": portal_username,
+                        "password": portal_password,
+                        "qrCodeType": "BHARAT",
+                        "qrOrgCode": org_code,
+                        "qrUserMobileNo": second_app_username,
+                        "qrUserName": second_app_username,
+                        "qrCodeFormat": "STRING",
+                        "mid": db_bqr_config_mid,
+                        "tid": db_bqr_conig_tid,
+                        "merchantPan": db_bqr_config_merchant_pan,
+                        "merchantVpa": db_upi_config_vpa
+                    })
+                    response = APIProcessor.send_request(api_details)
+                    publish_id = response["publishId"]
+                    logger.debug(f"fetching publish_id from api response is : {publish_id}")
+                    logger.debug(f"Response received for static_qrcode_generate_axisfc api is : {response}")
 
-            db_staticqrIntent_user_name = result["user_name"].iloc[0]
-
-            if db_staticqrIntent_user_name == app_username:
-                logger.info(f"staticqr_intent table has entry with user_name : {app_username}")
-
-                # Get second user from same org to regenerate qr code
-                query = "select username from org_employee where org_code ='" + str(org_code) + "';"
-                logger.debug(f"Query to fetch users of an org from the DB : {query}")
-                result = DBProcessor.getValueFromDB(query)
-
-                for user in result.index:
-                    if result['username'][user]!= app_username:
-                        second_app_username = result['username'][user]
-                        logger.info(f"Selected another user from same org to create static qr : {second_app_username}")
-                        break
-                    else:
-                        continue
-
-                # Regenerating static qr with another user for same org
+                else:
+                    logger.error(f"User creation failed : {response}")
+            else:
+                # Regenerating static qr with another existing user for same org
                 api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
                     "username": portal_username,
                     "password": portal_password,
@@ -358,20 +394,13 @@ def test_common_100_108_002():
                 })
                 response = APIProcessor.send_request(api_details)
 
-                res_regenerateqr_success = response["success"]
-                res_regenerateqr_username = response["username"]
-                res_regenerateqr_publish_id = response["publishId"]
-                res_regenerateqr_org_code = response["merchantCode"]
-                res_regenerateqr_mid = response["mid"]
-                res_regenerateqr_tid = response["tid"]
-                logger.debug(f"Response received for regenerating static_qrcode_hdfc api is : {response}")
+            logger.debug(f"Response received for regenerating static_qrcode_hdfc api is : {response}")
 
-                GlobalVariables.EXCEL_TC_Execution = "Pass"
-                GlobalVariables.time_calc.execution.pause()
-                logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-                logger.info(f"Execution is completed for the test case : {testcase_id}")
-            else:
-                logger.error(f"DB table staticqr_intent has different user")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -383,32 +412,6 @@ def test_common_100_108_002():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-        # -----------------------------------------Start of API Validation------------------------------------
-        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            logger.info(f"Started API validation for the test case : {testcase_id}")
-            try:
-                # --------------------------------------------------------------------------------------------
-                expected_api_values = {"success": True,
-                                       "username": portal_username,
-                                       "mid": db_bqr_config_mid,
-                                       "tid": db_bqr_conig_tid,
-                                       "merchantCode": org_code,
-                                       "publishId": res_generateqr_publish_id
-                                       }
-
-                actual_api_values = {"success": res_regenerateqr_success,
-                                     "username": res_regenerateqr_username,
-                                     "mid": res_regenerateqr_mid,
-                                     "tid": res_regenerateqr_tid,
-                                     "merchantCode": res_regenerateqr_org_code,
-                                     "publishId": res_regenerateqr_publish_id
-                                    }
-                # ---------------------------------------------------------------------------------------------
-                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
-            except Exception as e:
-                Configuration.perform_api_val_exception(testcase_id, e)
-            logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of API Validation---------------------------------------
 
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
