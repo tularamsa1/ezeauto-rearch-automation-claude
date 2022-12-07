@@ -86,11 +86,14 @@ def test_common_100_108_010():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -113,7 +116,7 @@ def test_common_100_108_010():
             db_upi_config_merchant_id = result['pgMerchantId'].values[0]
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
                 "username": portal_username,
@@ -491,11 +494,14 @@ def test_common_100_108_011():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            # Get mid, tid and merchant_pan from bharatqr_merchant_config table
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
 
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
@@ -518,7 +524,7 @@ def test_common_100_108_011():
             db_upi_config_merchant_id = result['pgMerchantId'].values[0]
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
-            testsuite_teardown.delete_staticqr_intent_HDFC(org_code, db_bqr_config_merchant_pan, db_upi_config_vpa, app_username, portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
                 "username": portal_username,
