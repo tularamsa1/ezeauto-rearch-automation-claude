@@ -130,10 +130,7 @@ def test_common_100_108_003():
                 "merchantVpa": db_upi_config_vpa
             })
             response = APIProcessor.send_request(api_details)
-            res_generateqr_success = response["success"]
-            res_generateqr_username = response["username"]
             res_generateqr_publish_id = response["publishId"]
-            res_generateqr_org_code = response["merchantCode"]
             res_generateqr_mid = response["mid"]
             res_generateqr_tid = response["tid"]
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
@@ -171,11 +168,6 @@ def test_common_100_108_003():
                                                                     'meRes': str(data_buffer)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for the callBackUpiMerchantRes : {response}")
-
-            res_callback_upi_txnid = response["upiTxnId"]
-            res_callback_orderNo = response["orderNo"]
-            res_callback_status = response["status"]
-            res_callback_message = response["message"]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn) + "'order by created_time desc limit 1; "
@@ -215,17 +207,53 @@ def test_common_100_108_003():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_api_values = {"upiTxnId": ref_id,
-                                       "orderNo": res_generateqr_publish_id,
-                                       "status": "Success",
-                                       "message": "SUCCESS"
-                                       }
+                date = date_time_converter.db_datetime(db_txn_created_time)
+                expected_api_values = {"pmt_status": "AUTHORIZED",
+                                       "txn_amt": float(amount),
+                                       "pmt_mode": "BHARATQR",
+                                       "pmt_state": "SETTLED",
+                                       "rrn": str(rrn),
+                                       "settle_status": "SETTLED",
+                                       "acquirer_code": "HDFC",
+                                       "issuer_code": "HDFC",
+                                       "txn_type": "CHARGE",
+                                       "mid": db_bqr_config_mid,
+                                       "tid": db_bqr_conig_tid,
+                                       "org_code": org_code,
+                                       "date": date}
+                logger.debug(f"expected_api_values: {expected_api_values}")
 
-                actual_api_values = {"upiTxnId": res_callback_upi_txnid,
-                                     "orderNo": res_callback_orderNo,
-                                     "status": res_callback_status,
-                                     "message": res_callback_message
-                                    }
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == db_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                auth_code_api = response["authCode"]
+                date_api = response["createdTime"]
+
+                actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
+                                     "pmt_mode": payment_mode_api, "pmt_state": state_api,
+                                     "rrn": str(rrn_api), "settle_status": settlement_status_api,
+                                     "acquirer_code": acquirer_code_api, "issuer_code": issuer_code_api,
+                                     "mid": mid_api, "tid": tid_api,
+                                     "txn_type": txn_type_api, "org_code": orgCode_api,
+                                     "date": date_time_converter.from_api_to_datetime_format(date_api)}
+                logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
@@ -433,7 +461,6 @@ def test_common_100_108_004():
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
-        mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -555,11 +582,6 @@ def test_common_100_108_004():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for the callBackUpiMerchantRes : {response}")
 
-            res_callback_upi_txnid = response["upiTxnId"]
-            res_callback_orderNo = response["orderNo"]
-            res_callback_status = response["status"]
-            res_callback_message = response["message"]
-
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
@@ -598,17 +620,53 @@ def test_common_100_108_004():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_api_values = {"upiTxnId": ref_id,
-                                       "orderNo": res_generateqr_publish_id,
-                                       "status": "Success",
-                                       "message": "SUCCESS"
-                                       }
+                date = date_time_converter.db_datetime(db_txn_created_time)
+                expected_api_values = {"pmt_status": "AUTHORIZED",
+                                       "txn_amt": float(amount),
+                                       "pmt_mode": "BHARATQR",
+                                       "pmt_state": "SETTLED",
+                                       "rrn": str(rrn),
+                                       "settle_status": "SETTLED",
+                                       "acquirer_code": "HDFC",
+                                       "issuer_code": "HDFC",
+                                       "txn_type": "CHARGE",
+                                       "mid": db_bqr_config_mid,
+                                       "tid": db_bqr_conig_tid,
+                                       "org_code": org_code,
+                                       "date": date}
+                logger.debug(f"expected_api_values: {expected_api_values}")
 
-                actual_api_values = {"upiTxnId": res_callback_upi_txnid,
-                                     "orderNo": res_callback_orderNo,
-                                     "status": res_callback_status,
-                                     "message": res_callback_message
-                                    }
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == db_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                auth_code_api = response["authCode"]
+                date_api = response["createdTime"]
+
+                actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,
+                                     "pmt_mode": payment_mode_api, "pmt_state": state_api,
+                                     "rrn": str(rrn_api), "settle_status": settlement_status_api,
+                                     "acquirer_code": acquirer_code_api, "issuer_code": issuer_code_api,
+                                     "mid": mid_api, "tid": tid_api,
+                                     "txn_type": txn_type_api, "org_code": orgCode_api,
+                                     "date": date_time_converter.from_api_to_datetime_format(date_api)}
+                logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
