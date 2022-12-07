@@ -92,7 +92,7 @@ def test_common_100_108_005():
             # Get vpa from upi_merchant_config table
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
 
             db_upi_config_vpa = result['vpa'].values[0]
@@ -712,7 +712,7 @@ def test_common_100_108_006():
             # Get vpa from upi_merchant_config table
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
 
             db_upi_config_vpa = result['vpa'].values[0]
@@ -1310,7 +1310,7 @@ def test_common_100_108_007():
             # Get vpa from upi_merchant_config table
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
 
             db_upi_config_vpa = result['vpa'].values[0]
@@ -1886,7 +1886,7 @@ def test_common_100_108_008():
             # Get vpa from upi_merchant_config table
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
 
             db_upi_config_vpa = result['vpa'].values[0]
@@ -2492,7 +2492,7 @@ def test_common_100_108_009():
             # Get vpa from upi_merchant_config table
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
 
             db_upi_config_vpa = result['vpa'].values[0]
