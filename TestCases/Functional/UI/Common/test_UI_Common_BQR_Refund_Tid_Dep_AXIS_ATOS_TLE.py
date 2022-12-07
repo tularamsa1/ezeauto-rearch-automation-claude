@@ -762,7 +762,7 @@ def test_common_100_102_192():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -774,7 +774,7 @@ def test_common_100_102_192():
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
                     "pmt_status_2": "REFUND_POSTED",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "REVPENDING",
                     "txn_id_2": txn_id_new_2,
                     #"rrn_2": str(rrn_new_2),

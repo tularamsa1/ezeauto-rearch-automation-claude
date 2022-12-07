@@ -547,7 +547,7 @@ def test_common_100_102_190():
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "PENDING",
-                    "txn_amt": float(amount), "pmt_mode": "BHARATQR",
+                    "txn_amt": "{:.2f}".format(amount), "pmt_mode": "BHARATQR",
                     "pmt_state": "PENDING",
                     "settle_status": "PENDING",
                     "acquirer_code": "AXIS",

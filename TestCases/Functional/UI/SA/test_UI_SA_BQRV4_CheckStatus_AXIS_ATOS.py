@@ -549,10 +549,10 @@ def test_sa_100_102_079():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"msg": "PAYMENT FAILED", "date": date_and_time,
-                                       "pmt_mode_2": "UPI", "pmt_status_2": "AUTHORIZED", "txn_amt_2": str(amount),
+                                       "pmt_mode_2": "UPI", "pmt_status_2": "AUTHORIZED", "txn_amt_2": "{:.2f}".format(amount),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new, "rrn_2": str(rrn),
                                        "customer_name_2": customer_name_new, "payer_name_2": payer_name_new,
                                        "order_id_2": order_id, "msg_2": "PAYMENT SUCCESSFUL",

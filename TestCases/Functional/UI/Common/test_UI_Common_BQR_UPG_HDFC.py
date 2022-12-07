@@ -903,7 +903,7 @@ def test_common_100_102_021():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expectedAppValues = {"Payment mode": "BHARAT QR", "Payment Txn ID": upg_txn_id, "Payment Amt": str(amount),
+                expectedAppValues = {"Payment mode": "BHARAT QR", "Payment Txn ID": upg_txn_id, "Payment Amt": "{:.2f}".format(amount),
                                      "Payment Status": "STATUS:UPG_FAILED"}
                 loginPage = LoginPage(app_driver)
                 logger.info(

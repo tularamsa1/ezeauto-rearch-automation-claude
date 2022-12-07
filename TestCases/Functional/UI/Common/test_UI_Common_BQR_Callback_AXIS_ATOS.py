@@ -531,13 +531,13 @@ def test_common_100_102_196():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
-                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt": str(amount)+".00",
+                                       "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED", "txn_amt_2": "{:.2f}".format(amount),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new, "rrn_2": str(rrn_new),
                                        "customer_name_2": customer_name_new,
                                        #"payer_name_2": payer_name_new,

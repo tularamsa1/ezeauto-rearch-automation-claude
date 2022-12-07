@@ -1241,17 +1241,17 @@ def test_common_100_102_099():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
                 date_and_time_new_2 = date_time_converter.to_app_format(created_time_new_2)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
-                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "txn_amt_2": "{:.2f}".format(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new,
                                        "pmt_mode_3": "BHARAT QR", "pmt_status_3": "AUTHORIZED",
-                                       "txn_amt_3": str(amount)+".00", "rrn_3": str(rrn_new_2),
+                                       "txn_amt_3": "{:.2f}".format(amount), "rrn_3": str(rrn_new_2),
                                        "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_2,
                                        "order_id_3": order_id, "pmt_msg_3": "PAYMENT SUCCESSFUL",
                                        "auth_code_3": auth_code_new_2, "date_3": date_and_time_new_2

@@ -194,7 +194,7 @@ def test_common_100_103_001():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount)+".00"+".00",
+                                     "txn_amt": "{:.2f}".format(amount),
                                      "txn_id": txn_id,
                                      "rrn":cnp_txn_rrn,
                                      "order_id":order_id,
@@ -1756,7 +1756,7 @@ def test_common_100_103_012():
                                        "pmt_mode_2": "CNP",
                                        "settle_status": "SETTLED",
                                        "settle_status_2": "SETTLED",
-                                       "txn_amt": str(amount)+".00",
+                                       "txn_amt": str(amount),
                                        "txn_amt_2": str(amount),
                                        "customer_name": customer_name,
                                        "customer_name_2": customer_name_2,

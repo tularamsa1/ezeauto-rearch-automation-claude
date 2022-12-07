@@ -1019,7 +1019,7 @@ def test_common_100_101_011():
                     "settle_status": "SETTLED",
                     "settle_status_2": "SETTLED",
                     "txn_amt": str(amount),
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": str(amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
                     "payer_name": payer_name,
