@@ -221,11 +221,12 @@ def revert_config_FC(portal_username, portal_password):
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
-def delete_staticqr_intent_HDFC(org_code, merchant_pan, vpa, app_username, portal_username, portal_password):
+def delete_staticqr_intent_table_entry(portal_username, portal_password, config_id):
     """
-    This method is to delete the static_qr data from staticqr_intent table for the given org_code based on merchant_pan and vpa with HDFC PG
+    This method is to delete the static_qr data from staticqr_intent table based on config id
     """
-    query = "delete from staticqr_intent where merchant_pan ='"+merchant_pan+"' and vpa ='"+vpa+"' and org_code ='" + org_code + "' and intent_type='STATIC_QR' and qr_type = 'BHARATQR';"
+
+    query = "delete from staticqr_intent where config_id ='"+str(config_id)+"';"
     result = DBProcessor.delete_value_from_db(query)
     logger.debug(f"Result for the query '{query}' is : {result} ")
 
