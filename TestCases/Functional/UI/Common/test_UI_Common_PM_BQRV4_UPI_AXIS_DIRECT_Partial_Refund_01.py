@@ -1030,7 +1030,7 @@ def test_common_100_102_174():
                     "pmt_mode_2": "UPI",
                     "settle_status": "SETTLED",
                     "settle_status_2": "SETTLED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount),
                     "txn_amt_2": str(refunded_amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
