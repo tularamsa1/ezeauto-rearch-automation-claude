@@ -373,7 +373,7 @@ def test_common_100_108_002():
                     response = APIProcessor.send_request(api_details)
                     publish_id = response["publishId"]
                     logger.debug(f"fetching publish_id from api response is : {publish_id}")
-                    logger.debug(f"Response received for static_qrcode_generate_axisfc api is : {response}")
+                    logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
 
                 else:
                     logger.error(f"User creation failed : {response}")
