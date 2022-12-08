@@ -36,6 +36,10 @@ def test_D100_D101_020():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
+        super_username = portal_cred['Username']
+        super_password = app_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -43,6 +47,16 @@ def test_D100_D101_020():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
+        api_details = DBProcessor.get_api_details('DB Refresh',
+                                                  request_body={
+                                                      "username": super_username,
+                                                      "password": super_password,
+                                                  })
+
+        response = APIProcessor.send_request(api_details)
+        logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -261,6 +275,10 @@ def test_D100_D101_021():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
+        super_username = portal_cred['Username']
+        super_password = app_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -268,6 +286,16 @@ def test_D100_D101_021():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
+        api_details = DBProcessor.get_api_details('DB Refresh',
+                                                  request_body={
+                                                      "username": super_username,
+                                                      "password": super_password,
+                                                  })
+
+        response = APIProcessor.send_request(api_details)
+        logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -487,6 +515,10 @@ def test_D100_D101_022():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
+        super_username = portal_cred['Username']
+        super_password = app_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -494,6 +526,16 @@ def test_D100_D101_022():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
+        api_details = DBProcessor.get_api_details('DB Refresh',
+                                                  request_body={
+                                                      "username": super_username,
+                                                      "password": super_password,
+                                                  })
+
+        response = APIProcessor.send_request(api_details)
+        logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -713,6 +755,10 @@ def test_D100_D101_023():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
+        super_username = portal_cred['Username']
+        super_password = app_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -720,6 +766,16 @@ def test_D100_D101_023():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
+        api_details = DBProcessor.get_api_details('DB Refresh',
+                                                  request_body={
+                                                      "username": super_username,
+                                                      "password": super_password,
+                                                  })
+
+        response = APIProcessor.send_request(api_details)
+        logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -938,6 +994,10 @@ def test_D100_D101_024():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
+        super_username = portal_cred['Username']
+        super_password = app_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -945,6 +1005,16 @@ def test_D100_D101_024():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
+        api_details = DBProcessor.get_api_details('DB Refresh',
+                                                  request_body={
+                                                      "username": super_username,
+                                                      "password": super_password,
+                                                  })
+
+        response = APIProcessor.send_request(api_details)
+        logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
 
@@ -1164,6 +1234,10 @@ def test_D100_D101_025():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
+        super_username = portal_cred['Username']
+        super_password = app_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1171,6 +1245,16 @@ def test_D100_D101_025():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
+        api_details = DBProcessor.get_api_details('DB Refresh',
+                                                  request_body={
+                                                      "username": super_username,
+                                                      "password": super_password,
+                                                  })
+
+        response = APIProcessor.send_request(api_details)
+        logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
 

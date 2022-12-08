@@ -16,14 +16,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_056():
+def test_D100_D101_074():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_DEBIT_VISA
-        Sub Feature Description: API that performs Failed inquiry on IS settlement when IS call is Timeout for EMV DEBIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_timeout_Inquiry_Instant_Settlement_EMV_DEBIT_VISA
+        Sub Feature Description: API that performs timeout inquiry on IS settlement when IS call is Timeout for EMV DEBIT VISA card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        038: TC038
+        074: TC074
     """
 
     try:
@@ -45,22 +45,9 @@ def test_D100_D101_056():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_invalid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_timeout_properties('10000')
-        card_processor.update_idfc_paymentApi_read_timeout('1')
-        card_processor.update_idfc_paymentApi_write_timeout('1')
-
-        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
-        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query_url)
-        url = str(result['prop_value'].values[0])
-        logger.debug(f"Query result, url : {url}")
-        if url.__contains__('castlemock'):
-            card_processor.update_instant_settle_clientcode('EZETAP1')
-        else:
-            card_processor.update_instant_settle_clientcode('EZETAP')
-
-
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('1')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -186,16 +173,16 @@ def test_D100_D101_056():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
-                                    "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -270,14 +257,14 @@ def test_D100_D101_056():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_057():
+def test_D100_D101_075():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_DEBIT_MASTER
-        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV DEBIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Timeout_Inquiry_Instant_Settlement_EMV_DEBIT_MASTER
+        Sub Feature Description: API that performs timeout inquiry on IS settlement when IS call is Timeout for EMV DEBIT MASTER card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        057: TC057
+        075: TC075
     """
 
     try:
@@ -299,21 +286,9 @@ def test_D100_D101_057():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_invalid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_timeout_properties('10000')
-        card_processor.update_idfc_paymentApi_read_timeout('1')
-        card_processor.update_idfc_paymentApi_write_timeout('1')
-
-        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
-        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query_url)
-        url = str(result['prop_value'].values[0])
-        logger.debug(f"Query result, url : {url}")
-        if url.__contains__('castlemock'):
-            card_processor.update_instant_settle_clientcode('EZETAP1')
-        else:
-            card_processor.update_instant_settle_clientcode('EZETAP')
-
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('1')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -439,16 +414,16 @@ def test_D100_D101_057():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
-                                    "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -523,14 +498,14 @@ def test_D100_D101_057():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_058():
+def test_D100_D101_076():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_DEBIT_RUPAY
-        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV DEBIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Timeout_Inquiry_Instant_Settlement_EMV_DEBIT_RUPAY
+        Sub Feature Description: API that performs timeout inquiry on IS settlement when IS call is Timeout for EMV DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        058: TC058
+        076: TC076
     """
 
     try:
@@ -552,21 +527,9 @@ def test_D100_D101_058():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_invalid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_timeout_properties('10000')
-        card_processor.update_idfc_paymentApi_read_timeout('1')
-        card_processor.update_idfc_paymentApi_write_timeout('1')
-
-        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
-        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query_url)
-        url = str(result['prop_value'].values[0])
-        logger.debug(f"Query result, url : {url}")
-        if url.__contains__('castlemock'):
-            card_processor.update_instant_settle_clientcode('EZETAP1')
-        else:
-            card_processor.update_instant_settle_clientcode('EZETAP')
-
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('1')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -692,16 +655,16 @@ def test_D100_D101_058():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
-                                    "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -775,14 +738,14 @@ def test_D100_D101_058():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_059():
+def test_D100_D101_077():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_CREDIT_VISA
-        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV CREDIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Timeout_Inquiry_Instant_Settlement_EMV_CREDIT_VISA
+        Sub Feature Description: API that performs timeout inquiry on IS settlement when IS call is Timeout for EMV CREDIT VISA card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        059: TC059
+        077: TC077
     """
 
     try:
@@ -804,21 +767,9 @@ def test_D100_D101_059():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_invalid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_timeout_properties('10000')
-        card_processor.update_idfc_paymentApi_read_timeout('1')
-        card_processor.update_idfc_paymentApi_write_timeout('1')
-
-        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
-        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query_url)
-        url = str(result['prop_value'].values[0])
-        logger.debug(f"Query result, url : {url}")
-        if url.__contains__('castlemock'):
-            card_processor.update_instant_settle_clientcode('EZETAP1')
-        else:
-            card_processor.update_instant_settle_clientcode('EZETAP')
-
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('1')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -944,16 +895,16 @@ def test_D100_D101_059():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
-                                    "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1028,14 +979,14 @@ def test_D100_D101_059():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_060():
+def test_D100_D101_078():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_CREDIT_MASTER
-        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV CREDIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Timeout_Inquiry_Instant_Settlement_EMV_CREDIT_MASTER
+        Sub Feature Description: API that performs timeout inquiry on IS settlement when IS call is Timeout for EMV CREDIT MASTER card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        060: TC060
+        042: TC078
     """
 
     try:
@@ -1057,21 +1008,9 @@ def test_D100_D101_060():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_invalid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_timeout_properties('10000')
-        card_processor.update_idfc_paymentApi_read_timeout('1')
-        card_processor.update_idfc_paymentApi_write_timeout('1')
-
-        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
-        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query_url)
-        url = str(result['prop_value'].values[0])
-        logger.debug(f"Query result, url : {url}")
-        if url.__contains__('castlemock'):
-            card_processor.update_instant_settle_clientcode('EZETAP1')
-        else:
-            card_processor.update_instant_settle_clientcode('EZETAP')
-
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('1')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -1197,16 +1136,16 @@ def test_D100_D101_060():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
-                                    "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1281,14 +1220,14 @@ def test_D100_D101_060():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_061():
+def test_D100_D101_079():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_Failed_Inquiry_Instant_Settlement_EMV_CREDIT_RUPAY
-        Sub Feature Description: API that performs failed inquiry on IS settlement when IS call is Timeout for EMV CREDIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_Timeout_Inquiry_Instant_Settlement_EMV_CREDIT_RUPAY
+        Sub Feature Description: API that performs timeout inquiry on IS settlement when IS call is Timeout for EMV CREDIT RUPAY card via IDFC_FDC
         TC naming code description:
         D100: Dev Projects
         D101: IDFC Instant Settlement
-        061: TC061
+        079: TC079
     """
 
     try:
@@ -1310,21 +1249,9 @@ def test_D100_D101_061():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_invalid_merchant_account_details(org_code=org_code)
-        card_processor.update_idfc_timeout_properties('10000')
-        card_processor.update_idfc_paymentApi_read_timeout('1')
-        card_processor.update_idfc_paymentApi_write_timeout('1')
-
-        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
-        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query_url)
-        url = str(result['prop_value'].values[0])
-        logger.debug(f"Query result, url : {url}")
-        if url.__contains__('castlemock'):
-            card_processor.update_instant_settle_clientcode('EZETAP1')
-        else:
-            card_processor.update_instant_settle_clientcode('EZETAP')
-
+        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('1')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -1450,16 +1377,16 @@ def test_D100_D101_061():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"NULL",
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
-                                    "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_PENDING"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
