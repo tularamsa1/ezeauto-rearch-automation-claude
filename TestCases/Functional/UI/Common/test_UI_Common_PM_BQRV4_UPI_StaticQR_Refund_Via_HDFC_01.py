@@ -135,14 +135,21 @@ def test_common_100_108_005():
             amount = random.randint(300, 399)
             logger.debug(f"generated random amount is : {amount}")
 
-            logger.debug(
-                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id} and rrn with {rrn} in the curl_data")
+            status = "SUCCESS"
+            logger.debug(f"Payment status is : {status}")
 
-           # Curl command for UPI callback
+            statusCode = "00"
+            logger.debug(f"Status code is : {statusCode}")
+
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
+
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
-                                                                                     'amount': str(amount) + ".00",
-                                                                                     'publish_id': publish_id,
-                                                                                     'rrn': rrn})
+                                                                                               'amount': str(amount) + ".00",
+                                                                                               'publish_id': publish_id,
+                                                                                               'status': status,
+                                                                                               'statusCode': statusCode,
+                                                                                               'rrn': rrn})
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
@@ -757,14 +764,21 @@ def test_common_100_108_006():
             amount = random.randint(300, 399)
             logger.debug(f"generated random amount is : {amount}")
 
-            logger.debug(
-                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id} and rrn with {rrn} in the curl_data")
+            status = "SUCCESS"
+            logger.debug(f"Payment status is : {status}")
 
-           # Curl command for UPI callback
+            statusCode = "00"
+            logger.debug(f"Status code is : {statusCode}")
+
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
+
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
-                                                                                     'amount': str(amount) + ".00",
-                                                                                     'publish_id': publish_id,
-                                                                                     'rrn': rrn})
+                                                                                               'amount': str(amount) + ".00",
+                                                                                               'publish_id': publish_id,
+                                                                                               'status': status,
+                                                                                               'statusCode': statusCode,
+                                                                                               'rrn': rrn})
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
@@ -1358,14 +1372,21 @@ def test_common_100_108_007():
             amount = 555
             logger.debug(f"amount is : {amount}")
 
-            logger.debug(
-                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id} and rrn with {rrn} in the curl_data")
+            status = "SUCCESS"
+            logger.debug(f"Payment status is : {status}")
 
-           # Curl command for UPI callback
+            statusCode = "00"
+            logger.debug(f"Status code is : {statusCode}")
+
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
+
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
-                                                                                     'amount': str(amount) + ".00",
-                                                                                     'publish_id': publish_id,
-                                                                                     'rrn': rrn})
+                                                                                               'amount': str(amount) + ".00",
+                                                                                               'publish_id': publish_id,
+                                                                                               'status': status,
+                                                                                               'statusCode': statusCode,
+                                                                                               'rrn': rrn})
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
@@ -1937,14 +1958,21 @@ def test_common_100_108_008():
             amount = 333
             logger.debug(f"amount is : {amount}")
 
-            logger.debug(
-                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id} and rrn with {rrn} in the curl_data")
+            status = "SUCCESS"
+            logger.debug(f"Payment status is : {status}")
 
-           # Curl command for UPI callback
+            statusCode = "00"
+            logger.debug(f"Status code is : {statusCode}")
+
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
+
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
-                                                                                     'amount': str(amount) + ".00",
-                                                                                     'publish_id': publish_id,
-                                                                                     'rrn': rrn})
+                                                                                               'amount': str(amount) + ".00",
+                                                                                               'publish_id': publish_id,
+                                                                                               'status': status,
+                                                                                               'statusCode': statusCode,
+                                                                                               'rrn': rrn})
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
@@ -2546,14 +2574,21 @@ def test_common_100_108_009():
             amount = random.randint(300, 399)
             logger.debug(f"generated random amount is : {amount}")
 
-            logger.debug(
-                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id} and rrn with {rrn} in the curl_data")
+            status = "SUCCESS"
+            logger.debug(f"Payment status is : {status}")
 
-           # Curl command for UPI callback
+            statusCode = "00"
+            logger.debug(f"Status code is : {statusCode}")
+
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
+
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
-                                                                                     'amount': str(amount) + ".00",
-                                                                                     'publish_id': publish_id,
-                                                                                     'rrn': rrn})
+                                                                                               'amount': str(amount) + ".00",
+                                                                                               'publish_id': publish_id,
+                                                                                               'status': status,
+                                                                                               'statusCode': statusCode,
+                                                                                               'rrn': rrn})
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
