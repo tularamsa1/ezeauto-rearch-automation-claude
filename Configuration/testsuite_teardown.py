@@ -223,6 +223,7 @@ def revert_config_FC(portal_username, portal_password):
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
+
 def delete_staticqr_intent_table_entry(portal_username, portal_password, config_id):
     """
     This method is to delete the static_qr data from staticqr_intent table based on config id
