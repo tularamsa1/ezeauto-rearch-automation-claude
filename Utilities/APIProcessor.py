@@ -91,15 +91,19 @@ def send_request(api_details):
         return json_resp
 
     if api_details['ApiName'] == 'callbackgeneratorUpiICICI':
-        router_ip = ConfigReader.read_config("environment", "str_exe_env_ip")
-        url = str(protocol + "://" + router_ip + ":28089") + endPoint
+        router_ip = Base_Actions.get_environment("str_exe_env_ip")
+        query = "select psp_base_url from upi_psp_config where bank_code='ICICI_DIRECT';"
+        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        psp_base_url = result['psp_base_url'].values[0]
+        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
         resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
         update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)
         logger.debug(
             f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
         return json_resp
-
 
     resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
     update_api_details_to_report_variables(resp)
