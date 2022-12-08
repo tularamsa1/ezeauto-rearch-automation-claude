@@ -299,7 +299,7 @@ def test_common_100_103_151():
                 date_and_time = date_time_converter.to_app_format(txn_posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": "{:.2f}".format(amount),
                                      "txn_id": txn_txn_id,
                                      "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -482,8 +482,16 @@ def test_common_100_103_151():
                 settle_status_db = result["settlement_status"].iloc[0]
                 pmt_state_db = result["state"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
-                tid_db = result['tid'].iloc[0]
+
+                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
                 mid_db = result['mid'].iloc[0]
+                tid_db = result['tid'].iloc[0]
+
+                query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query to fetch data from terminal_info table : {query}")
                 device_serial_db = result['device_serial'].iloc[0]
 
                 query = "select * from payment_intent where id='" + payment_intent_id + "'"
@@ -764,7 +772,7 @@ def test_common_100_103_152():
 
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": "{:.2f}".format(amount),
                                      "txn_id": txn_id,
                                      "customer_name": txn_customer_name,
                                      "settle_status": txn_settle_status,
@@ -945,8 +953,18 @@ def test_common_100_103_152():
                 state_db = result["state"].iloc[0]
                 settle_status_db = result["settlement_status"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
-                tid_db = result['tid'].iloc[0]
+                # tid_db = result['tid'].iloc[0]
+                # mid_db = result['mid'].iloc[0]
+                # device_serial_db = result['device_serial'].iloc[0]
+                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
                 mid_db = result['mid'].iloc[0]
+                tid_db = result['tid'].iloc[0]
+
+                query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query to fetch data from terminal_info table : {query}")
                 device_serial_db = result['device_serial'].iloc[0]
 
                 query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
@@ -1224,7 +1242,7 @@ def test_common_100_103_153():
 
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "PENDING",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": "{:.2f}".format(amount),
                                      "txn_id": txn_id,
                                      "order_id": order_id,
                                      "msg": "PAYMENT PENDING",
@@ -1400,8 +1418,18 @@ def test_common_100_103_153():
                 settle_status_db = result["settlement_status"].iloc[0]
                 pmt_state_db = result["state"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
-                tid_db = result['tid'].iloc[0]
+                # tid_db = result['tid'].iloc[0]
+                # mid_db = result['mid'].iloc[0]
+                # device_serial_db = result['device_serial'].iloc[0]
+                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
                 mid_db = result['mid'].iloc[0]
+                tid_db = result['tid'].iloc[0]
+
+                query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query to fetch data from terminal_info table : {query}")
                 device_serial_db = result['device_serial'].iloc[0]
 
                 query = "select * from payment_intent where id='" + payment_intent_id + "'"
