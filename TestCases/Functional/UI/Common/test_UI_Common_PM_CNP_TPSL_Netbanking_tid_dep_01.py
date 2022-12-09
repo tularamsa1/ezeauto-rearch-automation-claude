@@ -83,15 +83,14 @@ def test_common_100_103_154():
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
+        # -----------------------------PreConditions(Completed)-----------------------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
-
         GlobalVariables.time_calc.setup.end()
-        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-        # -----------------------------------------Start of Test Execution-------------------------------------
+        # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
