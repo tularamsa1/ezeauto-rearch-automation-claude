@@ -26,7 +26,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_170():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_UPG_REFUND_PENDING_VIA_AXIS_DIRECT_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled
+    Sub Feature Code: UI_Common_PM_RP_UPI_UPG_REFUND_PENDING_VIA_AXIS_DIRECT_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled_Tid_dep_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a upg txn using success callback via AXIS_DIRECT when upg refund and upg autorefund are enabled
     TC naming code description:
     100: Payment Method
@@ -59,6 +59,11 @@ def test_common_100_103_170():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,portal_pw=portal_password, payment_mode='UPI')
 
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code
@@ -84,7 +89,7 @@ def test_common_100_103_170():
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Setup to be done for the test case)----------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -288,7 +293,9 @@ def test_common_100_103_170():
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid,
+                    "tid": tid,
                     "org_code": org_code_txn,
                     "date": date
                      }
@@ -322,13 +329,17 @@ def test_common_100_103_170():
                         date_api = elements["postingDate"]
 
                 actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
-                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
@@ -478,7 +489,7 @@ def test_common_100_103_170():
 def test_common_100_103_171():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_UPG_FAILED_VIA_AXIS_DIRECT_when_UPGRefund_&_UPGAutoRefund_Disabled
+    Sub Feature Code: UI_Common_PM_RP_RP_UPI_UPG_FAILED_VIA_AXIS_DIRECT_when_UPGRefund_&_UPGAutoRefund_Disabled_Tid_dep
     Sub Feature Description: Tid Dep - Performing a upg txn using failed callback when upg refund and upg autorefund are disabled
     TC naming code description:
     100: Payment Method
@@ -510,6 +521,10 @@ def test_common_100_103_171():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,portal_pw=portal_password, payment_mode='UPI')
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
@@ -536,6 +551,7 @@ def test_common_100_103_171():
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Setup to be done for the test case)------------------
 
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -743,12 +759,16 @@ def test_common_100_103_171():
                 date = date_time_converter.db_datetime(posting_date)
                 expected_api_values = {
                     "pmt_status": "UPG_FAILED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
-                    "pmt_state": "UPG_FAILED", "rrn": str(rrn),
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "UPG_FAILED",
+                    "rrn": str(rrn),
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid,
+                    "tid": tid,
                     "org_code": org_code_txn,
                     "date": date
                 }
@@ -781,13 +801,17 @@ def test_common_100_103_171():
                 date_api = response["postingDate"]
 
                 actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
-                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }

@@ -26,7 +26,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_168():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Success_Via_CheckStatus_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Success_Via_CheckStatus_AXIS_DIRECT_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a Remote Pay successful upi txn via AXIS_DIRECT using check status
     TC naming code description:
     100: Payment Method
@@ -120,11 +120,6 @@ def test_common_100_103_168():
             remote_pay_upi_txn.clickOnRemotePayLaunchUPI()
             remote_pay_upi_txn.clickOnRemotePayCancelUPI()
             remote_pay_upi_txn.clickOnRemotePayProceed()
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
@@ -332,7 +327,6 @@ def test_common_100_103_168():
                                         "bank_code": "AXIS",
                                         "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                         "upi_bank_code": "AXIS_DIRECT",
-                                        "upi_mc_id": upi_mc_id,
                                         "pmt_intent_status": "COMPLETED",
                                         "mid": mid,
                                         "tid": tid,
@@ -390,7 +384,6 @@ def test_common_100_103_168():
                                     "bank_code": bank_code_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
-                                    "upi_mc_id": upi_mc_id_db,
                                     "pmt_intent_status": payment_intent_status,
                                     "mid": mid_db,
                                     "tid": tid_db,
@@ -442,7 +435,7 @@ def test_common_100_103_168():
 def test_common_100_103_169():
 
     """
-    Sub Feature Code : UI_Common_PM_RP_UPI_Failed_Via_CheckStatus_AXIS_DIRECT
+    Sub Feature Code : UI_Common_PM_RP_RP_UPI_Failed_Via_CheckStatus_AXIS_DIRECT_Tid_dep
     Sub Feature Description : Tid Dep - Verification of a Remote Pay failed UPI txn via AXIS_DIRECT using check status
     TC naming code description:
     100: Payment Method
@@ -562,12 +555,6 @@ def test_common_100_103_169():
             logger.debug(f"results from the txn table : created_time : {created_time}")
             device_serial = result['device_serial'].values[0]
             logger.debug(f"results from the txn table : device_serial : {device_serial}")
-
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -749,7 +736,6 @@ def test_common_100_103_169():
                                             "bank_code": "AXIS",
                                             "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                             "upi_bank_code": "AXIS_DIRECT",
-                                            "upi_mc_id": upi_mc_id,
                                             "pmt_intent_status": "ACTIVE",
                                             "mid": mid,
                                             "tid": tid,
@@ -803,9 +789,8 @@ def test_common_100_103_169():
                                         "settle_status": settlement_status_db,
                                         "acquirer_code": acquirer_code_db,
                                         "bank_code": bank_code_db,
-                                        "upi_txn_type": upi_txn_type_db,
                                         "upi_bank_code": upi_bank_code_db,
-                                        "upi_mc_id": upi_mc_id_db,
+                                        "upi_txn_type": upi_txn_type_db,
                                         "pmt_intent_status": payment_intent_status,
                                         "mid": mid_db,
                                         "tid": tid_db,
@@ -836,7 +821,7 @@ def test_common_100_103_169():
 def test_common_100_103_178():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Amount_Mismatch_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_RP_UPI_Amount_Mismatch_AXIS_DIRECT_Tid_dep
     Sub Feature Description : Tid Dep - Verification of a Remote Pay upi for amount mismatch
     TC naming code description:
     100: Payment Method
@@ -984,11 +969,6 @@ def test_common_100_103_178():
             device_serial = result['device_serial'].values[0]
             logger.debug(f"results from the txn table : device_serial : {device_serial}")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1111,7 +1091,7 @@ def test_common_100_103_178():
                     logger.debug("API DETAILS:", api_details)
                     response = APIProcessor.send_request(api_details)
                     status_api = response["status"]
-                    amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                    amount_api = int(response["amount"])
                     payment_mode_api = response["paymentMode"]
                     state_api = response["states"][0]
                     settlement_status_api = response["settlementStatus"]
@@ -1156,7 +1136,6 @@ def test_common_100_103_178():
                                             "settle_status": "PENDING",
                                             "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                             "upi_bank_code": "AXIS_DIRECT",
-                                            "upi_mc_id": upi_mc_id,
                                             "pmt_intent_status": "ACTIVE",
                                             "mid": mid,
                                             "tid": tid,
@@ -1210,7 +1189,6 @@ def test_common_100_103_178():
                                         "settle_status": settlement_status_db,
                                         "upi_txn_type": upi_txn_type_db,
                                         "upi_bank_code": upi_bank_code_db,
-                                        "upi_mc_id": upi_mc_id_db,
                                         "pmt_intent_status": payment_intent_status,
                                         "mid": mid_db,
                                         "tid": tid_db,

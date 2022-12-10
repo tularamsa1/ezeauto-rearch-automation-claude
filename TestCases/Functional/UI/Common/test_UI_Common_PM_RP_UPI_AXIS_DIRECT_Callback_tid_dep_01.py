@@ -27,7 +27,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_176():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_AXIS_DIRECT_Callback_tid_dep_01
+    Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_UPI_Callback_AXIS_DIRECT_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a successful UPI txn via AXIS_DIRECT using callback
     TC naming code description:
     100: Payment Method
@@ -137,6 +137,8 @@ def test_common_100_103_176():
             vpa = result['vpa'].values[0]
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
+            mid_db = result['mid'].iloc[0]
+            tid_db = result['tid'].iloc[0]
 
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
@@ -148,20 +150,14 @@ def test_common_100_103_176():
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
+            logger.debug(f"generated random rrn number is : {rrn}")
+            ref_id = '211115084892E01' + str(rrn)
+
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "' order by created_time desc limit 1;"  # Needs to modify these queries
             logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             payment_intent_id = result['id'].values[0]
             logger.info(f"generated random rrn number is : {payment_intent_id}")
-
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
-            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            txn_id = result['id'].values[0]
-            logger.debug(f"Query result, txn_id : {txn_id}")
-            rrn = random.randint(1111110, 9999999)
-            logger.debug(f"generated random rrn number is : {rrn}")
-            ref_id = '211115084892E01' + str(rrn)
 
             logger.debug(f"replacing the Txn_id with {txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
 
@@ -199,7 +195,7 @@ def test_common_100_103_176():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             mid = result['mid'].values[0]
             tid = result['tid'].values[0]
             org_code_txn = result['org_code'].values[0]
@@ -226,7 +222,7 @@ def test_common_100_103_176():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
 
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                                         "pmt_mode": "UPI",
                                         "pmt_status": "AUTHORIZED",
@@ -305,7 +301,7 @@ def test_common_100_103_176():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.db_datetime(posting_date)  # Replace date with dateand time
+                date_and_time = date_time_converter.db_datetime(created_time)  # Replace date with dateand time
                 expected_api_values = {
                                         "pmt_status": "AUTHORIZED",
                                         "txn_amt": amount,
@@ -424,12 +420,6 @@ def test_common_100_103_176():
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
 
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'AXIS_DIRECT';"
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
-                mid_db = result['mid'].iloc[0]
-                tid_db = result['tid'].iloc[0]
-
                 query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query to fetch data from terminal_info table : {query}")
@@ -465,7 +455,7 @@ def test_common_100_103_176():
             if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
                 logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
                 try:
-                    txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                    txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                     expected_values = {'PAID BY:': 'UPI',
                                        'merchant_ref_no': 'Ref # ' + str(order_id),
                                        'RRN': str(rrn),
@@ -499,7 +489,7 @@ def test_common_100_103_176():
 def test_common_100_103_177():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Failed_Via_UPI_Callback_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_RP_UPI_Failed_Via_UPI_Callback_AXIS_DIRECT _08_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a failed UPI txn via AXIS_DIRECT using Callback
     TC naming code description:
     100: Payment Method
@@ -608,6 +598,8 @@ def test_common_100_103_177():
             vpa = result['vpa'].values[0]
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
+            mid_db = result['mid'].iloc[0]
+            tid_db = result['tid'].iloc[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -617,6 +609,19 @@ def test_common_100_103_177():
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
             ref_id = '211115084892E01' + str(rrn)
+            # query = "select * from txn where id = '" + txn_id + "';"
+            # logger.debug(f"Query to fetch transaction id from database : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+            # posting_date = result['posting_date'].values[0]
+            txn_mid = result['mid'].values[0]
+            created_time = result['created_time'].values[0]
+            logger.debug(f"generated random original_posting_date is : {created_time}")
+            txn_tid = result['tid'].values[0]
+            org_code_txn = result['org_code'].values[0]
+            customer_name = result['customer_name'].values[0]
+            payer_name = result['payer_name'].values[0]
+            txn_device_serial = result['device_serial'].values[0]
+            logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "' order by created_time desc limit 1;"  # Needs to modify these queries
             logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
@@ -658,20 +663,6 @@ def test_common_100_103_177():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response : {response}")
 
-            query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch transaction id from database : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            # posting_date = result['posting_date'].values[0]
-            txn_mid = result['mid'].values[0]
-            created_time = result['created_time'].values[0]
-            logger.debug(f"generated random original_posting_date is : {created_time}")
-            txn_tid = result['tid'].values[0]
-            org_code_txn = result['org_code'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            txn_device_serial = result['device_serial'].values[0]
-            logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -699,8 +690,6 @@ def test_common_100_103_177():
                                         "txn_amt": "{:.2f}".format(amount),
                                         "settle_status": "FAILED",
                                         "txn_id": txn_id,
-                                        "customer_name": customer_name,
-                                        "payer_name": payer_name,
                                         "order_id": order_id,
                                         "payment_msg": "PAYMENT FAILED",
                                         "rrn": str(rrn),
@@ -752,8 +741,6 @@ def test_common_100_103_177():
                                         "txn_amt": app_amount.split(' ')[1],
                                         "settle_status": app_settlement_status,
                                         "txn_id": app_txn_id,
-                                        "customer_name": app_customer_name,
-                                        "payer_name": app_payer_name,
                                         "order_id": app_order_id,
                                         "payment_msg": app_payment_msg,
                                         "rrn": str(app_rrn),
@@ -889,12 +876,6 @@ def test_common_100_103_177():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
-
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'AXIS_DIRECT';"
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
-                mid_db = result['mid'].iloc[0]
-                tid_db = result['tid'].iloc[0]
 
                 query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
                 result = DBProcessor.getValueFromDB(query)

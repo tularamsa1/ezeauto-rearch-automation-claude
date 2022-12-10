@@ -25,7 +25,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_157():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Success_Via_CheckStatus_HDFC
+    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Success_Via_CheckStatus_HDFC_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a Remote Pay successful upi txn via HDFC using check status
     TC naming code description:
     100: Payment Method
@@ -153,11 +153,6 @@ def test_common_100_103_157():
             logger.debug(f"Query result, created_time from db : {created_time}")
             txn_device_serial = result['device_serial'].values[0]
             logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
 
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -344,7 +339,6 @@ def test_common_100_103_157():
                                         "bank_code": "HDFC",
                                         "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                         "upi_bank_code": "HDFC",
-                                        "upi_mc_id": upi_mc_id,
                                         "pmt_intent_status": "COMPLETED",
                                         "tid": txn_tid,
                                         "mid": txn_mid,
@@ -377,7 +371,6 @@ def test_common_100_103_157():
                 upi_status_db = result["status"].iloc[0]
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
                 query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
                 result = DBProcessor.getValueFromDB(query)
@@ -401,7 +394,6 @@ def test_common_100_103_157():
                                         "bank_code": bank_code_db,
                                         "upi_txn_type": upi_txn_type_db,
                                         "upi_bank_code": upi_bank_code_db,
-                                        "upi_mc_id": upi_mc_id_db,
                                         "pmt_intent_status": payment_intent_status,
                                         "mid": mid_db,
                                         "tid": tid_db,
@@ -456,7 +448,7 @@ def test_common_100_103_157():
 def test_common_100_103_158():
 
     """
-    Sub Feature Code : UI_Common_PM_RP_RP_UPI_Failed_Via_CheckStatus_HDFC
+    Sub Feature Code : UI_Common_PM_RP_RP_UPI_Failed_Via_CheckStatus_HDFC_Tid_dep
     Sub Feature Description :Tid Dep - Verification of a Remote Pay failed UPI txn via HDFC using check status
     TC naming code description:
     100: Payment Method
@@ -561,7 +553,6 @@ def test_common_100_103_158():
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"Query result, rrn from db : {rrn}")
             txn_id = result['id'].values[0]
@@ -585,12 +576,6 @@ def test_common_100_103_158():
             txn_device_serial = result['device_serial'].values[0]
             logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
 
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -606,8 +591,8 @@ def test_common_100_103_158():
             print(colored("Execution Timer resumed in execpt block of testcase function".center(
                 shutil.get_terminal_size().columns, "="), 'cyan'))
 
-            ReportProcessor.capture_ss_when_app_val_exe_failed()  # If In the execution or try block app driver is not initialized then we can remove this line
-            ReportProcessor.capture_ss_when_portal_val_exe_failed()  # If In the execution or try block portal driver is not initialized then we can remove this line
+            ReportProcessor.capture_ss_when_app_val_exe_failed()
+            ReportProcessor.capture_ss_when_portal_val_exe_failed()
             GlobalVariables.EXCEL_TC_Execution = "Fail"
             GlobalVariables.Incomplete_ExecutionCount += 1
 
@@ -797,7 +782,6 @@ def test_common_100_103_158():
                                     "bank_code": "HDFC",
                                     "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                     "upi_bank_code": "HDFC",
-                                    "upi_mc_id": upi_mc_id,
                                     "pmt_intent_status": "ACTIVE",
                                     "tid": txn_tid,
                                     "mid": txn_mid,
@@ -853,7 +837,6 @@ def test_common_100_103_158():
                                   "bank_code": bank_code_db,
                                   "upi_txn_type": upi_txn_type_db,
                                   "upi_bank_code": upi_bank_code_db,
-                                  "upi_mc_id": upi_mc_id_db,
                                   "pmt_intent_status": payment_intent_status,
                                   "tid": tid_db,
                                   "mid": mid_db,

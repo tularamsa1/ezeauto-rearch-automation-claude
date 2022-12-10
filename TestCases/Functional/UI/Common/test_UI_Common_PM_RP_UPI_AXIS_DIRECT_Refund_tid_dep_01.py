@@ -25,7 +25,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_172():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI Refund By API_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_RP_RP_UPI Refund By API_AXIS_DIRECT_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a Remote Pay refund using api for AXIS_DIRECT
     TC naming code description:
     100: Payment Method
@@ -148,14 +148,6 @@ def test_common_100_103_172():
             tid = result['tid'].values[0]
             logger.debug(f"results from the upi_merchant_config table : tid : {tid}")
 
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"results from the upi_merchant_config table : upi_mc_id : {upi_mc_id}")
-
-
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": amount,
@@ -177,8 +169,8 @@ def test_common_100_103_172():
             logger.debug(f"Fetching Transaction id, rrn from db query, txn_type_refunded : {txn_type_refunded}")
             rrn_refunded = result['rr_number'].iloc[0]
             logger.debug(f"Fetching Transaction id, rrn from db query, rrn_refunded : {rrn_refunded}")
-            posting_date = result['created_time'].values[0]
-            logger.debug(f"Fetching Transaction id, rrn from db query, posting_date : {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching Transaction id, rrn from db query, created_time : {created_time}")
 
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -200,7 +192,7 @@ def test_common_100_103_172():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
 
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 original_date_and_time = date_time_converter.to_app_format(created_time_original)
 
                 expected_app_values = {
@@ -223,7 +215,7 @@ def test_common_100_103_172():
                                         "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                                         "rrn": str(rrn_original),
                                         "date_2": date_and_time,
-                                        "date": original_date_and_time  # add date for refund cases also
+                                        "date": original_date_and_time
                                     }
 
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
@@ -311,7 +303,7 @@ def test_common_100_103_172():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                refunded_date_time = date_time_converter.db_datetime(posting_date)
+                refunded_date_time = date_time_converter.db_datetime(created_time)
                 original_date_time = date_time_converter.db_datetime(created_time_original)
 
                 expected_api_values = {
@@ -461,8 +453,6 @@ def test_common_100_103_172():
                                         "upi_txn_type_2": "REFUND",
                                         "upi_bank_code": "AXIS_DIRECT",
                                         "upi_bank_code_2": "AXIS_DIRECT",
-                                        "upi_mc_id": upi_mc_id,
-                                        "upi_mc_id_2": upi_mc_id,
                                         "mid": mid,
                                         "tid": tid,
                                         "mid_2": mid,
@@ -547,8 +537,6 @@ def test_common_100_103_172():
                                     "upi_txn_type_2": upi_txn_type_db_refunded,
                                     "upi_bank_code": upi_bank_code_db_original,
                                     "upi_bank_code_2": upi_bank_code_db_refunded,
-                                    "upi_mc_id": upi_mc_id_db_original,
-                                    "upi_mc_id_2": upi_mc_id_db_refunded,
                                     "mid": mid_db_original,
                                     "tid": tid_db_original,
                                     "mid_2": mid_db_refunded,
@@ -568,7 +556,7 @@ def test_common_100_103_172():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_chargeslip_values = {'PAID BY:': 'UPI',
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
                                               'RRN': "",
@@ -598,8 +586,6 @@ def test_common_100_103_172():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -608,7 +594,7 @@ def test_common_100_103_172():
 def test_common_100_103_173():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Refund_Failed_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_RP_RP_UPI_Refund_Failed_AXIS_DIRECT_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a Remote Pay upi refund failed via AXIS_DIRECT
     TC naming code description:
     100: Payment Method
@@ -731,12 +717,6 @@ def test_common_100_103_173():
             logger.debug(f"Fetching mid  from db query : {mid} ")
             tid = result['tid'].values[0]
             logger.debug(f"Fetching tid  from db query : {tid} ")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"Fetching upi_mc_id  from db query : {upi_mc_id} ")
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
@@ -1032,8 +1012,6 @@ def test_common_100_103_173():
                                     "upi_txn_type_2": "REFUND",
                                     "upi_bank_code": "AXIS_DIRECT",
                                     "upi_bank_code_2": "AXIS_DIRECT",
-                                    "upi_mc_id": upi_mc_id,
-                                    "upi_mc_id_2": upi_mc_id,
                                     "mid": mid,
                                     "tid": tid,
                                     "device_serial": txn_device_serial
@@ -1113,8 +1091,6 @@ def test_common_100_103_173():
                                     "upi_txn_type_2": upi_txn_type_db_refunded,
                                     "upi_bank_code": upi_bank_code_db_original,
                                     "upi_bank_code_2": upi_bank_code_db_refunded,
-                                    "upi_mc_id": upi_mc_id_db_original,
-                                    "upi_mc_id_2": upi_mc_id_db_refunded,
                                     "mid": mid_db_original,
                                     "tid": tid_db_original,
                                     "device_serial" : device_serial_db_original
@@ -1171,7 +1147,7 @@ def test_common_100_103_173():
 def test_common_100_103_174():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_RP_UPI_partial_Refund_AXIS_DIRECT
+    Sub Feature Code:UI_Common_PM_RP_RP_UPI_partial_Refund_AXIS_DIRECT_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a Remote Pay upi partial refund via AXIS_DIRECT
     TC naming code description:
     100: Payment Method
@@ -1294,11 +1270,6 @@ def test_common_100_103_174():
             tid = result['tid'].values[0]
             logger.debug(f"Fetching tid  from db query : {tid} ")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": refunded_amount,
@@ -1344,7 +1315,7 @@ def test_common_100_103_174():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_date_time)
                 original_date_and_time = date_time_converter.to_app_format(created_time_original)
                 expected_app_values = {
                                         "pmt_status": "STATUS:AUTHORIZED",
@@ -1452,7 +1423,7 @@ def test_common_100_103_174():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                refunded_date_time = date_time_converter.db_datetime(posting_date)
+                refunded_date_time = date_time_converter.db_datetime(created_date_time)
                 original_date_time = date_time_converter.db_datetime(created_time_original)
 
                 expected_api_values = {
@@ -1602,8 +1573,6 @@ def test_common_100_103_174():
                                         "upi_txn_type_2": "REFUND",
                                         "upi_bank_code": "AXIS_DIRECT",
                                         "upi_bank_code_2": "AXIS_DIRECT",
-                                        "upi_mc_id": upi_mc_id,
-                                        "upi_mc_id_2": upi_mc_id,
                                         "mid": mid,
                                         "tid": tid,
                                         "mid_2": mid,
@@ -1687,8 +1656,6 @@ def test_common_100_103_174():
                                     "upi_txn_type_2": upi_txn_type_db_refunded,
                                     "upi_bank_code": upi_bank_code_db_original,
                                     "upi_bank_code_2": upi_bank_code_db_refunded,
-                                    "upi_mc_id": upi_mc_id_db_original,
-                                    "upi_mc_id_2": upi_mc_id_db_refunded,
                                     "mid": mid_db_original,
                                     "tid": tid_db_original,
                                     "mid_2": mid_db_refunded,
@@ -1710,7 +1677,7 @@ def test_common_100_103_174():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_date_time)
 
                 expected_chargeslip_values = {'PAID BY:': 'UPI',
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
@@ -1751,8 +1718,8 @@ def test_common_100_103_174():
 def test_common_100_103_175():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_Upi_two_times_second_partial_refund_amount_greater_than_original_amount
-    Sub Feature Description: Tid Dep - Verification of a two remote pay partial refund when second partial refund amount is greater than original amount
+    Sub Feature Code: UI_Common_PM_RP_Upi_two_times_second_partial_refund_amount_greater_than_original_amount_Tid_dep
+    Sub Feature Description: Tid Dep - Tid Dep - Verification of a two remote pay partial refund when second partial refund amount is greater than original amount
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -1878,11 +1845,6 @@ def test_common_100_103_175():
             logger.debug(f"Fetching device_serial_original from db query : {device_serial_original} ")
             mid = result['mid'].values[0]
             tid = result['tid'].values[0]
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
@@ -2196,8 +2158,6 @@ def test_common_100_103_175():
                                         "upi_txn_type_2": "REFUND",
                                         "upi_bank_code": "AXIS_DIRECT",
                                         "upi_bank_code_2": "AXIS_DIRECT",
-                                        "upi_mc_id": upi_mc_id,
-                                        "upi_mc_id_2": upi_mc_id,
                                         "mid": mid,
                                         "tid": tid,
                                         "mid_2": mid,
@@ -2285,8 +2245,6 @@ def test_common_100_103_175():
                                     "upi_txn_type_2": upi_txn_type_db_refunded,
                                     "upi_bank_code": upi_bank_code_db_original,
                                     "upi_bank_code_2": upi_bank_code_db_refunded,
-                                    "upi_mc_id": upi_mc_id_db_original,
-                                    "upi_mc_id_2": upi_mc_id_db_refunded,
                                     "mid": mid_db_original,
                                     "tid": tid_db_original,
                                     "mid_2": mid_db_refunded,

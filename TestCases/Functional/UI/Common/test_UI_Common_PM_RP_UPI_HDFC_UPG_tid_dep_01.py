@@ -22,8 +22,8 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_159():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_UPG_REFUND_PENDING_VIA_HDFC_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled
-    Sub Feature Description: Tid Dep - Verification of a upg txn using success callback via HDFC when upg refund and upg autorefund are enabled
+    Sub Feature Code: UI_Common_PM_RP_UPI_UPG_REFUND_PENDING_VIA_HDFC_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled_Tid_dep
+    Sub Feature Description: Tid Dep - Verificayion of a upg txn using success callback via HDFC when upg refund and upg autorefund are enabled
     TC naming code description:
     100: Payment Method
     103: Remote Pay
@@ -83,7 +83,7 @@ def test_common_100_103_159():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
@@ -104,8 +104,9 @@ def test_common_100_103_159():
             result = DBProcessor.getValueFromDB(query)
             pg_merchant_id = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
-            posting_date = result['created_time'].values[0]
             upi_mc_id = result['id'].values[0]
+            upi_mc_mid = result['mid'].iloc[0]
+            upi_mc_tid = result['tid'].iloc[0]
 
 
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
@@ -155,7 +156,7 @@ def test_common_100_103_159():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             txn_mid = result['mid'].values[0]
             txn_tid = result['tid'].values[0]
 
@@ -178,7 +179,7 @@ def test_common_100_103_159():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "txn_id": txn_id,
                                        "txn_amt": "{:.2f}".format(amount),
@@ -245,7 +246,7 @@ def test_common_100_103_159():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {"pmt_status": "UPG_REFUND_PENDING",
                                        "txn_amt": amount,
                                        "pmt_state": "UPG_REFUND_PENDING",
@@ -368,11 +369,6 @@ def test_common_100_103_159():
                 ipr_vpa = result["vpa"].iloc[0]
                 ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
-                mid_db = result['mid'].iloc[0]
-                tid_db = result['tid'].iloc[0]
 
                 actual_db_values = {"pmt_status": status_db,
                                     "pmt_state": state_db,
@@ -385,9 +381,8 @@ def test_common_100_103_159():
                                     "payment_gateway": payment_gateway_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
-                                    "upi_mc_id": upi_mc_id_db,
-                                    "mid": mid_db,
-                                    "tid": tid_db,
+                                    "mid": upi_mc_mid,
+                                    "tid": upi_mc_tid,
                                     "ipr_pmt_mode": ipr_payment_mode,
                                     "ipr_bank_code": ipr_bank_code,
                                     "ipr_org_code": ipr_org_code,
@@ -422,7 +417,7 @@ def test_common_100_103_159():
 def test_common_100_103_160():
 
     """
-    Sub Feature Code:UI_Common_PM_RP_RP_UPI_UPG_FAILED_VIA_HDFC_when_UPGRefund_&_UPGAutoRefund_Disabled
+    Sub Feature Code:UI_Common_PM_RP_RP_UPI_UPG_FAILED_VIA_HDFC_when_UPGRefund_&_UPGAutoRefund_Disabled_Tid_dep
     Sub Feature Description:Tid Dep - Performing a upg txn using failed callback when upg refund and upg autorefund are disabled
     TC naming code description:
     100: Payment Method
@@ -483,8 +478,8 @@ def test_common_100_103_160():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Setup to be done for the test case)---------------------
 
-        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -574,13 +569,6 @@ def test_common_100_103_160():
             logger.debug(f"posting_date from txn table are : {posting_date}")
             txn_mid = result['mid'].values[0]
             txn_tid = result['tid'].values[0]
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"upi_mc_id from txn table are : {upi_mc_id}")
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -761,7 +749,6 @@ def test_common_100_103_160():
                                     "payment_gateway": "HDFC",
                                     "upi_txn_type": "UNKNOWN",
                                     "upi_bank_code": "HDFC",
-                                    "upi_mc_id": upi_mc_id,
                                     "mid": txn_mid,
                                     "tid": txn_tid,
                                     "ipr_pmt_mode": "UPI",
@@ -773,7 +760,6 @@ def test_common_100_103_160():
                                     "ipr_mid": txn_mid,
                                     "ipr_tid": txn_tid,
                                     "ipr_vpa": vpa,
-                                    "ipr_config_id": upi_mc_id,
                                     "ipr_pg_merchant_id": pgMerchantId,
                                 }
 
@@ -801,7 +787,7 @@ def test_common_100_103_160():
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
+                query = "select * from invalid_pg_request where request_id ='" + request_id + "';"
                 logger.debug(f"query : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -835,7 +821,6 @@ def test_common_100_103_160():
                                     "payment_gateway": payment_gateway_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
-                                    "upi_mc_id": upi_mc_id_db,
                                     "mid": mid_db,
                                     "tid": tid_db,
                                     "ipr_pmt_mode": ipr_payment_mode,
@@ -847,8 +832,8 @@ def test_common_100_103_160():
                                     "ipr_mid": ipr_mid,
                                     "ipr_tid": ipr_tid,
                                     "ipr_vpa": ipr_vpa,
-                                    "ipr_config_id": ipr_config_id,
                                     "ipr_pg_merchant_id": ipr_pg_merchant_id,
+
                                  }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")

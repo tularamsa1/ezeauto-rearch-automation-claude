@@ -28,7 +28,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_165():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_UPI_Callback_HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_UPI_Callback_HDFC_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a successful UPI txn via HDFC using callback
     TC naming code description:
     100: Payment Method
@@ -141,8 +141,10 @@ def test_common_100_103_165():
             logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+            mid_db = result['mid'].iloc[0]
+            logger.debug(f"Query result, mid : {mid_db}")
+            tid_db = result['tid'].iloc[0]
+            logger.debug(f"Query result, mid : {tid_db}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -162,6 +164,11 @@ def test_common_100_103_165():
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_ref = result['txn_ref'].values[0]
+            logger.debug(f"Query result : {result}")
+            upi_status_db = result["status"].iloc[0]
+            upi_txn_type_db = result["txn_type"].iloc[0]
+            upi_bank_code_db = result["bank_code"].iloc[0]
+            upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
             logger.debug(f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
 
@@ -195,7 +202,7 @@ def test_common_100_103_165():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             mid = result['mid'].values[0]
             logger.debug(f"Query result, mid : {mid}")
             tid = result['tid'].values[0]
@@ -232,7 +239,7 @@ def test_common_100_103_165():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
 
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
 
                 expected_app_values = {
                                         "pmt_mode": "UPI",
@@ -314,7 +321,7 @@ def test_common_100_103_165():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.db_datetime(posting_date)
+                date_and_time = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                                         "pmt_status": "AUTHORIZED",
                                         "txn_amt": amount,
@@ -398,7 +405,6 @@ def test_common_100_103_165():
                                         "bank_code": "HDFC",
                                         "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                         "upi_bank_code": "HDFC",
-                                        "upi_mc_id": upi_mc_id,
                                         "pmt_intent_status": "COMPLETED",
                                         "mid": mid,
                                         "tid": tid,
@@ -434,12 +440,6 @@ def test_common_100_103_165():
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
 
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
-                mid_db = result['mid'].iloc[0]
-                tid_db = result['tid'].iloc[0]
-
                 query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query to fetch data from terminal_info table : {query}")
@@ -456,7 +456,6 @@ def test_common_100_103_165():
                                     "bank_code": bank_code_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
-                                    "upi_mc_id": upi_mc_id_db,
                                     "pmt_intent_status": payment_intent_status,
                                     "mid": mid_db,
                                     "tid": tid_db,
@@ -476,7 +475,7 @@ def test_common_100_103_165():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
 
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_values = {'PAID BY:': 'UPI',
                                    'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'RRN': str(rrn),
@@ -509,7 +508,7 @@ def test_common_100_103_165():
 def test_common_100_103_166():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Failed_Via_UPI_Callback_HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Failed_Via_UPI_Callback_HDFC _08_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a failed UPI txn via HDFC using Callback
     TC naming code description:
     100: Payment Method
@@ -621,9 +620,8 @@ def test_common_100_103_166():
             logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
-
+            mid_db = result['mid'].iloc[0]
+            tid_db = result['tid'].iloc[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -632,7 +630,7 @@ def test_common_100_103_166():
             logger.debug(f"Query result, txn_id : {txn_id}")
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
-            posting_date = result['posting_date'].values[0]
+            created_time = result['created_time'].values[0]
             mid = result['mid'].values[0]
             tid = result['tid'].values[0]
             org_code_txn = result['org_code'].values[0]
@@ -646,15 +644,14 @@ def test_common_100_103_166():
             payment_intent_id = result['id'].values[0]
             logger.info(f"generated random rrn number is : {payment_intent_id}")
 
-            query = "select id from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-
             query = "select * from upi_txn where txn_id = '" + txn_id + "';"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_ref = result['txn_ref'].values[0]
+            upi_status_db = result["status"].iloc[0]
+            upi_txn_type_db = result["txn_type"].iloc[0]
+            upi_bank_code_db = result["bank_code"].iloc[0]
+            upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
             logger.debug(f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
 
@@ -711,7 +708,7 @@ def test_common_100_103_166():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
 
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date)
+                date_and_time = date_time_converter.to_app_format(created_time)
 
                 expected_app_values = {
                                         "pmt_mode": "UPI",
@@ -790,10 +787,11 @@ def test_common_100_103_166():
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                                         "pmt_status": "FAILED",
-                                        "txn_amt": amount, "pmt_mode": "UPI",
+                                        "txn_amt": amount,
+                                        "pmt_mode": "UPI",
                                         "pmt_state": "FAILED",
                                         "settle_status": "FAILED",
                                         "acquirer_code": "HDFC",
@@ -874,7 +872,7 @@ def test_common_100_103_166():
                                     "bank_code": "HDFC",
                                     "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                     "upi_bank_code": "HDFC",
-                                    "upi_mc_id": upi_mc_id,
+                                    "pmt_intent_status": "COMPLETED",
                                     "mid": mid,
                                     "tid": tid,
                                     "device_serial": txn_device_serial
@@ -894,25 +892,10 @@ def test_common_100_103_166():
                 bank_code_db = result["bank_code"].iloc[0]
                 settlement_status_db = result["settlement_status"].iloc[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
-                upi_txn_type_db = result["txn_type"].iloc[0]
-                upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 query = "select * from payment_intent where id='" + payment_intent_id + "'"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
-
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
-                mid_db = result['mid'].iloc[0]
-                tid_db = result['tid'].iloc[0]
 
                 query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
                 result = DBProcessor.getValueFromDB(query)
@@ -930,7 +913,7 @@ def test_common_100_103_166():
                                     "bank_code": bank_code_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
-                                    "upi_mc_id": upi_mc_id_db,
+                                    "pmt_intent_status": payment_intent_status,
                                     "mid": mid_db,
                                     "tid": tid_db,
                                     "device_serial": device_serial_db
@@ -961,7 +944,7 @@ def test_common_100_103_166():
 def test_common_100_103_167():
 
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_Amount_Mismatch_HDFC
+    Sub Feature Code: UI_Common_PM_RP_UPI_Amount_Mismatch_HDFC_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a Remote Pay upi for amount mismatch
     TC naming code description:
     100: Payment Method
@@ -1106,8 +1089,8 @@ def test_common_100_103_167():
             logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+            mid_db = result['mid'].iloc[0]
+            tid_db = result['tid'].iloc[0]
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
@@ -1140,8 +1123,8 @@ def test_common_100_103_167():
             logger.debug(f"Settlement status from txn is : {original_settlement_status}")
             original_acquirer_code = result['acquirer_code'].values[0]
             logger.debug(f"Settlement status from txn is : {original_acquirer_code}")
-            original_posting_date = result['posting_date'].values[0]
-            logger.debug(f"Posting date from txn is : {original_posting_date}")
+            original_created_time = result['created_time'].values[0]
+            logger.debug(f"created_time from txn is : {original_created_time}")
             original_device_serial = result['device_serial'].values[0]
             logger.debug(f"Posting original_device_serial from txn is : {original_device_serial}")
 
@@ -1174,7 +1157,7 @@ def test_common_100_103_167():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
 
             try:
-                date_and_time = date_time_converter.to_app_format(original_posting_date)
+                date_and_time = date_time_converter.to_app_format(original_created_time)
 
                 expected_app_values = {
                                        "pmt_mode": "UPI",
@@ -1246,7 +1229,7 @@ def test_common_100_103_167():
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
             try:
-                date = date_time_converter.db_datetime(original_posting_date)
+                date = date_time_converter.db_datetime(original_created_time)
 
                 expected_api_values = {"pmt_status": "FAILED",
                                        "txn_amt": amount,
@@ -1324,7 +1307,6 @@ def test_common_100_103_167():
                                         "settle_status": "FAILED",
                                         "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                         "upi_bank_code": "HDFC",
-                                        "upi_mc_id": upi_mc_id,
                                         "intent_status": "EXPIRED",
                                         "mid": original_mid,
                                         "tid": original_tid,
@@ -1347,12 +1329,6 @@ def test_common_100_103_167():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
 
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
-                mid_db = result['mid'].iloc[0]
-                tid_db = result['tid'].iloc[0]
-
                 query = "select * from terminal_info where tid ='" + str(tid_db) + "';"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query to fetch data from terminal_info table : {query}")
@@ -1368,7 +1344,6 @@ def test_common_100_103_167():
                                     "upi_txn_status": upi_status_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
-                                    "upi_mc_id": upi_mc_id_db,
                                     "intent_status": intent_status,
                                     "mid": mid_db,
                                     "tid": tid_db,
