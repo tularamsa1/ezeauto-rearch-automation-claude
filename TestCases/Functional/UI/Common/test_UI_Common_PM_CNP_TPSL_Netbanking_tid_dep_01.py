@@ -100,7 +100,7 @@ def test_common_100_103_154():
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             query = "select * from merchant_pg_config where org_code = '" + str(
-                org_code) + "' and payment_gateway = 'CYBERSOURCE'"
+                org_code) + "' and payment_gateway = 'TPSL'"
             logger.debug(f"Query to fetch tid from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             tid_settings = result['tid'].values[0]
@@ -556,7 +556,7 @@ def test_common_100_103_155():
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             query = "select * from merchant_pg_config where org_code = '" + str(
-                org_code) + "' and payment_gateway = 'CYBERSOURCE'"
+                org_code) + "' and payment_gateway = 'TPSL'"
             logger.debug(f"Query to fetch tid from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             tid_settings = result['tid'].values[0]
@@ -971,7 +971,7 @@ def test_common_100_103_156():
             order_id = datetime.now().strftime('%m%d%H%M%S')
 
             query = "select * from merchant_pg_config where org_code = '" + str(
-                org_code) + "' and payment_gateway = 'CYBERSOURCE'"
+                org_code) + "' and payment_gateway = 'TPSL'"
             logger.debug(f"Query to fetch tid from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             tid_settings = result['tid'].values[0]
