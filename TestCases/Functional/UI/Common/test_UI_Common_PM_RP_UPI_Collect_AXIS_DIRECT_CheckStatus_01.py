@@ -160,7 +160,7 @@ def test_common_100_103_128():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amount": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "customer_name": customer_name,
@@ -215,7 +215,7 @@ def test_common_100_103_128():
                 actual_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": app_payment_status,
-                    "txn_amount": app_amount.split(' ')[1],
+                    "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
                     "customer_name": app_customer_name,
@@ -555,7 +555,7 @@ def test_common_100_103_129():
 
                 expectedAppValues = {"pmt_mode": "UPI",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": txn_id,
                                      "rrn": str(rrn),
                                      "customer_name": customer_name,
@@ -956,7 +956,7 @@ def test_common_100_103_130():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "PENDING",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "PENDING",
                                        "txn_id": original_txn_id,
                                        #"customer_name_original": original_customer_name,
@@ -1365,7 +1365,7 @@ def test_common_100_103_131():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        #"customer_name_original": original_customer_name,

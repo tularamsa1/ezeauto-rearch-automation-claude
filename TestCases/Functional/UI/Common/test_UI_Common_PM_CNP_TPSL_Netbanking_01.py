@@ -180,7 +180,7 @@ def test_common_100_103_038():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": txn_id,
                                      "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -588,7 +588,7 @@ def test_common_100_103_039():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": txn_id,
                                      # "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -1038,7 +1038,7 @@ def test_common_100_103_040():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": txn_id,
                                      # "rrn": cnp_txn_rrn,
                                      "order_id": order_id,

@@ -306,7 +306,7 @@ def test_common_100_103_024():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": original_txn_id,
                     "rrn": str(original_rrn),
@@ -318,7 +318,7 @@ def test_common_100_103_024():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_PENDING",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id_1,
                     "rrn_2": str(callback_2_rrn),
@@ -1137,7 +1137,7 @@ def test_common_100_103_025():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     "rrn": str(original_rrn),
@@ -1149,7 +1149,7 @@ def test_common_100_103_025():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_PENDING",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id_1,
                     "rrn_2": str(callback_1_rrn),
@@ -1161,7 +1161,7 @@ def test_common_100_103_025():
 
                     "pmt_mode_3": "UPI",
                     "pmt_status_3": "REFUND_PENDING",
-                    "txn_amt_3": str(amount),
+                    "txn_amt_3": str(amount)+".00",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": new_txn_id_2,
                     "rrn_3": str(callback_2_rrn),
@@ -1993,7 +1993,7 @@ def test_common_100_103_026():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amount": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "customer_name": customer_name,
@@ -2047,7 +2047,7 @@ def test_common_100_103_026():
                 actual_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": app_payment_status,
-                    "txn_amount": app_amount.split(' ')[1],
+                    "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
                     "customer_name": app_customer_name,
@@ -2602,7 +2602,7 @@ def test_common_100_103_027():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     "rrn": str(original_rrn),
@@ -2614,7 +2614,7 @@ def test_common_100_103_027():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id_1,
                     "rrn_2": str(callback_1_rrn),
@@ -2626,7 +2626,7 @@ def test_common_100_103_027():
 
                     "pmt_mode_3": "UPI",
                     "pmt_status_3": "AUTHORIZED",
-                    "txn_amt_3": str(amount),
+                    "txn_amt_3": str(amount)+".00",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": new_txn_id_2,
                     "rrn_3": str(callback_2_rrn),
@@ -3543,7 +3543,7 @@ def test_common_100_103_028():  # Make sure to add the test case name as same as
                 expected_app_values = {
                                        "pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amount": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -3598,7 +3598,7 @@ def test_common_100_103_028():  # Make sure to add the test case name as same as
                 actual_app_values = {
                                         "pmt_mode": app_payment_mode,
                                         "pmt_status": app_payment_status,
-                                        "txn_amount": app_amount.split(' ')[1],
+                                        "txn_amt": app_amount.split(' ')[1],
                                         "settle_status": app_settlement_status,
                                         "txn_id": app_txn_id,
                                         "customer_name": app_customer_name,

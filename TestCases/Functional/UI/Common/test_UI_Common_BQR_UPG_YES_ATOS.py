@@ -145,7 +145,7 @@ def test_common_100_102_040():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "UPG_REFUND_PENDING",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        #"customer_name": customer_name,"payer_name": payer_name,
                                        "order_id": external_ref,"pmt_msg": "PAYMENT SUCCESSFUL",
@@ -519,7 +519,7 @@ def test_common_100_102_041():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "UPG_AUTHORIZED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        #"customer_name": customer_name,"payer_name": payer_name,
                                        "order_id": external_ref,"pmt_msg": "PAYMENT SUCCESSFUL",
@@ -915,14 +915,14 @@ def test_common_100_102_042():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_2 = date_time_converter.to_app_format(created_time_refunded)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "UPG_AUTH_REFUNDED",
-                                       "txn_amt": str(amount),"settle_status": "SETTLED",
+                                       "txn_amt": str(amount)+".00","settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id": external_ref, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "UPG_REFUNDED",
-                                       "txn_amt_2": str(amount), "settle_status_2": "SETTLED",
+                                       "txn_amt_2": str(amount)+".00", "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id_2": external_ref, "pmt_msg_2": "PAYMENT SUCCESSFUL",
@@ -1421,14 +1421,14 @@ def test_common_100_102_043():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_2 = date_time_converter.to_app_format(created_time_refunded)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "UPG_AUTH_REFUNDED",
-                                       "txn_amt": str(amount),"settle_status": "SETTLED",
+                                       "txn_amt": str(amount)+".00","settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id": external_ref, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code,
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "UPG_REFUNDED",
-                                       "txn_amt_2": str(amount), "settle_status_2": "SETTLED",
+                                       "txn_amt_2": str(amount)+".00", "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
                                        # "customer_name": customer_name,"payer_name": payer_name,
                                        "order_id_2": external_ref, "pmt_msg_2": "PAYMENT SUCCESSFUL",

@@ -283,7 +283,7 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     "customer_name": original_customer_name,
@@ -795,7 +795,7 @@ def test_common_100_103_020():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amount": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "customer_name": customer_name,
@@ -851,7 +851,7 @@ def test_common_100_103_020():
                 actual_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": app_payment_status,
-                    "txn_amount": app_amount.split(' ')[1],
+                    "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
                     "txn_id": app_txn_id,
                     "customer_name": app_customer_name,
@@ -1436,7 +1436,7 @@ def test_common_100_103_021():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     "rrn": str(original_rrn),
@@ -1448,7 +1448,7 @@ def test_common_100_103_021():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id_1,
                     "rrn_2": str(callback_1_rrn),
@@ -1460,7 +1460,7 @@ def test_common_100_103_021():
 
                     "pmt_mode_3": "UPI",
                     "pmt_status_3": "AUTHORIZED",
-                    "txn_amt_3": str(amount),
+                    "txn_amt_3": str(amount)+".00",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": new_txn_id_2,
                     "rrn_3": str(callback_2_rrn),
@@ -2230,10 +2230,10 @@ def test_common_100_103_022():
                 print(e)
 
             if org_setting_value:
-                logger.info(f"Value for max upi attempt is: {org_setting_value} min.")
+                logger.info(f"Value for expiry time is: {org_setting_value} min.")
                 time.sleep(10 + (org_setting_value * 60))
             else:
-                logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
+                logger.info(f"Value for expiry for Ezetap org is: {org_setting_value} min.")
                 time.sleep(10 + (setting_value * 60))
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
@@ -2243,6 +2243,15 @@ def test_common_100_103_022():
             pg_merchant_id = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
+
+            query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "' and payment_mode='UPI';"
+            logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            payment_intent_id = result['id'].values[0]
+            logger.info(f"generated random rrn number is : {payment_intent_id}")
+            intent_status = result['status'].values[0]
+            logger.info(f"Payment intent status for UPI is: {intent_status}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' order by created_time desc limit 1"
@@ -2259,16 +2268,7 @@ def test_common_100_103_022():
             logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
-            original_settlement_status = result['settlement_status'].values[0]
 
-            query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' and payment_mode='UPI';"
-            logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            payment_intent_id = result['id'].values[0]
-            logger.info(f"generated random rrn number is : {payment_intent_id}")
-            intent_status = result['status'].values[0]
-            logger.info(f"Payment intent status for UPI is: {intent_status}")
 
             query = "select * from upi_txn where txn_id = '" + original_txn_id + "';"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
@@ -2277,8 +2277,6 @@ def test_common_100_103_022():
 
             callback_1_rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {callback_1_rrn}")
-            # callback_1_ref_id = '211115084892E01' + str(callback_1_rrn)
-            # logger.debug(f"generated random ref_id is : {callback_1_ref_id}")
 
             logger.debug(
                 f"replacing the Txn_id with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {callback_1_rrn} in the curl_data")
@@ -2351,39 +2349,22 @@ def test_common_100_103_022():
             query = "select * from txn where id = '" + original_txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            orig_txn_status = result['status'].values[0]
-            orig_txn_customer_name = result['customer_name'].values[0]
-            orig_txn_payer_name = result['payer_name'].values[0]
-            orig_txn_settle_status = result['settlement_status'].values[0]
-            orig_txn_acquirer_code = result['acquirer_code'].values[0]
-            orig_txn_issuer_code = result['issuer_code'].values[0]
-            orig_txn_org_code_txn = result['org_code'].values[0]
             orig_txn_type = result['txn_type'].values[0]
             orig_posting_date = result['posting_date'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_1 + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            new_txn_status_1 = result['status'].values[0]
             new_txn_customer_name_1 = result['customer_name'].values[0]
             new_txn_payer_name_1 = result['payer_name'].values[0]
-            new_txn_settle_status_1 = result['settlement_status'].values[0]
-            new_txn_acquirer_code_1 = result['acquirer_code'].values[0]
-            new_txn_issuer_code_1 = result['issuer_code'].values[0]
-            new_txn_org_code_txn_1 = result['org_code'].values[0]
             new_txn_type_1 = result['txn_type'].values[0]
             new_txn_posting_date_1 = result['created_time'].values[0]
 
             query = "select * from txn where id = '" + new_txn_id_2 + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            new_txn_status_2 = result['status'].values[0]
             new_txn_customer_name_2 = result['customer_name'].values[0]
             new_txn_payer_name_2 = result['payer_name'].values[0]
-            new_txn_settle_status_2 = result['settlement_status'].values[0]
-            new_txn_acquirer_code_2 = result['acquirer_code'].values[0]
-            new_txn_issuer_code_2 = result['issuer_code'].values[0]
-            new_txn_org_code_txn_2 = result['org_code'].values[0]
             new_txn_type_2 = result['txn_type'].values[0]
             new_txn_posting_date_2 = result['created_time'].values[0]
             new_txn_posting_date_api = result['posting_date'].values[0]
@@ -2441,7 +2422,7 @@ def test_common_100_103_022():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     "rrn": str(original_rrn),
@@ -2453,7 +2434,7 @@ def test_common_100_103_022():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_PENDING",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id_1,
                     "rrn_2": str(callback_1_rrn),
@@ -2465,7 +2446,7 @@ def test_common_100_103_022():
 
                     "pmt_mode_3": "UPI",
                     "pmt_status_3": "REFUND_PENDING",
-                    "txn_amt_3": str(amount),
+                    "txn_amt_3": str(amount)+".00",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": new_txn_id_2,
                     "rrn_3": str(callback_2_rrn),
@@ -3358,7 +3339,7 @@ def test_common_100_103_023():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": original_txn_id,
                     "rrn": str(original_rrn),
@@ -3370,7 +3351,7 @@ def test_common_100_103_023():
 
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": new_txn_id_2,
                     "rrn_2": str(callback_2_rrn),
