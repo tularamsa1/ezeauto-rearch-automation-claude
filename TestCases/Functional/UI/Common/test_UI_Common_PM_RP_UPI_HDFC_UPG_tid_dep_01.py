@@ -381,6 +381,7 @@ def test_common_100_103_159():
                                     "payment_gateway": payment_gateway_db,
                                     "upi_txn_type": upi_txn_type_db,
                                     "upi_bank_code": upi_bank_code_db,
+                                    "upi_mc_id": upi_mc_id_db,
                                     "mid": upi_mc_mid,
                                     "tid": upi_mc_tid,
                                     "ipr_pmt_mode": ipr_payment_mode,

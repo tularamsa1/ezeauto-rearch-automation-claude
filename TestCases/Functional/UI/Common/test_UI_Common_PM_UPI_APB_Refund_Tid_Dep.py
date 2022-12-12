@@ -307,7 +307,7 @@ def test_common_100_101_155():
                     "settle_status_2": "FAILED",
                     "txn_amt": str(amount),
                     "device_serial": str(device_serial),
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": str(amount),
                     "order_id": order_id,
                     "rrn": str(rrn),
                     "acquirer_code": "AIRP",
