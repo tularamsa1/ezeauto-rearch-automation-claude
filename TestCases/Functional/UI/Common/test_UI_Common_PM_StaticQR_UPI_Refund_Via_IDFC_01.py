@@ -19,11 +19,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_107_020():
+def test_common_100_107_019():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_UPI_Full_Refund_Via_IDFC
     Sub Feature Description: Verifying staticQR UPI full refund using api for IDFC
-    TC naming code description:: 100: payment method, 107: UPI Static QR, 020: Testcase ID
+    TC naming code description:: 100: payment method, 107: UPI Static QR, 019: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -106,7 +106,7 @@ def test_common_100_107_020():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = random.randint(201, 300)
+            amount = random.randint(201, 399)
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -117,7 +117,7 @@ def test_common_100_107_020():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
@@ -634,11 +634,11 @@ def test_common_100_107_020():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_107_021():
+def test_common_100_107_020():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_UPI_Partial_Refund_Via_IDFC
     Sub Feature Description: Verifying staticQR UPI partial refund using api for IDFC
-    TC naming code description:: 100: payment method, 107: UPI Static QR, 021: Testcase ID
+    TC naming code description:: 100: payment method, 107: UPI Static QR, 020: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -721,7 +721,7 @@ def test_common_100_107_021():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = random.randint(201, 300)
+            amount = random.randint(201, 399)
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -732,7 +732,7 @@ def test_common_100_107_021():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
@@ -1244,7 +1244,7 @@ def test_common_100_107_021():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_100_107_022():
+def test_common_100_107_021():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_UPI_Refund_Posted_Via_IDFC
     Sub Feature Description: Verifying staticQR UPI refund reposted using api for IDFC
@@ -1331,7 +1331,8 @@ def test_common_100_107_022():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = 555
+            # amount = random.randfloat(201.11, 201.20)
+            amount = 201.11
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -1342,7 +1343,7 @@ def test_common_100_107_022():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
@@ -1817,11 +1818,11 @@ def test_common_100_107_022():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_100_107_023():
+def test_common_100_107_022():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_UPI_Refund_Failed_Via_IDFC
     Sub Feature Description: Verifying staticQR UPI refund failed using api for IDFC
-    TC naming code description:: 100: payment method, 107: UPI Static QR, 021: Testcase ID
+    TC naming code description:: 100: payment method, 107: UPI Static QR, 022: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1904,7 +1905,7 @@ def test_common_100_107_023():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = 666
+            amount = 201.01
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -1915,7 +1916,7 @@ def test_common_100_107_023():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
@@ -2298,8 +2299,7 @@ def test_common_100_107_023():
                 logger.debug(f"Query result : {result}")
                 status_db_refunded = result["status"].iloc[0]
                 payment_mode_db_refunded = result["payment_mode"].iloc[0]
-                amount_db_refunded = int(
-                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                amount_db_refunded = float(result["amount"].iloc[0])
                 state_db_refunded = result["state"].iloc[0]
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
@@ -2320,8 +2320,7 @@ def test_common_100_107_023():
                 logger.debug(f"Query result : {result}")
                 status_db_original = result["status"].iloc[0]
                 payment_mode_db_original = result["payment_mode"].iloc[0]
-                amount_db_original = int(
-                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                amount_db_original = float(result["amount"].iloc[0])
                 state_db_original = result["state"].iloc[0]
                 payment_gateway_db_original = result["payment_gateway"].iloc[0]
                 acquirer_code_db_original = result["acquirer_code"].iloc[0]
@@ -2389,11 +2388,11 @@ def test_common_100_107_023():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_107_024():
+def test_common_100_107_023():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_UPI_Refund_With_Decimal_Via_IDFC
     Sub Feature Description: Verifying staticQR UPI refund with decimal using api for IDFC
-    TC naming code description:: 100: payment method, 107: UPI Static QR, 024: Testcase ID
+    TC naming code description:: 100: payment method, 107: UPI Static QR, 023: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2476,7 +2475,7 @@ def test_common_100_107_024():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = random.randint(201, 300)
+            amount = random.randint(201, 399)
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -2487,7 +2486,7 @@ def test_common_100_107_024():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,

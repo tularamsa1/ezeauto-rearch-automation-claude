@@ -114,7 +114,7 @@ def test_common_100_107_016():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = random.randint(201, 300)
+            amount = random.randint(201, 399)
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -125,7 +125,7 @@ def test_common_100_107_016():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
@@ -584,7 +584,7 @@ def test_common_100_107_017():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = random.randint(201, 300)
+            amount = random.randint(201, 399)
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -595,7 +595,7 @@ def test_common_100_107_017():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
@@ -1053,7 +1053,7 @@ def test_common_100_107_018():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            amount = random.randint(201, 300)
+            amount = random.randint(401, 499)
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
@@ -1064,7 +1064,7 @@ def test_common_100_107_018():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.80:8089/idfc/hmac_merchant_creds/generate"
+            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
             headers = {'Content-Type': 'application/json'}
             req_payload1 = {"MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
