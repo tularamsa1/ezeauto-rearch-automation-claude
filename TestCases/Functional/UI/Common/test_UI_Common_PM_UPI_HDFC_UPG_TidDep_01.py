@@ -231,7 +231,7 @@ def test_common_100_101_108():
                     "pmt_status": "UPG_AUTHORIZED",
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",

@@ -46,8 +46,20 @@ def test_D100_D101_056():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1')
         card_processor.update_idfc_paymentApi_write_timeout('1')
+
+        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
+        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query_url)
+        url = str(result['prop_value'].values[0])
+        logger.debug(f"Query result, url : {url}")
+        if url.__contains__('castlemock'):
+            card_processor.update_instant_settle_clientcode('EZETAP1')
+        else:
+            card_processor.update_instant_settle_clientcode('EZETAP')
+
 
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -287,9 +299,20 @@ def test_D100_D101_057():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1')
         card_processor.update_idfc_paymentApi_write_timeout('1')
+
+        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
+        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query_url)
+        url = str(result['prop_value'].values[0])
+        logger.debug(f"Query result, url : {url}")
+        if url.__contains__('castlemock'):
+            card_processor.update_instant_settle_clientcode('EZETAP1')
+        else:
+            card_processor.update_instant_settle_clientcode('EZETAP')
 
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -529,9 +552,20 @@ def test_D100_D101_058():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1')
         card_processor.update_idfc_paymentApi_write_timeout('1')
+
+        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
+        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query_url)
+        url = str(result['prop_value'].values[0])
+        logger.debug(f"Query result, url : {url}")
+        if url.__contains__('castlemock'):
+            card_processor.update_instant_settle_clientcode('EZETAP1')
+        else:
+            card_processor.update_instant_settle_clientcode('EZETAP')
 
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -770,9 +804,20 @@ def test_D100_D101_059():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1')
         card_processor.update_idfc_paymentApi_write_timeout('1')
+
+        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
+        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query_url)
+        url = str(result['prop_value'].values[0])
+        logger.debug(f"Query result, url : {url}")
+        if url.__contains__('castlemock'):
+            card_processor.update_instant_settle_clientcode('EZETAP1')
+        else:
+            card_processor.update_instant_settle_clientcode('EZETAP')
 
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -1012,9 +1057,20 @@ def test_D100_D101_060():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1')
         card_processor.update_idfc_paymentApi_write_timeout('1')
+
+        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
+        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query_url)
+        url = str(result['prop_value'].values[0])
+        logger.debug(f"Query result, url : {url}")
+        if url.__contains__('castlemock'):
+            card_processor.update_instant_settle_clientcode('EZETAP1')
+        else:
+            card_processor.update_instant_settle_clientcode('EZETAP')
 
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -1254,9 +1310,20 @@ def test_D100_D101_061():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_invalid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1')
         card_processor.update_idfc_paymentApi_write_timeout('1')
+
+        query_url = "select prop_value from ezetap_properties where prop_key = 'instantSettlementInquiryApiUrl';"
+        logger.debug(f"Query to fetch payment inquiry url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query_url)
+        url = str(result['prop_value'].values[0])
+        logger.debug(f"Query result, url : {url}")
+        if url.__contains__('castlemock'):
+            card_processor.update_instant_settle_clientcode('EZETAP1')
+        else:
+            card_processor.update_instant_settle_clientcode('EZETAP')
 
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={

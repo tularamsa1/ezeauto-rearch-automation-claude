@@ -181,7 +181,7 @@ def test_common_100_102_272():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "UPG_AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
                     "rrn": str(rrn),
@@ -655,7 +655,7 @@ def test_common_100_102_273():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "UPG_AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
                     "rrn": str(rrn),

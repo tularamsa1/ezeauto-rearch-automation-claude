@@ -90,6 +90,17 @@ def send_request(api_details):
             f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
         return json_resp
 
+    if api_details['ApiName'] == 'callbackgeneratorUpiICICI':
+        router_ip = ConfigReader.read_config("environment", "str_exe_env_ip")
+        url = str(protocol + "://" + router_ip + ":28089") + endPoint
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        update_api_details_to_report_variables(resp)
+        json_resp = json.loads(resp.text)
+        logger.debug(
+            f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+        return json_resp
+
+
     resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
     update_api_details_to_report_variables(resp)
     json_resp = json.loads(resp.text)

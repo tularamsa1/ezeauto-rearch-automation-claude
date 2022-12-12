@@ -43,8 +43,8 @@ def test_common_100_103_046():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
@@ -65,9 +65,13 @@ def test_common_100_103_046():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # ---------------------------------------------------------------------------------------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -106,6 +110,17 @@ def test_common_100_103_046():
             remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
             remotePayUpiCollectTxn.clickOnRemotePayProceed()
             logger.info("UPI Collect txn is completed.")
+            time.sleep(5)
+
+            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            original_upi_mc_id = result['id'].values[0]
+            logger.debug(f"Fetching original_upi_mc_id from db query : {original_upi_mc_id} ")
+            original_mid = result['mid'].values[0]
+            logger.debug(f"Fetching original_mid from db query : {original_mid} ")
+            original_tid = result['tid'].values[0]
+            logger.debug(f"Fetching original_tid from db query : {original_tid} ")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "'"
             logger.debug(f"Query to fetch transaction id from database : {query}")
@@ -124,16 +139,6 @@ def test_common_100_103_046():
             logger.debug(f"Fetching original_rrn from db query : {original_rrn} ")
             original_txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching original_txn_type from db query : {original_txn_type} ")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            original_upi_mc_id = result['id'].values[0]
-            logger.debug(f"Fetching original_upi_mc_id from db query : {original_upi_mc_id} ")
-            original_mid = result['mid'].values[0]
-            logger.debug(f"Fetching original_mid from db query : {original_mid} ")
-            original_tid = result['tid'].values[0]
-            logger.debug(f"Fetching original_tid from db query : {original_tid} ")
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
@@ -179,8 +184,6 @@ def test_common_100_103_046():
             fully_refunded_posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching fully_refunded_posting_date from db query: {fully_refunded_posting_date} ")
 
-
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -209,8 +212,8 @@ def test_common_100_103_046():
                     "refund_settle_status": "SETTLED",
                     "txn_id": original_txn_id,
                     "refund_txn_id": partially_refunded_txn_id,
-                    "txn_amt": str(amount),
-                    "refund_txn_amt": str(partial_refunded_amount),
+                    "txn_amt": str(amount)+".00",
+                    "txn_amt_2": str(partial_refunded_amount)+".00",
                     "customer_name": original_customer_name,
                     "refund_customer_name": original_customer_name,
                     "payer_name": original_payer_name,
@@ -228,7 +231,7 @@ def test_common_100_103_046():
                     "full_refund_pmt_mode": "UPI",
                     "full_refund_settle_status": "SETTLED",
                     "full_refund_txn_id": fully_refunded_txn_id,
-                    "full_refund_txn_amt": str(full_refund_amount),
+                    "txn_amt_3": str(full_refund_amount),
                     "full_refund_customer_name": original_customer_name,
                     "full_refund_payer_name": original_payer_name,
                     "full_refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
@@ -331,7 +334,7 @@ def test_common_100_103_046():
                     "txn_id": app_txn_id_original,
                     "refund_txn_id": app_txn_id_refunded,
                     "txn_amt": str(app_payment_amt_original),
-                    "refund_txn_amt": str(app_payment_amt_refunded),
+                    "txn_amt_2": str(app_payment_amt_refunded),
                     "customer_name": original_customer_name,
                     "refund_customer_name": original_customer_name,
                     "payer_name": original_payer_name,
@@ -349,7 +352,7 @@ def test_common_100_103_046():
                     "full_refund_pmt_mode": fully_refunded_app_payment_mode,
                     "full_refund_settle_status": fully_refunded_app_settlement_status,
                     "full_refund_txn_id": fully_refunded_app_txn_id,
-                    "full_refund_txn_amt": str(full_refund_amount),
+                    "txn_amt_3": str(full_refund_amount),
                     "full_refund_customer_name": fully_refunded_customer_name,
                     "full_refund_payer_name": original_payer_name,
                     "full_refund_pmt_msg": fully_refunded_payment_msg,
@@ -1284,8 +1287,8 @@ def test_common_100_103_076():
                     "settle_status_2": "SETTLED",
                     "txn_id": original_txn_id,
                     "txn_id_2": partially_refunded_txn_id,
-                    "txn_amt": str(amount),
-                    "txn_amt_2": str(partial_refunded_amount),
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(partial_refunded_amount),
                     "customer_name": original_customer_name,
                     "customer_name_2": original_customer_name,
                     "payer_name": original_payer_name,
@@ -1304,7 +1307,7 @@ def test_common_100_103_076():
                     "pmt_mode_3": "UPI",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": fully_refunded_txn_id,
-                    "txn_amt_3": str(full_refund_amount),
+                    "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
@@ -1416,7 +1419,7 @@ def test_common_100_103_076():
                     "pmt_mode_3": fully_refunded_app_payment_mode,
                     "settle_status_3": fully_refunded_app_settlement_status,
                     "txn_id_3": fully_refunded_app_txn_id,
-                    "txn_amt_3": str(full_refund_amount),
+                    "txn_amt_3":"{:.2f}".format(fully_refunded_app_payment_amt),
                     "customer_name_3": fully_refunded_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": fully_refunded_payment_msg,

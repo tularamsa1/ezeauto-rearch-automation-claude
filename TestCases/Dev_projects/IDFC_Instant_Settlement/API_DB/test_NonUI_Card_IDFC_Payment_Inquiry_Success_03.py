@@ -46,7 +46,9 @@ def test_D100_D101_050():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -267,7 +269,9 @@ def test_D100_D101_051():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username,
@@ -498,7 +502,9 @@ def test_D100_D101_052():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username,
@@ -729,7 +735,9 @@ def test_D100_D101_053():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username ,
@@ -950,7 +958,9 @@ def test_D100_D101_054():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username,
@@ -1181,7 +1191,9 @@ def test_D100_D101_055():
         logger.debug(f"Query result, org_code : {org_code}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
+        card_processor.update_idfc_timeout_properties('10000')
         card_processor.update_idfc_paymentApi_read_timeout('1000')
+        card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
                                                       "username": super_username,

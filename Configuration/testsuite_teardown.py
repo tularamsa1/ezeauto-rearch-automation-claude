@@ -5,7 +5,7 @@ from DataProvider import GlobalConstants
 from Utilities import DBProcessor, APIProcessor
 
 
-def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_mode=None):
+def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_mode=None, bank_code_bqr=None):
     if payment_mode == "CNP":
         query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
@@ -40,6 +40,8 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
         query = "update upi_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='" + bank_code + "'"
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
+
+        if bank_code in ["ICICI_DIRECT", "AXIS_DIRECT"]: bank_code = bank_code_bqr
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='" + bank_code + "'"
         result = DBProcessor.setValueToDB(query)
         print("RESULT of updating DB setting active", result)
@@ -220,3 +222,17 @@ def revert_config_FC(portal_username, portal_password):
                                                                           "password": portal_password})
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+
+def delete_staticqr_intent_table_entry(portal_username, portal_password, config_id):
+    """
+    This method is to delete the static_qr data from staticqr_intent table based on config id
+    """
+    query = "delete from staticqr_intent where config_id ='"+str(config_id)+"';"
+    result = DBProcessor.delete_value_from_db(query)
+    logger.debug(f"Result for the query '{query}' is : {result} ")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                          "password": portal_password})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for DB refresh is : {response}")

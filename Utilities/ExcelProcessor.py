@@ -114,3 +114,18 @@ def getPortalValidations(workbook, apiName):
         return ValueError
     else:
         return sheet.cell(row=rowNumber, column=columnNumber).value
+
+
+def set_values_to_excel(excel_path, sheet_name, column_name, row_value, row_number=2):
+    workbook = openpyxl.load_workbook(excel_path)
+    st = workbook[sheet_name]
+    column_number = getColumnNumberFromName(workbook, st, column_name)
+    st.cell(row=row_number, column=column_number).value = row_value
+    workbook.save(excel_path)
+
+def get_values_from_excel(excel_path, sheet_name, column_name, row_number=2):
+    workbook = openpyxl.load_workbook(excel_path)
+    st = workbook[sheet_name]
+    column_number = getColumnNumberFromName(workbook, st, column_name)
+    if row_number == -1: row_number = st.max_row
+    return st.cell(row=row_number, column=column_number).value
