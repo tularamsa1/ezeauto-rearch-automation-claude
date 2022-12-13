@@ -236,3 +236,17 @@ def delete_staticqr_intent_table_entry(portal_username, portal_password, config_
                                                                           "password": portal_password})
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for DB refresh is : {response}")
+
+def delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa):
+    """
+    This method is to delete the static_qr data from staticqr_intent table based on vpa
+    """
+
+    query = "delete from staticqr_intent where vpa ='"+str(vpa)+"';"
+    result = DBProcessor.delete_value_from_db(query)
+    logger.debug(f"Result for the query '{query}' is : {result} ")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                          "password": portal_password})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for DB refresh is : {response}")
