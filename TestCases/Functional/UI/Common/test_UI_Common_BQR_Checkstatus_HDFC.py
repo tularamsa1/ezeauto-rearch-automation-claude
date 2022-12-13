@@ -166,7 +166,7 @@ def test_common_100_102_004():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED",
-                                       "txn_amt": str(amount),"settle_status": "SETTLED",
+                                       "txn_amt": str(amount)+".00","settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time, "Logout Result": "Success"}
@@ -548,7 +548,7 @@ def test_common_100_102_005():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "FAILED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "FAILED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
@@ -905,7 +905,7 @@ def test_common_100_102_006():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
@@ -1256,7 +1256,7 @@ def test_common_100_102_085():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "PENDING","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "PENDING","txn_amt": str(amount)+".00",
                                        "settle_status": "PENDING","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT PENDING","date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")

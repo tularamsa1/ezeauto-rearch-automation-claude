@@ -263,7 +263,7 @@ def test_common_100_103_072():
                 expected_app_values = {
                                        "pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amount": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -318,7 +318,7 @@ def test_common_100_103_072():
                 actual_app_values = {
                                         "pmt_mode": app_payment_mode,
                                         "pmt_status": app_payment_status,
-                                        "txn_amount": app_amount.split(' ')[1],
+                                        "txn_amt": app_amount.split(' ')[1],
                                         "settle_status": app_settlement_status,
                                         "txn_id": app_txn_id,
                                         "customer_name": app_customer_name,
@@ -719,7 +719,7 @@ def test_common_100_103_073():
                 expected_app_values = {
                                        "pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amount": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -774,7 +774,7 @@ def test_common_100_103_073():
                 actual_app_values = {
                                         "pmt_mode": app_payment_mode,
                                         "pmt_status": app_payment_status,
-                                        "txn_amount": app_amount.split(' ')[1],
+                                        "txn_amt": app_amount.split(' ')[1],
                                         "settle_status": app_settlement_status,
                                         "txn_id": app_txn_id,
                                         "customer_name": app_customer_name,
@@ -1214,7 +1214,7 @@ def test_common_100_103_074():
                 expected_app_values = {
                                        "pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amount": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -1269,7 +1269,7 @@ def test_common_100_103_074():
                 actual_app_values = {
                                         "pmt_mode": app_payment_mode,
                                         "pmt_status": app_payment_status,
-                                        "txn_amount": app_amount.split(' ')[1],
+                                        "txn_amt": app_amount.split(' ')[1],
                                         "settle_status": app_settlement_status,
                                         "txn_id": app_txn_id,
                                         "customer_name": app_customer_name,

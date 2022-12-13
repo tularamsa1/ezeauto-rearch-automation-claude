@@ -30,7 +30,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_103_004():
     """
-    Sub Feature Code: UI_Common_PM_RP_upi collect_Success_Via_upi_Collect_Checkstatus_HDFC
+    Sub Feature Code: UI_Common_PM_RP_upi_collect_Success_Via_upi_Collect_Checkstatus_HDFC
     Sub Feature Description: Verification of a Remote Pay successful upi collect txn via HDFC using check status
     TC naming code description:
     100: Payment Method
@@ -117,27 +117,6 @@ def test_common_100_103_004():
             remotePayUpiCollectTxn.clickOnRemotePayProceed()
             logger.info("UPI Collect txn is completed.")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "';"
-            logger.debug(f"Query to fetch txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
-            txn_id = result['id'].values[0]
-            status = result['status'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            mid = result['mid'].values[0]
-            tid = result['tid'].values[0]
-            posting_date = result['posting_date'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
-            org_code_txn = result['org_code'].values[0]
-            txn_type = result['txn_type'].values[0]
-
-            logger.debug(
-                f"Fetching txn_id, rrn and status from the txn table : txn_id : {txn_id}, status : {status}")
-
             query = "select id from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
@@ -151,6 +130,16 @@ def test_common_100_103_004():
             Txn_id = result['id'].values[0]
             logger.debug(f"Query result, Txn_id : {Txn_id}")
             auth_code = result['auth_code'].values[0]
+            rrn = result['rr_number'].values[0]
+            txn_id = result['id'].values[0]
+            status = result['status'].values[0]
+            customer_name = result['customer_name'].values[0]
+            payer_name = result['payer_name'].values[0]
+            mid = result['mid'].values[0]
+            tid = result['tid'].values[0]
+            posting_date = result['created_time'].values[0]
+            org_code_txn = result['org_code'].values[0]
+            txn_type = result['txn_type'].values[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -174,7 +163,7 @@ def test_common_100_103_004():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -612,7 +601,7 @@ def test_common_100_103_005():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expectedAppValues = {"pmt_mode": "UPI",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "settle_status": "FAILED",
                                      "txn_id": txn_id,
                                      # "rrn": str(rrn),
@@ -1050,7 +1039,7 @@ def test_common_100_103_032():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "PENDING",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "PENDING",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -1453,7 +1442,7 @@ def test_common_100_103_089():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,

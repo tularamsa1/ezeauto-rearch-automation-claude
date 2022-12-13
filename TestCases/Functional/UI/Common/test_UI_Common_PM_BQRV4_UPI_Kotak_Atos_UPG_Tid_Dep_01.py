@@ -209,7 +209,7 @@ def test_common_100_102_268():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
                     "rrn": str(rrn),
@@ -660,7 +660,7 @@ def test_common_100_102_269():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
                     "rrn": str(rrn),

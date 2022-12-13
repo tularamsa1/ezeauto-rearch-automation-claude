@@ -258,7 +258,7 @@ def test_common_100_103_007():
                 date_and_time = date_time_converter.to_app_format(txn_posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": txn_txn_id,
                                      "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -695,7 +695,7 @@ def test_common_100_103_008():
                 logger.info("Started APP validation for the test case : test_common_100_103_008")
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": Txn_id,
                                      "customer_name": txn_customer_name,
                                      "settle_status": txn_settle_status,
@@ -1147,7 +1147,7 @@ def test_common_100_103_011():
                 logger.info("Started APP validation for the test case : test_common_100_103_011")
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": Txn_id,
                                      "order_id": order_id,
                                      "msg": "PAYMENT FAILED",
@@ -1582,7 +1582,7 @@ def test_common_100_103_013():
                 # follow python naming convention.
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "PENDING",
-                                     "txn_amt": str(amount),
+                                     "txn_amt": str(amount)+".00",
                                      "txn_id": txn_id,
                                      # "rrn": cnp_txn_rrn,
                                      "order_id": order_id,

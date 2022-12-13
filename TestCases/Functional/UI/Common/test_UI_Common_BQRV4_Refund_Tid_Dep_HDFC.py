@@ -190,7 +190,7 @@ def test_common_100_102_119():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED_REFUNDED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -202,7 +202,7 @@ def test_common_100_102_119():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUNDED",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": str(amount)+".00",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_new_2,
                     "rrn_2": str(rrn_new_2),

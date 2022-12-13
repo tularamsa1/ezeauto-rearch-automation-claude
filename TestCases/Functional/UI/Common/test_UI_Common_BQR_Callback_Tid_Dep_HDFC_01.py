@@ -157,7 +157,7 @@ def test_common_100_102_089():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time}
@@ -519,7 +519,7 @@ def test_common_100_102_090():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "FAILED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "FAILED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
@@ -860,7 +860,7 @@ def test_common_100_102_091():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED","txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
@@ -1218,12 +1218,12 @@ def test_common_100_102_095():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(posting_date_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED", "txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED", "txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
-                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "txn_amt_2": str(amount)+".00", "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new
@@ -1755,12 +1755,12 @@ def test_common_100_102_096():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED", "txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED", "txn_amt": str(amount)+".00",
                                        "settle_status": "SETTLED", "txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
-                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "txn_amt_2": str(amount)+".00", "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new

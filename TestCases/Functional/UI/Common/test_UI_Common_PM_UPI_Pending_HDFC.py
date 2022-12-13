@@ -176,7 +176,7 @@ def test_common_100_101_014():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "PENDING",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,

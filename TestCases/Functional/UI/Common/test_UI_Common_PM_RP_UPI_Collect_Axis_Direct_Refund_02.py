@@ -214,8 +214,8 @@ def test_common_100_103_113():
                     "settle_status_2": "SETTLED",
                     "txn_id": original_txn_id,
                     "txn_id_2": partially_refunded_txn_id,
-                    "txn_amt": str(amount),
-                    "txn_amt_2": str(partial_refunded_amount),
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(partial_refunded_amount),
                     "customer_name": original_customer_name,
                     "customer_name_2": original_customer_name,
                     "payer_name": original_payer_name,
@@ -233,7 +233,7 @@ def test_common_100_103_113():
                     "pmt_mode_3": "UPI",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": fully_refunded_txn_id,
-                    "txn_amt_3": str(full_refund_amount),
+                    "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
@@ -354,7 +354,7 @@ def test_common_100_103_113():
                     "pmt_mode_3": fully_refunded_app_payment_mode,
                     "settle_status_3": fully_refunded_app_settlement_status,
                     "txn_id_3": fully_refunded_app_txn_id,
-                    "txn_amt_3": str(full_refund_amount),
+                    "txn_amt_3": "{:.2f}".format(fully_refunded_app_payment_amt),
                     "customer_name_3": fully_refunded_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": fully_refunded_payment_msg,
@@ -972,7 +972,7 @@ def test_common_100_103_114():
             logger.debug(f"Fetching partially_refunded_txn_type from db query : {partially_refunded_txn_type} ")
             partially_refunded_rrn = result['rr_number'].iloc[0]
             logger.debug(f"Fetching partially_refunded_rrn from db query : {partially_refunded_rrn} ")
-            partially_refunded_posting_date = result['posting_date'].values[0]
+            partially_refunded_posting_date = result['created_time'].values[0]
             logger.debug(f"Fetching partially_refunded_posting_date from db query: {partially_refunded_posting_date} ")
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1027,8 +1027,8 @@ def test_common_100_103_114():
                     "settle_status_2": "SETTLED",
                     "txn_id": original_txn_id,
                     "txn_id_2": partially_refunded_txn_id,
-                    "txn_amt": str(amount),
-                    "txn_amt_2": str(partial_refunded_amount),
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(partial_refunded_amount),
                     "customer_name": original_customer_name,
                     "customer_name_2": original_customer_name,
                     "payer_name": original_payer_name,
@@ -1047,7 +1047,7 @@ def test_common_100_103_114():
                     "pmt_mode_3": "UPI",
                     "settle_status_3": "SETTLED",
                     "txn_id_3": fully_refunded_txn_id,
-                    "txn_amt_3": str(full_refund_amount),
+                    "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
@@ -1159,7 +1159,7 @@ def test_common_100_103_114():
                     "pmt_mode_3": fully_refunded_app_payment_mode,
                     "settle_status_3": fully_refunded_app_settlement_status,
                     "txn_id_3": fully_refunded_app_txn_id,
-                    "txn_amt_3": str(full_refund_amount),
+                    "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": fully_refunded_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": fully_refunded_payment_msg,

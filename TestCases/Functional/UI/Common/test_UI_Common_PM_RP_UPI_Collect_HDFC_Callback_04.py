@@ -106,9 +106,7 @@ def test_common_100_103_029():
                 remote_pay_upi_collect_txn.clickOnRemotePayUpiCollectVpaValidation()
                 logger.info("VPA validation completed.")
                 remote_pay_upi_collect_txn.clickOnRemotePayUpiCollectProceed()
-
-            logger.info("starting first callback")
-            logger.info("fetching pg merchant id and vps from the upi_merchant_config table to perform the 1st upi callback")
+                time.sleep(5)
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -263,7 +261,7 @@ def test_common_100_103_029():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "rrn": str(original_rrn),
@@ -708,7 +706,7 @@ def test_common_100_103_030():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "rrn": str(original_rrn),
@@ -1189,7 +1187,7 @@ def test_common_100_103_031():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount),
+                                       "txn_amt": str(amount)+".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "rrn": str(original_rrn),

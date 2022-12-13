@@ -151,7 +151,7 @@ def test_common_100_103_078():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount),
+                    "txn_amt": str(amount)+".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -521,7 +521,7 @@ def test_common_100_103_079():
                 expected_app_values = {
                                 "pmt_mode": "UPI",
                                 "pmt_status": "FAILED",
-                                "txn_amt": str(amount),
+                                "txn_amt": str(amount)+".00",
                                 "settle_status": "FAILED",
                                 "txn_id": txn_id,
                                 "rrn": str(rrn),
@@ -909,7 +909,7 @@ def test_common_100_103_085():
                 expected_app_values = {
                                 "pmt_mode": "UPI",
                                 "pmt_status": "PENDING",
-                                "txn_amt": str(amount),
+                                "txn_amt": str(amount)+".00",
                                 "settle_status": "PENDING",
                                 "txn_id": txn_id,
                                 # "rrn": str(rrn),
@@ -1151,10 +1151,6 @@ def test_common_100_103_115():
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
-
-        app_username = "6548522513"
-        app_password = "A123457"
-
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
@@ -1293,7 +1289,7 @@ def test_common_100_103_115():
                 expected_app_values = {
                                 "pmt_mode": "UPI",
                                 "pmt_status": "FAILED",
-                                "txn_amt": str(amount),
+                                "txn_amt": str(amount)+".00",
                                 "settle_status": "FAILED",
                                 "txn_id": txn_id,
                                 # "rrn": str(rrn),
