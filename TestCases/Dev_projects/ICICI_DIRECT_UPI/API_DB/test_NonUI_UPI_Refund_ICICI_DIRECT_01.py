@@ -18,7 +18,7 @@ def test_d102_101_018():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_full_Refund_Via_API
     Sub Feature Description: Verification of a full refund using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 018: TC018
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 018: TC018
     """
 
     try:
@@ -455,7 +455,7 @@ def test_d102_101_025():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Refund_Failed_Via_API
     Sub Feature Description: Verification of a refund failed using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 025: TC025
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 025: TC025
     """
 
     try:
@@ -894,7 +894,7 @@ def test_d102_101_026():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Refund_Posted_Via_API
     Sub Feature Description: Verification of a refund posted using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 026: TC026
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 026: TC026
     """
 
     try:

@@ -18,7 +18,7 @@ def test_d102_101_019():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Partial_Refund_Via_API
     Sub Feature Description: Verification of a partial refund using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 019: TC019
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 019: TC019
     """
 
     try:
@@ -456,7 +456,7 @@ def test_d102_101_027():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Partial_Refund_Failed_Via_API
     Sub Feature Description: Verification of a partial refund failed using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 027: TC027
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 027: TC027
     """
 
     try:
@@ -898,7 +898,7 @@ def test_d102_101_028():
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Partial_Refund_via_api_amount_greater_than_original_amount
     Sub Feature Description: Verification of a UPI partial refund via api when partial refund amount is greater than
     original amount for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 028: TC028
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 028: TC028
     """
 
     try:
@@ -1158,8 +1158,8 @@ def test_d102_101_028():
                     "pmt_mode_2": payment_mode_api_refunded,
                     "settle_status": settlement_status_api_original,
                     "settle_status_2": settlement_status_api_refunded,
-                    "txn_amt": str(amount_api_original),
-                    "txn_amt_2": str(amount_api_refunded),
+                    "txn_amt": amount_api_original,
+                    "txn_amt_2": amount_api_refunded,
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
                     "payer_name": payer_name,
@@ -1213,7 +1213,7 @@ def test_d102_101_028():
                     "acquirer_code": "ICICI",
                     "acquirer_code_2": "ICICI",
                     "bank_code": "ICICI",
-                    "bank_code_2": "ICICI",
+                    # "bank_code_2": "ICICI",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "upi_txn_type": "PAY_QR",
@@ -1301,7 +1301,7 @@ def test_d102_101_028():
                     "acquirer_code": acquirer_code_db_original,
                     "acquirer_code_2": acquirer_code_db_refunded,
                     "bank_code": bank_code_db_original,
-                    "bank_code_2": bank_code_db_refunded,
+                    # "bank_code_2": bank_code_db_refunded,
                     "pmt_gateway": payment_gateway_db_original,
                     "pmt_gateway_2": payment_gateway_db_refunded,
                     "upi_txn_type": upi_txn_type_db_original,
@@ -1342,7 +1342,7 @@ def test_d102_101_029():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Partial_Refund_In_Decimal_Via_API
     Sub Feature Description: Verification of a partial refund in decimal using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 029: TC029
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 029: TC029
     """
 
     try:
@@ -1782,7 +1782,7 @@ def test_d102_101_030():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_2_times_successful_Partial_Refund_Via_API
     Sub Feature Description: Verification of two times partial refund using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 030: TC030
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 030: TC030
     """
 
     try:
@@ -2358,7 +2358,7 @@ def test_d102_101_031():
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_First_refund_whole_amt_and_2nd_with_decimal_Via_API
     Sub Feature Description: Verification of two times partial refund (First refund whole amt and second with decimal)
     using api for ICICI_DIRECT
-    TC naming code description: d102: Payment Method, 101: UPI, 031: TC031
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 031: TC031
     """
 
     try:

@@ -1,12 +1,13 @@
 import random
 import sys
-import time
 from datetime import datetime
+
 import pytest
+
 from Configuration import Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
-from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, \
-    APIProcessor, date_time_converter
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
+    date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -15,12 +16,12 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d102_101_021():
+def test_d102_101_032():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_2_Success_Callback_Same_RRN_After_QR_Expiry_Auto_Refund_Disabled
-    Sub Feature Description: Generate QR through api and perform 2 upi success callback with same rrn after qr expiry
-    via ICICI_Direct pg when auto refund is disabled
-    TC naming code description: d102: Payment Method, 101: UPI, 021: TC021
+    Sub Feature Code: NonUI_Common_PM_UPI_UPG_AUTHORIZED_when_UPGRefund_&_UPGAutoRefund_Disabled_Via_ICICI_DIRECT
+    Sub Feature Description: Performing a upg txn using upi success callback when upg refund and upg auto refund
+    disabled via ICICI DIRECT PG.
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101:- UPI, 032:- TC032
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -53,13 +54,6 @@ def test_d102_101_021():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                "password": portal_password,
-                                                                                "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
-        logger.debug(f"API details  : {api_details} ")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -79,13 +73,15 @@ def test_d102_101_021():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
             upi_mc_id = result['id'].values[0]
             logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
             logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            vpa = result['vpa'].values[0]
+            logger.debug(f"fetched vpa : {vpa}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -95,94 +91,47 @@ def test_d102_101_021():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
+            txn_id = str(response["txnId"]).split('E')[0] + 'E' + str(random.randint(111111111, 999999999))
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
-            logger.info("waiting for the time till qr get expired...")
-            time.sleep(60)
 
-            query = "select * from txn where id = '" + str(txn_id) + "';"
+            rrn = txn_id.split('E')[1]
+            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
+
+            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
+                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
+                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "PayerVA": str(vpa)
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback generator api is : {response}")
+
+            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback api is : {response}")
+
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+            logger.debug(f"query to fetch data from invalid_pg_request table is : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            logger.debug(f"query result : {result}")
+            ipr_txn_id = result['txn_id'].iloc[0]
+            logger.debug(f"fetched txn_id is : {ipr_txn_id}")
+
+            query = "select * from txn where id = '" + str(ipr_txn_id) + "';"
+            logger.debug(f"Query to fetch txn data from the txn table is : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
             org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
-
-            callback_1_rrn = txn_id.split('E')[1]
-            logger.debug(f"generated random rrn number to perform first callback is : {callback_1_rrn}")
-
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": callback_1_rrn, "merchantTranId": str(txn_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where orig_txn_id = '" + str(txn_id) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            txn_id_2 = result['id'].values[0]
-            logger.debug(f"fetched txn_id_2 from txn table is : {txn_id_2}")
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name_2 from txn table is : {customer_name_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name_2 from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_2 from txn table is : {org_code_txn_2}")
-            txn_type_2 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type_2 from txn table is : {txn_type_2}")
-            auth_code_2 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code_2 from txn table is : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time_2 from txn table is : {created_time_2}")
-
-            callback_2_rrn = callback_1_rrn
-            logger.debug(f"generated random rrn number to perform second callback is : {callback_2_rrn}")
-
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": callback_2_rrn, "merchantTranId": str(txn_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where orig_txn_id = '" + str(txn_id) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            txn_id_3 = result['id'].values[0]
-            logger.debug(f"fetched txn_id_3 from txn table is : {txn_id_3}")
-            customer_name_3 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name_3 from txn table is : {customer_name_3}")
-            payer_name_3 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name_3 from txn table is : {payer_name_3}")
-            org_code_txn_3 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_3 from txn table is : {org_code_txn_3}")
-            txn_type_3 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type_3 from txn table is : {txn_type_3}")
-            auth_code_3 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code_3 from txn table is : {auth_code_3}")
-            created_time_3 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time_3 from txn table is : {created_time_3}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -203,62 +152,20 @@ def test_d102_101_021():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
-                date_2 = date_time_converter.db_datetime(created_time_2)
                 expected_api_values = {
-                    "pmt_status": "EXPIRED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
-                    "pmt_state": "EXPIRED",
-                    "settle_status": "FAILED",
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "txn_amt": float(amount), "pmt_mode": "UPI",
+                    "pmt_state": "UPG_AUTHORIZED", "rrn": str(rrn),
+                    "settle_status": "SETTLED",
                     "acquirer_code": "ICICI",
-                    "order_id": order_id,
-                    "issuer_code": "ICICI", "rrn": str(rrn),
-                    "txn_type": txn_type, "mid": virtual_mid,
-                    "tid": virtual_tid, "org_code": org_code,
-                    # "payer_name": payer_name,
-                    # "customer_name": customer_name,
-                    "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": amount, "pmt_mode_2": "UPI",
-                    "pmt_state_2": "SETTLED",
-                    "rrn_2": str(callback_1_rrn),
-                    "settle_status_2": "SETTLED",
-                    "acquirer_code_2": "ICICI",
-                    "customer_name_2": customer_name_2,
-                    "payer_name_2": payer_name_2,
-                    "order_id_2": order_id,
-                    "issuer_code_2": "ICICI",
-                    "txn_type_2": txn_type_2, "mid_2": virtual_mid,
-                    "tid_2": virtual_tid, "org_code_2": org_code,
-                    # "auth_code_2": str(auth_code_2),
-                    # "auth_code_3": str(auth_code_3),
-                    "date": date,
-                    "date_2": date_2,
-                    "txn_id_2": txn_id_2
+                    "issuer_code": "ICICI",
+                    "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
+                    "org_code": org_code_txn,
+                    # "auth_code": auth_code,
+                    "date": date
                 }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password})
-                logger.debug(f"API DETAILS for txn : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction list api is : {response}")
-                elements = [x for x in response["txns"] if x["txnId"] == txn_id][0]
-                logger.debug(f"Response after filtering data of current txn is : {elements}")
-                status_api = elements["status"]
-                amount_api = elements["amount"]  # actual=345.00, expected should be in the same format
-                payment_mode_api = elements["paymentMode"]
-                state_api = elements["states"][0]
-                settlement_status_api = elements["settlementStatus"]
-                issuer_code_api = elements["issuerCode"]
-                acquirer_code_api = elements["acquirerCode"]
-                orgCode_api = elements["orgCode"]
-                mid_api = elements["mid"]
-                tid_api = elements["tid"]
-                txn_type_api = elements["txnType"]
-                date_api = elements["postingDate"]
-                rrn_api = elements["rrNumber"]
-                order_id_api = elements["orderNumber"]
-                # payer_name_api = elements["payerName"]
-                # customer_name_api = elements["customerName"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -266,59 +173,36 @@ def test_d102_101_021():
                 logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction list api is : {response}")
-                elements = [x for x in response["txns"] if x["txnId"] == txn_id_3][0]
-                logger.debug(f"Response after filtering data of current txn is : {elements}")
-                new_txn_status_api_1 = elements["status"]
-                new_txn_amount_api_1 = elements["amount"]
-                new_payment_mode_api_1 = elements["paymentMode"]
-                new_txn_state_api_1 = elements["states"][0]
-                new_txn_rrn_api_1 = elements["rrNumber"]
-                new_txn_settlement_status_api_1 = elements["settlementStatus"]
-                new_txn_issuer_code_api_1 = elements["issuerCode"]
-                new_txn_acquirer_code_api_1 = elements["acquirerCode"]
-                new_txn_orgCode_api_1 = elements["orgCode"]
-                new_txn_mid_api_1 = elements["mid"]
-                new_txn_tid_api_1 = elements["tid"]
-                new_txn_txn_type_api_1 = elements["txnType"]
-                new_txn_date_api_1 = elements["createdTime"]
-                new_txn_order_id_api_1 = elements["orderNumber"]
-                new_txn_payer_name_api_1 = elements["payerName"]
-                new_txn_customer_name_api_1 = elements["customerName"]
-                # new_txn_auth_code_api_1 = elements["authCode"]
+                response = [x for x in response["txns"] if x["txnId"] == ipr_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                # auth_code_api = response["authCode"]
+                date_api = response["postingDate"]
 
                 actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": float(amount_api),
+                    "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api,
+                    "pmt_state": state_api, "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
-                    "order_id": order_id_api,
-                    "issuer_code": issuer_code_api, "rrn": str(rrn_api),
-                    "txn_type": txn_type_api, "mid": mid_api,
-                    "tid": tid_api, "org_code": orgCode_api,
-                    # "payer_name": payer_name_api,
-                    # "customer_name": customer_name_api,
-                    "pmt_status_2": new_txn_status_api_1,
-                    "txn_amt_2": float(new_txn_amount_api_1),
-                    "pmt_mode_2": new_payment_mode_api_1,
-                    "pmt_state_2": new_txn_state_api_1,
-                    "rrn_2": str(new_txn_rrn_api_1),
-                    "settle_status_2": new_txn_settlement_status_api_1,
-                    "acquirer_code_2": new_txn_acquirer_code_api_1,
-                    "customer_name_2": new_txn_customer_name_api_1,
-                    "payer_name_2": new_txn_payer_name_api_1,
-                    "issuer_code_2": new_txn_issuer_code_api_1,
-                    "order_id_2": new_txn_order_id_api_1,
-                    "txn_type_2": new_txn_txn_type_api_1, "mid_2": new_txn_mid_api_1,
-                    "tid_2": new_txn_tid_api_1, "org_code_2": new_txn_orgCode_api_1,
-                    # "auth_code_2": str(new_txn_auth_code_api_1),
-                    # "auth_code_3": str(new_txn_auth_code_api_2),
-                    "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api_1),
-                    "txn_id_2": txn_id_3
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "org_code": orgCode_api,
+                    # "auth_code": auth_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -330,53 +214,42 @@ def test_d102_101_021():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "pmt_status": "EXPIRED",
-                    "pmt_state": "EXPIRED",
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "pmt_state": "UPG_AUTHORIZED",
                     "pmt_mode": "UPI",
                     "txn_amt": float(amount),
-                    "upi_txn_status": "EXPIRED",
-                    "settle_status": "FAILED",
+                    "upi_txn_status": "UPG_AUTHORIZED",
+                    "settle_status": "SETTLED",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
-                    # "payer_name": orig_txn_payer_name,
-                    "rrn": str(rrn),
-                    "upi_txn_type": "PAY_QR",
+                    "upi_txn_type": "UNKNOWN",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_mc_id": upi_mc_id,
-                    "order_id": order_id,
-                    "error_msg": None,
-                    "pmt_status_2": "AUTHORIZED",
-                    "pmt_state_2": "SETTLED",
-                    "pmt_mode_2": "UPI",
-                    "txn_amt_2": float(amount),
-                    "upi_txn_status_2": "AUTHORIZED",
-                    "settle_status_2": "SETTLED",
-                    "acquirer_code_2": "ICICI",
-                    "bank_code_2": "ICICI",
-                    "pmt_gateway_2": "ICICI",
-                    "payer_name_2": payer_name_2,
-                    "rrn_2": str(callback_1_rrn),
-                    "upi_txn_type_2": "PAY_QR",
-                    "upi_bank_code_2": "ICICI_DIRECT",
-                    "upi_mc_id_2": upi_mc_id,
-                    "order_id_2": order_id,
-                    "error_msg_2": None,
                     "mid": virtual_mid,
                     "tid": virtual_tid,
-                    "mid_2": virtual_mid,
-                    "tid_2": virtual_tid,
-                    "txn_id_2": txn_id_2
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "ICICI",
+                    "ipr_org_code": org_code,
+                    "ipr_auth_code": auth_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": float(amount),
+                    "ipr_mid": virtual_mid,
+                    "ipr_tid": virtual_tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    # "ipr_pg_merchant_id": pgMerchantId,
                 }
+
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
+                query = "select * from txn where id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = result["amount"].iloc[0]
+                amount_db = float(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
                 acquirer_code_db = result["acquirer_code"].iloc[0]
@@ -384,12 +257,8 @@ def test_d102_101_021():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                # orig_txn_payer_name_db = result['payerName'].values[0]
-                original_rrn_db = result['rr_number'].values[0]
-                order_id_db = result['external_ref'].values[0]
-                error_msg_db = result['error_message'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -398,33 +267,21 @@ def test_d102_101_021():
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
 
-                query = "select * from txn where id='" + txn_id_2 + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
+                query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+                logger.debug(f"query : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                new_txn_status_db_1 = result["status"].iloc[0]
-                new_txn_payment_mode_db_1 = result["payment_mode"].iloc[0]
-                new_txn_amount_db_1 = result["amount"].iloc[0]
-                new_txn_state_db_1 = result["state"].iloc[0]
-                new_txn_payment_gateway_db_1 = result["payment_gateway"].iloc[0]
-                new_txn_acquirer_code_db_1 = result["acquirer_code"].iloc[0]
-                new_txn_bank_code_db_1 = result["bank_code"].iloc[0]
-                new_txn_settlement_status_db_1 = result["settlement_status"].iloc[0]
-                new_txn_tid_db_1 = result['tid'].values[0]
-                new_txn_mid_db_1 = result['mid'].values[0]
-                new_txn_payer_name_1_db = result['payer_name'].values[0]
-                callback_1_rrn_db = result['rr_number'].values[0]
-                new_txn_order_id_db_1 = result['external_ref'].values[0]
-                error_msg_db_2 = result['error_message'].values[0]
-
-                query = "select * from upi_txn where txn_id='" + txn_id_2 + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                new_txn_upi_status_db_1 = result["status"].iloc[0]
-                new_txn_upi_txn_type_db_1 = result["txn_type"].iloc[0]
-                new_txn_upi_bank_code_db_1 = result["bank_code"].iloc[0]
-                new_txn_upi_mc_id_db_1 = result["upi_mc_id"].iloc[0]
+                ipr_payment_mode = result["payment_mode"].iloc[0]
+                ipr_bank_code = result["bank_code"].iloc[0]
+                ipr_org_code = result["org_code"].iloc[0]
+                ipr_amount = float(result["amount"].iloc[0])
+                ipr_rrn = result["rrn"].iloc[0]
+                ipr_auth_code = result["auth_code"].iloc[0]
+                ipr_mid = result["mid"].iloc[0]
+                ipr_tid = result["tid"].iloc[0]
+                ipr_config_id = result["config_id"].iloc[0]
+                ipr_vpa = result["vpa"].iloc[0]
+                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -436,37 +293,25 @@ def test_d102_101_021():
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "payer_name": orig_txn_payer_name_db,
-                    "rrn": str(original_rrn_db),
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
-                    "order_id": order_id_db,
-                    "error_msg": error_msg_db,
-                    "pmt_status_2": new_txn_status_db_1,
-                    "pmt_state_2": new_txn_state_db_1,
-                    "pmt_mode_2": new_txn_payment_mode_db_1,
-                    "txn_amt_2": new_txn_amount_db_1,
-                    "upi_txn_status_2": new_txn_upi_status_db_1,
-                    "settle_status_2": new_txn_settlement_status_db_1,
-                    "acquirer_code_2": new_txn_acquirer_code_db_1,
-                    "bank_code_2": new_txn_bank_code_db_1,
-                    "pmt_gateway_2": new_txn_payment_gateway_db_1,
-                    "payer_name_2": new_txn_payer_name_1_db,
-                    "rrn_2": str(callback_1_rrn_db),
-                    "upi_txn_type_2": new_txn_upi_txn_type_db_1,
-                    "upi_bank_code_2": new_txn_upi_bank_code_db_1,
-                    "upi_mc_id_2": new_txn_upi_mc_id_db_1,
-                    "order_id_2": new_txn_order_id_db_1,
-                    "error_msg_2": error_msg_db_2,
                     "mid": mid_db,
                     "tid": tid_db,
-                    "mid_2": new_txn_mid_db_1,
-                    "tid_2": new_txn_tid_db_1,
-                    "txn_id_2": txn_id_3
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_auth_code": ipr_auth_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                 }
-                logger.debug(f"actual_db_values : {actual_db_values}")
 
+                logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -475,7 +320,9 @@ def test_d102_101_021():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-        # -------------------------------------------End of Validation---------------------------------------------
+
+    # -------------------------------------------End of Validation---------------------------------------------
+
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -483,12 +330,12 @@ def test_d102_101_021():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d102_101_022():
+def test_d102_101_033():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_2_Success_Callback_Same_RRN_After_QR_Expiry_Auto_Refund_Enabled
-    Sub Feature Description: Generate QR through api and perform 2 upi success callback with same rrn after qr expiry
-    via ICICI_Direct pg when auto refund is enabled
-    TC naming code description: d102: Payment Method, 101: UPI, 022: TC022
+    Sub Feature Code: NonUI_Common_PM_UPI_UPG_REFUND_PENDING_when_UPGRefund_&_UPGAutoRefund_Enabled_Via_ICICI_DIRECT
+    Sub Feature Description: Performing a upg txn using upi success callback when upg refund and upg auto refund
+    enabled via ICICI DIRECT PG.
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101:- UPI, 033:- TC033
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -521,20 +368,14 @@ def test_d102_101_022():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
-                                                                              "password": portal_password,
-                                                                              "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["autoRefundEnabled"] = "true"
+        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
+                                                                                    "password": portal_password,
+                                                                                    "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-        api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
-                                                                                "password": portal_password,
-                                                                                "settingForOrgCode": org_code})
-        api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
-        logger.debug(f"API details  : {api_details} ")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -554,13 +395,15 @@ def test_d102_101_022():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
             upi_mc_id = result['id'].values[0]
             logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
             logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            vpa = result['vpa'].values[0]
+            logger.debug(f"fetched vpa : {vpa}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -570,94 +413,47 @@ def test_d102_101_022():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
+            txn_id = str(response["txnId"]).split('E')[0] + 'E' + str(random.randint(111111111, 999999999))
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
-            logger.info("waiting for the time till qr get expired...")
-            time.sleep(60)
 
-            query = "select * from txn where id = '" + str(txn_id) + "';"
+            rrn = txn_id.split('E')[1]
+            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
+
+            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
+                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
+                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "PayerVA": str(vpa)
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback generator api is : {response}")
+
+            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback api is : {response}")
+
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+            logger.debug(f"query to fetch data from invalid_pg_request table is : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            logger.debug(f"query result : {result}")
+            ipr_txn_id = result['txn_id'].iloc[0]
+            logger.debug(f"fetched txn_id is : {ipr_txn_id}")
+
+            query = "select * from txn where id = '" + str(ipr_txn_id) + "';"
+            logger.debug(f"Query to fetch txn data from the txn table is : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
             org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
-
-            callback_1_rrn = txn_id.split('E')[1]
-            logger.debug(f"generated random rrn number to perform first callback is : {callback_1_rrn}")
-
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": callback_1_rrn, "merchantTranId": str(txn_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where orig_txn_id = '" + str(txn_id) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            txn_id_2 = result['id'].values[0]
-            logger.debug(f"fetched txn_id_2 from txn table is : {txn_id_2}")
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name_2 from txn table is : {customer_name_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name_2 from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_2 from txn table is : {org_code_txn_2}")
-            txn_type_2 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type_2 from txn table is : {txn_type_2}")
-            auth_code_2 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code_2 from txn table is : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time_2 from txn table is : {created_time_2}")
-
-            callback_2_rrn = callback_1_rrn
-            logger.debug(f"generated random rrn number to perform second callback is : {callback_2_rrn}")
-
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": callback_2_rrn, "merchantTranId": str(txn_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where orig_txn_id = '" + str(txn_id) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            txn_id_3 = result['id'].values[0]
-            logger.debug(f"fetched txn_id_3 from txn table is : {txn_id_3}")
-            customer_name_3 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name_3 from txn table is : {customer_name_3}")
-            payer_name_3 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name_3 from txn table is : {payer_name_3}")
-            org_code_txn_3 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_3 from txn table is : {org_code_txn_3}")
-            txn_type_3 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type_3 from txn table is : {txn_type_3}")
-            auth_code_3 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code_3 from txn table is : {auth_code_3}")
-            created_time_3 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time_3 from txn table is : {created_time_3}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -678,63 +474,20 @@ def test_d102_101_022():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
-                date_2 = date_time_converter.db_datetime(created_time_2)
                 expected_api_values = {
-                    "pmt_status": "EXPIRED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
-                    "pmt_state": "EXPIRED",
-                    "settle_status": "FAILED",
+                    "pmt_status": "UPG_REFUND_PENDING",
+                    "txn_amt": float(amount), "pmt_mode": "UPI",
+                    "pmt_state": "UPG_REFUND_PENDING", "rrn": str(rrn),
+                    "settle_status": "SETTLED",
                     "acquirer_code": "ICICI",
-                    "order_id": order_id,
                     "issuer_code": "ICICI",
-                    # "rrn": str(rrn),
-                    "txn_type": txn_type, "mid": virtual_mid,
-                    "tid": virtual_tid, "org_code": org_code,
-                    # "payer_name": payer_name,
-                    # "customer_name": customer_name,
-                    "pmt_status_2": "REFUND_PENDING",
-                    "txn_amt_2": amount, "pmt_mode_2": "UPI",
-                    "pmt_state_2": "REFUND_PENDING",
-                    "rrn_2": str(callback_1_rrn),
-                    "settle_status_2": "SETTLED",
-                    "acquirer_code_2": "ICICI",
-                    "customer_name_2": customer_name_2,
-                    "payer_name_2": payer_name_2,
-                    "order_id_2": order_id,
-                    "issuer_code_2": "ICICI",
-                    "txn_type_2": txn_type_2, "mid_2": virtual_mid,
-                    "tid_2": virtual_tid, "org_code_2": org_code,
-                    # "auth_code_2": str(auth_code_2),
-                    # "auth_code_3": str(auth_code_3),
-                    "date": date,
-                    "date_2": date_2,
-                    "txn_id_2": txn_id_2
+                    "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
+                    "org_code": org_code_txn,
+                    # "auth_code": auth_code,
+                    "date": date
                 }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password})
-                logger.debug(f"API DETAILS for txn : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction list api is : {response}")
-                elements = [x for x in response["txns"] if x["txnId"] == txn_id][0]
-                logger.debug(f"Response after filtering data of current txn is : {elements}")
-                status_api = elements["status"]
-                amount_api = elements["amount"]  # actual=345.00, expected should be in the same format
-                payment_mode_api = elements["paymentMode"]
-                state_api = elements["states"][0]
-                settlement_status_api = elements["settlementStatus"]
-                issuer_code_api = elements["issuerCode"]
-                acquirer_code_api = elements["acquirerCode"]
-                orgCode_api = elements["orgCode"]
-                mid_api = elements["mid"]
-                tid_api = elements["tid"]
-                txn_type_api = elements["txnType"]
-                date_api = elements["postingDate"]
-                # rrn_api = elements["rrNumber"]
-                order_id_api = elements["orderNumber"]
-                # payer_name_api = elements["payerName"]
-                # customer_name_api = elements["customerName"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -742,59 +495,36 @@ def test_d102_101_022():
                 logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction list api is : {response}")
-                elements = [x for x in response["txns"] if x["txnId"] == txn_id_3][0]
-                logger.debug(f"Response after filtering data of current txn is : {elements}")
-                new_txn_status_api_1 = elements["status"]
-                new_txn_amount_api_1 = elements["amount"]
-                new_payment_mode_api_1 = elements["paymentMode"]
-                new_txn_state_api_1 = elements["states"][0]
-                new_txn_rrn_api_1 = elements["rrNumber"]
-                new_txn_settlement_status_api_1 = elements["settlementStatus"]
-                new_txn_issuer_code_api_1 = elements["issuerCode"]
-                new_txn_acquirer_code_api_1 = elements["acquirerCode"]
-                new_txn_orgCode_api_1 = elements["orgCode"]
-                new_txn_mid_api_1 = elements["mid"]
-                new_txn_tid_api_1 = elements["tid"]
-                new_txn_txn_type_api_1 = elements["txnType"]
-                new_txn_date_api_1 = elements["createdTime"]
-                new_txn_order_id_api_1 = elements["orderNumber"]
-                new_txn_payer_name_api_1 = elements["payerName"]
-                new_txn_customer_name_api_1 = elements["customerName"]
-                # new_txn_auth_code_api_1 = elements["authCode"]
+                response = [x for x in response["txns"] if x["txnId"] == ipr_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                # auth_code_api = response["authCode"]
+                date_api = response["postingDate"]
 
                 actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": float(amount_api),
+                    "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api,
+                    "pmt_state": state_api, "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
-                    "order_id": order_id_api,
                     "issuer_code": issuer_code_api,
-                    # "rrn": str(rrn_api),
-                    "txn_type": txn_type_api, "mid": mid_api,
-                    "tid": tid_api, "org_code": orgCode_api,
-                    # "payer_name": payer_name_api,
-                    # "customer_name": customer_name_api,
-                    "pmt_status_2": new_txn_status_api_1,
-                    "txn_amt_2": float(new_txn_amount_api_1),
-                    "pmt_mode_2": new_payment_mode_api_1,
-                    "pmt_state_2": new_txn_state_api_1,
-                    "rrn_2": str(new_txn_rrn_api_1),
-                    "settle_status_2": new_txn_settlement_status_api_1,
-                    "acquirer_code_2": new_txn_acquirer_code_api_1,
-                    "customer_name_2": new_txn_customer_name_api_1,
-                    "payer_name_2": new_txn_payer_name_api_1,
-                    "issuer_code_2": new_txn_issuer_code_api_1,
-                    "order_id_2": new_txn_order_id_api_1,
-                    "txn_type_2": new_txn_txn_type_api_1, "mid_2": new_txn_mid_api_1,
-                    "tid_2": new_txn_tid_api_1, "org_code_2": new_txn_orgCode_api_1,
-                    # "auth_code_2": str(new_txn_auth_code_api_1),
-                    "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api_1),
-                    "txn_id_2": txn_id_3
+                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "org_code": orgCode_api,
+                    # "auth_code": auth_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -806,53 +536,376 @@ def test_d102_101_022():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "pmt_status": "EXPIRED",
-                    "pmt_state": "EXPIRED",
+                    "pmt_status": "UPG_REFUND_PENDING",
+                    "pmt_state": "UPG_REFUND_PENDING",
                     "pmt_mode": "UPI",
                     "txn_amt": float(amount),
-                    "upi_txn_status": "EXPIRED",
-                    "settle_status": "FAILED",
+                    "upi_txn_status": "UPG_REFUND_PENDING",
+                    "settle_status": "SETTLED",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
-                    # "payer_name": orig_txn_payer_name,
+                    "upi_txn_type": "UNKNOWN",
+                    "upi_bank_code": "ICICI_DIRECT",
+                    "upi_mc_id": upi_mc_id,
+                    "mid": virtual_mid,
+                    "tid": virtual_tid,
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "ICICI",
+                    "ipr_org_code": org_code,
+                    "ipr_auth_code": auth_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": float(amount),
+                    "ipr_mid": virtual_mid,
+                    "ipr_tid": virtual_tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    # "ipr_pg_merchant_id": pgMerchantId,
+                }
+
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from txn where id='" + ipr_txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db = result["status"].iloc[0]
+                payment_mode_db = result["payment_mode"].iloc[0]
+                amount_db = float(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+                acquirer_code_db = result["acquirer_code"].iloc[0]
+                bank_code_db = result["bank_code"].iloc[0]
+                settlement_status_db = result["settlement_status"].iloc[0]
+                tid_db = result['tid'].values[0]
+                mid_db = result['mid'].values[0]
+
+                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].iloc[0]
+                upi_txn_type_db = result["txn_type"].iloc[0]
+                upi_bank_code_db = result["bank_code"].iloc[0]
+                upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+                logger.debug(f"query : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                ipr_payment_mode = result["payment_mode"].iloc[0]
+                ipr_bank_code = result["bank_code"].iloc[0]
+                ipr_org_code = result["org_code"].iloc[0]
+                ipr_amount = float(result["amount"].iloc[0])
+                ipr_rrn = result["rrn"].iloc[0]
+                ipr_auth_code = result["auth_code"].iloc[0]
+                ipr_mid = result["mid"].iloc[0]
+                ipr_tid = result["tid"].iloc[0]
+                ipr_config_id = result["config_id"].iloc[0]
+                ipr_vpa = result["vpa"].iloc[0]
+                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db,
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_auth_code": ipr_auth_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
+                }
+
+                logger.debug(f"actual_db_values : {actual_db_values}")
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+
+    # -------------------------------------------End of Validation---------------------------------------------
+
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+def test_d102_101_034():
+    """
+    Sub Feature Code: NonUI_Common_PM_UPI_amount_mismatch_Via_Pure_UPI_Success_Callback_ICICI_DIRECT
+    Sub Feature Description: Performing a amount mismatch using pure upi success callback via ICICI_DIRECT.
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101:- UPI, 034:- TC034
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog=True)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
+            upi_mc_id = result['id'].values[0]
+            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+            virtual_tid = result['virtual_tid'].values[0]
+            logger.debug(f"fetched virtual_tid : {virtual_tid}")
+            virtual_mid = result['virtual_mid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            vpa = result['vpa'].values[0]
+            logger.debug(f"fetched vpa : {vpa}")
+
+            amount = random.randint(1, 100)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            logger.debug(f"initiating upi qr for the amount of {amount}")
+            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
+                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received after initiating upi qr : {response}")
+            txn_id = response["txnId"]
+            logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+
+            rrn = txn_id.split('E')[1]
+            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
+            logger.debug(f"to perform the amount mismatch upon callback, changing the amount {amount} to {amount + 1}")
+            amount = amount + 1
+            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
+                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
+                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "PayerVA": str(vpa)
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback generator api is : {response}")
+
+            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback api is : {response}")
+
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+            logger.debug(f"query to fetch data from the invalid_pg_request table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"result for the query : {query} is : {result}")
+            ipr_txn_id = result['txn_id'].iloc[0]
+            logger.debug(f"captured txn_id from invalid_pg_request table is : {ipr_txn_id}")
+            ipr_payment_mode = result["payment_mode"].iloc[0]
+            logger.debug(f"captured payment_mode from invalid_pg_request : {ipr_payment_mode}")
+            ipr_bank_code = result["bank_code"].iloc[0]
+            logger.debug(f"captured bank_code from invalid_pg_request : {ipr_bank_code}")
+            ipr_org_code = result["org_code"].iloc[0]
+            logger.debug(f"captured org_code from invalid_pg_request : {ipr_org_code}")
+            ipr_amount = float(result["amount"].iloc[0])
+            logger.debug(f"captured txn_amount from invalid_pg_request : {ipr_amount}")
+            ipr_rrn = result["rrn"].iloc[0]
+            logger.debug(f"captured rrn from invalid_pg_request : {ipr_rrn}")
+            ipr_mid = result["mid"].iloc[0]
+            logger.debug(f"captured mid from invalid_pg_request : {ipr_mid}")
+            ipr_tid = result["tid"].iloc[0]
+            logger.debug(f"captured tid from invalid_pg_request : {ipr_tid}")
+            ipr_config_id = result["config_id"].iloc[0]
+            logger.debug(f"captured config_id from invalid_pg_request : {ipr_config_id}")
+            ipr_vpa = result["vpa"].iloc[0]
+            logger.debug(f"captured vpa from invalid_pg_request : {ipr_vpa}")
+            ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+            logger.debug(f"captured pg_merchant_id from invalid_pg_request : {ipr_pg_merchant_id}")
+            ipr_error_message = result["error_message"].iloc[0]
+            logger.debug(f"captured error_message from invalid_pg_request : {ipr_error_message}")
+
+            query = "select * from txn where id = '" + ipr_txn_id + "';"
+            logger.debug(f"Query to fetch transaction id from database : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"captured auth_code from txn table is : {auth_code}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"captured org_code from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"captured txn_type from txn table is : {txn_type}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"captured posting_date from txn table is : {posting_date}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"captured external_ref from txn table is : {external_ref}")
+
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+
+        # -----------------------------------------End of Test Execution--------------------------------------
+
+        # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                date = date_time_converter.db_datetime(posting_date)
+                expected_api_values = {
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "txn_amt": float(amount), "pmt_mode": "UPI",
+                    "pmt_state": "UPG_AUTHORIZED", "rrn": str(rrn),
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "ICICI",
+                    "issuer_code": "ICICI",
+                    "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
+                    "org_code": org_code_txn,
+                    "date": date,
+                    # "auth_code": str(auth_code)
+                }
+
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == ipr_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                # auth_code_api = response["authCode"]
+                date_api = response["postingDate"]
+
+                actual_api_values = {
+                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "org_code": orgCode_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    # "auth_code": str(auth_code_api),
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "pmt_state": "UPG_AUTHORIZED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": float(amount),
+                    "upi_txn_status": "UPG_AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "ICICI",
+                    "bank_code": "ICICI",
+                    "payment_gateway": "ICICI",
+                    "upi_txn_type": "UNKNOWN",
+                    "upi_bank_code": "ICICI_DIRECT",
+                    "upi_mc_id": upi_mc_id,
+                    "mid": virtual_mid,
+                    "tid": virtual_tid,
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "ICICI",
+                    "ipr_org_code": org_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": float(amount),
+                    "ipr_mid": virtual_mid,
+                    "ipr_tid": virtual_tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    # "ipr_pg_merchant_id": pg_merchant_id,
                     "rrn": str(rrn),
-                    "upi_txn_type": "PAY_QR",
-                    "upi_bank_code": "ICICI_DIRECT",
-                    "upi_mc_id": upi_mc_id,
-                    "order_id": order_id,
-                    "error_msg": None,
-                    "pmt_status_2": "REFUND_PENDING",
-                    "pmt_state_2": "REFUND_PENDING",
-                    "pmt_mode_2": "UPI",
-                    "txn_amt_2": float(amount),
-                    "upi_txn_status_2": "REFUND_PENDING",
-                    "settle_status_2": "SETTLED",
-                    "acquirer_code_2": "ICICI",
-                    "bank_code_2": "ICICI",
-                    "pmt_gateway_2": "ICICI",
-                    "payer_name_2": payer_name_2,
-                    "rrn_2": str(callback_1_rrn),
-                    "upi_txn_type_2": "PAY_QR",
-                    "upi_bank_code_2": "ICICI_DIRECT",
-                    "upi_mc_id_2": upi_mc_id,
-                    "order_id_2": order_id,
-                    "error_msg_2": None,
-                    "mid": virtual_mid,
-                    "tid": virtual_tid,
-                    "mid_2": virtual_mid,
-                    "tid_2": virtual_tid,
-                    "txn_id_2": txn_id_2
+                    "ipr_error_message": "The given amount - "+str(amount)+" doesnt match with the transaction amount."
                 }
-                logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
+                logger.debug(f"expectedDBValues: {expected_db_values}")
+
+                query = "select * from txn where id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = result["amount"].iloc[0]
+                amount_db = float(result["amount"].iloc[0])
                 state_db = result["state"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
                 acquirer_code_db = result["acquirer_code"].iloc[0]
@@ -860,12 +913,10 @@ def test_d102_101_022():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                # orig_txn_payer_name_db = result['payerName'].values[0]
-                original_rrn_db = result['rr_number'].values[0]
-                order_id_db = result['external_ref'].values[0]
-                error_msg_db = result['error_message'].values[0]
+                rrn_db = result['rr_number'].values[0]
+                # device_serial_db = result['device_serial'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -873,34 +924,6 @@ def test_d102_101_022():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                query = "select * from txn where id='" + txn_id_3 + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                new_txn_status_db_1 = result["status"].iloc[0]
-                new_txn_payment_mode_db_1 = result["payment_mode"].iloc[0]
-                new_txn_amount_db_1 = result["amount"].iloc[0]
-                new_txn_state_db_1 = result["state"].iloc[0]
-                new_txn_payment_gateway_db_1 = result["payment_gateway"].iloc[0]
-                new_txn_acquirer_code_db_1 = result["acquirer_code"].iloc[0]
-                new_txn_bank_code_db_1 = result["bank_code"].iloc[0]
-                new_txn_settlement_status_db_1 = result["settlement_status"].iloc[0]
-                new_txn_tid_db_1 = result['tid'].values[0]
-                new_txn_mid_db_1 = result['mid'].values[0]
-                new_txn_payer_name_1_db = result['payer_name'].values[0]
-                callback_1_rrn_db = result['rr_number'].values[0]
-                new_txn_order_id_db_1 = result['external_ref'].values[0]
-                error_msg_db_2 = result['error_message'].values[0]
-
-                query = "select * from upi_txn where txn_id='" + txn_id_3 + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                new_txn_upi_status_db_1 = result["status"].iloc[0]
-                new_txn_upi_txn_type_db_1 = result["txn_type"].iloc[0]
-                new_txn_upi_bank_code_db_1 = result["bank_code"].iloc[0]
-                new_txn_upi_mc_id_db_1 = result["upi_mc_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -911,38 +934,27 @@ def test_d102_101_022():
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
-                    "pmt_gateway": payment_gateway_db,
-                    # "payer_name": orig_txn_payer_name_db,
-                    "rrn": str(original_rrn_db),
+                    "payment_gateway": payment_gateway_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
-                    "order_id": order_id_db,
-                    "error_msg": error_msg_db,
-                    "pmt_status_2": new_txn_status_db_1,
-                    "pmt_state_2": new_txn_state_db_1,
-                    "pmt_mode_2": new_txn_payment_mode_db_1,
-                    "txn_amt_2": new_txn_amount_db_1,
-                    "upi_txn_status_2": new_txn_upi_status_db_1,
-                    "settle_status_2": new_txn_settlement_status_db_1,
-                    "acquirer_code_2": new_txn_acquirer_code_db_1,
-                    "bank_code_2": new_txn_bank_code_db_1,
-                    "pmt_gateway_2": new_txn_payment_gateway_db_1,
-                    "payer_name_2": new_txn_payer_name_1_db,
-                    "rrn_2": str(callback_1_rrn_db),
-                    "upi_txn_type_2": new_txn_upi_txn_type_db_1,
-                    "upi_bank_code_2": new_txn_upi_bank_code_db_1,
-                    "upi_mc_id_2": new_txn_upi_mc_id_db_1,
-                    "order_id_2": new_txn_order_id_db_1,
-                    "error_msg_2": error_msg_db_2,
                     "mid": mid_db,
                     "tid": tid_db,
-                    "mid_2": new_txn_mid_db_1,
-                    "tid_2": new_txn_tid_db_1,
-                    "txn_id_2": txn_id_3,
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
+                    "rrn": str(rrn_db),
+                    "ipr_error_message": str(ipr_error_message)
                 }
-                logger.debug(f"actual_db_values : {actual_db_values}")
 
+                logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -951,7 +963,8 @@ def test_d102_101_022():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-        # -------------------------------------------End of Validation---------------------------------------------
+    # -------------------------------------------End of Validation---------------------------------------------
+
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -959,12 +972,12 @@ def test_d102_101_022():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d102_101_023():
+def test_d102_101_035():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_2_Failed_Callback_Same_RRN_Before_QR_Expiry
-    Sub Feature Description: Generate QR through api and perform 2 upi failed callback with same rrn before qr expiry
-    via ICICI_Direct pg
-    TC naming code description: d102: Payment Method, 101: UPI, 023: TC023
+    Sub Feature Code: NonUI_Common_PM_UPI_amount_mismatch_Via_Pure_UPI_Success_Callback_UPGRefund_&_UPGAutoRefund_Enabled_ICICI_DIRECT
+    Sub Feature Description: Performing a amount mismatch using pure upi success callback when UPGRefund and UPGAuto
+    Refund is enabled via ICICI_DIRECT.
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101:- UPI, 035:- TC035
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -989,7 +1002,337 @@ def test_d102_101_023():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
+                                                                                    "password": portal_password,
+                                                                                    "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
+        logger.debug(f"API details  : {api_details}")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+        # Set the below variables depending on the log capturing need of the test case.
+        Configuration.configureLogCaptureVariables(apiLog=True)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result for upi_merchant_config table is : {result}")
+            upi_mc_id = result['id'].values[0]
+            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+            virtual_tid = result['virtual_tid'].values[0]
+            logger.debug(f"fetched virtual_tid : {virtual_tid}")
+            virtual_mid = result['virtual_mid'].values[0]
+            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            vpa = result['vpa'].values[0]
+            logger.debug(f"fetched vpa : {vpa}")
+
+            amount = random.randint(1, 100)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            logger.debug(f"initiating upi qr for the amount of {amount}")
+            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
+                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received after initiating upi qr : {response}")
+            txn_id = response["txnId"]
+            logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+
+            rrn = txn_id.split('E')[1]
+            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
+            logger.debug(f"to perform the amount mismatch upon callback, changing the amount {amount} to {amount + 1}")
+            amount = amount + 1
+            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
+                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
+                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "PayerVA": str(vpa)
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback generator api is : {response}")
+
+            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"response received for callback api is : {response}")
+
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+            logger.debug(f"query to fetch data from the invalid_pg_request table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"result for the query : {query} is : {result}")
+            ipr_txn_id = result['txn_id'].iloc[0]
+            logger.debug(f"captured txn_id from invalid_pg_request table is : {ipr_txn_id}")
+            ipr_payment_mode = result["payment_mode"].iloc[0]
+            logger.debug(f"captured payment_mode from invalid_pg_request : {ipr_payment_mode}")
+            ipr_bank_code = result["bank_code"].iloc[0]
+            logger.debug(f"captured bank_code from invalid_pg_request : {ipr_bank_code}")
+            ipr_org_code = result["org_code"].iloc[0]
+            logger.debug(f"captured org_code from invalid_pg_request : {ipr_org_code}")
+            ipr_amount = float(result["amount"].iloc[0])
+            logger.debug(f"captured txn_amount from invalid_pg_request : {ipr_amount}")
+            ipr_rrn = result["rrn"].iloc[0]
+            logger.debug(f"captured rrn from invalid_pg_request : {ipr_rrn}")
+            ipr_mid = result["mid"].iloc[0]
+            logger.debug(f"captured mid from invalid_pg_request : {ipr_mid}")
+            ipr_tid = result["tid"].iloc[0]
+            logger.debug(f"captured tid from invalid_pg_request : {ipr_tid}")
+            ipr_config_id = result["config_id"].iloc[0]
+            logger.debug(f"captured config_id from invalid_pg_request : {ipr_config_id}")
+            ipr_vpa = result["vpa"].iloc[0]
+            logger.debug(f"captured vpa from invalid_pg_request : {ipr_vpa}")
+            ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+            logger.debug(f"captured pg_merchant_id from invalid_pg_request : {ipr_pg_merchant_id}")
+            ipr_error_message = result["error_message"].iloc[0]
+            logger.debug(f"captured error_message from invalid_pg_request : {ipr_error_message}")
+
+            query = "select * from txn where id = '" + ipr_txn_id + "';"
+            logger.debug(f"Query to fetch transaction id from database : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"captured auth_code from txn table is : {auth_code}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"captured org_code from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"captured txn_type from txn table is : {txn_type}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"captured posting_date from txn table is : {posting_date}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"captured external_ref from txn table is : {external_ref}")
+
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+
+        # -----------------------------------------End of Test Execution--------------------------------------
+
+        # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                date = date_time_converter.db_datetime(posting_date)
+                expected_api_values = {
+                    "pmt_status": "UPG_REFUND_PENDING",
+                    "txn_amt": float(amount), "pmt_mode": "UPI",
+                    "pmt_state": "UPG_REFUND_PENDING", "rrn": str(rrn),
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "ICICI",
+                    "issuer_code": "ICICI",
+                    "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
+                    "org_code": org_code_txn,
+                    "date": date,
+                    # "auth_code": str(auth_code)
+                }
+
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == ipr_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                # auth_code_api = response["authCode"]
+                date_api = response["postingDate"]
+
+                actual_api_values = {
+                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "org_code": orgCode_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    # "auth_code": str(auth_code_api),
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "pmt_status": "UPG_REFUND_PENDING",
+                    "pmt_state": "UPG_REFUND_PENDING",
+                    "pmt_mode": "UPI",
+                    "txn_amt": float(amount),
+                    "upi_txn_status": "UPG_REFUND_PENDING",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "ICICI",
+                    "bank_code": "ICICI",
+                    "payment_gateway": "ICICI",
+                    "upi_txn_type": "UNKNOWN",
+                    "upi_bank_code": "ICICI_DIRECT",
+                    "upi_mc_id": upi_mc_id,
+                    "mid": virtual_mid,
+                    "tid": virtual_tid,
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "ICICI",
+                    "ipr_org_code": org_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": float(amount),
+                    "ipr_mid": virtual_mid,
+                    "ipr_tid": virtual_tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    # "ipr_pg_merchant_id": pg_merchant_id,
+                    "rrn": str(rrn),
+                    "ipr_error_message": "The given amount - "+str(amount)+" doesnt match with the transaction amount."
+                }
+
+                logger.debug(f"expectedDBValues: {expected_db_values}")
+
+                query = "select * from txn where id='" + ipr_txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db = result["status"].iloc[0]
+                payment_mode_db = result["payment_mode"].iloc[0]
+                amount_db = float(result["amount"].iloc[0])
+                state_db = result["state"].iloc[0]
+                payment_gateway_db = result["payment_gateway"].iloc[0]
+                acquirer_code_db = result["acquirer_code"].iloc[0]
+                bank_code_db = result["bank_code"].iloc[0]
+                settlement_status_db = result["settlement_status"].iloc[0]
+                tid_db = result['tid'].values[0]
+                mid_db = result['mid'].values[0]
+                rrn_db = result['rr_number'].values[0]
+                # device_serial_db = result['device_serial'].values[0]
+
+                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].iloc[0]
+                upi_txn_type_db = result["txn_type"].iloc[0]
+                upi_bank_code_db = result["bank_code"].iloc[0]
+                upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "payment_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db,
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
+                    "rrn": str(rrn_db),
+                    "ipr_error_message": str(ipr_error_message)
+                }
+
+                logger.debug(f"actual_db_values : {actual_db_values}")
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+    # -------------------------------------------End of Validation---------------------------------------------
+
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+def test_d102_101_036():
+    """
+    Sub Feature Code: NonUI_Common_PM_UPI_UPG_FAILED_Via_ICICI_DIRECT
+    Sub Feature Description: Performing a upg txn using upi failed callback when upg refund and upg auto refund
+    disabled via ICICI DIRECT PG.
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101:- UPI, 036:- TC036
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -1022,6 +1365,8 @@ def test_d102_101_023():
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
             logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            vpa = result['vpa'].values[0]
+            logger.debug(f"fetched vpa : {vpa}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -1031,7 +1376,7 @@ def test_d102_101_023():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
+            txn_id = str(response["txnId"]).split('E')[0] + 'E' + str(random.randint(111111111, 999999999))
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
 
             rrn = txn_id.split('E')[1]
@@ -1039,7 +1384,8 @@ def test_d102_101_023():
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "TxnStatus": "FAILED"
+                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "PayerVA": str(vpa),
+                "TxnStatus": "FAILED"
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback generator api is : {response}")
@@ -1048,51 +1394,30 @@ def test_d102_101_023():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback api is : {response}")
 
-            query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+            logger.debug(f"query to fetch data from invalid_pg_request table is : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result : {result}")
+            ipr_txn_id = result['txn_id'].iloc[0]
+            logger.debug(f"fetched txn_id is : {ipr_txn_id}")
+
+            query = "select * from txn where id = '" + str(ipr_txn_id) + "';"
+            logger.debug(f"Query to fetch txn data from the txn table is : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
             org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
-
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "TxnStatus": "FAILED"
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
-            txn_id_2 = result['id'].values[0]
-            logger.debug(f"fetched txn_id from txn table is : {txn_id_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
-            txn_type_2 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time from txn table is : {created_time_2}")
-            auth_code_2 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code from txn table is : {auth_code_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1114,43 +1439,42 @@ def test_d102_101_023():
             try:
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
-                    "pmt_status": "FAILED",
+                    "pmt_status": "UPG_FAILED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "FAILED", "rrn": str(rrn),
+                    "pmt_state": "UPG_FAILED", "rrn": str(rrn),
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
-                    "txn_type": 'CHARGE', "mid": virtual_mid, "tid": virtual_tid,
+                    "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
                     "org_code": org_code_txn,
-                    "date": date,
-                    "order_id": order_id,
-                    "txn_id": txn_id
+                    # "auth_code": auth_code,
+                    "date": date
                 }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password, })
-                logger.debug(f"API DETAILS for original_txn_id : {api_details}")
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                responseInList = response["txns"]
-                logger.debug(f"Response received for transaction details api is : {responseInList}")
-
-                for elements in responseInList:
-                    if elements["txnId"] == txn_id_2:
-                        status_api = elements["status"]
-                        amount_api = float(elements["amount"])
-                        payment_mode_api = elements["paymentMode"]
-                        state_api = elements["states"][0]
-                        rrn_api = elements["rrNumber"]
-                        settlement_status_api = elements["settlementStatus"]
-                        issuer_code_api = elements["issuerCode"]
-                        acquirer_code_api = elements["acquirerCode"]
-                        orgCode_api = elements["orgCode"]
-                        mid_api = elements["mid"]
-                        tid_api = elements["tid"]
-                        txn_type_api = elements["txnType"]
-                        date_api = elements["createdTime"]
-                        order_id_api = elements["orderNumber"]
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == ipr_txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])  # actual=345.00, expected should be in the same format
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+                # auth_code_api = response["authCode"]
+                date_api = response["postingDate"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1161,12 +1485,10 @@ def test_d102_101_023():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    "order_id": order_id_api,
-                    "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "txn_id": txn_id_2
+                    # "auth_code": auth_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1178,27 +1500,37 @@ def test_d102_101_023():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "pmt_status": "FAILED",
-                    "pmt_state": "FAILED",
+                    "pmt_status": "UPG_FAILED",
+                    "pmt_state": "UPG_FAILED",
                     "pmt_mode": "UPI",
                     "txn_amt": float(amount),
-                    "upi_txn_status": "FAILED",
+                    "upi_txn_status": "UPG_FAILED",
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
-                    "upi_txn_type": "PAY_QR",
+                    "upi_txn_type": "UNKNOWN",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_mc_id": upi_mc_id,
                     "mid": virtual_mid,
                     "tid": virtual_tid,
-                    "order_id": order_id,
-                    "error_msg": None,
-                    "txn_id": txn_id
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "ICICI",
+                    "ipr_org_code": org_code,
+                    "ipr_auth_code": auth_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": float(amount),
+                    "ipr_mid": virtual_mid,
+                    "ipr_tid": virtual_tid,
+                    "ipr_vpa": vpa,
+                    "ipr_config_id": upi_mc_id,
+                    # "ipr_pg_merchant_id": pgMerchantId,
+                    "ipr_error_message": "UPI Txn Id Tampered "+ str(txn_id)
                 }
+
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id_2 + "'"
+                query = "select * from txn where id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -1212,10 +1544,8 @@ def test_d102_101_023():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                order_id_db = result['external_ref'].values[0]
-                error_msg_db = result['error_message'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id_2 + "'"
+                query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -1223,6 +1553,23 @@ def test_d102_101_023():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
+                query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
+                logger.debug(f"query : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                ipr_payment_mode = result["payment_mode"].iloc[0]
+                ipr_bank_code = result["bank_code"].iloc[0]
+                ipr_org_code = result["org_code"].iloc[0]
+                ipr_amount = float(result["amount"].iloc[0])
+                ipr_rrn = result["rrn"].iloc[0]
+                ipr_auth_code = result["auth_code"].iloc[0]
+                ipr_mid = result["mid"].iloc[0]
+                ipr_tid = result["tid"].iloc[0]
+                ipr_config_id = result["config_id"].iloc[0]
+                ipr_vpa = result["vpa"].iloc[0]
+                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+                ipr_error_message = result["error_message"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -1239,325 +1586,31 @@ def test_d102_101_023():
                     "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    "order_id": order_id_db,
-                    "error_msg": error_msg_db,
-                    "txn_id": txn_id_2
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_auth_code": ipr_auth_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_vpa": ipr_vpa,
+                    "ipr_config_id": ipr_config_id,
+                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
+                    "ipr_error_message": str(ipr_error_message)
                 }
-                logger.debug(f"actual_db_values : {actual_db_values}")
 
+                logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-        # -------------------------------------------End of Validation---------------------------------------------
-    finally:
-        Configuration.executeFinallyBlock(testcase_id)
 
+    # -------------------------------------------End of Validation---------------------------------------------
 
-@pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.apiVal
-@pytest.mark.dbVal
-def test_d102_101_024():
-    """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_2_Failed_Callback_Diff_RRN_Before_QR_Expiry
-    Sub Feature Description: Generate QR through api and perform 2 upi failed callback with diff rrn before qr expiry
-    via ICICI_Direct pg
-    TC naming code description: d102: Payment Method, 101: UPI, 024: TC024
-    """
-    try:
-        testcase_id = sys._getframe().f_code.co_name
-        GlobalVariables.time_calc.setup.resume()
-        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
-        # -------------------------------Reset Settings to default(started)--------------------------------------------
-        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
-        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
-        app_username = app_cred['Username']
-        app_password = app_cred['Password']
-
-        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
-        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-        portal_username = portal_cred['Username']
-        portal_password = portal_cred['Password']
-
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        org_code = result['org_code'].values[0]
-        logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI')
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        GlobalVariables.setupCompletedSuccessfully = True
-        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
-        # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-        # -----------------------------------------Start of Test Execution-------------------------------------
-        try:
-            logger.info(f"Starting execution for the test case : {testcase_id}")
-            GlobalVariables.time_calc.execution.start()
-            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            virtual_tid = result['virtual_tid'].values[0]
-            logger.debug(f"fetched virtual_tid : {virtual_tid}")
-            virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
-
-            amount = random.randint(1, 100)
-            order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
-                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
-            logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
-
-            rrn = txn_id.split('E')[1]
-            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
-
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id), "TxnStatus": "FAILED"
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"fetched created_time from txn table is : {created_time}")
-            auth_code = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
-
-            rrn_2 = txn_id.split('E')[1] + '11'
-            api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
-                "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn_2, "merchantTranId": str(txn_id), "TxnStatus": "FAILED"
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback generator api is : {response}")
-
-            api_details = DBProcessor.get_api_details('callbackUpiICICI', request_body=response)
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for callback api is : {response}")
-
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
-            txn_id_2 = result['id'].values[0]
-            logger.debug(f"fetched txn_id from txn table is : {txn_id_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
-            txn_type_2 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time from txn table is : {created_time_2}")
-            auth_code_2 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code from txn table is : {auth_code_2}")
-
-            GlobalVariables.EXCEL_TC_Execution = "Pass"
-            GlobalVariables.time_calc.execution.pause()
-            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
-        except Exception as e:
-            Configuration.perform_exe_exception(testcase_id)
-            pytest.fail("Test case execution failed due to the exception -" + str(e))
-        # -----------------------------------------End of Test Execution--------------------------------------
-
-        # -----------------------------------------Start of Validation----------------------------------------
-        logger.info(f"Starting Validation for the test case : {testcase_id}")
-        GlobalVariables.time_calc.validation.start()
-        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-
-        # -----------------------------------------Start of API Validation------------------------------------
-        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
-            logger.info(f"Started API validation for the test case : {testcase_id}")
-            try:
-                date = date_time_converter.db_datetime(created_time)
-                expected_api_values = {
-                    "pmt_status": "FAILED",
-                    "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "FAILED", "rrn": str(rrn),
-                    "settle_status": "FAILED",
-                    "acquirer_code": "ICICI",
-                    "issuer_code": "ICICI",
-                    "txn_type": 'CHARGE', "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    "date": date,
-                    "order_id": order_id,
-                    "txn_id": txn_id
-                }
-                logger.debug(f"expected_api_values: {expected_api_values}")
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password, })
-                logger.debug(f"API DETAILS for original_txn_id : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                responseInList = response["txns"]
-                logger.debug(f"Response received for transaction details api is : {responseInList}")
-
-                for elements in responseInList:
-                    if elements["txnId"] == txn_id_2:
-                        status_api = elements["status"]
-                        amount_api = float(elements["amount"])
-                        payment_mode_api = elements["paymentMode"]
-                        state_api = elements["states"][0]
-                        rrn_api = elements["rrNumber"]
-                        settlement_status_api = elements["settlementStatus"]
-                        issuer_code_api = elements["issuerCode"]
-                        acquirer_code_api = elements["acquirerCode"]
-                        orgCode_api = elements["orgCode"]
-                        mid_api = elements["mid"]
-                        tid_api = elements["tid"]
-                        txn_type_api = elements["txnType"]
-                        date_api = elements["createdTime"]
-                        order_id_api = elements["orderNumber"]
-
-                actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": amount_api,
-                    "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
-                    "settle_status": settlement_status_api,
-                    "acquirer_code": acquirer_code_api,
-                    "issuer_code": issuer_code_api,
-                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
-                    "org_code": orgCode_api,
-                    "order_id": order_id_api,
-                    "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "txn_id": txn_id_2
-                }
-                logger.debug(f"actual_api_values: {actual_api_values}")
-
-                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
-            except Exception as e:
-                Configuration.perform_api_val_exception(testcase_id, e)
-            logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of API Validation---------------------------------------
-
-        # -----------------------------------------Start of DB Validation--------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                expected_db_values = {
-                    "pmt_status": "FAILED",
-                    "pmt_state": "FAILED",
-                    "pmt_mode": "UPI",
-                    "txn_amt": float(amount),
-                    "upi_txn_status": "FAILED",
-                    "settle_status": "FAILED",
-                    "acquirer_code": "ICICI",
-                    "bank_code": "ICICI",
-                    "pmt_gateway": "ICICI",
-                    "upi_txn_type": "PAY_QR",
-                    "upi_bank_code": "ICICI_DIRECT",
-                    "upi_mc_id": upi_mc_id,
-                    "mid": virtual_mid,
-                    "tid": virtual_tid,
-                    "order_id": order_id,
-                    "error_msg": None,
-                    "txn_id": txn_id
-                }
-                logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id_2 + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = float(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                order_id_db = result['external_ref'].values[0]
-                error_msg_db = result['error_message'].values[0]
-
-                query = "select * from upi_txn where txn_id='" + txn_id_2 + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
-                upi_txn_type_db = result["txn_type"].iloc[0]
-                upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                actual_db_values = {
-                    "pmt_status": status_db,
-                    "pmt_state": state_db,
-                    "pmt_mode": payment_mode_db,
-                    "txn_amt": amount_db,
-                    "upi_txn_status": upi_status_db,
-                    "settle_status": settlement_status_db,
-                    "acquirer_code": acquirer_code_db,
-                    "bank_code": bank_code_db,
-                    "pmt_gateway": payment_gateway_db,
-                    "upi_txn_type": upi_txn_type_db,
-                    "upi_bank_code": upi_bank_code_db,
-                    "upi_mc_id": upi_mc_id_db,
-                    "mid": mid_db,
-                    "tid": tid_db,
-                    "order_id": order_id_db,
-                    "error_msg": error_msg_db,
-                    "txn_id": txn_id_2
-                }
-                logger.debug(f"actual_db_values : {actual_db_values}")
-
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation---------------------------------------
-
-        GlobalVariables.time_calc.validation.end()
-        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
-        logger.info(f"Completed Validation for the test case : {testcase_id}")
-        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
