@@ -64,6 +64,26 @@ def test_common_100_107_016():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund enabled is : {response}")
 
+        # Get vpa from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
+
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        logger.info(f"fetched upi config id is : {db_upi_config_id}")
+
+        db_upi_config_vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+        db_upi_config_mid = result['mid'].values[0]
+        logger.info(f"fetched mid is : {db_upi_config_mid}")
+
+        db_upi_config_tid = result['tid'].values[0]
+        logger.info(f"fetched tid is : {db_upi_config_tid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -77,26 +97,6 @@ def test_common_100_107_016():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            # Get vpa from upi_merchant_config table
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
-            result = DBProcessor.getValueFromDB(query)
-
-            db_upi_config_id = result['id'].values[0]
-            logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
-            db_upi_config_vpa = result['vpa'].values[0]
-            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
-            db_upi_config_mid = result['mid'].values[0]
-            logger.info(f"fetched mid is : {db_upi_config_mid}")
-
-            db_upi_config_tid = result['tid'].values[0]
-            logger.info(f"fetched tid is : {db_upi_config_tid}")
-
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
             api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                 "username": portal_username,
@@ -125,35 +125,19 @@ def test_common_100_107_016():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
-            headers = {'Content-Type': 'application/json'}
-            req_payload1 = {"MerchantCredential": req_merch_creds,
+            api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body={
+                    "MerchantCredential": req_merch_creds,
                     "ResCode": ResCode,
-                    "PayerMobileNumber": "+919159362349",
-                    "TxnType": "MerchantCREDIT",
-                    "SubMerchantID": "-",
-                    "statusUpdateRetryCount": "0",
-                    "OperationName": "MerchantStatusUpdateReq",
-                    "OrgTxnTimeStamp": "280622111525",
                     "HMAC": req_hmac,
                     "Amount": amount,
-                    "PayeeMobileNumber": "+919159362350",
-                    "PayerVirAddr": "divya.ezetap@idfb",
                     "PayeeVirAddr": db_upi_config_vpa,
                     "MerchantID": db_upi_config_mid,
                     "OrgCustRefId": orig_cust_ref_id,
                     "OrgTxnRefId": res_generateqr_publish_id,
-                    "TimeStamp": "280622111524",
-                    "TxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32",
-                    "Remarks": "test1",
-                    "TerminalID": db_upi_config_tid,
-                    "ResDesc": "NO ORIGINAL REQUEST FOUND DURING DEBIT/CREDIT",
-                    "OrgTxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32"}
-
-            response1 = requests.post(url=api_url, json=req_payload1, headers=headers)
-            response_merch_creds = response1.text.replace("\n","")
-
-            logger.debug(f"First response received : {str(response_merch_creds)}")
+                    "TerminalID": db_upi_config_tid,})
+            response1 = APIProcessor.send_request(api_details)
+            logger.debug(f"First response received for hmac_merch_cred api is : {response}")
+            response_merch_creds = response1.text.replace("\n", "")
 
             sub_string1 = "MerchantCreds="
             sub_string2 = "HMAC="
@@ -163,30 +147,17 @@ def test_common_100_107_016():
             generated_merch_creds = response_merch_creds[index1 + len(sub_string1): index2]
             logger.debug(f"Generated MerchCreds is : {generated_merch_creds}")
 
-            req_payload2 = {"MerchantCredential": generated_merch_creds,
+            api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body=
+                           {"MerchantCredential": generated_merch_creds,
                            "ResCode": ResCode,
-                           "PayerMobileNumber": "+919159362349",
-                           "TxnType": "MerchantCREDIT",
-                           "SubMerchantID": "-",
-                           "statusUpdateRetryCount": "0",
-                           "OperationName": "MerchantStatusUpdateReq",
-                           "OrgTxnTimeStamp": "280622111525",
                            "HMAC": req_hmac,
                            "Amount": amount,
-                           "PayeeMobileNumber": "+919159362350",
-                           "PayerVirAddr": "divya.ezetap@idfb",
                            "PayeeVirAddr": db_upi_config_vpa,
                            "MerchantID": db_upi_config_mid,
                            "OrgCustRefId": orig_cust_ref_id,
                            "OrgTxnRefId": res_generateqr_publish_id,
-                           "TimeStamp": "280622111524",
-                           "TxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32",
-                           "Remarks": "test1",
-                           "TerminalID": db_upi_config_tid,
-                           "ResDesc": "NO ORIGINAL REQUEST FOUND DURING DEBIT/CREDIT",
-                           "OrgTxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32"}
-
-            response2 = requests.post(url=api_url, json=req_payload2, headers=headers)
+                           "TerminalID": db_upi_config_tid,})
+            response2 = APIProcessor.send_request(api_details)
             response_hmac = response2.text
 
             res = response_hmac.split('HMAC=', 1)
@@ -534,6 +505,26 @@ def test_common_100_107_017():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund disabled is : {response}")
 
+        # Get vpa from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
+
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        logger.info(f"fetched upi config id is : {db_upi_config_id}")
+
+        db_upi_config_vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+        db_upi_config_mid = result['mid'].values[0]
+        logger.info(f"fetched mid is : {db_upi_config_mid}")
+
+        db_upi_config_tid = result['tid'].values[0]
+        logger.info(f"fetched tid is : {db_upi_config_tid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -547,26 +538,6 @@ def test_common_100_107_017():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            # Get vpa from upi_merchant_config table
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
-            result = DBProcessor.getValueFromDB(query)
-
-            db_upi_config_id = result['id'].values[0]
-            logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
-            db_upi_config_vpa = result['vpa'].values[0]
-            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
-            db_upi_config_mid = result['mid'].values[0]
-            logger.info(f"fetched mid is : {db_upi_config_mid}")
-
-            db_upi_config_tid = result['tid'].values[0]
-            logger.info(f"fetched tid is : {db_upi_config_tid}")
-
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
             api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                 "username": portal_username,
@@ -595,35 +566,19 @@ def test_common_100_107_017():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
-            headers = {'Content-Type': 'application/json'}
-            req_payload1 = {"MerchantCredential": req_merch_creds,
-                    "ResCode": ResCode,
-                    "PayerMobileNumber": "+919159362349",
-                    "TxnType": "MerchantCREDIT",
-                    "SubMerchantID": "-",
-                    "statusUpdateRetryCount": "0",
-                    "OperationName": "MerchantStatusUpdateReq",
-                    "OrgTxnTimeStamp": "280622111525",
-                    "HMAC": req_hmac,
-                    "Amount": amount,
-                    "PayeeMobileNumber": "+919159362350",
-                    "PayerVirAddr": "divya.ezetap@idfb",
-                    "PayeeVirAddr": db_upi_config_vpa,
-                    "MerchantID": db_upi_config_mid,
-                    "OrgCustRefId": orig_cust_ref_id,
-                    "OrgTxnRefId": res_generateqr_publish_id,
-                    "TimeStamp": "280622111524",
-                    "TxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32",
-                    "Remarks": "test1",
-                    "TerminalID": db_upi_config_tid,
-                    "ResDesc": "NO ORIGINAL REQUEST FOUND DURING DEBIT/CREDIT",
-                    "OrgTxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32"}
-
-            response1 = requests.post(url=api_url, json=req_payload1, headers=headers)
-            response_merch_creds = response1.text.replace("\n","")
-
-            logger.debug(f"First response received : {str(response_merch_creds)}")
+            api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body={
+                "MerchantCredential": req_merch_creds,
+                "ResCode": ResCode,
+                "HMAC": req_hmac,
+                "Amount": amount,
+                "PayeeVirAddr": db_upi_config_vpa,
+                "MerchantID": db_upi_config_mid,
+                "OrgCustRefId": orig_cust_ref_id,
+                "OrgTxnRefId": res_generateqr_publish_id,
+                "TerminalID": db_upi_config_tid, })
+            response1 = APIProcessor.send_request(api_details)
+            logger.debug(f"First response received for hmac_merch_cred api is : {response}")
+            response_merch_creds = response1.text.replace("\n", "")
 
             sub_string1 = "MerchantCreds="
             sub_string2 = "HMAC="
@@ -633,30 +588,17 @@ def test_common_100_107_017():
             generated_merch_creds = response_merch_creds[index1 + len(sub_string1): index2]
             logger.debug(f"Generated MerchCreds is : {generated_merch_creds}")
 
-            req_payload2 = {"MerchantCredential": generated_merch_creds,
-                           "ResCode": ResCode,
-                           "PayerMobileNumber": "+919159362349",
-                           "TxnType": "MerchantCREDIT",
-                           "SubMerchantID": "-",
-                           "statusUpdateRetryCount": "0",
-                           "OperationName": "MerchantStatusUpdateReq",
-                           "OrgTxnTimeStamp": "280622111525",
-                           "HMAC": req_hmac,
-                           "Amount": amount,
-                           "PayeeMobileNumber": "+919159362350",
-                           "PayerVirAddr": "divya.ezetap@idfb",
-                           "PayeeVirAddr": db_upi_config_vpa,
-                           "MerchantID": db_upi_config_mid,
-                           "OrgCustRefId": orig_cust_ref_id,
-                           "OrgTxnRefId": res_generateqr_publish_id,
-                           "TimeStamp": "280622111524",
-                           "TxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32",
-                           "Remarks": "test1",
-                           "TerminalID": db_upi_config_tid,
-                           "ResDesc": "NO ORIGINAL REQUEST FOUND DURING DEBIT/CREDIT",
-                           "OrgTxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32"}
-
-            response2 = requests.post(url=api_url, json=req_payload2, headers=headers)
+            api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body=
+            {"MerchantCredential": generated_merch_creds,
+             "ResCode": ResCode,
+             "HMAC": req_hmac,
+             "Amount": amount,
+             "PayeeVirAddr": db_upi_config_vpa,
+             "MerchantID": db_upi_config_mid,
+             "OrgCustRefId": orig_cust_ref_id,
+             "OrgTxnRefId": res_generateqr_publish_id,
+             "TerminalID": db_upi_config_tid, })
+            response2 = APIProcessor.send_request(api_details)
             response_hmac = response2.text
 
             res = response_hmac.split('HMAC=', 1)
@@ -666,14 +608,14 @@ def test_common_100_107_017():
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
             req_payload3 = {"MerchantCredential": generated_merch_creds,
-                           "ResCode": ResCode,
-                           "HMAC": generated_hmac,
-                           "Amount": amount,
-                           "PayeeVirAddr": db_upi_config_vpa,
-                           "MerchantID": db_upi_config_mid,
-                           "OrgCustRefId": orig_cust_ref_id,
-                           "OrgTxnRefId": res_generateqr_publish_id,
-                           "TerminalID": db_upi_config_tid,
+                            "ResCode": ResCode,
+                            "HMAC": generated_hmac,
+                            "Amount": amount,
+                            "PayeeVirAddr": db_upi_config_vpa,
+                            "MerchantID": db_upi_config_mid,
+                            "OrgCustRefId": orig_cust_ref_id,
+                            "OrgTxnRefId": res_generateqr_publish_id,
+                            "TerminalID": db_upi_config_tid,
                             }
 
             # UPI Callback
@@ -1003,6 +945,26 @@ def test_common_100_107_018():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund disabled is : {response}")
 
+        # Get vpa from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
+
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        logger.info(f"fetched upi config id is : {db_upi_config_id}")
+
+        db_upi_config_vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+        db_upi_config_mid = result['mid'].values[0]
+        logger.info(f"fetched mid is : {db_upi_config_mid}")
+
+        db_upi_config_tid = result['tid'].values[0]
+        logger.info(f"fetched tid is : {db_upi_config_tid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -1016,26 +978,6 @@ def test_common_100_107_018():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            # Get vpa from upi_merchant_config table
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
-            result = DBProcessor.getValueFromDB(query)
-
-            db_upi_config_id = result['id'].values[0]
-            logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
-            db_upi_config_vpa = result['vpa'].values[0]
-            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
-            db_upi_config_mid = result['mid'].values[0]
-            logger.info(f"fetched mid is : {db_upi_config_mid}")
-
-            db_upi_config_tid = result['tid'].values[0]
-            logger.info(f"fetched tid is : {db_upi_config_tid}")
-
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
             api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                 "username": portal_username,
@@ -1064,35 +1006,19 @@ def test_common_100_107_018():
             req_merch_creds = "fCef5gQC8s861hBigj+NX7QTY7HuNjbRncLxYnphVJA="
             req_hmac = "8066ac67ef88ea969f0ca50a2c5f43b9ac298ab761b94e778e25d015faaf89b6"
 
-            api_url = "http://192.168.3.81:16067/idfc/hmac_merchant_creds/generate"
-            headers = {'Content-Type': 'application/json'}
-            req_payload1 = {"MerchantCredential": req_merch_creds,
-                    "ResCode": ResCode,
-                    "PayerMobileNumber": "+919159362349",
-                    "TxnType": "MerchantCREDIT",
-                    "SubMerchantID": "-",
-                    "statusUpdateRetryCount": "0",
-                    "OperationName": "MerchantStatusUpdateReq",
-                    "OrgTxnTimeStamp": "280622111525",
-                    "HMAC": req_hmac,
-                    "Amount": amount,
-                    "PayeeMobileNumber": "+919159362350",
-                    "PayerVirAddr": "divya.ezetap@idfb",
-                    "PayeeVirAddr": db_upi_config_vpa,
-                    "MerchantID": db_upi_config_mid,
-                    "OrgCustRefId": orig_cust_ref_id,
-                    "OrgTxnRefId": res_generateqr_publish_id,
-                    "TimeStamp": "280622111524",
-                    "TxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32",
-                    "Remarks": "test1",
-                    "TerminalID": db_upi_config_tid,
-                    "ResDesc": "NO ORIGINAL REQUEST FOUND DURING DEBIT/CREDIT",
-                    "OrgTxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32"}
-
-            response1 = requests.post(url=api_url, json=req_payload1, headers=headers)
-            response_merch_creds = response1.text.replace("\n","")
-
-            logger.debug(f"First response received : {str(response_merch_creds)}")
+            api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body={
+                "MerchantCredential": req_merch_creds,
+                "ResCode": ResCode,
+                "HMAC": req_hmac,
+                "Amount": amount,
+                "PayeeVirAddr": db_upi_config_vpa,
+                "MerchantID": db_upi_config_mid,
+                "OrgCustRefId": orig_cust_ref_id,
+                "OrgTxnRefId": res_generateqr_publish_id,
+                "TerminalID": db_upi_config_tid, })
+            response1 = APIProcessor.send_request(api_details)
+            logger.debug(f"First response received for hmac_merch_cred api is : {response}")
+            response_merch_creds = response1.text.replace("\n", "")
 
             sub_string1 = "MerchantCreds="
             sub_string2 = "HMAC="
@@ -1102,30 +1028,17 @@ def test_common_100_107_018():
             generated_merch_creds = response_merch_creds[index1 + len(sub_string1): index2]
             logger.debug(f"Generated MerchCreds is : {generated_merch_creds}")
 
-            req_payload2 = {"MerchantCredential": generated_merch_creds,
-                           "ResCode": ResCode,
-                           "PayerMobileNumber": "+919159362349",
-                           "TxnType": "MerchantCREDIT",
-                           "SubMerchantID": "-",
-                           "statusUpdateRetryCount": "0",
-                           "OperationName": "MerchantStatusUpdateReq",
-                           "OrgTxnTimeStamp": "280622111525",
-                           "HMAC": req_hmac,
-                           "Amount": amount,
-                           "PayeeMobileNumber": "+919159362350",
-                           "PayerVirAddr": "divya.ezetap@idfb",
-                           "PayeeVirAddr": db_upi_config_vpa,
-                           "MerchantID": db_upi_config_mid,
-                           "OrgCustRefId": orig_cust_ref_id,
-                           "OrgTxnRefId": res_generateqr_publish_id,
-                           "TimeStamp": "280622111524",
-                           "TxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32",
-                           "Remarks": "test1",
-                           "TerminalID": db_upi_config_tid,
-                           "ResDesc": "NO ORIGINAL REQUEST FOUND DURING DEBIT/CREDIT",
-                           "OrgTxnId": "IDFEZ3C11C084F3C54749926E0B852BBF32"}
-
-            response2 = requests.post(url=api_url, json=req_payload2, headers=headers)
+            api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body=
+            {"MerchantCredential": generated_merch_creds,
+             "ResCode": ResCode,
+             "HMAC": req_hmac,
+             "Amount": amount,
+             "PayeeVirAddr": db_upi_config_vpa,
+             "MerchantID": db_upi_config_mid,
+             "OrgCustRefId": orig_cust_ref_id,
+             "OrgTxnRefId": res_generateqr_publish_id,
+             "TerminalID": db_upi_config_tid, })
+            response2 = APIProcessor.send_request(api_details)
             response_hmac = response2.text
 
             res = response_hmac.split('HMAC=', 1)
@@ -1135,14 +1048,14 @@ def test_common_100_107_018():
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
             req_payload3 = {"MerchantCredential": generated_merch_creds,
-                           "ResCode": ResCode,
-                           "HMAC": generated_hmac,
-                           "Amount": amount,
-                           "PayeeVirAddr": db_upi_config_vpa,
-                           "MerchantID": db_upi_config_mid,
-                           "OrgCustRefId": orig_cust_ref_id,
-                           "OrgTxnRefId": res_generateqr_publish_id,
-                           "TerminalID": db_upi_config_tid,
+                            "ResCode": ResCode,
+                            "HMAC": generated_hmac,
+                            "Amount": amount,
+                            "PayeeVirAddr": db_upi_config_vpa,
+                            "MerchantID": db_upi_config_mid,
+                            "OrgCustRefId": orig_cust_ref_id,
+                            "OrgTxnRefId": res_generateqr_publish_id,
+                            "TerminalID": db_upi_config_tid,
                             }
 
             # UPI Callback

@@ -49,6 +49,27 @@ def test_common_100_107_013():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        # Get vpa from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
+
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        logger.info(f"fetched upi config id is : {db_upi_config_id}")
+
+        db_upi_config_vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+        db_upi_config_mid = result['mid'].values[0]
+        logger.info(f"fetched mid is : {db_upi_config_mid}")
+
+        db_upi_config_tid = result['tid'].values[0]
+        logger.info(f"fetched tid is : {db_upi_config_tid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -62,26 +83,6 @@ def test_common_100_107_013():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            # Get vpa from upi_merchant_config table
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
-            result = DBProcessor.getValueFromDB(query)
-
-            db_upi_config_id = result['id'].values[0]
-            logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
-            db_upi_config_vpa = result['vpa'].values[0]
-            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
-            db_upi_config_mid = result['mid'].values[0]
-            logger.info(f"fetched mid is : {db_upi_config_mid}")
-
-            db_upi_config_tid = result['tid'].values[0]
-            logger.info(f"fetched tid is : {db_upi_config_tid}")
-
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
             api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                 "username": portal_username,
@@ -238,6 +239,25 @@ def test_common_100_107_014():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        # Get vpa from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
+
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        logger.info(f"fetched upi config id is : {db_upi_config_id}")
+
+        db_upi_config_vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+        db_upi_config_mid = result['mid'].values[0]
+        logger.info(f"fetched mid is : {db_upi_config_mid}")
+
+        db_upi_config_tid = result['tid'].values[0]
+        logger.info(f"fetched tid is : {db_upi_config_tid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -251,26 +271,6 @@ def test_common_100_107_014():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            # Get vpa from upi_merchant_config table
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
-            result = DBProcessor.getValueFromDB(query)
-
-            db_upi_config_id = result['id'].values[0]
-            logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
-            db_upi_config_vpa = result['vpa'].values[0]
-            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
-            db_upi_config_mid = result['mid'].values[0]
-            logger.info(f"fetched mid is : {db_upi_config_mid}")
-
-            db_upi_config_tid = result['tid'].values[0]
-            logger.info(f"fetched tid is : {db_upi_config_tid}")
-
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
             api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                 "username": portal_username,
@@ -478,6 +478,27 @@ def test_common_100_107_015():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        # Get vpa from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
+
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        logger.info(f"fetched upi config id is : {db_upi_config_id}")
+
+        db_upi_config_vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+        db_upi_config_mid = result['mid'].values[0]
+        logger.info(f"fetched mid is : {db_upi_config_mid}")
+
+        db_upi_config_tid = result['tid'].values[0]
+        logger.info(f"fetched tid is : {db_upi_config_tid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
@@ -491,25 +512,6 @@ def test_common_100_107_015():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            # Get vpa from upi_merchant_config table
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
-            result = DBProcessor.getValueFromDB(query)
-
-            db_upi_config_id = result['id'].values[0]
-            logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
-            db_upi_config_vpa = result['vpa'].values[0]
-            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
-            db_upi_config_mid = result['mid'].values[0]
-            logger.info(f"fetched mid is : {db_upi_config_mid}")
-
-            db_upi_config_tid = result['tid'].values[0]
-            logger.info(f"fetched tid is : {db_upi_config_tid}")
-
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
             api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                 "username": app_username,
