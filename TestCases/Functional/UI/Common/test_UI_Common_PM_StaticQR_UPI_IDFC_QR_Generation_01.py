@@ -50,7 +50,7 @@ def test_common_100_107_013():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -77,7 +77,7 @@ def test_common_100_107_013():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -113,7 +113,6 @@ def test_common_100_107_013():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
@@ -141,7 +140,6 @@ def test_common_100_107_013():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -237,7 +235,7 @@ def test_common_100_107_014():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -263,7 +261,7 @@ def test_common_100_107_014():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -327,7 +325,6 @@ def test_common_100_107_014():
                 response = json.loads(resp.text)
                 logger.debug(f"response received for createUser api is : {response}")
                 if response["success"]:
-
                     # Regenerating static qr with new user under same org
                     api_details = DBProcessor.get_api_details('upi_staticqr_generation_IDFC', request_body={
                         "username": portal_username,
@@ -371,7 +368,6 @@ def test_common_100_107_014():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -477,7 +473,7 @@ def test_common_100_107_015():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -504,7 +500,7 @@ def test_common_100_107_015():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")

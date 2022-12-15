@@ -1,5 +1,6 @@
 import random
 import sys
+from datetime import datetime
 import pytest
 from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
@@ -51,11 +52,11 @@ def test_common_100_107_019():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # -------------------------------Reset Settings to default(completed)-------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -82,8 +83,8 @@ def test_common_100_107_019():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-        # -----------------------------------------Start of Test Execution-------------------------------------
+        # -----------------------------PreConditions(Completed)-----------------------------
+        # -----------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
@@ -157,16 +158,17 @@ def test_common_100_107_019():
             logger.debug(f"Second response received : {str(response_hmac)}")
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
-            req_payload3 = {"MerchantCredential": generated_merch_creds,
-                            "ResCode": ResCode,
-                            "HMAC": generated_hmac,
-                            "Amount": amount,
-                            "PayeeVirAddr": db_upi_config_vpa,
-                            "MerchantID": db_upi_config_mid,
-                            "OrgCustRefId": orig_cust_ref_id,
-                            "OrgTxnRefId": res_generateqr_publish_id,
-                            "TerminalID": db_upi_config_tid,
-                            }
+            req_payload3 = {
+                "MerchantCredential": generated_merch_creds,
+                "ResCode": ResCode,
+                "HMAC": generated_hmac,
+                "Amount": amount,
+                "PayeeVirAddr": db_upi_config_vpa,
+                "MerchantID": db_upi_config_mid,
+                "OrgCustRefId": orig_cust_ref_id,
+                "OrgTxnRefId": res_generateqr_publish_id,
+                "TerminalID": db_upi_config_tid,
+            }
 
             # UPI Callback
             api_details = DBProcessor.get_api_details('staticQR_UPI_IDFC_callback', request_body=req_payload3)
@@ -174,8 +176,10 @@ def test_common_100_107_019():
 
             logger.debug(f"Response received for staticQR_UPI_IDFC_callback api is : {response}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
-                orig_cust_ref_id) + "'order by created_time desc limit 1; "
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+
             logger.debug(f"Query to fetch data from txn table : {query}")
 
             result = DBProcessor.getValueFromDB(query)
@@ -185,7 +189,7 @@ def test_common_100_107_019():
             txn_created_time_orig = result['created_time'].values[0]
 
             # Calling unified refund API for UPI refund
-            api_details = DBProcessor.get_api_details('Refund_cash_Payment', request_body={
+            api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username,
                 "password": app_password,
                 "amount": amount,
@@ -214,7 +218,6 @@ def test_common_100_107_019():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
@@ -318,23 +321,24 @@ def test_common_100_107_019():
                 app_rrn_new = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {second_txn_id}, {app_rrn_new}")
 
-                actual_app_values = {"pmt_mode": app_payment_mode,
-                                     "pmt_status": app_payment_status.split(':')[1],
-                                     "txn_amt": app_amount.split(' ')[1],
-                                     "txn_id": app_txn_id,
-                                     "rrn": str(app_rrn),
-                                     "settle_status": app_settlement_status,
-                                     "pmt_msg": app_payment_msg,
-                                     "date": app_date_and_time,
-                                     "pmt_mode_2": payment_mode_new,
-                                     "pmt_status_2": payment_status_new.split(':')[1],
-                                     "txn_amt_2": app_amount_new.split(' ')[1],
-                                     "txn_id_2": app_txn_id_new,
-                                     "rrn_2": str(app_rrn_new),
-                                     "settle_status_2": app_settlement_status_new,
-                                     "payment_msg_2": app_payment_msg_new,
-                                     "date_2": app_date_and_time_new
-                                     }
+                actual_app_values = {
+                    "pmt_mode": app_payment_mode,
+                    "pmt_status": app_payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "settle_status": app_settlement_status,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time,
+                    "pmt_mode_2": payment_mode_new,
+                    "pmt_status_2": payment_status_new.split(':')[1],
+                    "txn_amt_2": app_amount_new.split(' ')[1],
+                    "txn_id_2": app_txn_id_new,
+                    "rrn_2": str(app_rrn_new),
+                    "settle_status_2": app_settlement_status_new,
+                    "payment_msg_2": app_payment_msg_new,
+                    "date_2": app_date_and_time_new
+                }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -342,7 +346,6 @@ def test_common_100_107_019():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
-
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -454,7 +457,6 @@ def test_common_100_107_019():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -573,7 +575,6 @@ def test_common_100_107_019():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -643,7 +644,7 @@ def test_common_100_107_020():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -670,8 +671,8 @@ def test_common_100_107_020():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
-        # -----------------------------------------Start of Test Execution-------------------------------------
+        # -----------------------------PreConditions(Completed)-----------------------------
+        # -----------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
@@ -727,15 +728,15 @@ def test_common_100_107_020():
             logger.debug(f"Generated MerchCreds is : {generated_merch_creds}")
 
             api_details = DBProcessor.get_api_details('hmac_merch_cred', request_body=
-                {"MerchantCredential": generated_merch_creds,
-                 "ResCode": ResCode,
-                 "HMAC": req_hmac,
-                 "Amount": amount,
-                 "PayeeVirAddr": db_upi_config_vpa,
-                 "MerchantID": db_upi_config_mid,
-                 "OrgCustRefId": orig_cust_ref_id,
-                 "OrgTxnRefId": res_generateqr_publish_id,
-                 "TerminalID": db_upi_config_tid, })
+            {"MerchantCredential": generated_merch_creds,
+             "ResCode": ResCode,
+             "HMAC": req_hmac,
+             "Amount": amount,
+             "PayeeVirAddr": db_upi_config_vpa,
+             "MerchantID": db_upi_config_mid,
+             "OrgCustRefId": orig_cust_ref_id,
+             "OrgTxnRefId": res_generateqr_publish_id,
+             "TerminalID": db_upi_config_tid, })
             response2 = APIProcessor.send_request(api_details)
             response_hmac = response2.text
 
@@ -745,16 +746,17 @@ def test_common_100_107_020():
             logger.debug(f"Second response received : {str(response_hmac)}")
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
-            req_payload3 = {"MerchantCredential": generated_merch_creds,
-                            "ResCode": ResCode,
-                            "HMAC": generated_hmac,
-                            "Amount": amount,
-                            "PayeeVirAddr": db_upi_config_vpa,
-                            "MerchantID": db_upi_config_mid,
-                            "OrgCustRefId": orig_cust_ref_id,
-                            "OrgTxnRefId": res_generateqr_publish_id,
-                            "TerminalID": db_upi_config_tid,
-                            }
+            req_payload3 = {
+                "MerchantCredential": generated_merch_creds,
+                "ResCode": ResCode,
+                "HMAC": generated_hmac,
+                "Amount": amount,
+                "PayeeVirAddr": db_upi_config_vpa,
+                "MerchantID": db_upi_config_mid,
+                "OrgCustRefId": orig_cust_ref_id,
+                "OrgTxnRefId": res_generateqr_publish_id,
+                "TerminalID": db_upi_config_tid,
+            }
 
             # UPI Callback
             api_details = DBProcessor.get_api_details('staticQR_UPI_IDFC_callback', request_body=req_payload3)
@@ -762,8 +764,10 @@ def test_common_100_107_020():
 
             logger.debug(f"Response received for staticQR_UPI_IDFC_callback api is : {response}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
-                orig_cust_ref_id) + "'order by created_time desc limit 1; "
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+
             logger.debug(f"Query to fetch data from txn table : {query}")
 
             result = DBProcessor.getValueFromDB(query)
@@ -775,7 +779,7 @@ def test_common_100_107_020():
             refund_amount = amount - 100
 
             # Calling unified refund API for UPI refund
-            api_details = DBProcessor.get_api_details('Refund_cash_Payment', request_body={
+            api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username,
                 "password": app_password,
                 "amount": refund_amount,
@@ -804,7 +808,6 @@ def test_common_100_107_020():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
@@ -1030,7 +1033,6 @@ def test_common_100_107_020():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -1221,7 +1223,7 @@ def test_common_100_107_021():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -1248,7 +1250,7 @@ def test_common_100_107_021():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -1323,26 +1325,26 @@ def test_common_100_107_021():
             logger.debug(f"Second response received : {str(response_hmac)}")
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
-            req_payload3 = {"MerchantCredential": generated_merch_creds,
-                            "ResCode": ResCode,
-                            "HMAC": generated_hmac,
-                            "Amount": amount,
-                            "PayeeVirAddr": db_upi_config_vpa,
-                            "MerchantID": db_upi_config_mid,
-                            "OrgCustRefId": orig_cust_ref_id,
-                            "OrgTxnRefId": res_generateqr_publish_id,
-                            "TerminalID": db_upi_config_tid,
-                            }
+            req_payload3 = {
+                "MerchantCredential": generated_merch_creds,
+                "ResCode": ResCode,
+                "HMAC": generated_hmac,
+                "Amount": amount,
+                "PayeeVirAddr": db_upi_config_vpa,
+                "MerchantID": db_upi_config_mid,
+                "OrgCustRefId": orig_cust_ref_id,
+                "OrgTxnRefId": res_generateqr_publish_id,
+                "TerminalID": db_upi_config_tid,
+            }
 
             # UPI Callback
             api_details = DBProcessor.get_api_details('staticQR_UPI_IDFC_callback', request_body=req_payload3)
             response = APIProcessor.send_request(api_details)
-
             logger.debug(f"Response received for staticQR_UPI_IDFC_callback api is : {response}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
-                orig_cust_ref_id) + "'order by created_time desc limit 1; "
-            logger.debug(f"Query to fetch data from txn table : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
 
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
@@ -1351,7 +1353,7 @@ def test_common_100_107_021():
             txn_created_time_orig = result['created_time'].values[0]
 
             # Calling unified refund API for UPI refund
-            api_details = DBProcessor.get_api_details('Refund_cash_Payment', request_body={
+            api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username,
                 "password": app_password,
                 "amount": amount,
@@ -1379,7 +1381,6 @@ def test_common_100_107_021():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
@@ -1474,22 +1475,23 @@ def test_common_100_107_021():
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {second_txn_id}, {app_payment_msg_new_2}")
 
-                actual_app_values = {"pmt_mode": payment_mode,
-                                     "pmt_status": payment_status.split(':')[1],
-                                     "txn_amt": app_amount.split(' ')[1],
-                                     "txn_id": app_txn_id,
-                                     "rrn": str(app_rrn),
-                                     "settle_status": app_settlement_status,
-                                     "pmt_msg": app_payment_msg,
-                                     "date": app_date_and_time,
-                                     "pmt_mode_2": payment_mode_new_2,
-                                     "pmt_status_2": payment_status_new_2.split(':')[1],
-                                     "txn_amt_2": app_amount_new_2.split(' ')[1],
-                                     "txn_id_2": app_txn_id_new_2,
-                                     "settle_status_2": app_settlement_status_new_2,
-                                     "pmt_msg_2": app_payment_msg_new_2,
-                                     "date_2": app_date_and_time_new_2
-                                     }
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "settle_status": app_settlement_status,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time,
+                    "pmt_mode_2": payment_mode_new_2,
+                    "pmt_status_2": payment_status_new_2.split(':')[1],
+                    "txn_amt_2": app_amount_new_2.split(' ')[1],
+                    "txn_id_2": app_txn_id_new_2,
+                    "settle_status_2": app_settlement_status_new_2,
+                    "pmt_msg_2": app_payment_msg_new_2,
+                    "date_2": app_date_and_time_new_2
+                }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -1763,7 +1765,7 @@ def test_common_100_107_022():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -1790,7 +1792,7 @@ def test_common_100_107_022():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -1882,8 +1884,9 @@ def test_common_100_107_022():
 
             logger.debug(f"Response received for staticQR_UPI_IDFC_callback api is : {response}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
-                orig_cust_ref_id) + "'order by created_time desc limit 1; "
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
 
             result = DBProcessor.getValueFromDB(query)
@@ -1893,7 +1896,7 @@ def test_common_100_107_022():
             txn_created_time_orig = result['created_time'].values[0]
 
             # Calling unified refund API for UPI refund
-            api_details = DBProcessor.get_api_details('Refund_cash_Payment', request_body={
+            api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username,
                 "password": app_password,
                 "amount": amount,
@@ -1921,7 +1924,6 @@ def test_common_100_107_022():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
@@ -2014,22 +2016,23 @@ def test_common_100_107_022():
                 logger.info(
                     f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
 
-                actual_app_values = {"pmt_mode": payment_mode,
-                                     "pmt_status": payment_status.split(':')[1],
-                                     "txn_amt": app_amount.split(' ')[1],
-                                     "txn_id": app_txn_id,
-                                     "rrn": str(app_rrn),
-                                     "settle_status": app_settlement_status,
-                                     "pmt_msg": app_payment_msg,
-                                     "date": app_date_and_time,
-                                     "pmt_mode_2": payment_mode_new_2,
-                                     "pmt_status_2": payment_status_new_2.split(':')[1],
-                                     "txn_amt_2": app_amount_new_2.split(' ')[1],
-                                     "txn_id_2": app_txn_id_new_2,
-                                     "settle_status_2": app_settlement_status_new_2,
-                                     "pmt_msg_2": app_payment_msg_new_2,
-                                     "date_2": app_date_and_time_new_2
-                                     }
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "settle_status": app_settlement_status,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time,
+                    "pmt_mode_2": payment_mode_new_2,
+                    "pmt_status_2": payment_status_new_2.split(':')[1],
+                    "txn_amt_2": app_amount_new_2.split(' ')[1],
+                    "txn_id_2": app_txn_id_new_2,
+                    "settle_status_2": app_settlement_status_new_2,
+                    "pmt_msg_2": app_payment_msg_new_2,
+                    "date_2": app_date_and_time_new_2
+                }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -2302,7 +2305,7 @@ def test_common_100_107_023():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        # Get vpa from upi_merchant_config table
+        # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
 
@@ -2329,7 +2332,7 @@ def test_common_100_107_023():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -2404,16 +2407,17 @@ def test_common_100_107_023():
             logger.debug(f"Second response received : {str(response_hmac)}")
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
-            req_payload3 = {"MerchantCredential": generated_merch_creds,
-                            "ResCode": ResCode,
-                            "HMAC": generated_hmac,
-                            "Amount": amount,
-                            "PayeeVirAddr": db_upi_config_vpa,
-                            "MerchantID": db_upi_config_mid,
-                            "OrgCustRefId": orig_cust_ref_id,
-                            "OrgTxnRefId": res_generateqr_publish_id,
-                            "TerminalID": db_upi_config_tid,
-                            }
+            req_payload3 = {
+                "MerchantCredential": generated_merch_creds,
+                "ResCode": ResCode,
+                "HMAC": generated_hmac,
+                "Amount": amount,
+                "PayeeVirAddr": db_upi_config_vpa,
+                "MerchantID": db_upi_config_mid,
+                "OrgCustRefId": orig_cust_ref_id,
+                "OrgTxnRefId": res_generateqr_publish_id,
+                "TerminalID": db_upi_config_tid,
+            }
 
             # UPI Callback
             api_details = DBProcessor.get_api_details('staticQR_UPI_IDFC_callback', request_body=req_payload3)
@@ -2421,8 +2425,9 @@ def test_common_100_107_023():
 
             logger.debug(f"Response received for staticQR_UPI_IDFC_callback api is : {response}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
-                orig_cust_ref_id) + "'order by created_time desc limit 1; "
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
 
             result = DBProcessor.getValueFromDB(query)
@@ -2434,7 +2439,7 @@ def test_common_100_107_023():
             refund_amount = amount - 100.50
 
             # Calling unified refund API for UPI refund
-            api_details = DBProcessor.get_api_details('Refund_cash_Payment', request_body={
+            api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username,
                 "password": app_password,
                 "amount": refund_amount,
@@ -2463,9 +2468,7 @@ def test_common_100_107_023():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -2587,7 +2590,6 @@ def test_common_100_107_023():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
-
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
