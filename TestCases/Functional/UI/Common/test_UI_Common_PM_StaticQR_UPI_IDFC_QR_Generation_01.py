@@ -123,7 +123,6 @@ def test_common_100_107_013():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
                 expected_api_values = {"success": True,
                                        "username": portal_username,
                                        "tid": db_upi_config_tid,
@@ -137,7 +136,6 @@ def test_common_100_107_013():
                                      "mid": res_generateqr_mid,
                                      "merchantCode": res_generateqr_org_code
                                     }
-                # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -550,7 +548,6 @@ def test_common_100_107_015():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
                 expected_api_values = {"success": False,
                                        "message": "You do not have permission to perform this operation.",
                                        "errorCode": "EZETAP_0000193",
@@ -566,7 +563,6 @@ def test_common_100_107_015():
                                      "realCode": res_realCode
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)

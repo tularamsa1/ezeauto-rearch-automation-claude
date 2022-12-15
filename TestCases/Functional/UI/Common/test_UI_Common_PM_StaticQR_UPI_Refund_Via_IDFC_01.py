@@ -1,8 +1,6 @@
 import random
 import sys
 import pytest
-import requests
-
 from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -772,7 +770,6 @@ def test_common_100_107_020():
             logger.debug(f"Query result : {result}")
 
             orig_txn_id = result["id"].iloc[0]
-            auth_code = result['auth_code'].values[0]
             created_time_orig_txn = result["created_time"].values[0]
 
             refund_amount = amount - 100
@@ -796,7 +793,6 @@ def test_common_100_107_020():
             logger.debug(f"Query result : {result}")
 
             rrn_new_2 = result['rr_number'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1275,7 +1271,6 @@ def test_common_100_107_021():
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
-            # amount = random.randfloat(201.11, 201.20)
             amount = 201.11
             logger.debug(f"generated random amount is : {amount}")
 
@@ -1373,7 +1368,6 @@ def test_common_100_107_021():
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
 
-            rrn_second_txn = result['rr_number'].values[0]
             created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1916,7 +1910,6 @@ def test_common_100_107_022():
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
 
-            rrn_second_txn = result['rr_number'].values[0]
             created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -2436,7 +2429,6 @@ def test_common_100_107_023():
             logger.debug(f"Query result : {result}")
 
             orig_txn_id = result["id"].iloc[0]
-            auth_code = result['auth_code'].values[0]
             created_time_orig_txn = result["created_time"].values[0]
 
             refund_amount = amount - 100.50
@@ -2460,7 +2452,6 @@ def test_common_100_107_023():
             logger.debug(f"Query result : {result}")
 
             rrn_new_2 = result['rr_number'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_second_txn = result["created_time"].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"

@@ -101,9 +101,6 @@ def send_request(api_details):
         url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
         resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
         update_api_details_to_report_variables(resp)
-        # json_resp = json.loads(resp.text)
-        # logger.debug(
-        #     f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
         return resp
 
     if api_details['ApiName'] == 'callbackgeneratorUpiICICI':
