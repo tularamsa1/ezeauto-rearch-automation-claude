@@ -90,6 +90,19 @@ def send_request(api_details):
             f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
         return json_resp
 
+    # For IDFC Callback
+    if api_details['ApiName'] == 'hmac_merch_cred':
+        router_ip = Base_Actions.get_environment("str_exe_env_ip")
+        query = "select psp_base_url from upi_psp_config where bank_code='IDFC';"
+        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        psp_base_url = result['psp_base_url'].values[0]
+        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        update_api_details_to_report_variables(resp)
+        return resp
+
     if api_details['ApiName'] == 'callbackgeneratorUpiICICI':
         router_ip = Base_Actions.get_environment("str_exe_env_ip")
         query = "select psp_base_url from upi_psp_config where bank_code='ICICI_DIRECT';"
