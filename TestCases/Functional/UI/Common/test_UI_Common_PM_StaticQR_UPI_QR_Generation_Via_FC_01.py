@@ -483,7 +483,7 @@ def test_common_100_107_003():
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
 
-        # -----------------------------------------Start of DB Validation--------------------------------------
+        # -----------------------------------------Start of API Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
@@ -509,7 +509,7 @@ def test_common_100_107_003():
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------End of API Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

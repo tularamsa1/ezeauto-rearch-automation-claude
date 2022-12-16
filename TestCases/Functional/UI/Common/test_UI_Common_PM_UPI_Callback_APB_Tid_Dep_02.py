@@ -1754,7 +1754,7 @@ def test_common_100_101_144():
 @pytest.mark.appVal
 def test_common_100_101_145():
     """
-    Sub Feature Code: UI_Common_PM_2_Pure_UPI_failed_callback_after_qr_expiry_AutoRefund_Enabled_APB
+    Sub Feature Code: UI_Common_PM_2_Pure_UPI_failed_callback_after_qr_expiry_AutoRefund_Enabled_Tid_Dep_APB
     Sub Feature Description: Performing two pure upi failed callback via APB after expiry the qr when autorefund is enabled
     TC naming code description: 100: Payment Method, 101: UPI, 145: TC145
     """
@@ -2230,7 +2230,7 @@ def test_common_100_101_145():
 @pytest.mark.appVal
 def test_common_100_101_146():
     """
-    Sub Feature Code: UI_Common_PM_2_Pure_UPI_failed_callback_after_qr_expiry_AutoRefund_Disabled_APB
+    Sub Feature Code: UI_Common_PM_2_Pure_UPI_failed_callback_after_qr_expiry_AutoRefund_Disabled_Tid_Dep_APB
     Sub Feature Description: Performing two pure upi failed callback via APB after expiry the qr when autorefund is disabled
     TC naming code description: 100: Payment Method, 101: UPI, 146: TC146
     """
