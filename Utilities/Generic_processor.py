@@ -8,26 +8,26 @@ logger = EzeAutoLogger(__name__)
 excel_path = ConfigReader.read_config_paths("System",
                                             "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 
-def get_generic_details_from_excel(config_merchant: str) -> dict:
+def get_generic_details_from_excel(generic_merchant: str) -> dict:
 
     """
     This method is used to fetch details of a specific entry from the Generic Details sheet of merchant_user_creation xlsx.
-    :param config_merchant:str
+    :param generic_merchant:str
     :return: dict
     """
 
-    dict_config_details = {}
+    dict_generic = {}
     try:
-        df_config_details = pandas.read_excel(excel_path, sheet_name="Generic")
-        df_config_details.set_index("GenericMerchant", inplace=True)
-        df_config_details.fillna("", inplace=True)
-        column_names = df_config_details.columns
+        df_generic = pandas.read_excel(excel_path, sheet_name="Generic")
+        df_generic.set_index("GenericMerchant", inplace=True)
+        df_generic.fillna("", inplace=True)
+        column_names = df_generic.columns
         for column_name in column_names:
-            dict_config_details[column_name] = str(df_config_details[column_name][config_merchant])
+            dict_generic[column_name] = str(df_generic[column_name][generic_merchant])
     except Exception as e:
         logger.warning(f"Unable to read the Generic details excel due to error {str(e)}")
-    if dict_config_details:
-        return dict_config_details
+    if dict_generic:
+        return dict_generic
     else:
         return None
 

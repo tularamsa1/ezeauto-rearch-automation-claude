@@ -24,6 +24,8 @@ def test_common_400_401_001():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -40,12 +42,13 @@ def test_common_400_401_001():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
             "username": portal_username,
@@ -81,17 +84,14 @@ def test_common_400_401_001():
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + "' and device_identifier_type = 'imei';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query, "ezetap_demo")
-            logger.debug(f"Query result of org_subscription table : {result}")
-            expected_device_identifier = result['device_identifier'].values[0]
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
             logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result['subscriber_id'].values[0]
+            expected_sub_id = result_from_db['subscriber_id'].values[0]
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
@@ -133,10 +133,12 @@ def test_common_400_401_001():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -158,11 +160,12 @@ def test_common_400_401_001():
                }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
+
         # -----------------------------------------End of API Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -186,6 +189,8 @@ def test_common_400_401_002():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -202,11 +207,13 @@ def test_common_400_401_002():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
             "username": portal_username,
@@ -242,17 +249,14 @@ def test_common_400_401_002():
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + "' and device_identifier_type = 'imei' limit 1;"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query, "ezetap_demo")
-            logger.debug(f"Query result of org_subscription table : {result}")
-            expected_device_identifier = result['device_identifier'].values[0]
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
             logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result['subscriber_id'].values[0]
+            expected_sub_id = result_from_db['subscriber_id'].values[0]
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
@@ -292,6 +296,7 @@ def test_common_400_401_002():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -318,11 +323,12 @@ def test_common_400_401_002():
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
+
         # -----------------------------------------End of API Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -344,7 +350,10 @@ def test_common_400_401_003():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -361,11 +370,13 @@ def test_common_400_401_003():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
             "username": portal_username,
@@ -400,24 +411,21 @@ def test_common_400_401_003():
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + "' and device_identifier_type = 'imei';"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query, "ezetap_demo")
-            logger.debug(f"Query result of org_subscription table : {result}")
-            expected_device_identifier = result['device_identifier'].values[0]
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
             logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result['subscriber_id'].values[0]
+            expected_sub_id = result_from_db['subscriber_id'].values[0]
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -455,6 +463,7 @@ def test_common_400_401_003():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -502,7 +511,10 @@ def test_common_400_401_004():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -519,11 +531,13 @@ def test_common_400_401_004():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)-------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
             "username": portal_username,
@@ -557,18 +571,15 @@ def test_common_400_401_004():
             logger.debug(f"Login Response is : {response}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + "' and device_identifier_type = 'imei' limit 1;"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result of org_subscription table : {result}")
-            expected_device_identifier = result['device_identifier'].values[0]
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
             logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result['subscriber_id'].values[0]
+            expected_sub_id = result_from_db['subscriber_id'].values[0]
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
 
@@ -634,7 +645,7 @@ def test_common_400_401_004():
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -662,6 +673,8 @@ def test_common_400_401_005():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -678,11 +691,13 @@ def test_common_400_401_005():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
+        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
             "username": portal_username,
@@ -717,19 +732,15 @@ def test_common_400_401_005():
             logger.debug(f"Login Response is : {response}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + "' and device_identifier_type = 'imei' limit 1;"
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result of org_subscription table : {result}")
-            expected_device_identifier = result['device_identifier'].values[0]
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
             logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result['subscriber_id'].values[0]
+            expected_sub_id = result_from_db['subscriber_id'].values[0]
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
 
@@ -769,10 +780,12 @@ def test_common_400_401_005():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -794,12 +807,13 @@ def test_common_400_401_005():
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
-        # -----------------------------------------End of API Validation---------------------------------------
+        # -----------------------------------------End of API Validation-------------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

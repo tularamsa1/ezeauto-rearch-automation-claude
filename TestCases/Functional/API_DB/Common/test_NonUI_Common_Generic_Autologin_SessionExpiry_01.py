@@ -26,12 +26,14 @@ def test_common_400_401_015():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -41,14 +43,6 @@ def test_common_400_401_015():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-            org_code) + " and deviceIdentifierType = imei limit 1';"
-
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        resultFromDB = DBProcessor.getValueFromDB(query)
-
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
@@ -80,34 +74,34 @@ def test_common_400_401_015():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        if resultFromDB.empty:
+        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result_from_db = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
 
-            expected_deviceIdentifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_deviceIdentifier}")
+        if result_from_db.empty:
+
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
 
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier,
+                "deviceIdentifier": expected_device_identifier,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Login Response is id is : {response}")
-            expected_Sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
+            expected_sub_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + " and deviceIdentifierType = imei limit 1';"
-
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            expected_deviceIdentifier = result['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_deviceIdentifier}")
-            expected_Sub_id = result['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
+            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
+            expected_sub_id = result_from_db['subscriberId'].values[0]
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -128,7 +122,7 @@ def test_common_400_401_015():
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier,
+                "deviceIdentifier": expected_device_identifier,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -159,10 +153,10 @@ def test_common_400_401_015():
                         "amount": "109",
                         "nonce": random.randint(10000, 99999),
                         "externalRefNumber": ext_ref_num,
-                        "deviceIdentifier": expected_deviceIdentifier,
+                        "deviceIdentifier": expected_device_identifier,
                         "appId": "ezetap_android",
                         "deviceIdentifierType": "imei",
-                        "subscriberId": expected_Sub_id
+                        "subscriberId": expected_sub_id
                     }
                 )
 
@@ -196,12 +190,13 @@ def test_common_400_401_015():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values =  {"success": True,
-                                         "subscriber_id": expected_Sub_id,
-                                         "autologin_by_token_enabled": True,
-                                         "orgCode": org_code,
-                                         "username": app_username
-                                        }
+                expected_api_values = {
+                    "success": True,
+                    "subscriber_id": expected_sub_id,
+                    "autologin_by_token_enabled": True,
+                    "orgCode": org_code,
+                    "username": app_username
+                }
 
                 actual_api_values = {
                     "success": cash_txn_success,
@@ -237,11 +232,15 @@ def test_common_400_401_016():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -251,12 +250,6 @@ def test_common_400_401_016():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-            org_code) + " and deviceIdentifierType = imei limit 1';"
-
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        resultFromDB = DBProcessor.getValueFromDB(query)
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
@@ -288,35 +281,33 @@ def test_common_400_401_016():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        if resultFromDB.empty:
+        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result_from_db = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
 
-            expected_deviceIdentifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_deviceIdentifier}")
+        if result_from_db.empty:
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
 
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier ,
+                "deviceIdentifier": expected_device_identifier ,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Login Response is : {response}")
-            expected_Sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
-
+            expected_sub_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + " and deviceIdentifierType = imei limit 1';"
-
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            expected_deviceIdentifier = result['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_deviceIdentifier}")
-            expected_Sub_id = result['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
+            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
+            expected_sub_id = result_from_db['subscriberId'].values[0]
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -335,7 +326,7 @@ def test_common_400_401_016():
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier,
+                "deviceIdentifier": expected_device_identifier,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -371,10 +362,10 @@ def test_common_400_401_016():
                         "amount": "109",
                         "nonce": random.randint(10000, 99999),
                         "externalRefNumber": ext_ref_num,
-                        "deviceIdentifier": expected_deviceIdentifier,
+                        "deviceIdentifier": expected_device_identifier,
                         "appId": "ezetap_android",
                         "deviceIdentifierType": "imei",
-                        "subscriberId": expected_Sub_id
+                        "subscriberId": expected_sub_id
                     }
                 )
 
@@ -398,17 +389,19 @@ def test_common_400_401_016():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expected_api_values =  {
                     "success": True,
-                    "subscriber_id": expected_Sub_id,
+                    "subscriber_id": expected_sub_id,
                     "autologin_by_token_enabled": True,
                     "orgCode": org_code,
                     "username": app_username
@@ -430,6 +423,7 @@ def test_common_400_401_016():
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
+
         # -----------------------------------------End of API Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -448,18 +442,19 @@ def test_common_400_401_017():
     Sub Feature Description: Do txn using invalid appID after session expiry
     TC naming code description:400: Generic functions,401: Autologin,017: TC017
     """
-
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -470,17 +465,12 @@ def test_common_400_401_017():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-            org_code) + " and deviceIdentifierType = imei limit 1';"
-
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        resultFromDB = DBProcessor.getValueFromDB(query)
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
@@ -505,39 +495,39 @@ def test_common_400_401_017():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        if resultFromDB.empty:
+        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result_from_db = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
 
-            expected_deviceIdentifier = random.randint(0, 10 ** 15)
-            print("expected_deviceIdentifier", expected_deviceIdentifier)
+        if result_from_db.empty:
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
 
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier ,
+                "deviceIdentifier": expected_device_identifier ,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Login Response is : {response}")
-            expected_Sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
+            expected_sub_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + " and deviceIdentifierType = imei limit 1';"
-
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            expected_deviceIdentifier = result['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_deviceIdentifier}")
-            expected_Sub_id = result['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
+            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
+            expected_sub_id = result_from_db['subscriberId'].values[0]
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
 
@@ -552,7 +542,7 @@ def test_common_400_401_017():
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier,
+                "deviceIdentifier": expected_device_identifier,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -575,26 +565,26 @@ def test_common_400_401_017():
                         "amount": "109",
                         "nonce": random.randint(10000, 99999),
                         "externalRefNumber": ext_ref_num,
-                        "deviceIdentifier": expected_deviceIdentifier,
+                        "deviceIdentifier": expected_device_identifier,
                         "appId": expected_appID,
                         "deviceIdentifierType": "imei",
-                        "subscriberId": expected_Sub_id
+                        "subscriberId": expected_sub_id
                 })
 
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Cash txn Response is: {response}")
-                actual_cashTxn_success = response['success']
-                logger.debug(f"success id is : {actual_cashTxn_success}")
-                actual_cashTxn_errorCode = response['errorCode']
-                logger.debug(f"errorCode id is : {actual_cashTxn_errorCode}")
-                actual_cashTxn_errorMessage = response['errorMessage']
-                logger.debug(f"errorMessage id is : {actual_cashTxn_errorMessage}")
-                actual_cashTxn_realCode = response['realCode']
-                logger.debug(f"realCode id is : {actual_cashTxn_realCode}")
-                actual_cashTxn_message = response['message']
-                logger.debug(f"message id is : {actual_cashTxn_message}")
+                actual_cash_txn_success = response['success']
+                logger.debug(f"success id is : {actual_cash_txn_success}")
+                actual_cash_txn_error_code = response['errorCode']
+                logger.debug(f"errorCode id is : {actual_cash_txn_error_code}")
+                actual_cash_txn_error_message = response['errorMessage']
+                logger.debug(f"errorMessage id is : {actual_cash_txn_error_message}")
+                actual_cash_txn_real_code = response['realCode']
+                logger.debug(f"realCode id is : {actual_cash_txn_real_code}")
+                actual_cash_txn_message = response['message']
+                logger.debug(f"message id is : {actual_cash_txn_message}")
 
-                if actual_cashTxn_success == True:
+                if actual_cash_txn_success == True:
                     logger.info(f"Cash txn is Success")
 
                 else:
@@ -610,36 +600,38 @@ def test_common_400_401_017():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
-            expected_cashTxn_errorCode = "EZETAP_0000073"
-            expected_cashTxn_errorMessage = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
-            expected_cashTxn_realCode = "AUTH_FAILED"
-            expected_cashTxn_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
+            expected_cash_txn_error_code = "EZETAP_0000073"
+            expected_cash_txn_error_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
+            expected_cash_txn_real_code = "AUTH_FAILED"
+            expected_cash_txn_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
 
             try:
                 expected_api_values = {
                     "success": False,
-                    "errorCode":expected_cashTxn_errorCode,
-                    "errorMessage":expected_cashTxn_errorMessage,
-                    "realCode":expected_cashTxn_realCode,
-                    "message":expected_cashTxn_message
+                    "errorCode":expected_cash_txn_error_code,
+                    "errorMessage":expected_cash_txn_error_message,
+                    "realCode":expected_cash_txn_real_code,
+                    "message":expected_cash_txn_message
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
-                    "success": actual_cashTxn_success,
-                    "errorCode": actual_cashTxn_errorCode,
-                    "errorMessage": actual_cashTxn_errorMessage,
-                    "realCode": actual_cashTxn_realCode,
-                    "message": actual_cashTxn_message
+                    "success": actual_cash_txn_success,
+                    "errorCode": actual_cash_txn_error_code,
+                    "errorMessage": actual_cash_txn_error_message,
+                    "realCode": actual_cash_txn_real_code,
+                    "message": actual_cash_txn_message
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -671,12 +663,14 @@ def test_common_400_401_018():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -686,12 +680,6 @@ def test_common_400_401_018():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-            org_code) + " and deviceIdentifierType = imei limit 1';"
-
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        resultFromDB = DBProcessor.getValueFromDB(query)
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
@@ -723,15 +711,20 @@ def test_common_400_401_018():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        if resultFromDB.empty:
+        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result_from_db = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
 
-            expected_deviceIdentifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_deviceIdentifier}")
+        if result_from_db.empty:
+
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
 
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier ,
+                "deviceIdentifier": expected_device_identifier ,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -742,15 +735,10 @@ def test_common_400_401_018():
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + " and deviceIdentifierType = imei limit 1';"
-
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            expected_deviceIdentifier = result['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_deviceIdentifier}")
-            expected_Sub_id = result['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_Sub_id}")
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
+            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
+            expected_sub_id = result_from_db['subscriberId'].values[0]
+            logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -761,6 +749,7 @@ def test_common_400_401_018():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of Test Execution---------------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -770,7 +759,7 @@ def test_common_400_401_018():
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier,
+                "deviceIdentifier": expected_device_identifier,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -788,14 +777,14 @@ def test_common_400_401_018():
                 ext_ref_num = ''.join(secrets.choice(string.ascii_lowercase + string.digits)
                                       for i in range(20))
 
-                expected_deviceIdentifier = 'zmxl'
+                expected_device_identifier = 'zmxl'
 
                 api_details = DBProcessor.get_api_details('cash_payment',request_body={
                     "username": app_username,
                     "amount": "109",
                     "nonce": random.randint(10000, 99999),
                     "externalRefNumber": ext_ref_num,
-                    "deviceIdentifier": expected_deviceIdentifier,
+                    "deviceIdentifier": expected_device_identifier,
                     "appId": "ezetap_android",
                     "deviceIdentifierType": "imei",
                     "subscriberId": expected_sub_id
@@ -803,18 +792,18 @@ def test_common_400_401_018():
 
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Cash txn Response is: {response}")
-                actual_cashTxn_success = response['success']
-                logger.debug(f"success id is : {actual_cashTxn_success}")
-                actual_cashTxn_errorCode = response['errorCode']
-                logger.debug(f"errorCode id is : {actual_cashTxn_errorCode}")
-                actual_cashTxn_errorMessage = response['errorMessage']
-                logger.debug(f"errorMessage id is : {actual_cashTxn_errorMessage}")
-                actual_cashTxn_realCode = response['realCode']
-                logger.debug(f"realCode id is : {actual_cashTxn_realCode}")
-                actual_cashTxn_message = response['message']
-                logger.debug(f"message id is : {actual_cashTxn_message}")
+                actual_cash_txn_success = response['success']
+                logger.debug(f"success id is : {actual_cash_txn_success}")
+                actual_cash_txn_error_code = response['errorCode']
+                logger.debug(f"errorCode id is : {actual_cash_txn_error_code}")
+                actual_cash_txn_error_message = response['errorMessage']
+                logger.debug(f"errorMessage id is : {actual_cash_txn_error_message}")
+                actual_cash_txn_real_code = response['realCode']
+                logger.debug(f"realCode id is : {actual_cash_txn_real_code}")
+                actual_cash_txn_message = response['message']
+                logger.debug(f"message id is : {actual_cash_txn_message}")
 
-                if actual_cashTxn_success == True:
+                if actual_cash_txn_success == True:
                     logger.info(f"Cash txn is Success")
 
                 else:
@@ -840,28 +829,28 @@ def test_common_400_401_018():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
-            expected_cashTxn_errorCode = "EZETAP_0000073"
-            expected_cashTxn_errorMessage = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
-            expected_cashTxn_realCode = "AUTH_FAILED"
-            expected_cashTxn_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
+            expected_cash_txn_error_code = "EZETAP_0000073"
+            expected_cash_txn_error_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
+            expected_cash_txn_real_code = "AUTH_FAILED"
+            expected_cash_txn_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
 
             try:
                 expected_api_values = {
                     "success": False,
-                    "errorCode":expected_cashTxn_errorCode,
-                    "errorMessage":expected_cashTxn_errorMessage,
-                    "realCode":expected_cashTxn_realCode,
-                    "message":expected_cashTxn_message
+                    "errorCode":expected_cash_txn_error_code,
+                    "errorMessage":expected_cash_txn_error_message,
+                    "realCode":expected_cash_txn_real_code,
+                    "message":expected_cash_txn_message
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
-                    "success": actual_cashTxn_success,
-                    "errorCode": actual_cashTxn_errorCode,
-                    "errorMessage": actual_cashTxn_errorMessage,
-                    "realCode": actual_cashTxn_realCode,
-                    "message": actual_cashTxn_message
+                    "success": actual_cash_txn_success,
+                    "errorCode": actual_cash_txn_error_code,
+                    "errorMessage": actual_cash_txn_error_message,
+                    "realCode": actual_cash_txn_real_code,
+                    "message": actual_cash_txn_message
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -893,12 +882,14 @@ def test_common_400_401_019():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
@@ -909,25 +900,12 @@ def test_common_400_401_019():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-            org_code) + " and deviceIdentifierType = imei limit 1';"
-
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        resultFromDB = DBProcessor.getValueFromDB(query)
-
-        GlobalVariables.setupCompletedSuccessfully = True
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, closedloop_log=False, q2_log=False)
-
-        GlobalVariables.time_calc.setup.end()
-        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)-------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
@@ -952,15 +930,19 @@ def test_common_400_401_019():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        if resultFromDB.empty:
+        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result_from_db = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
 
-            expected_deviceIdentifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_deviceIdentifier}")
+        if result_from_db.empty:
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
 
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier ,
+                "deviceIdentifier": expected_device_identifier ,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -971,20 +953,16 @@ def test_common_400_401_019():
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         else:
-            query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(
-                org_code) + " and deviceIdentifierType = imei limit 1';"
-
-            logger.debug(f"Query to fetch org_code from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            expected_device_identifier = result['device_identifier'].values[0]
+            expected_device_identifier = result_from_db['device_identifier'].values[0]
             logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result['subscriberId'].values[0]
+            expected_sub_id = result_from_db['subscriberId'].values[0]
             logger.debug(f"Subscriber id is : {expected_sub_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False, closedloop_log=False, q2_log=False)
 
@@ -1000,7 +978,7 @@ def test_common_400_401_019():
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
-                "deviceIdentifier": expected_deviceIdentifier,
+                "deviceIdentifier": expected_device_identifier,
                 "appId": "ezetap_android",
                 "deviceIdentifierType": "imei"
             })
@@ -1025,7 +1003,7 @@ def test_common_400_401_019():
                         "amount": "109",
                         "nonce": random.randint(10000, 99999),
                         "externalRefNumber": ext_ref_num,
-                        "deviceIdentifier": expected_deviceIdentifier,
+                        "deviceIdentifier": expected_device_identifier,
                         "appId": "ezetap_android",
                         "deviceIdentifierType": expected_deviceIdentifierType,
                         "subscriberId": expected_sub_id
@@ -1033,18 +1011,18 @@ def test_common_400_401_019():
 
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Cash txn Response is : {response}")
-                actual_cashTxn_success = response['success']
-                logger.debug(f"success id is : {actual_cashTxn_success}")
-                actual_cashTxn_errorCode = response['errorCode']
-                logger.debug(f"errorCode id is : {actual_cashTxn_errorCode}")
-                actual_cashTxn_errorMessage = response['errorMessage']
-                logger.debug(f"errorMessage id is : {actual_cashTxn_errorMessage}")
-                actual_cashTxn_realCode = response['realCode']
-                logger.debug(f"realCode id is : {actual_cashTxn_realCode}")
-                actual_cashTxn_message = response['message']
-                logger.debug(f"message id is : {actual_cashTxn_message}")
+                actual_cash_txn_success = response['success']
+                logger.debug(f"success id is : {actual_cash_txn_success}")
+                actual_cash_txn_error_code = response['errorCode']
+                logger.debug(f"errorCode id is : {actual_cash_txn_error_code}")
+                actual_cash_txn_error_message = response['errorMessage']
+                logger.debug(f"errorMessage id is : {actual_cash_txn_error_message}")
+                actual_cash_txn_real_code = response['realCode']
+                logger.debug(f"realCode id is : {actual_cash_txn_real_code}")
+                actual_cash_txn_message = response['message']
+                logger.debug(f"message id is : {actual_cash_txn_message}")
 
-                if actual_cashTxn_success == True:
+                if actual_cash_txn_success == True:
                     logger.info(f"Cash txn is Success")
 
                 else:
@@ -1060,6 +1038,7 @@ def test_common_400_401_019():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -1076,11 +1055,11 @@ def test_common_400_401_019():
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
-                    "success": actual_cashTxn_success,
+                    "success": actual_cash_txn_success,
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
