@@ -18,8 +18,7 @@ def test_d102_102_014():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Callback_Success
     Sub Feature Description: Generate QR through api and perform callback success for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 014->TC014
+    TC naming code description: d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 014->TC014
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -317,8 +316,7 @@ def test_d102_102_015():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Callback_Failed
     Sub Feature Description: Generate QR through api and perform callback failed for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 015->TC015
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 015->TC015
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -611,8 +609,7 @@ def test_d102_102_016():
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Callback_same_rrn_Success
     Sub Feature Description: Generate QR through api and perform two callback success with same rrn for BQRV4 UPI
     txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 016->TC016
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 016->TC016
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -925,8 +922,7 @@ def test_d102_102_017():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Callback_Failed
     Sub Feature Description: Generate QR through api and perform callback failed for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 017->TC017
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 017->TC017
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1234,8 +1230,7 @@ def test_d102_102_018():
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Callback_difffent_rrn_Success
     Sub Feature Description: Generate QR through api and perform two callback success with diffrent rrn for BQRV4 UPI
     txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 016->TC016
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 016->TC016
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

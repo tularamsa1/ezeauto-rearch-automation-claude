@@ -19,7 +19,7 @@ def test_d102_101_003():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Callback_Success
     Sub Feature Description: Generate QR through api and perform callback success for UPI txn of ICICI_Direct pg
-    TC naming code description: d102: ICICI DIRECT UPI Dev, 101-> UPI, 003->TC003
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 003->TC003
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -280,7 +280,7 @@ def test_d102_101_004():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Callback_Failed
     Sub Feature Description: Generate QR through api and perform callback failed for UPI txn of ICICI_Direct pg
-    TC naming code description: d102: ICICI DIRECT UPI Dev, 101-> UPI, 004->TC004
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 004->TC004
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

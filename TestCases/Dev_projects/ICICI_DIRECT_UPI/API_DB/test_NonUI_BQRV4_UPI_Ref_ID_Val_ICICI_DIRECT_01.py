@@ -18,8 +18,7 @@ def test_d102_102_010():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Ref_ID_Validation_Failed
     Sub Feature Description: Generate QR through api and perform Ref ID validation failed for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 010->TC010
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 010->TC010
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -280,8 +279,7 @@ def test_d102_102_011():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Ref_ID_Validation_Failed_Service_Unavilable
     Sub Feature Description: Generate QR through api and perform Ref ID validation failed due to service unavilable for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 BQR, 011->TC011
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 011->TC011
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

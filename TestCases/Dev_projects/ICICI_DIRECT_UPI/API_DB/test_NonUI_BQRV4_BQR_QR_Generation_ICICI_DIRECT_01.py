@@ -18,8 +18,7 @@ def test_d102_102_008():
     """
     Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_QR_Generation_Success
     Sub Feature Description: Generate QR through api successfully for BQR txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 BQR, 008->TC008
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 008->TC008
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -242,8 +241,7 @@ def test_d102_102_009():
     """
     Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_QR_Generation_Failed
     Sub Feature Description: Generating QR through api failed for BQR txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 BQR, 009->TC009
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 009->TC009
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -333,7 +331,6 @@ def test_d102_102_009():
                 expected_api_values = {"error_code": "EZETAP_600029",
                                        "real_code" : "BHARATQR_MERCHANT_CONFIG_NOT_FOUND"
                                        }
-
 
                 actual_api_values = {"error_code": error_code,
                                        "real_code" : real_code_api
