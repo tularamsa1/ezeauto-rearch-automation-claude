@@ -110,7 +110,8 @@ def test_d102_102_028():
                                                                     "amount":str(amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after sending the request for the check status : {response}")
+            txn_id_refunded = response["txnId"]
+            logger.debug(f"response received after sending the request for refund payment : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
@@ -128,7 +129,7 @@ def test_d102_102_028():
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Response received to fetch refund txn details is : {result}")
-            txn_id_refunded = result["id"].iloc[0]
+            #txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
             posting_date_refunded = result['created_time'].values[0]
@@ -424,6 +425,9 @@ def test_d102_102_028():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -523,6 +527,7 @@ def test_d102_102_029():
                                                                     "amount":amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -539,7 +544,7 @@ def test_d102_102_029():
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
@@ -588,7 +593,7 @@ def test_d102_102_029():
                     "acquirer_code_2": "HDFC",
                     #"issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
-                    "mid_2": mid, "tid_2": tid,
+                    #"mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code,
                     #"auth_code_2": auth_code_new_2,
                     "date_2": date_new_2,
@@ -637,8 +642,8 @@ def test_d102_102_029():
                 # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
                 orgCode_api_new_2 = response["orgCode"]
-                mid_api_new_2 = response["mid"]
-                tid_api_new_2 = response["tid"]
+                #mid_api_new_2 = response["mid"]
+                #tid_api_new_2 = response["tid"]
                 txn_type_api_new_2 = response["txnType"]
                 # auth_code_api_new_2 = response["authCode"]
                 date_api_new_2 = response["createdTime"]
@@ -664,7 +669,7 @@ def test_d102_102_029():
                     "acquirer_code_2": acquirer_code_api_new_2,
                     # "issuer_code_2": issuer_code_api_new_2,
                     "txn_type_2": txn_type_api_new_2,
-                    "mid_2": mid_api_new_2, "tid_2": tid_api_new_2,
+                    #"mid_2": mid_api_new_2, "tid_2": tid_api_new_2,
                     "org_code_2": orgCode_api_new_2,
                     # "auth_code_2": auth_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
@@ -812,6 +817,7 @@ def test_d102_102_029():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -911,6 +917,7 @@ def test_d102_102_030():
                                                                     "amount":amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -927,7 +934,7 @@ def test_d102_102_030():
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
@@ -1200,6 +1207,7 @@ def test_d102_102_030():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -1300,6 +1308,7 @@ def test_d102_102_031():
                                                                     "amount":str(refund_amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_refunded = response["txnId"]
             logger.debug(f"response received after sending the request for refund txn : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -1318,7 +1327,7 @@ def test_d102_102_031():
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Response received to fetch refund txn details is : {result}")
-            txn_id_refunded = result["id"].iloc[0]
+            #txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
             posting_date_refunded = result['created_time'].values[0]
@@ -1713,6 +1722,7 @@ def test_d102_102_032():
                                                                     "amount":refund_amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -1729,7 +1739,7 @@ def test_d102_102_032():
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]

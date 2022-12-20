@@ -101,7 +101,7 @@ def test_d102_102_059():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            amount = random.randint(225, 300)
+            amount = random.randint(226, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('bqrGenerate',
@@ -123,6 +123,7 @@ def test_d102_102_059():
                                                                     "amount":str(amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for refund txn : {response}")
 
             query = "select * from txn where id = '" + str(txn_id) + "';"
@@ -140,7 +141,7 @@ def test_d102_102_059():
                 order_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
@@ -439,6 +440,9 @@ def test_d102_102_059():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -549,6 +553,7 @@ def test_d102_102_060():
                                                                     "amount":amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -565,7 +570,7 @@ def test_d102_102_060():
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
@@ -838,6 +843,7 @@ def test_d102_102_060():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -950,6 +956,7 @@ def test_d102_102_061():
                                                                     "amount":amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -966,7 +973,7 @@ def test_d102_102_061():
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
@@ -1329,7 +1336,7 @@ def test_d102_102_062():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            amount = random.randint(225, 300)
+            amount = random.randint(226, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('bqrGenerate',
@@ -1352,6 +1359,7 @@ def test_d102_102_062():
                                                                     "amount":str(refund_amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for refund txn : {response}")
 
             query = "select * from txn where id = '" + str(txn_id) + "';"
@@ -1369,7 +1377,7 @@ def test_d102_102_062():
                 order_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]
@@ -1668,6 +1676,7 @@ def test_d102_102_062():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -1779,6 +1788,7 @@ def test_d102_102_063():
                                                                     "amount":refund_amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -1795,7 +1805,7 @@ def test_d102_102_063():
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_new_2 = result['id'].values[0]
+            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
             customer_name_new_2 = result['customer_name'].values[0]
             payer_name_new_2 = result['payer_name'].values[0]

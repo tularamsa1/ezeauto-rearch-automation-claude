@@ -188,7 +188,7 @@ def test_d102_101_032():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -510,7 +510,7 @@ def test_d102_101_033():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -782,8 +782,8 @@ def test_d102_101_034():
             logger.debug(f"captured org_code from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"captured txn_type from txn table is : {txn_type}")
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"captured posting_date from txn table is : {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"captured created_time from txn table is : {created_time}")
             external_ref = result['external_ref'].values[0]
             logger.debug(f"captured external_ref from txn table is : {external_ref}")
 
@@ -806,7 +806,7 @@ def test_d102_101_034():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
@@ -843,7 +843,7 @@ def test_d102_101_034():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1111,8 +1111,8 @@ def test_d102_101_035():
             logger.debug(f"captured org_code from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"captured txn_type from txn table is : {txn_type}")
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"captured posting_date from txn table is : {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"captured created_time from txn table is : {created_time}")
             external_ref = result['external_ref'].values[0]
             logger.debug(f"captured external_ref from txn table is : {external_ref}")
 
@@ -1135,7 +1135,7 @@ def test_d102_101_035():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "UPG_REFUND_PENDING",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
@@ -1172,7 +1172,7 @@ def test_d102_101_035():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1474,7 +1474,7 @@ def test_d102_101_036():
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
                 # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,

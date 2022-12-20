@@ -439,9 +439,9 @@ def test_d102_108_002():
 @pytest.mark.dbVal
 def test_d102_108_003():
     """
-    Sub Feature Code: NonUI_Common_StaticQR_UPI_QR_Regeneration_Different_User_ICICI_DIRECT
-    Sub Feature Description: Re-generate the static QR using UPI with different user and verify the tables getting updated.
-    TC naming code description: d102: ICICI-DIRECT UPI Dev, 108: UPI STATIC QR, 003: Testcase ID
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_StaticQR_Regeneration_Different_User_ICICI_DIRECT
+    Sub Feature Description: Performing static QR re generation success with different app user for BQRV4 UPI via ICICI DIRECT
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 108: BQRv4 StaticQR, 003: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -468,7 +468,7 @@ def test_d102_108_003():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
-                                                    portal_pw=portal_password, payment_mode='UPI',bank_code_bqr='HDFC')
+                                                           portal_pw=portal_password, payment_mode='BQRV4',bank_code_bqr='HDFC')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -478,62 +478,56 @@ def test_d102_108_003():
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
         logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
+
         upi_mc_id = result['id'].values[0]
         logger.info(f"fetched upi_mc_id is : {upi_mc_id}")
+
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
+
         vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {vpa}")
+
+        query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
+                                                        "status = 'ACTIVE' and bank_code='HDFC'"
+        result = DBProcessor.getValueFromDB(query)
+        bqr_mc_id = result["id"].iloc[0]
+        bqr_m_pan = result["merchant_pan"].iloc[0]
         tid = result['tid'].values[0]
-        logger.info(f"fetched tid is : {tid}")
         mid = result['mid'].values[0]
-        logger.info(f"fetched mid is : {mid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username,portal_password,vpa)
-
-        logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
-        query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
-        result = DBProcessor.delete_value_from_db(query)
-        logger.debug(f"Query result : {result}")
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # ---------------------------------------- Preconditions Completed ------------------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            api_details = DBProcessor.get_api_details('static_qrcode_generate_icici_direct', request_body={
+            api_details = DBProcessor.get_api_details('static_qrcode_generate_hdfc', request_body={
                 "username": portal_username,
                 "password": portal_password,
-                "qrCodeType": "UPI",
-                "qrOrgCode": org_code,
                 "qrUserMobileNo": mobile_number,
                 "qrUserName": app_username,
-                "upiMerchantConfigId": str(upi_mc_id),
+                "qrCodeType": "BHARAT",
+                "qrOrgCode": org_code,
                 "merchantVpa": vpa,
+                "mid": mid,
+                "tid": tid
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
             publish_id = response["publishId"]
-            success_api = response["success"]
             username_api = response["username"]
-            org_code_api = response["merchantCode"]
-            mid_api = response["mid"]
-            tid_api = response["tid"]
-            logger.debug(f"fetching success status,publish_id, username, org code from api response is : "
-                         f"{success_api},{publish_id},{username_api},{org_code_api}")
+            logger.debug(f"fetching publish_id, username from api response is : "f"{publish_id},{username_api}")
 
             query = "select username from org_employee where org_code='" + str(org_code) + "';"
             logger.debug(f"Query to fetch all user under the {org_code} org_code from the DB : {query}")
@@ -577,50 +571,43 @@ def test_d102_108_003():
                 logger.debug(f"response received for createUser api is : {response}")
                 if response["success"]:
                     # Regenerating static qr with another user for same org
-                    api_details = DBProcessor.get_api_details('static_qrcode_generate_icici_direct', request_body={
+                    api_details = DBProcessor.get_api_details('static_qrcode_generate_hdfc', request_body={
                         "username": portal_username,
                         "password": portal_password,
-                        "qrCodeType": "UPI",
-                        "qrOrgCode": org_code,
+                        "qrCodeType": "BHARAT",
                         "qrUserMobileNo": second_app_username,
                         "qrUserName": second_app_username,
-                        "upiMerchantConfigId": str(upi_mc_id),
+                        "qrOrgCode": org_code,
                         "merchantVpa": vpa,
+                        "mid": mid,
+                        "tid": tid
                     })
-                    response = APIProcessor.send_request(api_details)
-                    logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
-                    publish_id_second = response["publishId"]
-                    success_api_second = response["success"]
-                    username_api_second = response["username"]
-                    org_code_api_second = response["merchantCode"]
-                    mid_api_second = response["mid"]
-                    tid_api_second = response["tid"]
-                    logger.debug(f"fetching success status,publish_id, username, org code from second api response is : "
-                                 f"{success_api_second},{publish_id_second},{username_api_second},{org_code_api_second}")
+
                 else:
                     logger.error(f"User creation failed : {response}")
             else:
                 # Regenerating static qr with another existing user for same org
-                api_details = DBProcessor.get_api_details('static_qrcode_generate_icici_direct', request_body={
+                api_details = DBProcessor.get_api_details('static_qrcode_generate_hdfc', request_body={
                     "username": portal_username,
                     "password": portal_password,
-                    "qrCodeType": "UPI",
-                    "qrOrgCode": org_code,
+                    "qrCodeType": "BHARAT",
                     "qrUserMobileNo": second_app_username,
                     "qrUserName": second_app_username,
-                    "upiMerchantConfigId": str(upi_mc_id),
+                    "qrOrgCode": org_code,
                     "merchantVpa": vpa,
+                    "mid": mid,
+                    "tid": tid
                 })
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
-                publish_id_second = response["publishId"]
-                success_api_second = response["success"]
-                username_api_second = response["username"]
-                org_code_api_second = response["merchantCode"]
-                mid_api_second = response["mid"]
-                tid_api_second = response["tid"]
-                logger.debug(f"fetching success status,publish_id, username, org code from second api response is : "
-                             f"{success_api_second},{publish_id_second},{username_api_second},{org_code_api_second}")
+
+            response = APIProcessor.send_request(api_details)
+            api_publish_id_second = response["publishId"]
+            api_username_second = response["username"]
+            api_success_second = response["success"]
+            api_org_code_second = response["merchantCode"]
+            api_mid_second = response["mid"]
+            api_tid_second = response["tid"]
+            logger.debug(f"Response received for regenerating static_qrcode_hdfc api is : {response}")
+            logger.debug(f"fetching publish_id, username from api response is : "f"{publish_id},{username_api}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -631,6 +618,7 @@ def test_d102_108_003():
             pytest.fail("Test case execution failed due to the exception -" + str(e))
 
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
 
         logger.info(f"Starting Validation for the test case : {testcase_id}")
@@ -640,30 +628,21 @@ def test_d102_108_003():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values = {
-                    "success": True,
-                    "success_2": True,
-                    "user_name" : portal_username,
-                    "user_name_2": portal_username,
-                    "org_code" : org_code,
-                    "org_code_2": org_code,
-                    "publish_id": publish_id,
-               }
+                expected_api_values = {"success": True,
+                                       "user_name": portal_username,
+                                       "org_code": org_code,
+                                       "mid": mid,
+                                       "tid": tid,
+                                       "publisher_id": publish_id
+                                       }
 
-                actual_api_values = {
-                    "success": success_api,
-                    "success_2": success_api_second,
-                    "user_name" : username_api,
-                    "user_name_2": username_api_second,
-                    "org_code" : org_code_api,
-                    "org_code_2": org_code_api_second,
-                    "mid": mid_api,
-                    "tid": tid_api,
-                    "mid_2": mid_api_second,
-                    "tid_2": tid_api_second,
-                    "publish_id": publish_id_second,
-                }
-
+                actual_api_values = {"success": api_success_second,
+                                     "user_name" : api_username_second,
+                                     "org_code" : api_org_code_second,
+                                     "mid": api_mid_second,
+                                     "tid": api_tid_second,
+                                     "publisher_id": api_publish_id_second
+                                       }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -671,31 +650,36 @@ def test_d102_108_003():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-
                 expected_db_values = {
+                    "publish_id": publish_id,
                     "org_code": org_code,
-                    "config_id": upi_mc_id,
+                    "config_id": bqr_mc_id,
                     "vpa": vpa,
+                    "merchant_pan": bqr_m_pan,
                     "user_mobile": second_app_username,
                     "user_name": second_app_username,
-                    "mid": '',
-                    "tid": '',
-                    "qr_type": "UPI",
+                    "mid": mid,
+                    "tid": tid,
+                    "qr_type": "BHARATQR",
                     "intent_type": "STATIC_QR"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from staticqr_intent where publish_id='" + publish_id + "'"
+                query = "select * from staticqr_intent where config_id='" + str(bqr_mc_id) + "'"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
+
+                publish_id_db = result["publish_id"].iloc[0]
                 org_code_db = result["org_code"].iloc[0]
                 config_id_db = result["config_id"].iloc[0]
                 vpa_db = result["vpa"].iloc[0]
+                merchant_pan_db = result["merchant_pan"].iloc[0]
                 user_mobile_db = result["user_mobile"].iloc[0]
                 username_db = result["user_name"].iloc[0]
                 tid_db = result['tid'].values[0]
@@ -704,9 +688,11 @@ def test_d102_108_003():
                 intent_type_db = result['intent_type'].values[0]
 
                 actual_db_values = {
+                    "publish_id": publish_id_db,
                     "org_code": org_code_db,
                     "config_id": config_id_db,
                     "vpa": vpa_db,
+                    "merchant_pan": merchant_pan_db,
                     "user_mobile": user_mobile_db,
                     "user_name": username_db,
                     "mid": mid_db,

@@ -104,13 +104,14 @@ def test_d102_102_066():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
-            sleep(1)
-            query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
-                '%y%m%d') + "%' order by created_time desc limit 1;"
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_upg = result['id'].values[0]
+            txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+            query = "select * from txn where id = '" + txn_id_upg + "';"
+            logger.debug(f"Query to fetch txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]
@@ -425,13 +426,14 @@ def test_d102_102_067():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
-            sleep(1)
-            query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
-                '%y%m%d') + "%' order by created_time desc limit 1;"
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_upg = result['id'].values[0]
+            txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+            query = "select * from txn where id = '" + txn_id_upg + "';"
+            logger.debug(f"Query to fetch txn_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]
@@ -716,38 +718,29 @@ def test_d102_102_068():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(500, 1000)
-            order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
-                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after initiating qr : {response}")
-            txn_id = response["txnId"]
-            txn_id_tampered = str(txn_id.split('E')[0]) + 'E' + str(random.randint(10000000, 999999999))
-            auth_code = "AE" + txn_id_tampered.split('E')[1]
-            rrn = "RE" + txn_id_tampered.split('E')[1]
+            upg_txn_id = '220518115526031E' + str(random.randint(10000000, 999999999))
+            auth_code = "AE" + upg_txn_id.split('E')[1]
+            rrn = "RE" + upg_txn_id.split('E')[1]
             logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
+                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {upg_txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
-                                                                    "TXN_ID": txn_id_tampered,
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(amount),
+                                                                    "TXN_ID": upg_txn_id,
                                                                     "AUTH_CODE": auth_code, "RRN": rrn,
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
-            sleep(1)
-            query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
-                '%y%m%d') + "%' order by created_time desc limit 1;"
+            query = ("select * from invalid_pg_request where request_id ='" + upg_txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_upg = result['id'].values[0]
+            txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+            query = "select * from txn where id = '" + txn_id_upg + "';"
+            logger.debug(f"Query to fetch txn details from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -779,7 +772,7 @@ def test_d102_102_068():
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -850,7 +843,7 @@ def test_d102_102_068():
                     "ipr_mid": mid,
                     "ipr_tid": tid,
                     "ipr_config_id": bqr_mc_id,
-                    "ipr_pg_merchant_id": merchant_id,
+                    "ipr_pg_merchant_id": bqr_m_pan,
                     "bqr_pmt_status": "success", "bqr_pmt_state": "UPG_AUTHORIZED",
                     "bqr_txn_amt": float(amount),
                     "brq_terminal_info_id": terminal_info_id,
@@ -1038,38 +1031,29 @@ def test_d102_102_069():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(500, 1000)
-            order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
-                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
-            })
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after initiating qr : {response}")
-            txn_id = response["txnId"]
-            txn_id_tampered = str(txn_id.split('E')[0]) + 'E' + str(random.randint(10000000, 999999999))
-            auth_code = "AE" + txn_id_tampered.split('E')[1]
-            rrn = "RE" + txn_id_tampered.split('E')[1]
+            upg_txn_id = '220518115526031E' + str(random.randint(10000000, 999999999))
+            auth_code = "AE" + upg_txn_id.split('E')[1]
+            rrn = "RE" + upg_txn_id.split('E')[1]
             logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
+                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {upg_txn_id},"
                 f" Auth code : {auth_code}, RRN : {rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
-                                                      request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
-                                                                    "TXN_ID": txn_id_tampered,
+                                                      request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(amount),
+                                                                    "TXN_ID": upg_txn_id,
                                                                     "AUTH_CODE": auth_code, "RRN": rrn,
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
-            sleep(1)
-            query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
-                '%y%m%d') + "%' order by created_time desc limit 1;"
+            query = ("select * from invalid_pg_request where request_id ='" + upg_txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_upg = result['id'].values[0]
+            txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+            query = "select * from txn where id = '" + txn_id_upg + "';"
+            logger.debug(f"Query to fetch txn details from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -1101,7 +1085,7 @@ def test_d102_102_069():
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -1172,7 +1156,7 @@ def test_d102_102_069():
                     "ipr_mid": mid,
                     "ipr_tid": tid,
                     "ipr_config_id": bqr_mc_id,
-                    "ipr_pg_merchant_id": merchant_id,
+                    "ipr_pg_merchant_id": bqr_m_pan,
                     "bqr_pmt_status": "success", "bqr_pmt_state": "UPG_REFUND_PENDING",
                     "bqr_txn_amt": float(amount),
                     "brq_terminal_info_id": terminal_info_id,
@@ -1370,13 +1354,14 @@ def test_d102_102_070():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
-            sleep(2)
-            query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
-                '%y%m%d') + "%' order by created_time desc limit 1;"
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id_upg = result['id'].values[0]
+            txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+            query = "select * from txn where id = '" + txn_id_upg + "';"
+            logger.debug(f"Query to fetch txn details from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]

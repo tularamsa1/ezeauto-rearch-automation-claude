@@ -63,9 +63,9 @@ def test_d102_107_001():
         logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
         vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {vpa}")
-        tid = result['tid'].values[0]
+        tid = result['virtual_tid'].values[0]
         logger.info(f"fetched tid is : {tid}")
-        mid = result['mid'].values[0]
+        mid = result['virtual_mid'].values[0]
         logger.info(f"fetched mid is : {mid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username,portal_password,vpa)
@@ -249,9 +249,9 @@ def test_d102_107_002():
         logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
         vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {vpa}")
-        tid = result['tid'].values[0]
+        tid = result['virtual_tid'].values[0]
         logger.info(f"fetched tid is : {tid}")
-        mid = result['mid'].values[0]
+        mid = result['virtual_mid'].values[0]
         logger.info(f"fetched mid is : {mid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username,portal_password,vpa)
@@ -595,7 +595,7 @@ def test_d102_107_004():
     """
     Sub Feature Code: NonUI_Common_StaticQR_UPI_QR_Regeneration_Different_User_ICICI_DIRECT
     Sub Feature Description: Re-generate the static QR using UPI with different user and verify the tables getting updated.
-    TC naming code description: d102: ICICI-DIRECT UPI Dev, 107: UPI STATIC QR, 003: Testcase ID
+    TC naming code description: d102: ICICI-DIRECT UPI Dev, 107: UPI STATIC QR, 004: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -638,10 +638,10 @@ def test_d102_107_004():
         logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
         vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {vpa}")
-        tid = result['tid'].values[0]
-        logger.info(f"fetched tid is : {tid}")
-        mid = result['mid'].values[0]
-        logger.info(f"fetched mid is : {mid}")
+        virtual_tid = result['virtual_tid'].values[0]
+        logger.info(f"fetched virtual tid is : {virtual_tid}")
+        virtual_mid = result['virtual_mid'].values[0]
+        logger.info(f"fetched virtual mid is : {virtual_mid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username,portal_password,vpa)
 
@@ -801,6 +801,10 @@ def test_d102_107_004():
                     "user_name_2": portal_username,
                     "org_code" : org_code,
                     "org_code_2": org_code,
+                    "mid": virtual_mid,
+                    "tid": virtual_tid,
+                    "mid_2": virtual_mid,
+                    "tid_2": virtual_tid,
                     "publish_id": publish_id,
                }
 
@@ -836,8 +840,8 @@ def test_d102_107_004():
                     "vpa": vpa,
                     "user_mobile": second_app_username,
                     "user_name": second_app_username,
-                    "mid": '',
-                    "tid": '',
+                    "mid": virtual_mid,
+                    "tid": virtual_tid,
                     "qr_type": "UPI",
                     "intent_type": "STATIC_QR"
                 }

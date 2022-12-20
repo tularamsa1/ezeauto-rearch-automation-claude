@@ -1,7 +1,6 @@
 import random
 import sys
 from datetime import datetime
-from time import sleep
 import pytest
 from Configuration import testsuite_teardown, Configuration
 from DataProvider import GlobalVariables
@@ -43,7 +42,7 @@ def test_d102_102_071():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4',
                                                            bank_code_bqr='HDFC')
 
@@ -123,13 +122,14 @@ def test_d102_102_071():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for callback : {response}")
-            sleep(1)
-            query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
-                '%y%m%d') + "%' order by created_time desc limit 1;"
+            query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-
-            txn_id_upg = result['id'].values[0]
+            txn_id_upg = result['txn_id'].values[0]
+            logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+            query = "select * from txn where id = '" + txn_id_upg + "';"
+            logger.debug(f"Query to fetch txn details from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
             rrn_db = result['rr_number'].values[0]
             org_code_db = result['org_code'].values[0]
             created_time_db = result['created_time'].values[0]

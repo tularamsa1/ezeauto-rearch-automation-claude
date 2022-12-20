@@ -19,7 +19,7 @@ def test_d102_101_003():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Callback_Success
     Sub Feature Description: Generate QR through api and perform callback success for UPI txn of ICICI_Direct pg
-    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 003->TC003
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101-> UPI, 003->TC003
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -280,7 +280,7 @@ def test_d102_101_004():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Callback_Failed
     Sub Feature Description: Generate QR through api and perform callback failed for UPI txn of ICICI_Direct pg
-    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 004->TC004
+    TC naming code description: d102: ICICI DIRECT UPI Dev, 101-> UPI, 004->TC004
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -619,8 +619,6 @@ def test_d102_101_009():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -688,7 +686,7 @@ def test_d102_101_009():
                 expected_api_values = {
                     "pmt_status": "EXPIRED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "EXPIRED", "rrn": str(rrn),
+                    "pmt_state": "EXPIRED",
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
@@ -723,7 +721,6 @@ def test_d102_101_009():
                         amount_api = float(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
-                        rrn_api = elements["rrNumber"]
                         settlement_status_api = elements["settlementStatus"]
                         issuer_code_api = elements["issuerCode"]
                         acquirer_code_api = elements["acquirerCode"]
@@ -762,7 +759,7 @@ def test_d102_101_009():
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
@@ -1030,8 +1027,6 @@ def test_d102_101_010():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -1099,7 +1094,7 @@ def test_d102_101_010():
                 expected_api_values = {
                     "pmt_status": "EXPIRED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "EXPIRED", "rrn": str(rrn),
+                    "pmt_state": "EXPIRED",
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
@@ -1134,7 +1129,6 @@ def test_d102_101_010():
                         amount_api = float(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
-                        rrn_api = elements["rrNumber"]
                         settlement_status_api = elements["settlementStatus"]
                         issuer_code_api = elements["issuerCode"]
                         acquirer_code_api = elements["acquirerCode"]
@@ -1173,7 +1167,7 @@ def test_d102_101_010():
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
@@ -1434,8 +1428,6 @@ def test_d102_101_011():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -1483,7 +1475,7 @@ def test_d102_101_011():
                 expected_api_values = {
                     "pmt_status": "EXPIRED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "EXPIRED", "rrn": str(rrn),
+                    "pmt_state": "EXPIRED",
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
@@ -1507,7 +1499,6 @@ def test_d102_101_011():
                         amount_api = float(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
-                        rrn_api = elements["rrNumber"]
                         settlement_status_api = elements["settlementStatus"]
                         issuer_code_api = elements["issuerCode"]
                         acquirer_code_api = elements["acquirerCode"]
@@ -1521,7 +1512,7 @@ def test_d102_101_011():
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,

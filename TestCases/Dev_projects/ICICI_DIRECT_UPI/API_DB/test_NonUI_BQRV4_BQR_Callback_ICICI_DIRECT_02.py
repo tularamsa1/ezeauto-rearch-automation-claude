@@ -1506,7 +1506,7 @@ def test_d102_102_053():
 
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
-                                                                    "TXN_ID": txn_id, "STATUS_CODE": "02",
+                                                                    "TXN_ID": txn_id, "STATUS_CODE": "01",
                                                                     "STATUS_DESC": "FAILED",
                                                                     "AUTH_CODE": auth_code, "RRN": rrn,
                                                                     "MERCHANT_PAN": bqr_m_pan})

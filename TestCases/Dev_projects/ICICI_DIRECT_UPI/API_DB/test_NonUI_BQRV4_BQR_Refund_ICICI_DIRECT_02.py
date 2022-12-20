@@ -112,6 +112,7 @@ def test_d102_102_033():
                                                                     "amount": refund_amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_refunded = response["txnId"]
             logger.debug(f"Response received for transaction details api is : {response}")
 
             greater_refund_amount = 101
@@ -142,7 +143,7 @@ def test_d102_102_033():
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Response received to fetch refund txn details is : {result}")
-            txn_id_refunded = result["id"].iloc[0]
+            #txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
             created_time_refunded = result['created_time'].values[0]
@@ -540,6 +541,7 @@ def test_d102_102_058():
                                                                     "amount":str(refund_amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
+            txn_id_refunded = response["txnId"]
             logger.debug(f"response received after sending the request for refund txn : {response}")
 
             query = "select * from txn where id = '" + txn_id + "';"
@@ -558,7 +560,7 @@ def test_d102_102_058():
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Response received to fetch refund txn details is : {result}")
-            txn_id_refunded = result["id"].iloc[0]
+            #txn_id_refunded = result["id"].iloc[0]
             auth_code_refunded = result['auth_code'].values[0]
             rrn_refunded = result['rr_number'].iloc[0]
             posting_date_refunded = result['created_time'].values[0]
@@ -1787,6 +1789,5 @@ def test_d102_102_050():
 
      finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 

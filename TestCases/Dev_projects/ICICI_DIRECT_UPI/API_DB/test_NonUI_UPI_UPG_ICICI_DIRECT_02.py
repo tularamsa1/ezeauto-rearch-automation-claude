@@ -234,7 +234,7 @@ def test_d102_101_037():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -255,7 +255,7 @@ def test_d102_101_037():
                 refund_mid_api = elements["mid"]
                 refund_tid_api = elements["tid"]
                 refund_txn_type_api = elements["txnType"]
-                refund_date_api = elements["postingDate"]
+                refund_date_api = elements["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,

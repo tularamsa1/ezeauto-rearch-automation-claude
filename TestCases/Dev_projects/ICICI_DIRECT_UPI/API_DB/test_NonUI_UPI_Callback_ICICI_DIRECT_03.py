@@ -103,8 +103,6 @@ def test_d102_101_021():
             query = "select * from txn where id = '" + str(txn_id) + "';"
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Result for the query : {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -211,7 +209,7 @@ def test_d102_101_021():
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "order_id": order_id,
-                    "issuer_code": "ICICI", "rrn": str(rrn),
+                    "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid,
                     "tid": virtual_tid, "org_code": org_code,
                     # "payer_name": payer_name,
@@ -255,7 +253,6 @@ def test_d102_101_021():
                 tid_api = elements["tid"]
                 txn_type_api = elements["txnType"]
                 date_api = elements["postingDate"]
-                rrn_api = elements["rrNumber"]
                 order_id_api = elements["orderNumber"]
                 # payer_name_api = elements["payerName"]
                 # customer_name_api = elements["customerName"]
@@ -293,7 +290,7 @@ def test_d102_101_021():
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "order_id": order_id_api,
-                    "issuer_code": issuer_code_api, "rrn": str(rrn_api),
+                    "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api,
                     "tid": tid_api, "org_code": orgCode_api,
                     # "payer_name": payer_name_api,
@@ -340,7 +337,6 @@ def test_d102_101_021():
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
                     # "payer_name": orig_txn_payer_name,
-                    "rrn": str(rrn),
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_mc_id": upi_mc_id,
@@ -385,7 +381,6 @@ def test_d102_101_021():
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
                 # orig_txn_payer_name_db = result['payerName'].values[0]
-                original_rrn_db = result['rr_number'].values[0]
                 order_id_db = result['external_ref'].values[0]
                 error_msg_db = result['error_message'].values[0]
 
@@ -437,7 +432,6 @@ def test_d102_101_021():
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
                     # "payer_name": orig_txn_payer_name_db,
-                    "rrn": str(original_rrn_db),
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
