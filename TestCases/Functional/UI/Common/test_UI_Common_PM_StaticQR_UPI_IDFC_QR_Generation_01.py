@@ -203,7 +203,7 @@ def test_common_100_107_013():
 def test_common_100_107_014():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_UPI_QR_Regeneration_Success_Via_IDFC
-    Sub Feature Description: Verifying UPI static QR regeneration via IDFC
+    Sub Feature Description: Verifying UPI static QR regeneration with different app user via IDFC
     TC naming code description:: 100: payment method, 107: UPI Static QR, 014: Testcase ID
     """
     try:
@@ -254,14 +254,25 @@ def test_common_100_107_014():
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
+
+        logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
+        query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
+        result = DBProcessor.delete_value_from_db(query)
+        logger.debug(f"Query result : {result}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -337,10 +348,6 @@ def test_common_100_107_014():
                         "merchantVpa": db_upi_config_vpa
                     })
                     response = APIProcessor.send_request(api_details)
-                    publish_id = response["publishId"]
-                    logger.debug(f"fetching publish_id from api response is : {publish_id}")
-                    logger.debug(f"Response received for static_qrcode_generate_IDFC api is : {response}")
-
                 else:
                     logger.error(f"User creation failed : {response}")
             else:
@@ -358,6 +365,8 @@ def test_common_100_107_014():
                 response = APIProcessor.send_request(api_details)
 
             logger.debug(f"Response received for regenerating static_qrcode_IDFC api is : {response}")
+            publish_id = response["publishId"]
+            logger.debug(f"fetching publish_id from api response is : {publish_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -385,7 +394,11 @@ def test_common_100_107_014():
                     "mid": db_upi_config_mid,
                     "tid": db_upi_config_tid,
                     "qr_type": "UPI",
-                    "intent_type": "STATIC_QR"
+                    "intent_type": "STATIC_QR",
+                    "audit_publish_id": publish_id,
+                    "audit_org_code": org_code,
+                    "audit_qr_type": "UPI",
+                    "audit_intent_type": "STATIC_QR",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -405,6 +418,15 @@ def test_common_100_107_014():
                 db_staticqrIntent_qrtype = result["qr_type"].iloc[0]
                 db_staticqrIntent_intent_type = result["intent_type"].iloc[0]
 
+                query = "select * from qrcode_audit where org_code='" + org_code + "'"
+                logger.debug(f"Query to fetch data from qrcode_audit table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                audit_publish_id_db = result["publish_id"].iloc[0]
+                audit_org_code_db = result["org_code"].iloc[0]
+                audit_qr_type_db = result['qr_type'].values[0]
+                audit_intent_type_db = result['intent_type'].values[0]
+
                 actual_db_values = {
                     "publish_id": db_staticqrIntent_publish_id,
                     "org_code": db_staticqrIntent_org_code,
@@ -414,7 +436,11 @@ def test_common_100_107_014():
                     "mid": db_staticqrIntent_mid,
                     "tid": db_staticqrIntent_tid,
                     "qr_type": db_staticqrIntent_qrtype,
-                    "intent_type": db_staticqrIntent_intent_type
+                    "intent_type": db_staticqrIntent_intent_type,
+                    "audit_publish_id": audit_publish_id_db,
+                    "audit_org_code": audit_org_code_db,
+                    "audit_qr_type": audit_qr_type_db,
+                    "audit_intent_type": audit_intent_type_db,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
