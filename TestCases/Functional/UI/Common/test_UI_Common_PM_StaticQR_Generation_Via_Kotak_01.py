@@ -53,6 +53,22 @@ def test_common_100_108_020():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query to fetch bharatqr_merchant_config : {result}")
+        mid = result['mid'].values[0]
+        logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
+        tid = result['tid'].values[0]
+        logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
+        merchant_pan = result['merchant_pan'].values[0]
+        logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+        config_id = result['id'].values[0]
+        logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
+
+        # to delete the publisher_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
@@ -73,22 +89,6 @@ def test_common_100_108_020():
             logger.debug(f"Query to fetch upi_merchant_config : {result}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Fetching mid from the upi_merchant_config table : vpa : {vpa}")
-
-            query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query to fetch bharatqr_merchant_config : {result}")
-            mid = result['mid'].values[0]
-            logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
-            merchant_pan = result['merchant_pan'].values[0]
-            logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
-            config_id = result['id'].values[0]
-            logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
-
-            #to delete the publisher_id which was generated previously
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
             #generating STATIC QR
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_KOTAK', request_body={
@@ -236,6 +236,23 @@ def test_common_100_108_021():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query to fetch bharatqr_merchant_config : {result}")
+        mid = result['mid'].values[0]
+        logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
+        tid = result['tid'].values[0]
+        logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
+        merchant_pan = result['merchant_pan'].values[0]
+        logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+        config_id = result['id'].values[0]
+        logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
+
+        # to delete the publisher_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
@@ -256,22 +273,6 @@ def test_common_100_108_021():
             logger.debug(f"Query to fetch upi_merchant_config : {result}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Fetching mid from the upi_merchant_config table : vpa : {vpa}")
-
-            query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query to fetch bharatqr_merchant_config : {result}")
-            mid = result['mid'].values[0]
-            logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
-            merchant_pan = result['merchant_pan'].values[0]
-            logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
-            config_id = result['id'].values[0]
-            logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
-
-            # to delete the publisher_id which was generated previously
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
             # Generate static QR for first user
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_KOTAK', request_body={
