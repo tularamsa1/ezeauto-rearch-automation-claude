@@ -70,6 +70,22 @@ def test_common_100_108_022():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund enabled is : {response}")
 
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Fetching result for bharatqr_merchant_config table : {result}")
+        mid = result['mid'].values[0]
+        logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
+        tid = result['tid'].values[0]
+        logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
+        merchant_pan = result['merchant_pan'].values[0]
+        logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+        config_id = result['id'].values[0]
+        logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
+
+        # to delete the publisher_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
@@ -92,22 +108,6 @@ def test_common_100_108_022():
             logger.debug(f"Fetching upi_mc_id : {upi_mc_id}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Fetching vpa : {vpa}")
-
-            query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Fetching result for bharatqr_merchant_config table : {result}")
-            mid = result['mid'].values[0]
-            logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
-            merchant_pan = result['merchant_pan'].values[0]
-            logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
-            config_id = result['id'].values[0]
-            logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
-
-            # to delete the publisher_id which was generated previously
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
             # generating STATIC QR
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_KOTAK', request_body={
@@ -156,6 +156,8 @@ def test_common_100_108_022():
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+            status = response['status']
+            logger.debug(f"status is : {status}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(rrn) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
@@ -301,6 +303,7 @@ def test_common_100_108_022():
                     "tid": tid,
                     "org_code": org_code_txn,
                     "auth_code": auth_code,
+                    "status": "SUCCESS",
                     "date": date
                 }
 
@@ -349,21 +352,23 @@ def test_common_100_108_022():
                         date_api = elements["createdTime"]
                         logger.debug(f"date_api is : {date_api}")
 
-                actual_api_values = {"pmt_status": status_api,
-                                     "txn_amt": amount_api,
-                                     "pmt_mode": payment_mode_api,
-                                     "pmt_state": state_api,
-                                     "rrn": str(rrn_api),
-                                     "settle_status": settlement_status_api,
-                                     "acquirer_code": acquirer_code_api,
-                                     "issuer_code": issuer_code_api,
-                                     "txn_type": txn_type_api,
-                                     "mid": mid_api,
-                                     "tid": tid_api,
-                                     "org_code": org_code_api,
-                                     "auth_code": auth_code_api,
-                                     "date": date_time_converter.from_api_to_datetime_format(date_api)
-                                     }
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "org_code": org_code_api,
+                    "auth_code": auth_code_api,
+                    "status": status,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -455,6 +460,7 @@ def test_common_100_108_022():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
+
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -540,6 +546,22 @@ def test_common_100_108_023():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund enabled is : {response}")
 
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Fetching result for bharatqr_merchant_config table : {result}")
+        mid = result['mid'].values[0]
+        logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
+        tid = result['tid'].values[0]
+        logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
+        merchant_pan = result['merchant_pan'].values[0]
+        logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
+        config_id = result['id'].values[0]
+        logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
+
+        # to delete the publisher_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
@@ -562,22 +584,6 @@ def test_common_100_108_023():
             logger.debug(f"Fetching upi_mc_id : {upi_mc_id}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Fetching vpa : {vpa}")
-
-            query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Fetching result for bharatqr_merchant_config table : {result}")
-            mid = result['mid'].values[0]
-            logger.debug(f"Fetching mid from the bharatqr_merchant_config table : mid : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {tid}")
-            merchant_pan = result['merchant_pan'].values[0]
-            logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
-            config_id = result['id'].values[0]
-            logger.debug(f"Fetching config_id from the bharatqr_merchant_config table : config_id : {config_id}")
-
-            # to delete the publisher_id which was generated previously
-            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
             # generating STATIC QR
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_KOTAK', request_body={
@@ -627,6 +633,8 @@ def test_common_100_108_023():
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+            status = response['status']
+            logger.debug(f"status is : {status}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn) + "'order by created_time desc limit 1; "
@@ -771,16 +779,17 @@ def test_common_100_108_023():
                     "tid": tid,
                     "org_code": org_code_txn,
                     "auth_code": auth_code,
+                    "status": "SUCCESS",
                     "date": date
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 # hitting the txnlist api
-                api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
-                                                                                   "password": app_password,
-                                                                                   }
-                                                          )
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
+                    "username": app_username,
+                    "password": app_password,
+                })
 
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
                 response = APIProcessor.send_request(api_details)
@@ -819,21 +828,23 @@ def test_common_100_108_023():
                         date_api = elements["createdTime"]
                         logger.debug(f"date_api is : {date_api}")
 
-                actual_api_values = {"pmt_status": status_api,
-                                     "txn_amt": amount_api,
-                                     "pmt_mode": payment_mode_api,
-                                     "pmt_state": state_api,
-                                     "rrn": str(rrn_api),
-                                     "settle_status": settlement_status_api,
-                                     "acquirer_code": acquirer_code_api,
-                                     "issuer_code": issuer_code_api,
-                                     "txn_type": txn_type_api,
-                                     "mid": mid_api,
-                                     "tid": tid_api,
-                                     "org_code": org_code_api,
-                                     "auth_code": auth_code_api,
-                                     "date": date_time_converter.from_api_to_datetime_format(date_api)
-                                     }
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "org_code": org_code_api,
+                    "auth_code": auth_code_api,
+                    "status": status,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
