@@ -895,11 +895,7 @@ def test_common_100_108_029():
                     "mid": db_bqr_config_mid,
                     "tid": db_bqr_config_tid,
                     "qr_type": "BHARATQR",
-                    "intent_type": "STATIC_QR",
-                    # "audit_publish_id": res_generateqr_publish_id,
-                    # "audit_org_code": org_code,
-                    # "audit_qr_type": "BHARATQR",
-                    # "audit_intent_type": "STATIC_QR"
+                    "intent_type": "STATIC_QR"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -919,15 +915,6 @@ def test_common_100_108_029():
                 db_staticqr_intent_qrtype = result["qr_type"].iloc[0]
                 db_staticqr_intent_intent_type = result["intent_type"].iloc[0]
 
-                # query = "select * from qrcode_audit where org_code='" + org_code + "'"
-                # logger.debug(f"Query to fetch data from qrcode_audit table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # audit_publish_id_db = result["publish_id"].iloc[0]
-                # audit_org_code_db = result["org_code"].iloc[0]
-                # audit_qr_type_db = result['qr_type'].values[0]
-                # audit_intent_type_db = result['intent_type'].values[0]
-
                 actual_db_values = {
                     "publish_id": db_staticqr_intent_publish_id,
                     "org_code": db_staticqr_intent_org_code,
@@ -938,11 +925,7 @@ def test_common_100_108_029():
                     "mid": db_staticqr_intent_mid,
                     "tid": db_staticqr_intent_tid,
                     "qr_type": db_staticqr_intent_qrtype,
-                    "intent_type": db_staticqr_intent_intent_type,
-                    # "audit_publish_id": audit_publish_id_db,
-                    # "audit_org_code": audit_org_code_db,
-                    # "audit_qr_type": audit_qr_type_db,
-                    # "audit_intent_type": audit_intent_type_db,
+                    "intent_type": db_staticqr_intent_intent_type
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
