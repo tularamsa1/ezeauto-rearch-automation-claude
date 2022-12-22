@@ -672,6 +672,8 @@ def test_common_100_103_166():
             logger.info(f"upi_txn_type_db is : {upi_txn_type_db}")
             upi_bank_code_db = result["bank_code"].iloc[0]
             logger.info(f"upi_bank_code_db is : {upi_bank_code_db}")
+            upi_status_db = result["status"].iloc[0]
+            logger.debug(f"upi_status_db is : {upi_status_db}")
 
             api_details = DBProcessor.get_api_details('upi_failed_curl',curl_data={
                 'ref_id': txn_ref,
@@ -896,6 +898,7 @@ def test_common_100_103_166():
                     "bank_code": "HDFC",
                     "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                     "upi_bank_code": "HDFC",
+                    "upi_txn_Status": "FAILED",
                     "pmt_intent_status": "COMPLETED",
                     "mid": mid,
                     "tid": tid,
@@ -947,6 +950,7 @@ def test_common_100_103_166():
                     "bank_code": bank_code_db,
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
+                    "upi_txn_Status": upi_status_db,
                     "pmt_intent_status": payment_intent_status,
                     "mid": mid_db,
                     "tid": tid_db,
