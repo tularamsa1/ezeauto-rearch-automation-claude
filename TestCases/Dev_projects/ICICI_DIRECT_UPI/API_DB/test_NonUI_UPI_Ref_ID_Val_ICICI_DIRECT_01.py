@@ -60,9 +60,9 @@ def test_d102_101_007():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual_tid : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual_mid : {mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -79,7 +79,7 @@ def test_d102_101_007():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = random.randint(205, 225)
+            amount = random.randint(205, 219)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
@@ -311,9 +311,9 @@ def test_d102_101_008():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual_tid : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual_mid : {mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

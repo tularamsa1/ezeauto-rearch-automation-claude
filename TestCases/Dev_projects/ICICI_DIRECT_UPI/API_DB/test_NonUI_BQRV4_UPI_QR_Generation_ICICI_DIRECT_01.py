@@ -17,7 +17,7 @@ logger = EzeAutoLogger(__name__)
 def test_d102_102_006():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_QR_Generation_Success
-    Sub Feature Description: Generate QR through api successfully for UPI txn of ICICI_Direct pg
+    Sub Feature Description: Generate QR through api successfully for BQRV4 UPI txn of ICICI_Direct pg
     TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 006->TC006
     """
     try:
@@ -81,7 +81,7 @@ def test_d102_102_006():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(230, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
@@ -93,10 +93,6 @@ def test_d102_102_006():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # rrn = result['rr_number'].values[0]
-            # logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             # ------------------------------------------------------------------------------------------------
@@ -126,7 +122,7 @@ def test_d102_102_006():
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")

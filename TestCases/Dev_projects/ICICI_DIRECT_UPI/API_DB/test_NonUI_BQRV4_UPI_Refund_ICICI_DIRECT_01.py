@@ -18,7 +18,7 @@ def test_d102_102_059():
      """
     :Description:Verification of a BQRV4 UPI Refund transaction via ICICI_DIRECT
     :Subfeature code: NonUI_Common_BQRV4_UPI_Refund_via_ICICI_DIRECT
-    :TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102->BQRv4 BQR, 059-> TC059
+    :TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102->BQRv4 UPI, 059-> TC059
     """
      try:
         testcase_id = sys._getframe().f_code.co_name
@@ -65,8 +65,6 @@ def test_d102_102_059():
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                                                        "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
-        #mid = result["mid"].iloc[0]
-        #tid = result["tid"].iloc[0]
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
@@ -84,7 +82,7 @@ def test_d102_102_059():
         vpa = result['vpa'].values[0]
         virtual_mid = result['virtual_mid'].values[0]
         virtual_tid = result['virtual_tid'].values[0]
-
+        logger.debug(f"fetched virtual tid and virtual mid is : {virtual_tid, virtual_mid}")
         logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -123,30 +121,26 @@ def test_d102_102_059():
                                                                     "amount":str(amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for refund txn : {response}")
+            txn_id_new_2 = response["txnId"]
+            logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id_new_2}")
 
-            query = "select * from txn where id = '" + str(txn_id) + "';"
-            logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
+            query = "select * from txn where id = '" + txn_id + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id = result['id'].values[0]
-            rrn = result['rr_number'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
+            rrn = result['rr_number'].iloc[0]
             created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
-
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
+            query = "select * from txn where id = '" + txn_id_new_2 + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            #txn_id_new_2 = result['id'].values[0]
+
             rrn_new_2 = result['rr_number'].values[0]
-            customer_name_new_2 = result['customer_name'].values[0]
-            payer_name_new_2 = result['payer_name'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_new_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching rrn, created_time from database for current merchant:{rrn}, {created_time}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -177,7 +171,6 @@ def test_d102_102_059():
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "virtual_mid": virtual_mid, "virtual_tid": virtual_tid,
                     "org_code": org_code,
-                    #"auth_code": auth_code,
                     "date": date_new,
                     "order_id": order_id,
                     "pmt_status_2": "REFUNDED",
@@ -185,10 +178,8 @@ def test_d102_102_059():
                     "pmt_state_2": "REFUNDED", "rrn_2": str(rrn_new_2),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    #"issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND", "virtual_mid_2": virtual_mid, "virtual_tid_2": virtual_tid,
                     "org_code_2": org_code,
-                    #"auth_code_2": auth_code_new_2,
                     "date_2": date_new_2,
                     "order_id_2": order_id
                 }
@@ -210,11 +201,10 @@ def test_d102_102_059():
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
-                orgCode_api = response["orgCode"]
+                org_code_api = response["orgCode"]
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                #auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
                 order_id_api = response["orderNumber"]
 
@@ -232,13 +222,11 @@ def test_d102_102_059():
                 state_api_new_2 = response["states"][0]
                 rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
-                # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
                 orgCode_api_new_2 = response["orgCode"]
                 mid_api_new_2 = response["mid"]
                 tid_api_new_2 = response["tid"]
                 txn_type_api_new_2 = response["txnType"]
-               # auth_code_api_new_2 = response["authCode"]
                 date_api_new_2 = response["createdTime"]
                 order_id_api_new_2 = response["orderNumber"]
 
@@ -250,8 +238,7 @@ def test_d102_102_059():
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "virtual_mid": mid_api, "virtual_tid": tid_api,
-                    "org_code": orgCode_api,
-                    #"auth_code": auth_code_api,
+                    "org_code": org_code_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
@@ -259,10 +246,8 @@ def test_d102_102_059():
                     "pmt_state_2": state_api_new_2, "rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
-                    # "issuer_code_2": issuer_code_api_new_2,
                     "txn_type_2": txn_type_api_new_2, "virtual_mid_2": mid_api_new_2, "virtual_tid_2": tid_api_new_2,
                     "org_code_2": orgCode_api_new_2,
-                    #"auth_code_2": auth_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
@@ -296,7 +281,7 @@ def test_d102_102_059():
                     "order_id": order_id,
                     "bqr_pmt_status": "SUCCESS", "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -306,7 +291,6 @@ def test_d102_102_059():
                     "txn_amt_2": float(amount),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "payment_gateway_2": "ICICI",
                     "upi_txn_status_2": "REFUNDED",
                     "upi_txn_type_2": "REFUND",
@@ -352,7 +336,7 @@ def test_d102_102_059():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -368,7 +352,6 @@ def test_d102_102_059():
                 state_db_new_2 = result["state"].iloc[0]
                 payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
                 acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
                 settlement_status_db_new_2 = result["settlement_status"].iloc[0]
                 tid_db_new_2 = result['tid'].values[0]
                 mid_db_new_2 = result['mid'].values[0]
@@ -401,7 +384,7 @@ def test_d102_102_059():
                     "order_id": order_id_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -413,7 +396,6 @@ def test_d102_102_059():
                     "upi_txn_status_2": upi_status_db_new_2,
                     "settle_status_2": settlement_status_db_new_2,
                     "acquirer_code_2": acquirer_code_db_new_2,
-                    # "bank_code_2": bank_code_db_new_2,
                     "payment_gateway_2": payment_gateway_db_new_2,
                     "upi_txn_type_2": upi_txn_type_db_new_2,
                     "upi_bank_code_2": upi_bank_code_db_new_2,
@@ -438,9 +420,6 @@ def test_d102_102_059():
 
      finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -514,7 +493,7 @@ def test_d102_102_060():
         vpa = result['vpa'].values[0]
         virtual_mid = result['virtual_mid'].values[0]
         virtual_tid = result['virtual_tid'].values[0]
-
+        logger.debug(f"fetched virtual tid and virtual mid is : {virtual_tid, virtual_mid}")
         logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -553,8 +532,9 @@ def test_d102_102_060():
                                                                     "amount":amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
+            txn_id_new_2 = response["txnId"]
+            logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id_new_2}")
 
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
@@ -562,22 +542,15 @@ def test_d102_102_060():
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
             created_time = result['created_time'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
+            logger.debug(f"Fetching auth_code, rrn, posting_date from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
+            query = "select * from txn where id = '" + txn_id_new_2 + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
-            customer_name_new_2 = result['customer_name'].values[0]
-            payer_name_new_2 = result['payer_name'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_new_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                         f"current merchant:{auth_code_new_2}, {rrn_new_2}, {txn_id_new_2}, {created_time_new_2}")
+            logger.debug(f"Fetching rrn, created_time from database for current merchant:{rrn_new_2}, {created_time_new_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -608,20 +581,16 @@ def test_d102_102_060():
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "virtual_mid": virtual_mid, "virtual_tid": virtual_tid,
                     "org_code": org_code,
-                    #"auth_code": auth_code,
                     "date": date_new,
                     "order_id": order_id,
                     "pmt_status_2": "REFUND_POSTED",
-                    "txn_amt_2": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]), "pmt_mode_2": "UPI",
+                    "txn_amt_2": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
+                    "pmt_mode_2": "UPI",
                     "pmt_state_2": "REFUND_INITIATED",
-                    # "rrn_2": str(rrn_new_2),
                     "settle_status_2": "REVPENDING",
                     "acquirer_code_2": "ICICI",
-                    # "issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
-                    #"virtual_mid_2": virtual_mid, "virtual_tid_2": virtual_tid,
                     "org_code_2": org_code,
-                    # "auth_code_2": auth_code_new_2,
                     "date_2": date_new_2,
                     "order_id_2": order_id
                 }
@@ -647,7 +616,6 @@ def test_d102_102_060():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                #auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
                 order_id_api = response["orderNumber"]
 
@@ -663,15 +631,10 @@ def test_d102_102_060():
                 amount_api_new_2 = float(response["amount"])
                 payment_mode_api_new_2 = response["paymentMode"]
                 state_api_new_2 = response["states"][0]
-                # rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
-                # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
                 orgCode_api_new_2 = response["orgCode"]
-                #mid_api_new_2 = response["mid"]
-                #tid_api_new_2 = response["tid"]
                 txn_type_api_new_2 = response["txnType"]
-                # auth_code_api_new_2 = response["authCode"]
                 date_api_new_2 = response["createdTime"]
                 order_id_api_new_2 = response["orderNumber"]
 
@@ -684,20 +647,15 @@ def test_d102_102_060():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "virtual_mid": mid_api, "virtual_tid": tid_api,
                     "org_code": orgCode_api,
-                    #"auth_code": auth_code_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
-                    # "rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
-                    # "issuer_code_2": issuer_code_api_new_2,
                     "txn_type_2": txn_type_api_new_2,
-                    #"virtual_mid_2": mid_api_new_2, "virtual_tid_2": tid_api_new_2,
                     "org_code_2": orgCode_api_new_2,
-                    # "auth_code_2": auth_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
@@ -725,10 +683,9 @@ def test_d102_102_060():
                     "virtual_mid": virtual_mid,
                     "virtual_tid": virtual_tid,
                     "order_id": order_id,
-                    # "bqr_pmt_status": "INITIATED BY UPI",
                     "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -738,10 +695,7 @@ def test_d102_102_060():
                     "txn_amt_2": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
                     "settle_status_2": "REVPENDING",
                     "acquirer_code_2": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "payment_gateway_2": "ICICI",
-                    #"virtual_mid_2": virtual_mid,
-                    #"virtual_tid_2": virtual_tid,
                     "order_id_2": order_id,
 
                 }
@@ -767,11 +721,10 @@ def test_d102_102_060():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -787,10 +740,7 @@ def test_d102_102_060():
                 state_db_new_2 = result["state"].iloc[0]
                 payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
                 acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
                 settlement_status_db_new_2 = result["settlement_status"].iloc[0]
-                tid_db_new_2 = result['tid'].values[0]
-                mid_db_new_2 = result['mid'].values[0]
                 order_id_db_new_2 = result['external_ref'].values[0]
 
                 actual_db_values = {
@@ -805,10 +755,9 @@ def test_d102_102_060():
                     "virtual_mid": mid_db,
                     "virtual_tid": tid_db,
                     "order_id": order_id_db,
-                    # "bqr_pmt_status": bqr_status_db,
                     "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -819,10 +768,7 @@ def test_d102_102_060():
                     "txn_amt_2": amount_db_new_2,
                     "settle_status_2": settlement_status_db_new_2,
                     "acquirer_code_2": acquirer_code_db_new_2,
-                    # "bank_code_2": bank_code_db_new_2,
                     "payment_gateway_2": payment_gateway_db_new_2,
-                    #"virtual_mid_2": mid_db_new_2,
-                    #"virtual_tid_2": tid_db_new_2,
                     "order_id_2": order_id_db_new_2,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -841,7 +787,6 @@ def test_d102_102_060():
 
      finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -898,8 +843,6 @@ def test_d102_102_061():
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                                                        "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
-        # mid = result["mid"].iloc[0]
-        # tid = result["tid"].iloc[0]
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
@@ -917,7 +860,7 @@ def test_d102_102_061():
         vpa = result['vpa'].values[0]
         virtual_mid = result['virtual_mid'].values[0]
         virtual_tid = result['virtual_tid'].values[0]
-
+        logger.debug(f"fetched virtual tid and virtual mid is : {virtual_tid, virtual_mid}")
         logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -956,8 +899,9 @@ def test_d102_102_061():
                                                                     "amount":amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
+            txn_id_new_2 = response["txnId"]
+            logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id_new_2}")
 
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
@@ -965,22 +909,15 @@ def test_d102_102_061():
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
             created_time = result['created_time'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
+            logger.debug(f"Fetching auth_code, rrn, created time from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
+            query = "select * from txn where id = '" + txn_id_new_2 + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
-            customer_name_new_2 = result['customer_name'].values[0]
-            payer_name_new_2 = result['payer_name'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_new_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                         f"current merchant:{auth_code_new_2}, {rrn_new_2}, {txn_id_new_2}, {created_time_new_2}")
+            logger.debug(f"Fetching rrn, created_time from database for current merchant:{rrn_new_2}, {created_time_new_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1011,20 +948,16 @@ def test_d102_102_061():
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "virtual_mid": virtual_mid, "virtual_tid": virtual_tid,
                     "org_code": org_code,
-                    #"auth_code": auth_code,
                     "date": date_new,
                     "order_id": order_id,
                     "pmt_status_2": "FAILED",
-                    "txn_amt_2": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]), "pmt_mode_2": "UPI",
+                    "txn_amt_2": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
+                    "pmt_mode_2": "UPI",
                     "pmt_state_2": "FAILED",
-                    # "rrn_2": str(rrn_new_2),
                     "settle_status_2": "FAILED",
                     "acquirer_code_2": "ICICI",
-                    # "issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
-                    # "mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code,
-                    # "auth_code_2": auth_code_new_2,
                     "date_2": date_new_2,
                     "order_id_2": order_id
                 }
@@ -1046,11 +979,10 @@ def test_d102_102_061():
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
-                orgCode_api = response["orgCode"]
+                org_code_api = response["orgCode"]
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                #auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
                 order_id_api = response["orderNumber"]
 
@@ -1066,15 +998,10 @@ def test_d102_102_061():
                 amount_api_new_2 = float(response["amount"])
                 payment_mode_api_new_2 = response["paymentMode"]
                 state_api_new_2 = response["states"][0]
-                # rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
-                # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
-                orgCode_api_new_2 = response["orgCode"]
-                # mid_api_new_2 = response["mid"]
-                # tid_api_new_2 = response["tid"]
+                org_code_api_new_2 = response["orgCode"]
                 txn_type_api_new_2 = response["txnType"]
-                # auth_code_api_new_2 = response["authCode"]
                 date_api_new_2 = response["createdTime"]
                 order_id_api_new_2 = response["orderNumber"]
 
@@ -1086,21 +1013,16 @@ def test_d102_102_061():
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "virtual_mid": mid_api, "virtual_tid": tid_api,
-                    "org_code": orgCode_api,
-                    #"auth_code": auth_code_api,
+                    "org_code": org_code_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
-                    # "rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
-                    # "issuer_code_2": issuer_code_api_new_2,
                     "txn_type_2": txn_type_api_new_2,
-                    # "mid_2": mid_api_new_2, "tid_2": tid_api_new_2,
-                    "org_code_2": orgCode_api_new_2,
-                    # "auth_code_2": auth_code_api_new_2,
+                    "org_code_2": org_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
@@ -1128,10 +1050,9 @@ def test_d102_102_061():
                     "virtual_mid": virtual_mid,
                     "virtual_tid": virtual_tid,
                     "order_id": order_id,
-                    # "bqr_pmt_status": "INITIATED BY UPI",
                     "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -1141,10 +1062,7 @@ def test_d102_102_061():
                     "txn_amt_2": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
                     "settle_status_2": "FAILED",
                     "acquirer_code_2": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "payment_gateway_2": "ICICI",
-                    # "mid_2": mid,
-                    # "tid_2": tid,
                     "order_id_2": order_id,
 
                 }
@@ -1170,11 +1088,10 @@ def test_d102_102_061():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -1190,10 +1107,7 @@ def test_d102_102_061():
                 state_db_new_2 = result["state"].iloc[0]
                 payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
                 acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
                 settlement_status_db_new_2 = result["settlement_status"].iloc[0]
-                # tid_db_new_2 = result['tid'].values[0]
-                # mid_db_new_2 = result['mid'].values[0]
                 order_id_db_new_2 = result['external_ref'].values[0]
 
                 actual_db_values = {
@@ -1208,10 +1122,9 @@ def test_d102_102_061():
                     "virtual_mid": mid_db,
                     "virtual_tid": tid_db,
                     "order_id": order_id_db,
-                    # "bqr_pmt_status": bqr_status_db,
                     "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -1222,10 +1135,7 @@ def test_d102_102_061():
                     "txn_amt_2": amount_db_new_2,
                     "settle_status_2": settlement_status_db_new_2,
                     "acquirer_code_2": acquirer_code_db_new_2,
-                    # "bank_code_2": bank_code_db_new_2,
                     "payment_gateway_2": payment_gateway_db_new_2,
-                    # "mid_2": mid_db_new_2,
-                    # "tid_2": tid_db_new_2,
                     "order_id_2": order_id_db_new_2,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -1241,7 +1151,6 @@ def test_d102_102_061():
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
     # -------------------------------------------End of Validation---------------------------------------------
-
      finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1300,8 +1209,6 @@ def test_d102_102_062():
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                                                        "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
-        #mid = result["mid"].iloc[0]
-        #tid = result["tid"].iloc[0]
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
@@ -1319,7 +1226,7 @@ def test_d102_102_062():
         vpa = result['vpa'].values[0]
         virtual_mid = result['virtual_mid'].values[0]
         virtual_tid = result['virtual_tid'].values[0]
-
+        logger.debug(f"fetched virtual tid and virtual mid is : {virtual_tid, virtual_mid}")
         logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -1359,30 +1266,25 @@ def test_d102_102_062():
                                                                     "amount":str(refund_amount),
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for refund txn : {response}")
+            txn_id_new_2 = response["txnId"]
+            logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id_new_2}")
 
-            query = "select * from txn where id = '" + str(txn_id) + "';"
-            logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
+            query = "select * from txn where id = '" + txn_id + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_id = result['id'].values[0]
-            rrn = result['rr_number'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
             auth_code = result['auth_code'].values[0]
+            rrn = result['rr_number'].iloc[0]
             created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
-
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
+            query = "select * from txn where id = '" + txn_id_new_2 + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
-            customer_name_new_2 = result['customer_name'].values[0]
-            payer_name_new_2 = result['payer_name'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_new_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching rrn, created_time from database for current merchant:{rrn_new_2}, {created_time_new_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1413,7 +1315,6 @@ def test_d102_102_062():
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "virtual_mid": virtual_mid, "virtual_tid": virtual_tid,
                     "org_code": org_code,
-                    #"auth_code": auth_code,
                     "date": date_new,
                     "order_id": order_id,
                     "pmt_status_2": "REFUNDED",
@@ -1421,10 +1322,8 @@ def test_d102_102_062():
                     "pmt_state_2": "REFUNDED", "rrn_2": str(rrn_new_2),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    #"issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND", "virtual_mid_2": virtual_mid, "virtual_tid_2": virtual_tid,
                     "org_code_2": org_code,
-                    #"auth_code_2": auth_code_new_2,
                     "date_2": date_new_2,
                     "order_id_2": order_id
                 }
@@ -1450,7 +1349,6 @@ def test_d102_102_062():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                #auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
                 order_id_api = response["orderNumber"]
 
@@ -1468,13 +1366,11 @@ def test_d102_102_062():
                 state_api_new_2 = response["states"][0]
                 rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
-                # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
                 orgCode_api_new_2 = response["orgCode"]
                 mid_api_new_2 = response["mid"]
                 tid_api_new_2 = response["tid"]
                 txn_type_api_new_2 = response["txnType"]
-               # auth_code_api_new_2 = response["authCode"]
                 date_api_new_2 = response["createdTime"]
                 order_id_api_new_2 = response["orderNumber"]
 
@@ -1487,7 +1383,6 @@ def test_d102_102_062():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "virtual_mid": mid_api, "virtual_tid": tid_api,
                     "org_code": orgCode_api,
-                    #"auth_code": auth_code_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
@@ -1495,10 +1390,8 @@ def test_d102_102_062():
                     "pmt_state_2": state_api_new_2, "rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
-                    # "issuer_code_2": issuer_code_api_new_2,
                     "txn_type_2": txn_type_api_new_2, "virtual_mid_2": mid_api_new_2, "virtual_tid_2": tid_api_new_2,
                     "org_code_2": orgCode_api_new_2,
-                    #"auth_code_2": auth_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
@@ -1532,7 +1425,7 @@ def test_d102_102_062():
                     "order_id": order_id,
                     "bqr_pmt_status": "SUCCESS", "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -1542,7 +1435,6 @@ def test_d102_102_062():
                     "txn_amt_2": float(refund_amount),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "payment_gateway_2": "ICICI",
                     "upi_txn_status_2": "REFUNDED",
                     "upi_txn_type_2": "REFUND",
@@ -1588,7 +1480,7 @@ def test_d102_102_062():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -1604,7 +1496,6 @@ def test_d102_102_062():
                 state_db_new_2 = result["state"].iloc[0]
                 payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
                 acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
                 settlement_status_db_new_2 = result["settlement_status"].iloc[0]
                 tid_db_new_2 = result['tid'].values[0]
                 mid_db_new_2 = result['mid'].values[0]
@@ -1637,7 +1528,7 @@ def test_d102_102_062():
                     "order_id": order_id_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -1649,7 +1540,6 @@ def test_d102_102_062():
                     "upi_txn_status_2": upi_status_db_new_2,
                     "settle_status_2": settlement_status_db_new_2,
                     "acquirer_code_2": acquirer_code_db_new_2,
-                    # "bank_code_2": bank_code_db_new_2,
                     "payment_gateway_2": payment_gateway_db_new_2,
                     "upi_txn_type_2": upi_txn_type_db_new_2,
                     "upi_bank_code_2": upi_bank_code_db_new_2,
@@ -1674,7 +1564,6 @@ def test_d102_102_062():
 
      finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -1748,7 +1637,7 @@ def test_d102_102_063():
         vpa = result['vpa'].values[0]
         virtual_mid = result['virtual_mid'].values[0]
         virtual_tid = result['virtual_tid'].values[0]
-
+        logger.debug(f"fetched virtual tid and virtual mid is : {virtual_tid, virtual_mid}")
         logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -1788,8 +1677,9 @@ def test_d102_102_063():
                                                                     "amount":refund_amount,
                                                                     "originalTransactionId": str(txn_id)})
             response = APIProcessor.send_request(api_details)
-            txn_id_new_2 = response["txnId"]
             logger.debug(f"response received after sending the request for the refund : {response}")
+            txn_id_new_2 = response["txnId"]
+            logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id_new_2}")
 
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
@@ -1797,22 +1687,16 @@ def test_d102_102_063():
             auth_code = result['auth_code'].values[0]
             rrn = result['rr_number'].iloc[0]
             created_time = result['created_time'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
-                         f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
+            logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
+                         f"current merchant:{auth_code}, {rrn}, {created_time}")
 
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
+            query = "select * from txn where id = '" + txn_id_new_2 + "';"
+            logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            #txn_id_new_2 = result['id'].values[0]
             rrn_new_2 = result['rr_number'].values[0]
-            customer_name_new_2 = result['customer_name'].values[0]
-            payer_name_new_2 = result['payer_name'].values[0]
-            auth_code_new_2 = result['auth_code'].values[0]
             created_time_new_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                         f"current merchant:{auth_code_new_2}, {rrn_new_2}, {txn_id_new_2}, {created_time_new_2}")
+            logger.debug(
+                f"Fetching rrn, created_time from database for current merchant:{rrn_new_2}, {created_time_new_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1843,20 +1727,15 @@ def test_d102_102_063():
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "virtual_mid": virtual_mid, "virtual_tid": virtual_tid,
                     "org_code": org_code,
-                    #"auth_code": auth_code,
                     "date": date_new,
                     "order_id": order_id,
                     "pmt_status_2": "FAILED",
                     "txn_amt_2": float(str(refund_amount).split('.')[0] + '.' + str(refund_amount).split('.')[1][:2]), "pmt_mode_2": "UPI",
                     "pmt_state_2": "FAILED",
-                    # "rrn_2": str(rrn_new_2),
                     "settle_status_2": "FAILED",
                     "acquirer_code_2": "ICICI",
-                    # "issuer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
-                    # "mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code,
-                    # "auth_code_2": auth_code_new_2,
                     "date_2": date_new_2,
                     "order_id_2": order_id
                 }
@@ -1882,7 +1761,6 @@ def test_d102_102_063():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                #auth_code_api = response["authCode"]
                 date_api = response["createdTime"]
                 order_id_api = response["orderNumber"]
 
@@ -1898,15 +1776,10 @@ def test_d102_102_063():
                 amount_api_new_2 = float(response["amount"])
                 payment_mode_api_new_2 = response["paymentMode"]
                 state_api_new_2 = response["states"][0]
-                # rrn_api_new_2 = response["rrNumber"]
                 settlement_status_api_new_2 = response["settlementStatus"]
-                # issuer_code_api_new_2 = response["issuerCode"]
                 acquirer_code_api_new_2 = response["acquirerCode"]
                 orgCode_api_new_2 = response["orgCode"]
-                # mid_api_new_2 = response["mid"]
-                # tid_api_new_2 = response["tid"]
                 txn_type_api_new_2 = response["txnType"]
-                # auth_code_api_new_2 = response["authCode"]
                 date_api_new_2 = response["createdTime"]
                 order_id_api_new_2 = response["orderNumber"]
 
@@ -1919,20 +1792,15 @@ def test_d102_102_063():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "virtual_mid": mid_api, "virtual_tid": tid_api,
                     "org_code": orgCode_api,
-                    #"auth_code": auth_code_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
-                    # "rrn_2": str(rrn_api_new_2),
                     "settle_status_2": settlement_status_api_new_2,
                     "acquirer_code_2": acquirer_code_api_new_2,
-                    # "issuer_code_2": issuer_code_api_new_2,
                     "txn_type_2": txn_type_api_new_2,
-                    # "mid_2": mid_api_new_2, "tid_2": tid_api_new_2,
                     "org_code_2": orgCode_api_new_2,
-                    # "auth_code_2": auth_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
                 }
@@ -1960,10 +1828,9 @@ def test_d102_102_063():
                     "virtual_mid": virtual_mid,
                     "virtual_tid": virtual_tid,
                     "order_id": order_id,
-                    # "bqr_pmt_status": "INITIATED BY UPI",
                     "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(str(amount).split('.')[0] + '.' + str(amount).split('.')[1][:2]),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -1973,10 +1840,7 @@ def test_d102_102_063():
                     "txn_amt_2": float(str(refund_amount).split('.')[0] + '.' + str(refund_amount).split('.')[1][:2]),
                     "settle_status_2": "FAILED",
                     "acquirer_code_2": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "payment_gateway_2": "ICICI",
-                    # "mid_2": mid,
-                    # "tid_2": tid,
                     "order_id_2": order_id,
 
                 }
@@ -2002,11 +1866,10 @@ def test_d102_102_063():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -2022,10 +1885,7 @@ def test_d102_102_063():
                 state_db_new_2 = result["state"].iloc[0]
                 payment_gateway_db_new_2 = result["payment_gateway"].iloc[0]
                 acquirer_code_db_new_2 = result["acquirer_code"].iloc[0]
-                # bank_code_db_new_2 = result["bank_code"].iloc[0]
                 settlement_status_db_new_2 = result["settlement_status"].iloc[0]
-                # tid_db_new_2 = result['tid'].values[0]
-                # mid_db_new_2 = result['mid'].values[0]
                 order_id_db_new_2 = result['external_ref'].values[0]
 
                 actual_db_values = {
@@ -2040,10 +1900,9 @@ def test_d102_102_063():
                     "virtual_mid": mid_db,
                     "virtual_tid": tid_db,
                     "order_id": order_id_db,
-                    # "bqr_pmt_status": bqr_status_db,
                     "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -2054,10 +1913,7 @@ def test_d102_102_063():
                     "txn_amt_2": amount_db_new_2,
                     "settle_status_2": settlement_status_db_new_2,
                     "acquirer_code_2": acquirer_code_db_new_2,
-                    # "bank_code_2": bank_code_db_new_2,
                     "payment_gateway_2": payment_gateway_db_new_2,
-                    # "mid_2": mid_db_new_2,
-                    # "tid_2": tid_db_new_2,
                     "order_id_2": order_id_db_new_2,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")

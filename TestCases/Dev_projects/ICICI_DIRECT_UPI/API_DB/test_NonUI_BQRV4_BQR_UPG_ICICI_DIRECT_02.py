@@ -16,7 +16,8 @@ logger = EzeAutoLogger(__name__)
 def test_d102_102_071():
     """
     Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_UPG_Refund_Success_Amt_mismatch_Upg_Autorefund_disabled
-    Sub Feature Description: Generate QR through api and perform upg success refund for BQRV4 BQR amount mismatch of ICICI_Direct pg
+    Sub Feature Description: Generate QR through api and perform bqrv4 bqr success upg refund txn when
+    amount is mismatched of ICICI_Direct pg
     TC naming code description:: d102->Dev Project[ICICI_DIRECT_UPI], 102->BQRV4 BQR, 071-> Tesctcase ID
     """
     try:
@@ -99,22 +100,19 @@ def test_d102_102_071():
             # ------------------------------------------------------------------------------------------------
             amount = random.choice([51, 52, 53, 54])
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
 
-            # Generate QR
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             orig_auth_code = "AE" + txn_id.split('E')[1]
             orig_rrn = "RE" + txn_id.split('E')[1]
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
-                f" Auth code : {orig_auth_code}, RRN : {orig_rrn}")
+            logger.debug(f"authcode and rrn for current txn is : {orig_auth_code, orig_rrn}")
 
-            # Do callback
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
                                                                     "TXN_ID": txn_id,
@@ -122,11 +120,13 @@ def test_d102_102_071():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for callback : {response}")
+
             query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to fetch txn details from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -141,7 +141,6 @@ def test_d102_102_071():
             logger.debug(f"fetched created_time from txn table is : {created_time_db}")
             logger.debug(f"fetched auth_code from txn table is : {auth_code_db}")
 
-            # Do refund for UPG txn
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": amount,
@@ -156,7 +155,7 @@ def test_d102_102_071():
             refunded_txn_id = result["id"].iloc[0]
             refund_created_time_db = result['created_time'].values[0]
 
-            logger.debug(f"Fetching Refund txn_id from db query : {refunded_txn_id} ")
+            logger.debug(f"Fetching Refund txn_id and created time from db query : {refunded_txn_id}, {created_time_db} ")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()

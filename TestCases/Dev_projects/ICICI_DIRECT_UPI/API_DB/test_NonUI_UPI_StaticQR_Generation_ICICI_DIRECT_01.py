@@ -595,7 +595,7 @@ def test_d102_107_004():
     """
     Sub Feature Code: NonUI_Common_StaticQR_UPI_QR_Regeneration_Different_User_ICICI_DIRECT
     Sub Feature Description: Re-generate the static QR using UPI with different user and verify the tables getting updated.
-    TC naming code description: d102: ICICI-DIRECT UPI Dev, 107: UPI STATIC QR, 004: Testcase ID
+    TC naming code description: d102: ICICI-DIRECT UPI Dev, 107: UPI STATIC QR, 003: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -843,7 +843,11 @@ def test_d102_107_004():
                     "mid": virtual_mid,
                     "tid": virtual_tid,
                     "qr_type": "UPI",
-                    "intent_type": "STATIC_QR"
+                    "intent_type": "STATIC_QR",
+                    "audit_publish_id": publish_id,
+                    "audit_org_code": org_code,
+                    "audit_qr_type": "UPI",
+                    "audit_intent_type": "STATIC_QR",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -861,6 +865,15 @@ def test_d102_107_004():
                 qr_type_db = result['qr_type'].values[0]
                 intent_type_db = result['intent_type'].values[0]
 
+                query = "select * from qrcode_audit where org_code='" + org_code + "'"
+                logger.debug(f"Query to fetch data from qrcode_audit table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                audit_publish_id_db = result["publish_id"].iloc[0]
+                audit_org_code_db = result["org_code"].iloc[0]
+                audit_qr_type_db = result['qr_type'].values[0]
+                audit_intent_type_db = result['intent_type'].values[0]
+
                 actual_db_values = {
                     "org_code": org_code_db,
                     "config_id": config_id_db,
@@ -870,7 +883,11 @@ def test_d102_107_004():
                     "mid": mid_db,
                     "tid": tid_db,
                     "qr_type": qr_type_db,
-                    "intent_type": intent_type_db
+                    "intent_type": intent_type_db,
+                    "audit_publish_id": audit_publish_id_db,
+                    "audit_org_code": audit_org_code_db,
+                    "audit_qr_type": audit_qr_type_db,
+                    "audit_intent_type": audit_intent_type_db,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 

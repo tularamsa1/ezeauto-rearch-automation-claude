@@ -123,12 +123,6 @@ def test_d102_107_005():
             logger.debug(f"Result for the query : {query} is : {result}")
             txn_id = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -162,7 +156,7 @@ def test_d102_107_005():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": external_ref
                 }
@@ -407,12 +401,6 @@ def test_d102_107_006():
             logger.debug(f"Result for the query : {query} is : {result}")
             txn_id = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -446,7 +434,7 @@ def test_d102_107_006():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": external_ref
                 }
@@ -691,35 +679,14 @@ def test_d102_107_016():
             logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Result for the query {query} is : {result}")
-            logger.debug(f"Result for the query {query} is : {result}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             txn_id = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {rrn}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-            external_ref = result['external_ref'].values[0]
-            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"fetched created_time from txn table is : {created_time}")
-            auth_code = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             external_ref = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref}")
 
@@ -743,14 +710,8 @@ def test_d102_107_016():
             logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Result for the query {query} is : {result}")
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
             txn_id_2 = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {txn_id_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
             txn_type_2 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
             created_time_2 = result['created_time'].values[0]
@@ -788,7 +749,7 @@ def test_d102_107_016():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": external_ref,
                     "pmt_status_2": "AUTHORIZED",
@@ -798,8 +759,7 @@ def test_d102_107_016():
                     "acquirer_code_2": "ICICI",
                     "issuer_code_2": "ICICI",
                     "txn_type_2": txn_type_2, "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn_2,
-                    # "auth_code_2": auth_code_2,
+                    "org_code_2": org_code,
                     "date_2": new_txn_date,
                     "order_id_2": refund_external_ref,
                 }
@@ -850,7 +810,6 @@ def test_d102_107_016():
                         new_txn_mid_api = elements["mid"]
                         new_txn_tid_api = elements["tid"]
                         new_txn_type_api = elements["txnType"]
-                        # new_txn_auth_code_api = elements["authCode"]
                         new_txn_date_api = elements["createdTime"]
                         new_txn_order_id_api = elements["orderNumber"]
 
@@ -873,7 +832,6 @@ def test_d102_107_016():
                     "issuer_code_2": new_txn_issuer_code_api,
                     "txn_type_2": new_txn_type_api, "mid_2": new_txn_mid_api, "tid_2": new_txn_tid_api,
                     "org_code_2": new_txn_orgCode_api,
-                    # "auth_code_2": new_txn_auth_code_api,
                     "order_id_2": new_txn_order_id_api,
                     "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api),
                 }
@@ -937,7 +895,6 @@ def test_d102_107_016():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                order_id_db = result['external_ref'].values[0]
                 error_msg_db = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
@@ -963,7 +920,6 @@ def test_d102_107_016():
                 new_txn_settlement_status_db = result["settlement_status"].iloc[0]
                 new_txn_tid_db = result['tid'].values[0]
                 new_txn_mid_db = result['mid'].values[0]
-                new_txn_order_id_db = result['external_ref'].values[0]
                 new_txn_error_msg_db = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id_2 + "'"
@@ -1135,35 +1091,14 @@ def test_d102_107_017():
             logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Result for the query {query} is : {result}")
-            logger.debug(f"Result for the query {query} is : {result}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             txn_id = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {rrn}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-            external_ref = result['external_ref'].values[0]
-            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"fetched created_time from txn table is : {created_time}")
-            auth_code = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             external_ref = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref}")
 
@@ -1216,7 +1151,7 @@ def test_d102_107_017():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": external_ref,
                     "txn_id": txn_id
@@ -1306,7 +1241,6 @@ def test_d102_107_017():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                order_id_db = result['external_ref'].values[0]
                 error_msg_db = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"

@@ -17,7 +17,8 @@ logger = EzeAutoLogger(__name__)
 def test_d102_102_039():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_UPG_Success_Amt_mismatch_Upg_Autorefund_disabled
-    Sub Feature Description: Generate QR through api and perform upg success for BQRV4 UPI amount mismatch of ICICI_Direct pg
+    Sub Feature Description: Generate QR through api and perform upg success txn for BQRV4 UPI when
+    amount is mismatched of ICICI_Direct pg
     TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 039->TC039
     """
     try:
@@ -93,16 +94,19 @@ def test_d102_102_039():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(226, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             rrn = txn_id.split('E')[1]
             customer_vpa = 'hello123@upi'
             mismatch_amount = amount - 50
+            logger.debug(f"Rrn, customer vpa and mismatch amount for performing callback is : "
+                         f"{rrn, customer_vpa, mismatch_amount}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(mismatch_amount),
@@ -403,9 +407,12 @@ def test_d102_102_040():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             rrn = txn_id.split('E')[1]
             customer_vpa = 'hello123@upi'
             mismatch_amount = amount - 50
+            logger.debug(f"Rrn, customer vpa and mismatch amount for performing callback is : "
+                         f"{rrn, customer_vpa, mismatch_amount}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(mismatch_amount),
@@ -697,9 +704,12 @@ def test_d102_102_041():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             rrn = txn_id.split('E')[1]
             customer_vpa = 'hello123@upi'
             mismatch_amount = amount - 50
+            logger.debug(f"Rrn, customer vpa and mismatch amount for performing callback is : "
+                         f"{rrn, customer_vpa, mismatch_amount}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(mismatch_amount),
@@ -909,7 +919,7 @@ def test_d102_102_041():
 def test_d102_102_042():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_UPG_Success_Upg_Autorefund_disabled
-    Sub Feature Description: Generate QR through api and perform upg success for BQRV4 UPI txn with diffrent txn id of ICICI_Direct pg
+    Sub Feature Description: Generate QR through api and perform upg success for BQRV4 UPI txn with different txn id of ICICI_Direct pg
     TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 042->TC042
     """
     try:
@@ -992,6 +1002,7 @@ def test_d102_102_042():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             txn_id_tampered, rrn = txn_id.split('E')
             txn_id_tampered = str(txn_id_tampered)+'E' + str(random.randint(10000000, 999999999))
             customer_vpa = 'hello123@upi'
@@ -1600,9 +1611,12 @@ def test_d102_102_044():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             rrn = txn_id.split('E')[1]
             customer_vpa = 'hello123@upi'
             mismatch_amount = amount - 50
+            logger.debug(f"Rrn, customer vpa and mismatch amount for performing callback is : "
+                         f"{rrn, customer_vpa, mismatch_amount}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(mismatch_amount),
@@ -1642,6 +1656,7 @@ def test_d102_102_044():
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
             rrn_refunded = result['rr_number'].iloc[0]
             created_time_refunded = result['created_time'].values[0]
+            logger.debug(f"Fetching rrn, created_time from database for current merchant:{rrn_refunded}, {created_time_refunded}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1678,7 +1693,6 @@ def test_d102_102_044():
                     "pmt_state_2": "UPG_REFUNDED", "rrn_2": str(rrn_refunded),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    #"issuer_code_2": "ICICI",
                     "txn_type_2": 'REFUND', "mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code_txn,
                     "date_2": date_2
@@ -1720,7 +1734,6 @@ def test_d102_102_044():
                 state_api_2 = response["states"][0]
                 rrn_api_2 = response["rrNumber"]
                 settlement_status_api_2 = response["settlementStatus"]
-                #issuer_code_api_2 = response["issuerCode"]
                 acquirer_code_api_2 = response["acquirerCode"]
                 org_code_api_2 = response["orgCode"]
                 mid_api_2 = response["mid"]
@@ -1743,7 +1756,6 @@ def test_d102_102_044():
                     "pmt_state_2": state_api_2, "rrn_2": str(rrn_api_2),
                     "settle_status_2": settlement_status_api_2,
                     "acquirer_code_2": acquirer_code_api_2,
-                    #"issuer_code_2": issuer_code_api_2,
                     "txn_type_2": txn_type_api_2, "mid_2": mid_api_2, "tid_2": tid_api_2,
                     "org_code_2": org_code_api_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_2)

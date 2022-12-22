@@ -85,18 +85,17 @@ def test_d102_102_066():
             # ------------------------------------------------------------------------------------------------
             amount = random.choice([51, 52, 53, 54])
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             auth_code = "AE" + txn_id.split('E')[1]
             rrn = "RE" + txn_id.split('E')[1]
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
-                f" Auth code : {auth_code}, RRN : {rrn}")
+            logger.debug(f"authcode and rrn for current txn is : {auth_code, rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
                                                                     "TXN_ID": txn_id,
@@ -104,11 +103,13 @@ def test_d102_102_066():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -330,9 +331,9 @@ def test_d102_102_066():
 @pytest.mark.dbVal
 def test_d102_102_067():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_UPG_Success_Amt_mismatch_Upg_Autorefund_enabled
-    Sub Feature Description: Generate QR through api and perform upg success for BQRV4 BQR amount mismatch
-    when auto refund is enabled of ICICI_Direct pg
+    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_Success_UPG_txn_Amt_mismatch_Upg_Autorefund_enabled
+    Sub Feature Description: Generate QR through api and perform BQRV4 BQR success upg txn for amount mismatch
+    when upg auto refund is enabled of ICICI_Direct pg
     TC naming code description:
     d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 067->TC067
     """
@@ -407,18 +408,17 @@ def test_d102_102_067():
             # ------------------------------------------------------------------------------------------------
             amount = random.choice([51, 52, 53, 54])
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             auth_code = "AE" + txn_id.split('E')[1]
             rrn = "RE" + txn_id.split('E')[1]
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
-                f" Auth code : {auth_code}, RRN : {rrn}")
+            logger.debug(f"authcode and rrn for current txn is : {auth_code, rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
                                                                     "TXN_ID": txn_id,
@@ -426,11 +426,13 @@ def test_d102_102_067():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -652,10 +654,9 @@ def test_d102_102_067():
 @pytest.mark.dbVal
 def test_d102_102_068():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_UPG_Success_txn_not_matched_Upg_Autorefund_disabled
-    Sub Feature Description: Generate QR through api and perform upg success for BQRV4 BQR txn id mismatch of ICICI_Direct pg
-    TC naming code description:
-    d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 068->TC068
+    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_Success_UPG_txn_txn_id_not_matched_Upg_Autorefund_disabled
+    Sub Feature Description: Generate QR through api and perform Bqrv4 bqr success upg txn with invalid txn id of ICICI_Direct pg
+    TC naming code description: d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 068->TC068
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -719,11 +720,10 @@ def test_d102_102_068():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(500, 1000)
             upg_txn_id = '220518115526031E' + str(random.randint(10000000, 999999999))
+            logger.debug(f"Randomly generated txn id is : {upg_txn_id}")
             auth_code = "AE" + upg_txn_id.split('E')[1]
             rrn = "RE" + upg_txn_id.split('E')[1]
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {upg_txn_id},"
-                f" Auth code : {auth_code}, RRN : {rrn}")
+            logger.debug(f"authcode and rrn for current txn is : {auth_code, rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(amount),
                                                                     "TXN_ID": upg_txn_id,
@@ -731,11 +731,13 @@ def test_d102_102_068():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = ("select * from invalid_pg_request where request_id ='" + upg_txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to fetch txn details from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -955,9 +957,9 @@ def test_d102_102_068():
 @pytest.mark.dbVal
 def test_d102_102_069():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_UPG_Success_invalid_txn_id_Upg_Autorefund_enabled
-    Sub Feature Description: Generate QR through api and perform upg success for BQRV4 BQR txn id mismatch
-    when auto refund is enabled of ICICI_Direct pg
+    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_Success_UPG_txn_txn_id_not_matched_Upg_Autorefund_enabled
+    Sub Feature Description: Generate QR through api and perform Bqrv4 bqr success upg txn with invalid txn id of
+    ICICI_Direct pg when auto refund is enabled of ICICI_Direct pg
     TC naming code description:
     d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 069->TC069
     """
@@ -1032,11 +1034,11 @@ def test_d102_102_069():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(500, 1000)
             upg_txn_id = '220518115526031E' + str(random.randint(10000000, 999999999))
+            logger.debug(f"Randomly generated txn id is : {upg_txn_id}")
             auth_code = "AE" + upg_txn_id.split('E')[1]
             rrn = "RE" + upg_txn_id.split('E')[1]
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {upg_txn_id},"
-                f" Auth code : {auth_code}, RRN : {rrn}")
+            logger.debug(f"authcode and rrn for current txn is : {auth_code, rrn}")
+
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": upg_txn_id, "TXN_AMOUNT": str(amount),
                                                                     "TXN_ID": upg_txn_id,
@@ -1044,11 +1046,13 @@ def test_d102_102_069():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = ("select * from invalid_pg_request where request_id ='" + upg_txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to fetch txn details from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1159,7 +1163,7 @@ def test_d102_102_069():
                     "ipr_pg_merchant_id": bqr_m_pan,
                     "bqr_pmt_status": "success", "bqr_pmt_state": "UPG_REFUND_PENDING",
                     "bqr_txn_amt": float(amount),
-                    "brq_terminal_info_id": terminal_info_id,
+                    "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id_upg,
                     "bqr_merchant_pan": merchant_id,
@@ -1206,7 +1210,7 @@ def test_d102_102_069():
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -1239,7 +1243,7 @@ def test_d102_102_069():
                     "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -1268,10 +1272,10 @@ def test_d102_102_069():
 @pytest.mark.dbVal
 def test_d102_102_070():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_UPG_Failed_Amt_mismatch_Upg_Autorefund_disabled
-    Sub Feature Description: Generate QR through api and perform upg failed for BQRV4 BQR amount mismatch of ICICI_Direct pg
-    TC naming code description:
-    d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 066->TC066
+    Sub Feature Code: NonUI_Common_BQRV4_BQR_ICICI_Direct_Failed_UPG_Amt_mismatch_txn_Upg_Autorefund_disabled
+    Sub Feature Description: Generate QR through api and perform Bqrv4 bqr failed upg txn when amount is \
+    mismatched of ICICI_Direct pg
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 BQR, 070->TC070
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1335,18 +1339,17 @@ def test_d102_102_070():
             # ------------------------------------------------------------------------------------------------
             amount = random.choice([51, 52, 53, 54])
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
+            logger.debug(f"Fetching txn id from Api output : {txn_id}")
             auth_code = "AE" + txn_id.split('E')[1]
             rrn = "RE" + txn_id.split('E')[1]
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN from data base : Txn_id : {txn_id},"
-                f" Auth code : {auth_code}, RRN : {rrn}")
+            logger.debug(f"authcode and rrn for current txn is : {auth_code, rrn}")
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
                                                                     "TXN_ID": txn_id, "STATUS_CODE": "01",
@@ -1354,11 +1357,13 @@ def test_d102_102_070():
                                                                     "MERCHANT_PAN": merchant_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].values[0]
             logger.debug(f"fetched upg_txn_id from txn table is : {txn_id_upg}")
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to fetch txn details from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
