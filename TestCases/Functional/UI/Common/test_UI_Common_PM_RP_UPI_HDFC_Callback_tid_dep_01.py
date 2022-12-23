@@ -638,20 +638,12 @@ def test_common_100_103_166():
             logger.debug(f"Query result of txn table is : {result}")
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
-            rrn = random.randint(1111110, 9999999)
-            logger.debug(f"generated random rrn number is : {rrn}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"created_time is : {created_time}")
-            mid = result['mid'].values[0]
-            logger.debug(f"Query result, mid : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"Query result, tid : {tid}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code_txn  : {org_code_txn}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"Query result, txn_type : {txn_type}")
-            txn_device_serial = result['device_serial'].values[0]
-            logger.debug(f"Query result, txn_device_serial from db : {txn_device_serial}")
+
+            query = "select * from upi_txn where txn_id = '" + txn_id + "';"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result of upi_mc_id table is : {result}")
+            txn_ref = result['txn_ref'].values[0]
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
@@ -660,26 +652,15 @@ def test_common_100_103_166():
             payment_intent_id = result['id'].values[0]
             logger.info(f"generated random rrn number is : {payment_intent_id}")
 
-            query = "select * from upi_txn where txn_id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result of upi_mc_id table is : {result}")
-            txn_ref = result['txn_ref'].values[0]
-            logger.info(f"txn_ref is : {txn_ref}")
-            upi_status_db = result["status"].iloc[0]
-            logger.info(f"upi_status_db is : {upi_status_db}")
-            upi_txn_type_db = result["txn_type"].iloc[0]
-            logger.info(f"upi_txn_type_db is : {upi_txn_type_db}")
-            upi_bank_code_db = result["bank_code"].iloc[0]
-            logger.info(f"upi_bank_code_db is : {upi_bank_code_db}")
-            upi_status_db = result["status"].iloc[0]
-            logger.debug(f"upi_status_db is : {upi_status_db}")
+            rrn = random.randint(1111110, 9999999)
+            logger.debug(f"generated random rrn number is : {rrn}")
 
             api_details = DBProcessor.get_api_details('upi_failed_curl',curl_data={
                 'ref_id': txn_ref,
                 'Txn_id': payment_intent_id,
                 'amount': str(amount) + ".00",
-                'vpa': vpa, 'rrn': rrn
+                'vpa': vpa,
+                'rrn': rrn
             })
 
             logger.info(f"api_details: {api_details['CurlData']}")
@@ -701,15 +682,39 @@ def test_common_100_103_166():
             })
 
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response from upi merchant is: {response}")
 
-            query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch transaction details from database : {query}")
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
+            logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of txn table is : {result}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"created_time is : {created_time}")
+            mid = result['mid'].values[0]
+            logger.debug(f"Query result, mid : {mid}")
+            tid = result['tid'].values[0]
+            logger.debug(f"Query result, tid : {tid}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"Query result, org_code_txn  : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"Query result, txn_type : {txn_type}")
+            txn_device_serial = result['device_serial'].values[0]
+            logger.debug(f"Query result, txn_device_serial from db : {txn_device_serial}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"payer_name is : {payer_name}")
+
+            query = "select * from upi_txn where txn_id = '" + txn_id + "';"
+            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result of upi_mc_id table is : {result}")
+            upi_status_db = result["status"].iloc[0]
+            logger.info(f"upi_status_db is : {upi_status_db}")
+            upi_txn_type_db = result["txn_type"].iloc[0]
+            logger.info(f"upi_txn_type_db is : {upi_txn_type_db}")
+            upi_bank_code_db = result["bank_code"].iloc[0]
+            logger.info(f"upi_bank_code_db is : {upi_bank_code_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
