@@ -79,7 +79,7 @@ def test_d102_101_032():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
             vpa = result['vpa'].values[0]
             logger.debug(f"fetched vpa : {vpa}")
 
@@ -120,12 +120,6 @@ def test_d102_101_032():
             result = DBProcessor.getValueFromDB(query)
             external_ref = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -160,8 +154,7 @@ def test_d102_101_032():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    # "auth_code": auth_code,
+                    "org_code": org_code,
                     "date": date
                 }
 
@@ -187,8 +180,7 @@ def test_d102_101_032():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -199,7 +191,6 @@ def test_d102_101_032():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -238,7 +229,6 @@ def test_d102_101_032():
                     "ipr_tid": virtual_tid,
                     "ipr_vpa": vpa,
                     "ipr_config_id": upi_mc_id,
-                    # "ipr_pg_merchant_id": pgMerchantId,
                 }
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -281,7 +271,6 @@ def test_d102_101_032():
                 ipr_tid = result["tid"].iloc[0]
                 ipr_config_id = result["config_id"].iloc[0]
                 ipr_vpa = result["vpa"].iloc[0]
-                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -308,7 +297,6 @@ def test_d102_101_032():
                     "ipr_tid": ipr_tid,
                     "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
-                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -401,7 +389,7 @@ def test_d102_101_033():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
             vpa = result['vpa'].values[0]
             logger.debug(f"fetched vpa : {vpa}")
 
@@ -442,12 +430,6 @@ def test_d102_101_033():
             result = DBProcessor.getValueFromDB(query)
             external_ref = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -482,8 +464,7 @@ def test_d102_101_033():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    # "auth_code": auth_code,
+                    "org_code": org_code,
                     "date": date
                 }
 
@@ -509,8 +490,7 @@ def test_d102_101_033():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -521,7 +501,6 @@ def test_d102_101_033():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -560,7 +539,6 @@ def test_d102_101_033():
                     "ipr_tid": virtual_tid,
                     "ipr_vpa": vpa,
                     "ipr_config_id": upi_mc_id,
-                    # "ipr_pg_merchant_id": pgMerchantId,
                 }
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -603,7 +581,6 @@ def test_d102_101_033():
                 ipr_tid = result["tid"].iloc[0]
                 ipr_config_id = result["config_id"].iloc[0]
                 ipr_vpa = result["vpa"].iloc[0]
-                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -630,7 +607,6 @@ def test_d102_101_033():
                     "ipr_tid": ipr_tid,
                     "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
-                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -714,7 +690,7 @@ def test_d102_101_034():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
             vpa = result['vpa'].values[0]
             logger.debug(f"fetched vpa : {vpa}")
 
@@ -778,12 +754,10 @@ def test_d102_101_034():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             logger.debug(f"captured auth_code from txn table is : {auth_code}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"captured org_code from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"captured txn_type from txn table is : {txn_type}")
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"captured posting_date from txn table is : {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"captured created_time from txn table is : {created_time}")
             external_ref = result['external_ref'].values[0]
             logger.debug(f"captured external_ref from txn table is : {external_ref}")
 
@@ -806,7 +780,7 @@ def test_d102_101_034():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
@@ -815,9 +789,8 @@ def test_d102_101_034():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
-                    # "auth_code": str(auth_code)
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -842,8 +815,7 @@ def test_d102_101_034():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -855,7 +827,6 @@ def test_d102_101_034():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    # "auth_code": str(auth_code_api),
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -892,7 +863,6 @@ def test_d102_101_034():
                     "ipr_tid": virtual_tid,
                     "ipr_vpa": vpa,
                     "ipr_config_id": upi_mc_id,
-                    # "ipr_pg_merchant_id": pg_merchant_id,
                     "rrn": str(rrn),
                     "ipr_error_message": "The given amount - "+str(amount)+" doesnt match with the transaction amount."
                 }
@@ -914,7 +884,6 @@ def test_d102_101_034():
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
                 rrn_db = result['rr_number'].values[0]
-                # device_serial_db = result['device_serial'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -949,7 +918,6 @@ def test_d102_101_034():
                     "ipr_tid": ipr_tid,
                     "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
-                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "rrn": str(rrn_db),
                     "ipr_error_message": str(ipr_error_message)
                 }
@@ -1043,7 +1011,7 @@ def test_d102_101_035():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
             vpa = result['vpa'].values[0]
             logger.debug(f"fetched vpa : {vpa}")
 
@@ -1107,12 +1075,10 @@ def test_d102_101_035():
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
             logger.debug(f"captured auth_code from txn table is : {auth_code}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"captured org_code from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"captured txn_type from txn table is : {txn_type}")
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"captured posting_date from txn table is : {posting_date}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"captured created_time from txn table is : {created_time}")
             external_ref = result['external_ref'].values[0]
             logger.debug(f"captured external_ref from txn table is : {external_ref}")
 
@@ -1135,7 +1101,7 @@ def test_d102_101_035():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date = date_time_converter.db_datetime(posting_date)
+                date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status": "UPG_REFUND_PENDING",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
@@ -1144,9 +1110,8 @@ def test_d102_101_035():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
-                    # "auth_code": str(auth_code)
                 }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -1171,8 +1136,7 @@ def test_d102_101_035():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1184,7 +1148,6 @@ def test_d102_101_035():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    # "auth_code": str(auth_code_api),
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1221,7 +1184,6 @@ def test_d102_101_035():
                     "ipr_tid": virtual_tid,
                     "ipr_vpa": vpa,
                     "ipr_config_id": upi_mc_id,
-                    # "ipr_pg_merchant_id": pg_merchant_id,
                     "rrn": str(rrn),
                     "ipr_error_message": "The given amount - "+str(amount)+" doesnt match with the transaction amount."
                 }
@@ -1243,7 +1205,6 @@ def test_d102_101_035():
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
                 rrn_db = result['rr_number'].values[0]
-                # device_serial_db = result['device_serial'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -1278,7 +1239,6 @@ def test_d102_101_035():
                     "ipr_tid": ipr_tid,
                     "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
-                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "rrn": str(rrn_db),
                     "ipr_error_message": str(ipr_error_message)
                 }
@@ -1364,7 +1324,7 @@ def test_d102_101_036():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
             vpa = result['vpa'].values[0]
             logger.debug(f"fetched vpa : {vpa}")
 
@@ -1406,12 +1366,6 @@ def test_d102_101_036():
             result = DBProcessor.getValueFromDB(query)
             external_ref = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -1446,8 +1400,7 @@ def test_d102_101_036():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    # "auth_code": auth_code,
+                    "org_code": org_code,
                     "date": date
                 }
 
@@ -1473,8 +1426,7 @@ def test_d102_101_036():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -1485,7 +1437,6 @@ def test_d102_101_036():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -1524,7 +1475,6 @@ def test_d102_101_036():
                     "ipr_tid": virtual_tid,
                     "ipr_vpa": vpa,
                     "ipr_config_id": upi_mc_id,
-                    # "ipr_pg_merchant_id": pgMerchantId,
                     "ipr_error_message": "UPI Txn Id Tampered "+ str(txn_id)
                 }
 
@@ -1568,7 +1518,6 @@ def test_d102_101_036():
                 ipr_tid = result["tid"].iloc[0]
                 ipr_config_id = result["config_id"].iloc[0]
                 ipr_vpa = result["vpa"].iloc[0]
-                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
                 ipr_error_message = result["error_message"].iloc[0]
 
                 actual_db_values = {
@@ -1596,7 +1545,6 @@ def test_d102_101_036():
                     "ipr_tid": ipr_tid,
                     "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
-                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "ipr_error_message": str(ipr_error_message)
                 }
 

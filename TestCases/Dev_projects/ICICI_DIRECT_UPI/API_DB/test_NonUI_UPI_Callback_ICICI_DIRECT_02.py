@@ -78,7 +78,7 @@ def test_d102_101_012():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -108,12 +108,6 @@ def test_d102_101_012():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -139,14 +133,8 @@ def test_d102_101_012():
                 order_id) + "' AND rr_number = '" + str(rrn_2) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
             txn_id_2 = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {txn_id_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
             txn_type_2 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
             created_time_2 = result['created_time'].values[0]
@@ -182,7 +170,7 @@ def test_d102_101_012():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": order_id,
                     "pmt_status_2": "AUTHORIZED",
@@ -192,8 +180,7 @@ def test_d102_101_012():
                     "acquirer_code_2": "ICICI",
                     "issuer_code_2": "ICICI",
                     "txn_type_2": txn_type_2, "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn_2,
-                    # "auth_code_2": auth_code_2,
+                    "org_code_2": org_code,
                     "date_2": new_txn_date,
                     "order_id_2": order_id,
                 }
@@ -244,7 +231,6 @@ def test_d102_101_012():
                         new_txn_mid_api = elements["mid"]
                         new_txn_tid_api = elements["tid"]
                         new_txn_type_api = elements["txnType"]
-                        # new_txn_auth_code_api = elements["authCode"]
                         new_txn_date_api = elements["createdTime"]
                         new_txn_order_id_api = elements["orderNumber"]
 
@@ -267,7 +253,6 @@ def test_d102_101_012():
                     "issuer_code_2": new_txn_issuer_code_api,
                     "txn_type_2": new_txn_type_api, "mid_2": new_txn_mid_api, "tid_2": new_txn_tid_api,
                     "org_code_2": new_txn_orgCode_api,
-                    # "auth_code_2": new_txn_auth_code_api,
                     "order_id_2": new_txn_order_id_api,
                     "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api),
                 }
@@ -494,7 +479,7 @@ def test_d102_101_015():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -524,12 +509,6 @@ def test_d102_101_015():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -555,14 +534,8 @@ def test_d102_101_015():
                 order_id) + "' AND rr_number = '" + str(rrn_2) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
             txn_id_2 = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {txn_id_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
             txn_type_2 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
             created_time_2 = result['created_time'].values[0]
@@ -598,7 +571,7 @@ def test_d102_101_015():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": order_id,
                     "pmt_status_2": "REFUND_PENDING",
@@ -608,8 +581,7 @@ def test_d102_101_015():
                     "acquirer_code_2": "ICICI",
                     "issuer_code_2": "ICICI",
                     "txn_type_2": txn_type_2, "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn_2,
-                    # "auth_code_2": auth_code_2,
+                    "org_code_2": org_code,
                     "date_2": new_txn_date,
                     "order_id_2": order_id,
                 }
@@ -660,7 +632,6 @@ def test_d102_101_015():
                         new_txn_mid_api = elements["mid"]
                         new_txn_tid_api = elements["tid"]
                         new_txn_type_api = elements["txnType"]
-                        # new_txn_auth_code_api = elements["authCode"]
                         new_txn_date_api = elements["createdTime"]
                         new_txn_order_id_api = elements["orderNumber"]
 
@@ -683,7 +654,6 @@ def test_d102_101_015():
                     "issuer_code_2": new_txn_issuer_code_api,
                     "txn_type_2": new_txn_type_api, "mid_2": new_txn_mid_api, "tid_2": new_txn_tid_api,
                     "org_code_2": new_txn_orgCode_api,
-                    # "auth_code_2": new_txn_auth_code_api,
                     "order_id_2": new_txn_order_id_api,
                     "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api),
                 }
@@ -910,7 +880,7 @@ def test_d102_101_016():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -928,14 +898,6 @@ def test_d102_101_016():
             query = "select * from txn where id = '" + str(txn_id) + "';"
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Result for the query : {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -966,8 +928,6 @@ def test_d102_101_016():
             logger.debug(f"fetched customer_name_2 from txn table is : {customer_name_2}")
             payer_name_2 = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name_2 from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_2 from txn table is : {org_code_txn_2}")
             txn_type_2 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type_2 from txn table is : {txn_type_2}")
             auth_code_2 = result['auth_code'].values[0]
@@ -1000,8 +960,6 @@ def test_d102_101_016():
             logger.debug(f"fetched customer_name_3 from txn table is : {customer_name_3}")
             payer_name_3 = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name_3 from txn table is : {payer_name_3}")
-            org_code_txn_3 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_3 from txn table is : {org_code_txn_3}")
             txn_type_3 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type_3 from txn table is : {txn_type_3}")
             auth_code_3 = result['auth_code'].values[0]
@@ -1037,11 +995,9 @@ def test_d102_101_016():
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "order_id": order_id,
-                    "issuer_code": "ICICI", "rrn": str(rrn),
+                    "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid,
                     "tid": virtual_tid, "org_code": org_code,
-                    # "payer_name": payer_name,
-                    # "customer_name": customer_name,
                     "pmt_status_2": "AUTHORIZED",
                     "txn_amt_2": amount, "pmt_mode_2": "UPI",
                     "pmt_state_2": "SETTLED",
@@ -1054,7 +1010,6 @@ def test_d102_101_016():
                     "issuer_code_2": "ICICI",
                     "txn_type_2": txn_type_2, "mid_2": virtual_mid,
                     "tid_2": virtual_tid, "org_code_2": org_code,
-                    # "auth_code_2": str(auth_code_2),
                     "pmt_status_3": "AUTHORIZED",
                     "txn_amt_3": amount, "pmt_mode_3": "UPI",
                     "pmt_state_3": "SETTLED",
@@ -1067,7 +1022,6 @@ def test_d102_101_016():
                     "issuer_code_3": "ICICI",
                     "txn_type_3": txn_type_3, "mid_3": virtual_mid,
                     "tid_3": virtual_tid, "org_code_3": org_code,
-                    # "auth_code_3": str(auth_code_3),
                     "date": date,
                     "date_2": date_2,
                     "date_3": date_3,
@@ -1093,10 +1047,7 @@ def test_d102_101_016():
                 tid_api = elements["tid"]
                 txn_type_api = elements["txnType"]
                 date_api = elements["postingDate"]
-                rrn_api = elements["rrNumber"]
                 order_id_api = elements["orderNumber"]
-                # payer_name_api = elements["payerName"]
-                # customer_name_api = elements["customerName"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1122,7 +1073,6 @@ def test_d102_101_016():
                 new_txn_order_id_api_1 = elements["orderNumber"]
                 new_txn_payer_name_api_1 = elements["payerName"]
                 new_txn_customer_name_api_1 = elements["customerName"]
-                # new_txn_auth_code_api_1 = elements["authCode"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1149,7 +1099,6 @@ def test_d102_101_016():
                 new_txn_order_id_api_2 = elements["orderNumber"]
                 new_txn_payer_name_api_2 = elements["payerName"]
                 new_txn_customer_name_api_2 = elements["customerName"]
-                # new_txn_auth_code_api_2 = elements["authCode"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": float(amount_api),
@@ -1158,11 +1107,9 @@ def test_d102_101_016():
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "order_id": order_id_api,
-                    "issuer_code": issuer_code_api, "rrn": str(rrn_api),
+                    "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api,
                     "tid": tid_api, "org_code": orgCode_api,
-                    # "payer_name": payer_name_api,
-                    # "customer_name": customer_name_api,
                     "pmt_status_2": new_txn_status_api_1,
                     "txn_amt_2": float(new_txn_amount_api_1),
                     "pmt_mode_2": new_payment_mode_api_1,
@@ -1176,7 +1123,6 @@ def test_d102_101_016():
                     "order_id_2": new_txn_order_id_api_1,
                     "txn_type_2": new_txn_txn_type_api_1, "mid_2": new_txn_mid_api_1,
                     "tid_2": new_txn_tid_api_1, "org_code_2": new_txn_orgCode_api_1,
-                    # "auth_code_2": str(new_txn_auth_code_api_1),
                     "pmt_status_3": new_txn_status_api_2,
                     "txn_amt_3": float(new_txn_amount_api_2), "pmt_mode_3": new_payment_mode_api_2,
                     "pmt_state_3": new_txn_state_api_2,
@@ -1189,7 +1135,6 @@ def test_d102_101_016():
                     "order_id_3": new_txn_order_id_api_2,
                     "txn_type_3": new_txn_type_api_2, "mid_3": new_txn_mid_api_2,
                     "tid_3": new_txn_tid_api_2, "org_code_3": new_txn_orgCode_api_2,
-                    # "auth_code_3": str(new_txn_auth_code_api_2),
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api_1),
                     "date_3": date_time_converter.from_api_to_datetime_format(new_txn_date_api_2),
@@ -1216,8 +1161,6 @@ def test_d102_101_016():
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
-                    # "payer_name": orig_txn_payer_name,
-                    "rrn": str(rrn),
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_mc_id": upi_mc_id,
@@ -1232,7 +1175,6 @@ def test_d102_101_016():
                     "acquirer_code_2": "ICICI",
                     "bank_code_2": "ICICI",
                     "pmt_gateway_2": "ICICI",
-                    "payer_name_2": payer_name_2,
                     "rrn_2": str(callback_1_rrn),
                     "upi_txn_type_2": "PAY_QR",
                     "upi_bank_code_2": "ICICI_DIRECT",
@@ -1252,7 +1194,6 @@ def test_d102_101_016():
                     "upi_bank_code_3": "ICICI_DIRECT",
                     "upi_mc_id_3": upi_mc_id,
                     "order_id_3": order_id,
-                    "payer_name_3": payer_name_3,
                     "rrn_3": str(callback_2_rrn),
                     "error_msg_3": None,
                     "mid": virtual_mid,
@@ -1278,8 +1219,6 @@ def test_d102_101_016():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                # orig_txn_payer_name_db = result['payerName'].values[0]
-                original_rrn_db = result['rr_number'].values[0]
                 order_id_db = result['external_ref'].values[0]
                 error_msg_db = result['error_message'].values[0]
 
@@ -1306,7 +1245,6 @@ def test_d102_101_016():
                 new_txn_settlement_status_db_1 = result["settlement_status"].iloc[0]
                 new_txn_tid_db_1 = result['tid'].values[0]
                 new_txn_mid_db_1 = result['mid'].values[0]
-                new_txn_payer_name_1_db = result['payer_name'].values[0]
                 callback_1_rrn_db = result['rr_number'].values[0]
                 new_txn_order_id_db_1 = result['external_ref'].values[0]
                 error_msg_db_2 = result['error_message'].values[0]
@@ -1334,7 +1272,6 @@ def test_d102_101_016():
                 new_txn_settlement_status_db_2 = result["settlement_status"].iloc[0]
                 new_txn_tid_db_2 = result['tid'].values[0]
                 new_txn_mid_db_2 = result['mid'].values[0]
-                new_txn_payer_name_2_db = result['payer_name'].values[0]
                 callback_2_rrn_db = result['rr_number'].values[0]
                 new_txn_order_id_db_2 = result['external_ref'].values[0]
                 error_msg_db_3 = result['error_message'].values[0]
@@ -1358,8 +1295,6 @@ def test_d102_101_016():
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "payer_name": orig_txn_payer_name_db,
-                    "rrn": str(original_rrn_db),
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
@@ -1374,7 +1309,6 @@ def test_d102_101_016():
                     "acquirer_code_2": new_txn_acquirer_code_db_1,
                     "bank_code_2": new_txn_bank_code_db_1,
                     "pmt_gateway_2": new_txn_payment_gateway_db_1,
-                    "payer_name_2": new_txn_payer_name_1_db,
                     "rrn_2": str(callback_1_rrn_db),
                     "upi_txn_type_2": new_txn_upi_txn_type_db_1,
                     "upi_bank_code_2": new_txn_upi_bank_code_db_1,
@@ -1393,7 +1327,6 @@ def test_d102_101_016():
                     "upi_txn_type_3": new_txn_upi_txn_type_db_2,
                     "upi_bank_code_3": new_txn_upi_bank_code_db_2,
                     "upi_mc_id_3": new_txn_upi_mc_id_db_2,
-                    "payer_name_3": new_txn_payer_name_2_db,
                     "order_id_3": new_txn_order_id_db_2,
                     "rrn_3": str(callback_2_rrn_db),
                     "error_msg_3": error_msg_db_3,
@@ -1499,7 +1432,7 @@ def test_d102_101_017():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -1519,12 +1452,6 @@ def test_d102_101_017():
             logger.debug(f"Result for the query : {query} is : {result}")
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -1555,8 +1482,6 @@ def test_d102_101_017():
             logger.debug(f"fetched customer_name_2 from txn table is : {customer_name_2}")
             payer_name_2 = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name_2 from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_2 from txn table is : {org_code_txn_2}")
             txn_type_2 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type_2 from txn table is : {txn_type_2}")
             auth_code_2 = result['auth_code'].values[0]
@@ -1589,8 +1514,6 @@ def test_d102_101_017():
             logger.debug(f"fetched customer_name_3 from txn table is : {customer_name_3}")
             payer_name_3 = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name_3 from txn table is : {payer_name_3}")
-            org_code_txn_3 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn_3 from txn table is : {org_code_txn_3}")
             txn_type_3 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type_3 from txn table is : {txn_type_3}")
             auth_code_3 = result['auth_code'].values[0]
@@ -1630,8 +1553,6 @@ def test_d102_101_017():
                     # "rrn": str(rrn),
                     "txn_type": txn_type, "mid": virtual_mid,
                     "tid": virtual_tid, "org_code": org_code,
-                    # "payer_name": payer_name,
-                    # "customer_name": customer_name,
                     "pmt_status_2": "REFUND_PENDING",
                     "txn_amt_2": amount, "pmt_mode_2": "UPI",
                     "pmt_state_2": "REFUND_PENDING",
@@ -1644,7 +1565,6 @@ def test_d102_101_017():
                     "issuer_code_2": "ICICI",
                     "txn_type_2": txn_type_2, "mid_2": virtual_mid,
                     "tid_2": virtual_tid, "org_code_2": org_code,
-                    # "auth_code_2": str(auth_code_2),
                     "pmt_status_3": "REFUND_PENDING",
                     "txn_amt_3": amount, "pmt_mode_3": "UPI",
                     "pmt_state_3": "REFUND_PENDING",
@@ -1657,7 +1577,6 @@ def test_d102_101_017():
                     "issuer_code_3": "ICICI",
                     "txn_type_3": txn_type_3, "mid_3": virtual_mid,
                     "tid_3": virtual_tid, "org_code_3": org_code,
-                    # "auth_code_3": str(auth_code_3),
                     "date": date,
                     "date_2": date_2,
                     "date_3": date_3,
@@ -1683,10 +1602,7 @@ def test_d102_101_017():
                 tid_api = elements["tid"]
                 txn_type_api = elements["txnType"]
                 date_api = elements["postingDate"]
-                # rrn_api = elements["rrNumber"]
                 order_id_api = elements["orderNumber"]
-                # payer_name_api = elements["payerName"]
-                # customer_name_api = elements["customerName"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1712,7 +1628,6 @@ def test_d102_101_017():
                 new_txn_order_id_api_1 = elements["orderNumber"]
                 new_txn_payer_name_api_1 = elements["payerName"]
                 new_txn_customer_name_api_1 = elements["customerName"]
-                # new_txn_auth_code_api_1 = elements["authCode"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1739,7 +1654,6 @@ def test_d102_101_017():
                 new_txn_order_id_api_2 = elements["orderNumber"]
                 new_txn_payer_name_api_2 = elements["payerName"]
                 new_txn_customer_name_api_2 = elements["customerName"]
-                # new_txn_auth_code_api_2 = elements["authCode"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": float(amount_api),
@@ -1749,11 +1663,8 @@ def test_d102_101_017():
                     "acquirer_code": acquirer_code_api,
                     "order_id": order_id_api,
                     "issuer_code": issuer_code_api,
-                    # "rrn": str(rrn_api),
                     "txn_type": txn_type_api, "mid": mid_api,
                     "tid": tid_api, "org_code": orgCode_api,
-                    # "payer_name": payer_name_api,
-                    # "customer_name": customer_name_api,
                     "pmt_status_2": new_txn_status_api_1,
                     "txn_amt_2": float(new_txn_amount_api_1),
                     "pmt_mode_2": new_payment_mode_api_1,
@@ -1767,7 +1678,6 @@ def test_d102_101_017():
                     "order_id_2": new_txn_order_id_api_1,
                     "txn_type_2": new_txn_txn_type_api_1, "mid_2": new_txn_mid_api_1,
                     "tid_2": new_txn_tid_api_1, "org_code_2": new_txn_orgCode_api_1,
-                    # "auth_code_2": str(new_txn_auth_code_api_1),
                     "pmt_status_3": new_txn_status_api_2,
                     "txn_amt_3": float(new_txn_amount_api_2), "pmt_mode_3": new_payment_mode_api_2,
                     "pmt_state_3": new_txn_state_api_2,
@@ -1780,7 +1690,6 @@ def test_d102_101_017():
                     "order_id_3": new_txn_order_id_api_2,
                     "txn_type_3": new_txn_type_api_2, "mid_3": new_txn_mid_api_2,
                     "tid_3": new_txn_tid_api_2, "org_code_3": new_txn_orgCode_api_2,
-                    # "auth_code_3": str(new_txn_auth_code_api_2),
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
                     "date_2": date_time_converter.from_api_to_datetime_format(new_txn_date_api_1),
                     "date_3": date_time_converter.from_api_to_datetime_format(new_txn_date_api_2),
@@ -1807,7 +1716,6 @@ def test_d102_101_017():
                     "acquirer_code": "ICICI",
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
-                    # "payer_name": orig_txn_payer_name,
                     "rrn": str(rrn),
                     "upi_txn_type": "PAY_QR",
                     "upi_bank_code": "ICICI_DIRECT",
@@ -1823,7 +1731,6 @@ def test_d102_101_017():
                     "acquirer_code_2": "ICICI",
                     "bank_code_2": "ICICI",
                     "pmt_gateway_2": "ICICI",
-                    "payer_name_2": payer_name_2,
                     "rrn_2": str(callback_1_rrn),
                     "upi_txn_type_2": "PAY_QR",
                     "upi_bank_code_2": "ICICI_DIRECT",
@@ -1843,7 +1750,6 @@ def test_d102_101_017():
                     "upi_bank_code_3": "ICICI_DIRECT",
                     "upi_mc_id_3": upi_mc_id,
                     "order_id_3": order_id,
-                    "payer_name_3": payer_name_3,
                     "rrn_3": str(callback_2_rrn),
                     "error_msg_3": None,
                     "mid": virtual_mid,
@@ -1869,7 +1775,6 @@ def test_d102_101_017():
                 settlement_status_db = result["settlement_status"].iloc[0]
                 tid_db = result['tid'].values[0]
                 mid_db = result['mid'].values[0]
-                # orig_txn_payer_name_db = result['payerName'].values[0]
                 original_rrn_db = result['rr_number'].values[0]
                 order_id_db = result['external_ref'].values[0]
                 error_msg_db = result['error_message'].values[0]
@@ -1897,7 +1802,6 @@ def test_d102_101_017():
                 new_txn_settlement_status_db_1 = result["settlement_status"].iloc[0]
                 new_txn_tid_db_1 = result['tid'].values[0]
                 new_txn_mid_db_1 = result['mid'].values[0]
-                new_txn_payer_name_1_db = result['payer_name'].values[0]
                 callback_1_rrn_db = result['rr_number'].values[0]
                 new_txn_order_id_db_1 = result['external_ref'].values[0]
                 error_msg_db_2 = result['error_message'].values[0]
@@ -1925,7 +1829,6 @@ def test_d102_101_017():
                 new_txn_settlement_status_db_2 = result["settlement_status"].iloc[0]
                 new_txn_tid_db_2 = result['tid'].values[0]
                 new_txn_mid_db_2 = result['mid'].values[0]
-                new_txn_payer_name_2_db = result['payer_name'].values[0]
                 callback_2_rrn_db = result['rr_number'].values[0]
                 new_txn_order_id_db_2 = result['external_ref'].values[0]
                 error_msg_db_3 = result['error_message'].values[0]
@@ -1949,7 +1852,6 @@ def test_d102_101_017():
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "payer_name": orig_txn_payer_name_db,
                     "rrn": str(original_rrn_db),
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
@@ -1965,7 +1867,6 @@ def test_d102_101_017():
                     "acquirer_code_2": new_txn_acquirer_code_db_1,
                     "bank_code_2": new_txn_bank_code_db_1,
                     "pmt_gateway_2": new_txn_payment_gateway_db_1,
-                    "payer_name_2": new_txn_payer_name_1_db,
                     "rrn_2": str(callback_1_rrn_db),
                     "upi_txn_type_2": new_txn_upi_txn_type_db_1,
                     "upi_bank_code_2": new_txn_upi_bank_code_db_1,
@@ -1984,7 +1885,6 @@ def test_d102_101_017():
                     "upi_txn_type_3": new_txn_upi_txn_type_db_2,
                     "upi_bank_code_3": new_txn_upi_bank_code_db_2,
                     "upi_mc_id_3": new_txn_upi_mc_id_db_2,
-                    "payer_name_3": new_txn_payer_name_2_db,
                     "order_id_3": new_txn_order_id_db_2,
                     "rrn_3": str(callback_2_rrn_db),
                     "error_msg_3": error_msg_db_3,
@@ -2075,7 +1975,7 @@ def test_d102_101_020():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -2105,12 +2005,6 @@ def test_d102_101_020():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -2133,20 +2027,8 @@ def test_d102_101_020():
                 order_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
             txn_id_2 = result['id'].values[0]
             logger.debug(f"fetched txn_id from txn table is : {txn_id_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
-            txn_type_2 = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"fetched created_time from txn table is : {created_time_2}")
-            auth_code_2 = result['auth_code'].values[0]
-            logger.debug(f"fetched auth_code from txn table is : {auth_code_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2175,7 +2057,7 @@ def test_d102_101_020():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": "CHARGE", "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "order_id": order_id,
                     "txn_id": txn_id

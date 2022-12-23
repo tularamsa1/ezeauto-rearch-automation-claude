@@ -14,11 +14,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d102_101_018():
+def test_d102_107_007():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_full_Refund_Via_API
-    Sub Feature Description: Verification of a full refund using api for ICICI_DIRECT
-    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 018: TC018
+    Sub Feature Code: NonUI_Common_UPI_StaticQR_ICICI_Direct_full_Refund_Via_API
+    Sub Feature Description: Initiate upi static QR via api and perform a full refund using api for ICICI_DIRECT
+    TC naming code description: Dev Project[ICICI_DIRECT_UPI], 107: Static QR UPI, 006: TC007
     """
 
     try:
@@ -28,7 +28,6 @@ def test_d102_101_018():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -39,22 +38,41 @@ def test_d102_101_018():
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
 
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        query = "select * from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
+        mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        upi_mc_id = result['id'].values[0]
+        logger.info(f"fetched upi_mc_id is : {upi_mc_id}")
+        pg_merchant_id = result['pgMerchantId'].values[0]
+        logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
+        vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {vpa}")
+        virtual_tid = result['virtual_tid'].values[0]
+        logger.debug(f"fetched virtual_tid : {virtual_tid}")
+        virtual_mid = result['virtual_mid'].values[0]
+        logger.info(f"fetched virtual_mid is : {virtual_mid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True)
 
@@ -67,36 +85,31 @@ def test_d102_101_018():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            virtual_tid = result['virtual_tid'].values[0]
-            logger.debug(f"fetched virtual_tid : {virtual_tid}")
-            virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched virtual_mid : {virtual_mid}")
-
-            amount = random.randint(301, 1000)
-            order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
-                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
+            logger.info("generating upi static qr via icici direct")
+            api_details = DBProcessor.get_api_details('static_qrcode_generate_icici_direct', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "qrCodeType": "UPI",
+                "qrUserMobileNo": mobile_number,
+                "qrUserName": app_username,
+                "upiMerchantConfigId": str(upi_mc_id),
+                "merchantVpa": vpa,
             })
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
-            logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+            logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
+            publish_id = response["publishId"]
+            success_api = response["success"]
+            username_api = response["username"]
+            org_code_api = response["merchantCode"]
+            logger.debug(f"fetching success status,publish_id, username, org code from api response is : "
+                         f"{success_api},{publish_id},{username_api},{org_code_api}")
 
-            rrn = txn_id.split('E')[1]
-            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
-
+            amount = random.randint(301, 1000)
+            rrn = str(random.randint(100000000000, 999999999999))
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id)
-            })
+                "PayerAmount": str(amount),
+                "BankRRN": rrn, "merchantTranId": str(publish_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback generator api is : {response}")
 
@@ -104,22 +117,24 @@ def test_d102_101_018():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback api is : {response}")
 
-            query = "select * from txn where id='" + txn_id + "';"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                rrn) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            logger.debug(f"Result for the query : {query} is : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
 
             api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username, "password": app_password,
@@ -128,7 +143,9 @@ def test_d102_101_018():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for paymentRefund api is : {response}")
 
-            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id ='" + str(txn_id) +"'"
+            query = "select * from txn where org_code='" + org_code + "' and orig_txn_id = '" + str(
+                txn_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             refund_rrn = result['rr_number'].iloc[0]
@@ -145,6 +162,8 @@ def test_d102_101_018():
             logger.debug(f"fetched refund_created_time from txn table is : {refund_created_time}")
             refund_auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched refund_auth_code from txn table is : {refund_auth_code}")
+            refund_external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched refund_external_ref from txn table is : {refund_external_ref}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -181,14 +200,12 @@ def test_d102_101_018():
                     "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id": order_id,
-                    "order_id_2": order_id,
                     "rrn": str(rrn),
                     "rrn_2": str(refund_rrn),
                     "acquirer_code": "ICICI",
                     "acquirer_code_2": "ICICI",
                     "issuer_code": "ICICI",
-                    "txn_type": txn_type,
+                    "txn_type": 'CHARGE',
                     "mid": virtual_mid, "tid": virtual_tid,
                     "org_code": org_code,
                     "txn_type_2": refund_txn_type,
@@ -196,6 +213,8 @@ def test_d102_101_018():
                     "org_code_2": org_code,
                     "date": date,
                     "date_2": refund_date,
+                    "order_id": external_ref,
+                    "order_id_2": refund_external_ref
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -302,8 +321,6 @@ def test_d102_101_018():
                     "pmt_mode_2": "UPI",
                     "txn_amt": float(amount),
                     "txn_amt_2": float(amount),
-                    "order_id": order_id,
-                    "order_id_2": order_id,
                     "upi_txn_status": "AUTHORIZED_REFUNDED",
                     "upi_txn_status_2": "REFUNDED",
                     "settle_status": "SETTLED",
@@ -315,7 +332,7 @@ def test_d102_101_018():
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
-                    "upi_txn_type": "PAY_QR",
+                    "upi_txn_type": "STATIC_QR",
                     "upi_txn_type_2": "REFUND",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_bank_code_2": "ICICI_DIRECT",
@@ -342,7 +359,6 @@ def test_d102_101_018():
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
                 tid_db_refunded = result['tid'].values[0]
                 mid_db_refunded = result['mid'].values[0]
-                order_id_db_refunded = result['external_ref'].values[0]
                 error_msg_db_refunded = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + refund_txn_id + "'"
@@ -368,7 +384,6 @@ def test_d102_101_018():
                 settlement_status_db_original = result["settlement_status"].iloc[0]
                 tid_db_original = result['tid'].values[0]
                 mid_db_original = result['mid'].values[0]
-                order_id_db_original = result['external_ref'].values[0]
                 error_msg_db_original = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
@@ -389,8 +404,6 @@ def test_d102_101_018():
                     "pmt_mode_2": payment_mode_db_refunded,
                     "txn_amt": amount_db_original,
                     "txn_amt_2": amount_db_refunded,
-                    "order_id": order_id_db_original,
-                    "order_id_2": order_id_db_refunded,
                     "upi_txn_status": upi_status_db_original,
                     "upi_txn_status_2": upi_status_db_refunded,
                     "settle_status": settlement_status_db_original,
@@ -435,11 +448,11 @@ def test_d102_101_018():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d102_101_025():
+def test_d102_107_008():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Refund_Failed_Via_API
-    Sub Feature Description: Verification of a refund failed using api for ICICI_DIRECT
-    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 025: TC025
+    Sub Feature Code: NonUI_Common_UPI_StaticQR_ICICI_Direct_Refund_Failed_Via_API
+    Sub Feature Description: Initiate upi static QR via api and perform refund failed using api for ICICI_DIRECT
+    TC naming code description: Dev Project[ICICI_DIRECT_UPI], 107: Static QR UPI, 008: TC008
     """
 
     try:
@@ -449,7 +462,6 @@ def test_d102_101_025():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -460,22 +472,41 @@ def test_d102_101_025():
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
 
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        query = "select * from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
+        mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        upi_mc_id = result['id'].values[0]
+        logger.info(f"fetched upi_mc_id is : {upi_mc_id}")
+        pg_merchant_id = result['pgMerchantId'].values[0]
+        logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
+        vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {vpa}")
+        virtual_tid = result['virtual_tid'].values[0]
+        logger.debug(f"fetched virtual_tid : {virtual_tid}")
+        virtual_mid = result['virtual_mid'].values[0]
+        logger.info(f"fetched virtual_mid is : {virtual_mid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True)
 
@@ -488,36 +519,31 @@ def test_d102_101_025():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            virtual_tid = result['virtual_tid'].values[0]
-            logger.debug(f"fetched virtual_tid : {virtual_tid}")
-            virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched virtual_mid : {virtual_mid}")
-
-            amount = 201.01
-            order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
-                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
+            logger.info("generating upi static qr via icici direct")
+            api_details = DBProcessor.get_api_details('static_qrcode_generate_icici_direct', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "qrCodeType": "UPI",
+                "qrUserMobileNo": mobile_number,
+                "qrUserName": app_username,
+                "upiMerchantConfigId": str(upi_mc_id),
+                "merchantVpa": vpa,
             })
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
-            logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+            logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
+            publish_id = response["publishId"]
+            success_api = response["success"]
+            username_api = response["username"]
+            org_code_api = response["merchantCode"]
+            logger.debug(f"fetching success status,publish_id, username, org code from api response is : "
+                         f"{success_api},{publish_id},{username_api},{org_code_api}")
 
-            rrn = txn_id.split('E')[1]
-            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
-
+            amount = 201.01
+            rrn = str(random.randint(100000000000, 999999999999))
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id)
-            })
+                "PayerAmount": str(amount),
+                "BankRRN": rrn, "merchantTranId": str(publish_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback generator api is : {response}")
 
@@ -525,22 +551,24 @@ def test_d102_101_025():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback api is : {response}")
 
-            query = "select * from txn where id='" + txn_id + "';"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                rrn) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            logger.debug(f"Result for the query : {query} is : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
 
             api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username, "password": app_password,
@@ -548,12 +576,12 @@ def test_d102_101_025():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for paymentRefund api is : {response}")
-            refund_txn_id = response["txnId"]
-            logger.debug(f"Fetching txn_id from the paymentRefund api response : {refund_txn_id}")
-            query = "select * from txn where id='" + refund_txn_id + "';"
-            logger.debug(f"Query to fetch refunded txn data from txn table is : {query}")
+
+            query = "select * from txn where org_code='" + org_code + "' and orig_txn_id = '" + str(
+                txn_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+            logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is {result}")
             refund_rrn = result['rr_number'].iloc[0]
             logger.debug(f"fetched refund_rrn from txn table is : {refund_rrn}")
             refund_customer_name = result['customer_name'].values[0]
@@ -568,6 +596,8 @@ def test_d102_101_025():
             logger.debug(f"fetched refund_created_time from txn table is : {refund_created_time}")
             refund_auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched refund_auth_code from txn table is : {refund_auth_code}")
+            refund_external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched refund_external_ref from txn table is : {refund_external_ref}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -604,19 +634,19 @@ def test_d102_101_025():
                     "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id": order_id,
-                    "order_id_2": order_id,
                     "rrn": str(rrn),
                     "acquirer_code": "ICICI",
                     "acquirer_code_2": "ICICI",
                     "issuer_code": "ICICI",
-                    "txn_type": txn_type,
+                    "txn_type": 'CHARGE',
                     "mid": virtual_mid, "tid": virtual_tid,
                     "org_code": org_code,
                     "txn_type_2": refund_txn_type,
                     "org_code_2": org_code,
                     "date": date,
                     "date_2": refund_date,
+                    "order_id": external_ref,
+                    "order_id_2": refund_external_ref
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -718,8 +748,6 @@ def test_d102_101_025():
                     "pmt_mode_2": "UPI",
                     "txn_amt": float(amount),
                     "txn_amt_2": float(amount),
-                    "order_id": order_id,
-                    "order_id_2": order_id,
                     "upi_txn_status": "AUTHORIZED",
                     "upi_txn_status_2": "FAILED",
                     "settle_status": "SETTLED",
@@ -731,7 +759,7 @@ def test_d102_101_025():
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
-                    "upi_txn_type": "PAY_QR",
+                    "upi_txn_type": "STATIC_QR",
                     "upi_txn_type_2": "REFUND",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_bank_code_2": "ICICI_DIRECT",
@@ -754,7 +782,6 @@ def test_d102_101_025():
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                order_id_db_refunded = result['external_ref'].values[0]
                 error_msg_db_refunded = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + refund_txn_id + "'"
@@ -780,7 +807,6 @@ def test_d102_101_025():
                 settlement_status_db_original = result["settlement_status"].iloc[0]
                 tid_db_original = result['tid'].values[0]
                 mid_db_original = result['mid'].values[0]
-                order_id_db_original = result['external_ref'].values[0]
                 error_msg_db_original = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
@@ -801,8 +827,6 @@ def test_d102_101_025():
                     "pmt_mode_2": payment_mode_db_refunded,
                     "txn_amt": amount_db_original,
                     "txn_amt_2": amount_db_refunded,
-                    "order_id": order_id_db_original,
-                    "order_id_2": order_id_db_refunded,
                     "upi_txn_status": upi_status_db_original,
                     "upi_txn_status_2": upi_status_db_refunded,
                     "settle_status": settlement_status_db_original,
@@ -845,11 +869,11 @@ def test_d102_101_025():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d102_101_026():
+def test_d102_107_009():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Refund_Posted_Via_API
-    Sub Feature Description: Verification of a refund posted using api for ICICI_DIRECT
-    TC naming code description: d102: ICICI DIRECT UPI Dev, 101: UPI, 026: TC026
+    Sub Feature Code: NonUI_Common_UPI_StaticQR_ICICI_Direct_Refund_Posted_Via_API
+    Sub Feature Description: Initiate upi static QR via api and perform refund posted using api for ICICI_DIRECT
+    TC naming code description: Dev Project[ICICI_DIRECT_UPI], 107: Static QR UPI, 009: TC009
     """
 
     try:
@@ -859,7 +883,6 @@ def test_d102_101_026():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -870,22 +893,41 @@ def test_d102_101_026():
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
 
-        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        query = "select * from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
+        mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        upi_mc_id = result['id'].values[0]
+        logger.info(f"fetched upi_mc_id is : {upi_mc_id}")
+        pg_merchant_id = result['pgMerchantId'].values[0]
+        logger.info(f"fetched pg_merchant_id is : {pg_merchant_id}")
+        vpa = result['vpa'].values[0]
+        logger.info(f"fetched vpa is : {vpa}")
+        virtual_tid = result['virtual_tid'].values[0]
+        logger.debug(f"fetched virtual_tid : {virtual_tid}")
+        virtual_mid = result['virtual_mid'].values[0]
+        logger.info(f"fetched virtual_mid is : {virtual_mid}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True)
 
@@ -898,36 +940,31 @@ def test_d102_101_026():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            virtual_tid = result['virtual_tid'].values[0]
-            logger.debug(f"fetched virtual_tid : {virtual_tid}")
-            virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched virtual_mid : {virtual_mid}")
-
-            amount = 201.11
-            order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
-            api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
-                "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
+            logger.info("generating upi static qr via icici direct")
+            api_details = DBProcessor.get_api_details('static_qrcode_generate_icici_direct', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "qrCodeType": "UPI",
+                "qrUserMobileNo": mobile_number,
+                "qrUserName": app_username,
+                "upiMerchantConfigId": str(upi_mc_id),
+                "merchantVpa": vpa,
             })
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received after initiating upi qr : {response}")
-            txn_id = response["txnId"]
-            logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+            logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
+            publish_id = response["publishId"]
+            success_api = response["success"]
+            username_api = response["username"]
+            org_code_api = response["merchantCode"]
+            logger.debug(f"fetching success status,publish_id, username, org code from api response is : "
+                         f"{success_api},{publish_id},{username_api},{org_code_api}")
 
-            rrn = txn_id.split('E')[1]
-            logger.debug(f"generated random rrn number to perform first callback is : {rrn}")
-
+            amount = 201.11
+            rrn = str(random.randint(100000000000, 999999999999))
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": virtual_mid, "subMerchantId": virtual_mid, "terminalId": virtual_tid,
-                "PayerAmount": str(amount), "BankRRN": rrn, "merchantTranId": str(txn_id)
-            })
+                "PayerAmount": str(amount),
+                "BankRRN": rrn, "merchantTranId": str(publish_id)})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback generator api is : {response}")
 
@@ -935,22 +972,24 @@ def test_d102_101_026():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for callback api is : {response}")
 
-            query = "select * from txn where id='" + txn_id + "';"
-            logger.debug(f"Query to fetch txn data from the txn table : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
+                rrn) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query {query} is : {result}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            logger.debug(f"Result for the query : {query} is : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {rrn}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {external_ref}")
 
             api_details = DBProcessor.get_api_details('paymentRefund', request_body={
                 "username": app_username, "password": app_password,
@@ -958,13 +997,12 @@ def test_d102_101_026():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for paymentRefund api is : {response}")
-            refund_txn_id = response["txnId"]
-            logger.debug(f"Fetching txn_id from the paymentRefund api response : {refund_txn_id}")
 
-            query = "select * from txn where id='" + refund_txn_id + "';"
-            logger.debug(f"Query to fetch refunded txn data from txn table is : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and orig_txn_id = '" + str(
+                txn_id) + "' and id LIKE '" + datetime.utcnow().strftime(
+                '%y%m%d') + "%' order by created_time desc limit 1;"
+            logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is {result}")
             refund_rrn = result['rr_number'].iloc[0]
             logger.debug(f"fetched refund_rrn from txn table is : {refund_rrn}")
             refund_customer_name = result['customer_name'].values[0]
@@ -979,6 +1017,8 @@ def test_d102_101_026():
             logger.debug(f"fetched refund_created_time from txn table is : {refund_created_time}")
             refund_auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched refund_auth_code from txn table is : {refund_auth_code}")
+            refund_external_ref = result['external_ref'].values[0]
+            logger.debug(f"fetched refund_external_ref from txn table is : {refund_external_ref}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1015,19 +1055,19 @@ def test_d102_101_026():
                     "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id": order_id,
-                    "order_id_2": order_id,
                     "rrn": str(rrn),
                     "acquirer_code": "ICICI",
                     "acquirer_code_2": "ICICI",
                     "issuer_code": "ICICI",
-                    "txn_type": txn_type,
+                    "txn_type": 'CHARGE',
                     "mid": virtual_mid, "tid": virtual_tid,
                     "org_code": org_code,
                     "txn_type_2": refund_txn_type,
                     "org_code_2": org_code,
                     "date": date,
                     "date_2": refund_date,
+                    "order_id": external_ref,
+                    "order_id_2": refund_external_ref
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -1129,8 +1169,6 @@ def test_d102_101_026():
                     "pmt_mode_2": "UPI",
                     "txn_amt": float(amount),
                     "txn_amt_2": float(amount),
-                    "order_id": order_id,
-                    "order_id_2": order_id,
                     "upi_txn_status": "AUTHORIZED",
                     "upi_txn_status_2": "REFUND_POSTED",
                     "settle_status": "SETTLED",
@@ -1142,7 +1180,7 @@ def test_d102_101_026():
                     "bank_code": "ICICI",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
-                    "upi_txn_type": "PAY_QR",
+                    "upi_txn_type": "STATIC_QR",
                     "upi_txn_type_2": "REFUND",
                     "upi_bank_code": "ICICI_DIRECT",
                     "upi_bank_code_2": "ICICI_DIRECT",
@@ -1165,7 +1203,6 @@ def test_d102_101_026():
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                order_id_db_refunded = result['external_ref'].values[0]
                 error_msg_db_refunded = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + refund_txn_id + "'"
@@ -1191,7 +1228,6 @@ def test_d102_101_026():
                 settlement_status_db_original = result["settlement_status"].iloc[0]
                 tid_db_original = result['tid'].values[0]
                 mid_db_original = result['mid'].values[0]
-                order_id_db_original = result['external_ref'].values[0]
                 error_msg_db_original = result['error_message'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
@@ -1212,8 +1248,6 @@ def test_d102_101_026():
                     "pmt_mode_2": payment_mode_db_refunded,
                     "txn_amt": amount_db_original,
                     "txn_amt_2": amount_db_refunded,
-                    "order_id": order_id_db_original,
-                    "order_id_2": order_id_db_refunded,
                     "upi_txn_status": upi_status_db_original,
                     "upi_txn_status_2": upi_status_db_refunded,
                     "settle_status": settlement_status_db_original,

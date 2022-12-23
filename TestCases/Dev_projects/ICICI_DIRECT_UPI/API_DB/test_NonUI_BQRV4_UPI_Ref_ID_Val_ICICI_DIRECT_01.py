@@ -18,8 +18,7 @@ def test_d102_102_010():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Ref_ID_Validation_Failed
     Sub Feature Description: Generate QR through api and perform Ref ID validation failed for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 010->TC010
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 010->TC010
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -80,9 +79,9 @@ def test_d102_102_010():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = random.randint(205, 225)
+            amount = random.randint(205, 219)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
@@ -94,8 +93,6 @@ def test_d102_102_010():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             # ------------------------------------------------------------------------------------------------
@@ -125,7 +122,7 @@ def test_d102_102_010():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "error_code": "EZETAP_500081",
                     "error_message": "UPI REF ID Validation Failed.",
@@ -196,7 +193,7 @@ def test_d102_102_010():
                     "tid": tid,
                     "bqr_pmt_status": "false : Ref Id generation failed", "bqr_pmt_state": "FAILED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -229,7 +226,7 @@ def test_d102_102_010():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -251,7 +248,7 @@ def test_d102_102_010():
                     "tid": tid_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -278,10 +275,10 @@ def test_d102_102_010():
 @pytest.mark.dbVal
 def test_d102_102_011():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Ref_ID_Validation_Failed_Service_Unavilable
-    Sub Feature Description: Generate QR through api and perform Ref ID validation failed due to service unavilable for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 BQR, 011->TC011
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Ref_ID_Validation_Failed_Service_Unavailable
+    Sub Feature Description: Generate QR through api and perform Ref ID validation failed due to service unavailable
+    for BQRV4 UPI txn of ICICI_Direct pg
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 011->TC011
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -344,7 +341,7 @@ def test_d102_102_011():
             # ------------------------------------------------------------------------------------------------
             amount = 509.05
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
@@ -356,8 +353,6 @@ def test_d102_102_011():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             # ------------------------------------------------------------------------------------------------
@@ -387,7 +382,7 @@ def test_d102_102_011():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "error_code": "EZETAP_500081",
                     "error_message": "UPI REF ID Validation Failed.",
@@ -459,7 +454,7 @@ def test_d102_102_011():
                     "bqr_pmt_status": "false : Service Unavailable",
                     "bqr_txn_amt": float(amount),
                     "bqr_pmt_state": "FAILED",
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -492,7 +487,7 @@ def test_d102_102_011():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -514,7 +509,7 @@ def test_d102_102_011():
                     "tid": tid_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,

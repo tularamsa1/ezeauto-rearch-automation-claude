@@ -17,9 +17,8 @@ logger = EzeAutoLogger(__name__)
 def test_d102_102_006():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_QR_Generation_Success
-    Sub Feature Description: Generate QR through api successfully for UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 006->TC006
+    Sub Feature Description: Generate QR through api successfully for BQRV4 UPI txn of ICICI_Direct pg
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 006->TC006
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -80,9 +79,9 @@ def test_d102_102_006():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = random.randint(201, 300)
+            amount = random.randint(230, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
@@ -94,14 +93,8 @@ def test_d102_102_006():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # rrn = result['rr_number'].values[0]
-            # logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
-            # auth_code = result['auth_code'].values[0]
-            # logger.debug(f"fetched auth_code from txn table is : {auth_code}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -129,7 +122,7 @@ def test_d102_102_006():
                     "acquirer_code": "HDFC",
                     "issuer_code": "HDFC",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -190,10 +183,6 @@ def test_d102_102_006():
                     "error_msg": None,
                     "mid": mid,
                     "tid": tid,
-                    # "upi_txn_status": "PENDING",
-                    # "upi_txn_type": "PAY_QR",
-                    # "upi_bank_code": "ICICI_DIRECT",
-                    # "upi_mc_id": upi_mc_id,
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -214,15 +203,6 @@ def test_d102_102_006():
                 txn_type_db = result['txn_type'].values[0]
                 error_msg_db = result['error_message'].values[0]
 
-                # query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # upi_status_db = result["status"].iloc[0]
-                # upi_txn_type_db = result["txn_type"].iloc[0]
-                # upi_bank_code_db = result["bank_code"].iloc[0]
-                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -236,10 +216,6 @@ def test_d102_102_006():
                     "error_msg" : error_msg_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    # "upi_txn_status": upi_status_db,
-                    # "upi_txn_type": upi_txn_type_db,
-                    # "upi_bank_code": upi_bank_code_db,
-                    # "upi_mc_id": upi_mc_id_db,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
@@ -263,8 +239,7 @@ def test_d102_102_007():
     """
     Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_QR_Generation_Failed
     Sub Feature Description: Generating QR through api failed for UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 007->TC007
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 007->TC007
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -326,7 +301,7 @@ def test_d102_102_007():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = random.randint(201, 300)
+            amount = random.randint(230, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={

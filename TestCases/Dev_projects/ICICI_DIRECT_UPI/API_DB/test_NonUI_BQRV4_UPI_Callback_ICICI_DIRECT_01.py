@@ -16,10 +16,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 def test_d102_102_014():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Callback_Success
-    Sub Feature Description: Generate QR through api and perform callback success for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 014->TC014
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Success_Callback
+    Sub Feature Description: Generate QR through api and perform success callback for BQRV4 UPI txn of ICICI_Direct pg
+    TC naming code description: d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 014->TC014
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -61,9 +60,9 @@ def test_d102_102_014():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual tid is : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual mid is : {mid}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -92,15 +91,16 @@ def test_d102_102_014():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating upi qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
-            rrn = txn_id.split('E')[1]
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+            rrn = txn_id.split('E')[1]
+            logger.debug(f"rrn for current txn is : {rrn}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(amount),
@@ -117,12 +117,6 @@ def test_d102_102_014():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -154,7 +148,7 @@ def test_d102_102_014():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -218,7 +212,7 @@ def test_d102_102_014():
                     "tid": tid,
                     "bqr_pmt_status": "INITIATED BY UPI", "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_org_code": org_code,
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
@@ -254,7 +248,7 @@ def test_d102_102_014():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -284,7 +278,7 @@ def test_d102_102_014():
                     "tid": tid_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -315,10 +309,9 @@ def test_d102_102_014():
 @pytest.mark.dbVal
 def test_d102_102_015():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Callback_Failed
-    Sub Feature Description: Generate QR through api and perform callback failed for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 015->TC015
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Failed_Callback
+    Sub Feature Description: Generate QR through api and perform failed callback ufor BQRV4 UPI txn of ICICI_Direct pg
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 015->TC015
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -360,9 +353,9 @@ def test_d102_102_015():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual tid is : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual mid is : {mid}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -400,6 +393,7 @@ def test_d102_102_015():
             txn_id = response["txnId"]
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
             rrn = txn_id.split('E')[1]
+            logger.debug(f"rrn for current txn is : {rrn}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(amount),
@@ -416,8 +410,6 @@ def test_d102_102_015():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             # ------------------------------------------------------------------------------------------------
@@ -447,7 +439,7 @@ def test_d102_102_015():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -511,7 +503,7 @@ def test_d102_102_015():
                     "tid": tid,
                     "bqr_pmt_status": "INITIATED BY UPI", "bqr_pmt_state": "FAILED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
                     "bqr_org_code": org_code,
@@ -547,7 +539,7 @@ def test_d102_102_015():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -577,7 +569,7 @@ def test_d102_102_015():
                     "tid": tid_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -608,11 +600,10 @@ def test_d102_102_015():
 @pytest.mark.dbVal
 def test_d102_102_016():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Callback_same_rrn_Success
-    Sub Feature Description: Generate QR through api and perform two callback success with same rrn for BQRV4 UPI
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Success_Callback_same_rrn
+    Sub Feature Description: Generate QR through api and perform two success callback with same rrn for BQRV4 UPI
     txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 016->TC016
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 016->TC016
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -654,9 +645,9 @@ def test_d102_102_016():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual tid is : {tid}")
+        logger.debug(f"fetched virtual mid is : {mid}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -685,15 +676,16 @@ def test_d102_102_016():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating upi qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             txn_id = response["txnId"]
-            rrn = txn_id.split('E')[1]
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+            rrn = txn_id.split('E')[1]
+            logger.debug(f"rrn for current txn is : {rrn}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(amount),
@@ -722,12 +714,6 @@ def test_d102_102_016():
             txn_id_2 = result['id'].values[0]
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -759,7 +745,7 @@ def test_d102_102_016():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "txn_id": txn_id_2
                 }
@@ -826,7 +812,7 @@ def test_d102_102_016():
                     "tid": tid,
                     "bqr_pmt_status": "INITIATED BY UPI", "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_org_code": org_code,
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id_2,
@@ -862,7 +848,7 @@ def test_d102_102_016():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -892,7 +878,7 @@ def test_d102_102_016():
                     "tid": tid_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -923,10 +909,9 @@ def test_d102_102_016():
 @pytest.mark.dbVal
 def test_d102_102_017():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Callback_Failed
-    Sub Feature Description: Generate QR through api and perform callback failed for BQRV4 UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 017->TC017
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Failed_Callback
+    Sub Feature Description: Generate QR through api and perform failed callback for BQRV4 UPI txn of ICICI_Direct pg
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 017->TC017
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -968,9 +953,9 @@ def test_d102_102_017():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual tid is : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual mid is : {mid}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -999,7 +984,7 @@ def test_d102_102_017():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(101, 200)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating upi qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
@@ -1008,6 +993,7 @@ def test_d102_102_017():
             txn_id = response["txnId"]
             logger.debug(f"Fetching txn_id from the API_OUTPUT, Txn_id : {txn_id}")
             rrn = txn_id.split('E')[1]
+            logger.debug(f"rrn for current txn is : {rrn}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(amount),
@@ -1034,6 +1020,7 @@ def test_d102_102_017():
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_2 = result['id'].values[0]
+            logger.debug(f"fetched txn id 2 from txn table is : {txn_id_2}")
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]
@@ -1134,7 +1121,7 @@ def test_d102_102_017():
                     "tid": tid,
                     "bqr_pmt_status": "INITIATED BY UPI", "bqr_pmt_state": "FAILED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id_2,
                     "bqr_org_code": org_code,
@@ -1170,7 +1157,7 @@ def test_d102_102_017():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -1200,7 +1187,7 @@ def test_d102_102_017():
                     "tid": tid_db,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
@@ -1231,11 +1218,10 @@ def test_d102_102_017():
 @pytest.mark.dbVal
 def test_d102_102_018():
     """
-    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Callback_difffent_rrn_Success
-    Sub Feature Description: Generate QR through api and perform two callback success with diffrent rrn for BQRV4 UPI
+    Sub Feature Code: NonUI_Common_BQRV4_UPI_ICICI_Direct_Duplicate_Success_Callback_different_rrn
+    Sub Feature Description: Generate QR through api and perform two success callback with different rrn for BQRV4 UPI
     txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 102-> BQRV4 UPI, 016->TC016
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 102-> BQRV4 UPI, 018->TC018
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1277,9 +1263,9 @@ def test_d102_102_018():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual tid is : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual mid is : {mid}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -1308,7 +1294,7 @@ def test_d102_102_018():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.debug(f"initiating upi qr for the amount of {amount}")
+            logger.debug(f"initiating upi qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id)
             })
@@ -1329,6 +1315,7 @@ def test_d102_102_018():
             logger.debug(f"response received for callback api is : {response}")
 
             rrn_2 = rrn[::-1]
+            logger.debug(f"rrn to perform second callback is : {rrn_2}")
 
             api_details = DBProcessor.get_api_details('callbackgeneratorUpiICICI', request_body={
                 "merchantId": mid, "subMerchantId": mid, "terminalId":tid, "PayerAmount": str(amount),
@@ -1345,8 +1332,6 @@ def test_d102_102_018():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -1357,10 +1342,9 @@ def test_d102_102_018():
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_2 = result['id'].values[0]
+            logger.debug(f"fetched txn id from txn table is : {txn_id_2}")
             rrn_2 = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
             created_time_2 = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time_2}")
             auth_code_2 = result['auth_code'].values[0]
@@ -1393,7 +1377,7 @@ def test_d102_102_018():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "pmt_status_2": "AUTHORIZED",
                     "txn_amt_2": float(amount), "pmt_mode_2": "UPI",
@@ -1402,7 +1386,7 @@ def test_d102_102_018():
                     "acquirer_code_2": "ICICI",
                     "issuer_code_2": "ICICI",
                     "txn_type_2": 'CHARGE', "mid_2": mid, "tid_2": tid,
-                    "org_code_2": org_code_txn,
+                    "org_code_2": org_code,
                     "date_2": date_2
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -1497,7 +1481,7 @@ def test_d102_102_018():
                     "tid": tid,
                     "bqr_pmt_status": "INITIATED BY UPI", "bqr_pmt_state": "SETTLED",
                     "bqr_txn_amt": float(amount),
-                    "bqr_txn_type": "DYNAMIC_QR", "brq_terminal_info_id": terminal_info_id,
+                    "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_org_code": org_code,
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id,
@@ -1566,7 +1550,7 @@ def test_d102_102_018():
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = float(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
-                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
@@ -1617,7 +1601,7 @@ def test_d102_102_018():
                     "tid_2": tid_db_2,
                     "bqr_pmt_status": bqr_status_db, "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_amount_db,
-                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_txn_type": bqr_txn_type_db, "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_bank_code": bqr_bank_code_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,

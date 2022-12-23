@@ -18,8 +18,7 @@ def test_d102_101_005():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_QR_Generation_Success
     Sub Feature Description: Generate QR through api successfully for UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 101-> UPI, 005->TC005
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 005->TC005
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -94,14 +93,10 @@ def test_d102_101_005():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # rrn = result['rr_number'].values[0]
-            # logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
-            # auth_code = result['auth_code'].values[0]
-            # logger.debug(f"fetched auth_code from txn table is : {auth_code}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -263,8 +258,7 @@ def test_d102_101_006():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_QR_Generation_Failed
     Sub Feature Description: Generating QR through api failed for UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 101-> UPI, 005->TC005
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 006->TC006
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -331,7 +325,8 @@ def test_d102_101_006():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received after initiating qr : {response}")
             real_code_api = response["realCode"]
-            error_code = response["errorCode"]
+            error_code_api = response["errorCode"]
+            logger.debug(f"fetching real code and error code from response : {real_code_api, error_code_api} ")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -355,8 +350,7 @@ def test_d102_101_006():
                                        "real_code" : "UPI_MERCHANT_VALID_CONFIG_NOT_FOUND"
                                        }
 
-
-                actual_api_values = {"error_code": error_code,
+                actual_api_values = {"error_code": error_code_api,
                                        "real_code" : real_code_api
                                        }
                 logger.debug(f"actual_api_values: {actual_api_values}")
