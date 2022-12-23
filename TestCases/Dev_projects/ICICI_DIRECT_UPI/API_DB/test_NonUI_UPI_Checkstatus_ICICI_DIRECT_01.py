@@ -61,9 +61,9 @@ def test_d102_101_001():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual_tid is : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual_mid is : {mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -106,12 +106,6 @@ def test_d102_101_001():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -143,7 +137,7 @@ def test_d102_101_001():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -277,8 +271,8 @@ def test_d102_101_001():
 @pytest.mark.dbVal
 def test_d102_101_002():
     """
-    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Checkstatus_Failed
-    Sub Feature Description: Generate QR through api and perform checkstatus failed for UPI txn of ICICI_Direct pg
+    Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Failed_Checkstatus
+    Sub Feature Description: Generate QR through api and perform failed checkstatus for UPI txn of ICICI_Direct pg
     TC naming code description: d102: ICICI DIRECT UPI Dev, 101-> UPI, 002->TC002
     """
     try:
@@ -321,9 +315,9 @@ def test_d102_101_002():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual_tid : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual_mid : {mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -368,8 +362,6 @@ def test_d102_101_002():
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
             logger.debug(f"fetched rrn from txn table is : {rrn}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             # ------------------------------------------------------------------------------------------------
@@ -399,7 +391,7 @@ def test_d102_101_002():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -624,14 +616,6 @@ def test_d102_101_013():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -659,12 +643,11 @@ def test_d102_101_013():
                     "pmt_status": "EXPIRED",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
                     "pmt_state": "EXPIRED",
-                    # "rrn": str(rrn),
                     "settle_status": "FAILED",
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -680,7 +663,6 @@ def test_d102_101_013():
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
-                # rrn_api = response["rrNumber"]
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
@@ -694,7 +676,6 @@ def test_d102_101_013():
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
                     "pmt_state": state_api,
-                    # "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
@@ -882,14 +863,6 @@ def test_d102_101_014():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -917,12 +890,11 @@ def test_d102_101_014():
                     "pmt_status": "PENDING",
                     "txn_amt": float(amount), "pmt_mode": "UPI",
                     "pmt_state": "PENDING",
-                    # "rrn": str(rrn),
                     "settle_status": "PENDING",
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": 'CHARGE', "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -938,7 +910,6 @@ def test_d102_101_014():
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
-                # rrn_api = response["rrNumber"]
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
@@ -952,7 +923,6 @@ def test_d102_101_014():
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
                     "pmt_state": state_api,
-                    # "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
@@ -1128,7 +1098,7 @@ def test_d102_101_038():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(220, 225)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -1147,8 +1117,6 @@ def test_d102_101_038():
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Fetching original_org_code_txn from txn table : {org_code_txn} ")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching original_txn_type from txn table : {txn_type} ")
             created_time = result['created_time'].values[0]
@@ -1181,7 +1149,7 @@ def test_d102_101_038():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -1195,7 +1163,7 @@ def test_d102_101_038():
                 for elements in responseInList:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
-                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api = int(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
                         settlement_status_api = elements["settlementStatus"]

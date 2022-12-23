@@ -12,6 +12,7 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -183,7 +184,7 @@ def test_common_100_108_010():
                 expected_app_values = {"pmt_mode": "BHARAT QR",
                                        "txn_id": txn_id,
                                        "pmt_status": "AUTHORIZED",
-                                       "txn_amt":  str("%.2f" % amount),
+                                       "txn_amt": str("%.2f" % amount),
                                        "settle_status": "SETTLED",
                                        "rrn": str(rrn_num),
                                        "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -309,29 +310,30 @@ def test_common_100_108_010():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                expected_db_values = {"txn_amt": amount,
-                                      "pmt_mode": "BHARATQR",
-                                      "pmt_status": "AUTHORIZED",
-                                      "pmt_state": "SETTLED",
-                                      "acquirer_code": "HDFC",
-                                      "bank_name": "HDFC Bank",
-                                      "mid": db_bqr_config_mid,
-                                      "tid": db_bqr_config_tid,
-                                      "pmt_gateway": "HDFC",
-                                      "rrn": str(rrn_num),
-                                      "settle_status": "SETTLED",
-                                      "bqr_pmt_status": "Transaction Success",
-                                      "bqr_pmt_state": "SETTLED",
-                                      "bqr_txn_amt": amount,
-                                      "bqr_txn_type": "STATIC_QR",
-                                      "bqr_terminal_info_id": db_bqr_config_terminal_info_id,
-                                      "bqr_bank_code": "HDFC",
-                                      "bqr_merchant_config_id": db_bqr_config_id,
-                                      "bqr_txn_primary_id": txn_id,
-                                      "bqr_merchant_pan": db_bqr_config_merchant_pan,
-                                      "bqr_rrn": str(rrn_num),
-                                      "bqr_org_code": org_code
-                                      }
+                expected_db_values = {
+                    "txn_amt": amount,
+                    "pmt_mode": "BHARATQR",
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_state": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "bank_name": "HDFC Bank",
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_config_tid,
+                    "pmt_gateway": "HDFC",
+                    "rrn": str(rrn_num),
+                    "settle_status": "SETTLED",
+                    "bqr_pmt_status": "Transaction Success",
+                    "bqr_pmt_state": "SETTLED",
+                    "bqr_txn_amt": amount,
+                    "bqr_txn_type": "STATIC_QR",
+                    "bqr_terminal_info_id": db_bqr_config_terminal_info_id,
+                    "bqr_bank_code": "HDFC",
+                    "bqr_merchant_config_id": db_bqr_config_id,
+                    "bqr_txn_primary_id": txn_id,
+                    "bqr_merchant_pan": db_bqr_config_merchant_pan,
+                    "bqr_rrn": str(rrn_num),
+                    "bqr_org_code": org_code
+                }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from txn where id='" + txn_id + "'"
@@ -401,7 +403,7 @@ def test_common_100_108_010():
                                    'RRN': str(rrn_num),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                    'date': txn_date, 'time': txn_time,
-                }
+                                   }
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username,
                                                                    "password": app_password},
@@ -588,7 +590,7 @@ def test_common_100_108_011():
                 date_and_time = date_time_converter.to_app_format(db_txn_created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR",
                                        "pmt_status": "AUTHORIZED",
-                                       "txn_amt":  str("%.2f" % amount),
+                                       "txn_amt": str("%.2f" % amount),
                                        "settle_status": "SETTLED",
                                        "rrn": str(rrn_num),
                                        "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -1004,7 +1006,7 @@ def test_common_100_108_019():
                 date_and_time = date_time_converter.to_app_format(db_txn_created_time)
                 expected_app_values = {"pmt_mode": "BHARAT QR",
                                        "pmt_status": "FAILED",
-                                       "txn_amt":  str("%.2f" % amount),
+                                       "txn_amt": str("%.2f" % amount),
                                        "settle_status": "FAILED",
                                        "pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time}
@@ -1196,6 +1198,433 @@ def test_common_100_108_019():
                                     "bqr_rrn": bqr_rrn_db,
                                     "bqr_org_code": bqr_org_code_db
                                     }
+                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+    # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.appVal
+def test_common_100_108_032():
+    """
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_StaticQR_Duplicate_Callback_Via_HDFC
+    Sub Feature Description: Verifying duplicate Callback case for BQR with same rrn and same txn ref  not to create new txn
+    TC naming code description: 100: Payment method, 108: BQRV4 Static QR, 032: Testcase ID
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select * from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
+            # Get config_id, mid, tid and merchant_pan from bharatqr_merchant_config table
+            query = "select * from bharatqr_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+
+            db_bqr_config_id = result['id'].values[0]
+            logger.info(f"fetched config id is : {db_bqr_config_id}")
+
+            db_bqr_config_mid = result['mid'].values[0]
+            logger.info(f"fetched mid is : {db_bqr_config_mid}")
+
+            db_bqr_config_tid = result['tid'].values[0]
+            logger.info(f"fetched tid is : {db_bqr_config_tid}")
+
+            db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
+            logger.info(f"fetched merchant_pan is : {db_bqr_config_merchant_pan}")
+
+            db_bqr_config_terminal_info_id = result["terminal_info_id"].iloc[0]
+            logger.info(f"fetched terminal_info_id is : {db_bqr_config_terminal_info_id}")
+
+            # Get vpa from upi_merchant_config table
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query)
+
+            db_upi_config_vpa = result['vpa'].values[0]
+            logger.info(f"fetched vpa is : {db_upi_config_vpa}")
+
+            db_upi_config_merchant_id = result['pgMerchantId'].values[0]
+            logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
+
+            api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "qrCodeType": "BHARAT",
+                "qrOrgCode": org_code,
+                "qrUserMobileNo": app_username,
+                "qrUserName": app_username,
+                "qrCodeFormat": "STRING",
+                "mid": db_bqr_config_mid,
+                "tid": db_bqr_config_tid,
+                "merchantPan": db_bqr_config_merchant_pan,
+                "merchantVpa": db_upi_config_vpa
+            })
+            response = APIProcessor.send_request(api_details)
+            publish_id = response["publishId"]
+            logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
+
+            amount = random.randint(301, 399)
+            logger.debug(f"generated random amount is : {amount}")
+
+            auth_code = "A" + publish_id[-10:]
+            rrn_num = "R" + publish_id[-10:]
+
+            # Do first BQR callback
+            api_details = DBProcessor.get_api_details('callbackHDFC', request_body={
+                "PRIMARY_ID": publish_id,
+                "SECONDARY_ID": "",
+                "MERCHANT_PAN": db_bqr_config_merchant_pan,
+                "TXN_ID": publish_id,
+                "TXN_AMOUNT": amount,
+                "AUTH_CODE": auth_code,
+                "RRN": rrn_num,
+
+            })
+            response = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for first BQR callback api is : {response}")
+
+            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
+                rrn_num) + "'order by created_time desc limit 1; "
+            logger.debug(f"Query to fetch data from txn table : {query}")
+
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result : {result}")
+
+            txn_id = result["id"].iloc[0]
+            db_txn_amount = result["amount"].iloc[0]
+            db_org_code = result["org_code"].iloc[0]
+            db_txn_bank_code = result["bank_code"].iloc[0]
+            db_txn_username = result["username"].iloc[0]
+            db_txn_tid = result["tid"].iloc[0]
+            db_txn_mid = result["mid"].iloc[0]
+            db_txn_payment_mode = result["payment_mode"].iloc[0]
+            db_txn_status = result["status"].iloc[0]
+            db_txn_state = result["state"].iloc[0]
+
+            # Do second BQR callback
+            api_details = DBProcessor.get_api_details('callbackHDFC', request_body={
+                "PRIMARY_ID": publish_id,
+                "SECONDARY_ID": "",
+                "MERCHANT_PAN": db_bqr_config_merchant_pan,
+                "TXN_ID": publish_id,
+                "TXN_AMOUNT": amount,
+                "AUTH_CODE": auth_code,
+                "RRN": rrn_num,
+
+            })
+            response_2 = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for second BQR callback api is : {response_2}")
+
+            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
+                rrn_num) + "'order by created_time desc limit 1; "
+            logger.debug(f"Query to fetch data from txn table : {query}")
+
+            result_2 = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result : {result_2}")
+
+            txn_id_2 = result_2["id"].iloc[0]
+            db_txn_amount_2 = result_2["amount"].iloc[0]
+            db_org_code_2 = result_2["org_code"].iloc[0]
+            db_txn_bank_code_2 = result_2["bank_code"].iloc[0]
+            db_txn_username_2 = result_2["username"].iloc[0]
+            db_txn_tid_2 = result_2["tid"].iloc[0]
+            db_txn_mid_2 = result_2["mid"].iloc[0]
+            db_txn_payment_mode_2 = result_2["payment_mode"].iloc[0]
+            db_txn_status_2 = result_2["status"].iloc[0]
+            db_txn_state_2 = result_2["state"].iloc[0]
+
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+
+        # -----------------------------------------End of Test Execution--------------------------------------
+        # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                expected_app_values = {
+                    "pmt_mode": "BHARAT QR",
+                    "txn_id": txn_id,
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str("%.2f" % amount),
+                    "settle_status": "SETTLED",
+                    "rrn": str(rrn_num),
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "auth_code": auth_code,
+                }
+                logger.debug(f"expectedAppValues: {expected_app_values}")
+
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                login_page = LoginPage(app_driver)
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id_2)
+                payment_status_2 = txn_history_page.fetch_txn_status_text()
+                app_date_and_time_2 = txn_history_page.fetch_date_time_text()
+                app_payment_msg_2 = txn_history_page.fetch_txn_payment_msg_text()
+                payment_mode_2 = txn_history_page.fetch_txn_type_text()
+                app_txn_id_2 = txn_history_page.fetch_txn_id_text()
+                app_amount_2 = txn_history_page.fetch_txn_amount_text()
+                app_auth_code_2 = txn_history_page.fetch_auth_code_text()
+                app_settlement_status_2 = txn_history_page.fetch_settlement_status_text()
+                app_rrn_2 = txn_history_page.fetch_RRN_text()
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode_2,
+                    "txn_id": app_txn_id_2,
+                    "pmt_status": payment_status_2.split(':')[1],
+                    "txn_amt": app_amount_2.split(' ')[1],
+                    "rrn": str(app_rrn_2),
+                    "settle_status": app_settlement_status_2,
+                    "auth_code": app_auth_code_2,
+                    "pmt_msg": app_payment_msg_2,
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for original txn : {api_details}")
+                response1 = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response1}")
+
+                response = [x for x in response1["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = float(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                rrn_api = response["rrNumber"]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                org_code_api = response["orgCode"]
+                mid_api = response["mid"]
+                tid_api = response["tid"]
+                txn_type_api = response["txnType"]
+
+                response = [x for x in response1["txns"] if x["txnId"] == txn_id_2][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api_2 = response["status"]
+                amount_api_2 = float(response["amount"])
+                payment_mode_api_2 = response["paymentMode"]
+                state_api_2 = response["states"][0]
+                rrn_api_2 = response["rrNumber"]
+                settlement_status_api_2 = response["settlementStatus"]
+                issuer_code_api_2 = response["issuerCode"]
+                acquirer_code_api_2 = response["acquirerCode"]
+                org_code_api_2 = response["orgCode"]
+                mid_api_2 = response["mid"]
+                tid_api_2 = response["tid"]
+                txn_type_api_2 = response["txnType"]
+
+                expected_api_values = {
+                    "txn_id": txn_id,
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "org_code": org_code_api,
+                }
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                actual_api_values = {
+                    "txn_id": txn_id_2,
+                    "pmt_status": status_api_2,
+                    "txn_amt": amount_api_2,
+                    "pmt_mode": payment_mode_api_2,
+                    "pmt_state": state_api_2,
+                    "rrn": str(rrn_api_2),
+                    "settle_status": settlement_status_api_2,
+                    "acquirer_code": acquirer_code_api_2,
+                    "issuer_code": issuer_code_api_2,
+                    "mid": mid_api_2,
+                    "tid": tid_api_2,
+                    "txn_type": txn_type_api_2,
+                    "org_code": org_code_api_2
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                query = "select * from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                bqr_status_db = result["status_desc"].iloc[0]
+                bqr_state_db = result["state"].iloc[0]
+                bqr_amount_db = int(
+                    result["txn_amount"].iloc[0])
+                bqr_txn_type_db = result["txn_type"].iloc[0]
+                brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+                bqr_bank_code_db = result["bank_code"].iloc[0]
+                bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
+                bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
+                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
+                bqr_rrn_db = result['rrn'].values[0]
+                bqr_org_code_db = result['org_code'].values[0]
+
+                query = "select * from bharatqr_txn where id='" + txn_id_2 + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                bqr_status_db_2 = result["status_desc"].iloc[0]
+                bqr_state_db_2 = result["state"].iloc[0]
+                bqr_amount_db_2 = int(
+                    result["txn_amount"].iloc[0])
+                bqr_txn_type_db_2 = result["txn_type"].iloc[0]
+                brq_terminal_info_id_db_2 = result["terminal_info_id"].iloc[0]
+                bqr_bank_code_db_2 = result["bank_code"].iloc[0]
+                bqr_merchant_config_id_db_2 = result["merchant_config_id"].iloc[0]
+                bqr_txn_primary_id_db_2 = result["transaction_primary_id"].iloc[0]
+                bqr_merchant_pan_db_2 = result["merchant_pan"].iloc[0]
+                bqr_rrn_db_2 = result['rrn'].values[0]
+                bqr_org_code_db_2 = result['org_code'].values[0]
+
+                expected_db_values = {
+                    "txn_amt": db_txn_amount,
+                    "pmt_mode": db_txn_payment_mode,
+                    "pmt_status": db_txn_status,
+                    "pmt_state": db_txn_state,
+                    "mid": db_txn_mid,
+                    "tid": db_txn_tid,
+                    "bank_code": db_txn_bank_code,
+                    "org_code": db_org_code,
+                    "username": db_txn_username,
+                    "bqr_pmt_status": bqr_status_db,
+                    "bqr_pmt_state": bqr_state_db,
+                    "bqr_txn_amt": bqr_amount_db,
+                    "bqr_txn_type": bqr_txn_type_db,
+                    "bqr_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_bank_code": bqr_bank_code_db,
+                    "bqr_merchant_config_id": bqr_merchant_config_id_db,
+                    "bqr_txn_primary_id": bqr_txn_primary_id_db,
+                    "bqr_merchant_pan": bqr_merchant_pan_db,
+                    "bqr_rrn": str(bqr_rrn_db),
+                    "bqr_org_code": bqr_org_code_db
+                }
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                actual_db_values = {
+                    "txn_amt": db_txn_amount_2,
+                    "pmt_mode": db_txn_payment_mode_2,
+                    "pmt_status": db_txn_status_2,
+                    "pmt_state": db_txn_state_2,
+                    "mid": db_txn_mid_2,
+                    "tid": db_txn_tid_2,
+                    "bank_code": db_txn_bank_code_2,
+                    "org_code": db_org_code_2,
+                    "username": db_txn_username_2,
+                    "bqr_pmt_status": bqr_status_db_2,
+                    "bqr_pmt_state": bqr_state_db_2,
+                    "bqr_txn_amt": bqr_amount_db_2,
+                    "bqr_txn_type": bqr_txn_type_db_2,
+                    "bqr_terminal_info_id": brq_terminal_info_id_db_2,
+                    "bqr_bank_code": bqr_bank_code_db_2,
+                    "bqr_merchant_config_id": bqr_merchant_config_id_db_2,
+                    "bqr_txn_primary_id": bqr_txn_primary_id_db_2,
+                    "bqr_merchant_pan": bqr_merchant_pan_db_2,
+                    "bqr_rrn": str(bqr_rrn_db_2),
+                    "bqr_org_code": bqr_org_code_db_2
+                }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)

@@ -87,7 +87,7 @@ def test_d102_101_037():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
             vpa = result['vpa'].values[0]
             logger.debug(f"fetched vpa : {vpa}")
 
@@ -128,12 +128,6 @@ def test_d102_101_037():
             result = DBProcessor.getValueFromDB(query)
             external_ref = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -155,12 +149,6 @@ def test_d102_101_037():
             result = DBProcessor.getValueFromDB(query)
             external_ref_2 = result['external_ref'].values[0]
             logger.debug(f"fetched external_ref from txn table is : {external_ref_2}")
-            customer_name_2 = result['customer_name'].values[0]
-            logger.debug(f"fetched customer_name from txn table is : {customer_name_2}")
-            payer_name_2 = result['payer_name'].values[0]
-            logger.debug(f"fetched payer_name from txn table is : {payer_name_2}")
-            org_code_txn_2 = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn_2}")
             txn_type_2 = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type_2}")
             created_time_2 = result['created_time'].values[0]
@@ -198,16 +186,15 @@ def test_d102_101_037():
                     "acquirer_code": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type, "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "date": date,
                     "pmt_status_2": "UPG_REFUNDED",
                     "txn_amt_2": float(amount), "pmt_mode_2": "UPI",
                     "pmt_state_2": "UPG_REFUNDED",
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    # "issuer_code_2": "ICICI",
                     "txn_type_2": txn_type_2, "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn_2,
+                    "org_code_2": org_code,
                     "date_2": refund_date
                 }
 
@@ -234,7 +221,7 @@ def test_d102_101_037():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                date_api = response["postingDate"]
+                date_api = response["createdTime"]
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -249,13 +236,12 @@ def test_d102_101_037():
                 refund_payment_mode_api = elements["paymentMode"]
                 refund_state_api = elements["states"][0]
                 refund_settlement_status_api = elements["settlementStatus"]
-                # refund_issuer_code_api = response["issuerCode"]
                 refund_acquirer_code_api = elements["acquirerCode"]
                 refund_orgCode_api = elements["orgCode"]
                 refund_mid_api = elements["mid"]
                 refund_tid_api = elements["tid"]
                 refund_txn_type_api = elements["txnType"]
-                refund_date_api = elements["postingDate"]
+                refund_date_api = elements["createdTime"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -272,7 +258,6 @@ def test_d102_101_037():
                     "pmt_state_2": refund_state_api,
                     "settle_status_2": refund_settlement_status_api,
                     "acquirer_code_2": refund_acquirer_code_api,
-                    # "issuer_code_2": refund_issuer_code_api,
                     "txn_type_2": refund_txn_type_api, "mid_2": refund_mid_api, "tid_2": refund_tid_api,
                     "org_code_2": refund_orgCode_api,
                     "date_2": date_time_converter.from_api_to_datetime_format(refund_date_api)
@@ -313,7 +298,6 @@ def test_d102_101_037():
                     "ipr_tid": virtual_tid,
                     "ipr_vpa": vpa,
                     "ipr_config_id": upi_mc_id,
-                    # "ipr_pg_merchant_id": pgMerchantId,
                     "rrn": str(rrn),
                     "pmt_status_2": "UPG_REFUNDED",
                     "pmt_state_2": "UPG_REFUNDED",
@@ -322,7 +306,6 @@ def test_d102_101_037():
                     "upi_txn_status_2": "UPG_REFUNDED",
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "pmt_gateway_2": "ICICI",
                     "upi_txn_type_2": "REFUND",
                     "upi_bank_code_2": "ICICI_DIRECT",
@@ -372,7 +355,6 @@ def test_d102_101_037():
                 ipr_tid = result["tid"].iloc[0]
                 ipr_config_id = result["config_id"].iloc[0]
                 ipr_vpa = result["vpa"].iloc[0]
-                # ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 query = "select * from txn where id='" + txn_id_2 + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -384,7 +366,6 @@ def test_d102_101_037():
                 refund_state_db = result["state"].iloc[0]
                 refund_payment_gateway_db = result["payment_gateway"].iloc[0]
                 refund_acquirer_code_db = result["acquirer_code"].iloc[0]
-                # refund_bank_code_db = result["bank_code"].iloc[0]
                 refund_settlement_status_db = result["settlement_status"].iloc[0]
                 refund_tid_db = result['tid'].values[0]
                 refund_mid_db = result['mid'].values[0]
@@ -423,7 +404,6 @@ def test_d102_101_037():
                     "ipr_tid": ipr_tid,
                     "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
-                    # "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "rrn": str(rrn_db),
                     "pmt_status_2": refund_status_db,
                     "pmt_state_2": refund_state_db,
@@ -432,7 +412,6 @@ def test_d102_101_037():
                     "upi_txn_status_2": refund_upi_status_db,
                     "settle_status_2": refund_settlement_status_db,
                     "acquirer_code_2": refund_acquirer_code_db,
-                    # "bank_code_2": refund_bank_code_db",
                     "pmt_gateway_2": refund_payment_gateway_db,
                     "upi_txn_type_2": refund_upi_txn_type_db,
                     "upi_bank_code_2": refund_upi_bank_code_db,

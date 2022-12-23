@@ -18,8 +18,7 @@ def test_d102_101_007():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Ref_ID_Validation_Failed
     Sub Feature Description: Generate QR through api and perform Ref ID validation failed for UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 101-> UPI, 007->TC007
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 007->TC007
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -61,9 +60,9 @@ def test_d102_101_007():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual_tid : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual_mid : {mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -80,7 +79,7 @@ def test_d102_101_007():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = random.randint(205, 225)
+            amount = random.randint(205, 219)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
             api_details = DBProcessor.get_api_details('upiqrGenerate', request_body={
@@ -94,14 +93,10 @@ def test_d102_101_007():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # rrn = result['rr_number'].values[0]
-            # logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
-            # auth_code = result['auth_code'].values[0]
-            # logger.debug(f"fetched auth_code from txn table is : {auth_code}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -274,8 +269,7 @@ def test_d102_101_008():
     """
     Sub Feature Code: NonUI_Common_UPI_ICICI_Direct_Ref_ID_Validation_Failed_Service_Unavilable
     Sub Feature Description: Generate QR through api and perform Ref ID validation failed due to service unavilable for UPI txn of ICICI_Direct pg
-    TC naming code description:
-    100-> Payment Method, 101-> UPI, 008->TC008
+    TC naming code description:d102->Dev Project[ICICI_DIRECT_UPI], 101-> UPI, 008->TC008
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -317,9 +311,9 @@ def test_d102_101_008():
         upi_mc_id = result['id'].values[0]
         logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {tid}")
+        logger.debug(f"fetched virtual_tid : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"fetched upi_mc_id : {mid}")
+        logger.debug(f"fetched virtual_mid : {mid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -350,14 +344,10 @@ def test_d102_101_008():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # rrn = result['rr_number'].values[0]
-            # logger.debug(f"fetched rrn from txn table is : {rrn}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
-            # auth_code = result['auth_code'].values[0]
-            # logger.debug(f"fetched auth_code from txn table is : {auth_code}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()

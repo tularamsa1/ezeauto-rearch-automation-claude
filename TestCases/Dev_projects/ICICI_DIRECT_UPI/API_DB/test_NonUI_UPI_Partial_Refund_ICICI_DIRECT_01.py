@@ -77,7 +77,7 @@ def test_d102_101_019():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -112,8 +112,6 @@ def test_d102_101_019():
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -139,8 +137,6 @@ def test_d102_101_019():
             logger.debug(f"fetched txn_id_refunded from txn table is : {refund_txn_id}")
             refund_payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched refund_payer_name from txn table is : {refund_payer_name}")
-            refund_org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched refund_org_code_txn from txn table is : {refund_org_code_txn}")
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched refund_txn_type from txn table is : {refund_txn_type}")
             refund_created_time = result['created_time'].values[0]
@@ -182,7 +178,7 @@ def test_d102_101_019():
                     "customer_name": customer_name,
                     "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
-                    "payer_name_2": payer_name,
+                    "payer_name_2": refund_payer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "rrn": str(rrn),
@@ -192,13 +188,10 @@ def test_d102_101_019():
                     "issuer_code": "ICICI",
                     "txn_type": txn_type,
                     "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    # "issuer_code_refunded": "HDFC",
+                    "org_code": org_code,
                     "txn_type_2": refund_txn_type,
                     "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn,
-                    # "auth_code_2": refund_auth_code,
-                    # "auth_code": auth_code,
+                    "org_code_2": org_code,
                     "date": date,
                     "date_2": refund_date,
                 }
@@ -225,7 +218,6 @@ def test_d102_101_019():
                 mid_api_original = response["mid"]
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
-                # auth_code_api_original = response["authCode"]
                 date_api_original = response["createdTime"]
                 order_id_api_original = response["orderNumber"]
                 customer_name_api = response["customerName"]
@@ -245,13 +237,11 @@ def test_d102_101_019():
                 rrn_api_refunded = response["rrNumber"]
                 state_api_refunded = response["states"][0]
                 settlement_status_api_refunded = response["settlementStatus"]
-                # issuer_code_api_refunded = response["issuerCode"]
                 acquirer_code_api_refunded = response["acquirerCode"]
                 org_code_api_refunded = response["orgCode"]
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                # auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["createdTime"]
                 order_id_api_refunded = response["orderNumber"]
                 customer_name_api_refunded = response["customerName"]
@@ -282,12 +272,9 @@ def test_d102_101_019():
                     "mid": mid_api_original, "tid": tid_api_original,
                     "org_code": org_code_api_original,
                     "acquirer_code_2": acquirer_code_api_refunded,
-                    # "issuer_code_refunded": issuer_code_api_refunded,
                     "txn_type_2": txn_type_api_refunded,
                     "mid_2": mid_api_refunded, "tid_2": tid_api_refunded,
                     "org_code_2": org_code_api_refunded,
-                    # "auth_code_2": auth_code_api_refunded,
-                    # "auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded),
                 }
@@ -324,7 +311,6 @@ def test_d102_101_019():
                     "error_msg_2": None,
                     "acquirer_code_2": "ICICI",
                     "bank_code": "ICICI",
-                    # "bank_code_2": "ICICI",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "upi_txn_type": "PAY_QR",
@@ -352,7 +338,6 @@ def test_d102_101_019():
                 state_db_refunded = result["state"].iloc[0]
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                bank_code_db_refunded = result["bank_code"].iloc[0]
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
                 tid_db_refunded = result['tid'].values[0]
                 mid_db_refunded = result['mid'].values[0]
@@ -413,7 +398,6 @@ def test_d102_101_019():
                     "acquirer_code": acquirer_code_db_original,
                     "acquirer_code_2": acquirer_code_db_refunded,
                     "bank_code": bank_code_db_original,
-                    # "bank_code_2": bank_code_db_refunded,
                     "pmt_gateway": payment_gateway_db_original,
                     "pmt_gateway_2": payment_gateway_db_refunded,
                     "upi_txn_type": upi_txn_type_db_original,
@@ -515,7 +499,7 @@ def test_d102_101_027():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -550,8 +534,6 @@ def test_d102_101_027():
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -572,16 +554,12 @@ def test_d102_101_027():
             logger.debug(f"Query to fetch refunded txn data from txn table is : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Result for the query : {query} is {result}")
-            refund_rrn = result['rr_number'].iloc[0]
-            logger.debug(f"fetched refund_rrn from txn table is : {refund_rrn}")
             refund_customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched refund_customer_name from txn table is : {refund_customer_name}")
             refund_txn_id = result['id'].values[0]
             logger.debug(f"fetched txn_id_refunded from txn table is : {refund_txn_id}")
             refund_payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched refund_payer_name from txn table is : {refund_payer_name}")
-            refund_org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched refund_org_code_txn from txn table is : {refund_org_code_txn}")
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched refund_txn_type from txn table is : {refund_txn_type}")
             refund_created_time = result['created_time'].values[0]
@@ -627,19 +605,14 @@ def test_d102_101_027():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "rrn": str(rrn),
-                    # "rrn_2": str(refund_rrn),
                     "acquirer_code": "ICICI",
                     "acquirer_code_2": "ICICI",
                     "issuer_code": "ICICI",
                     "txn_type": txn_type,
                     "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    # "issuer_code_refunded": "HDFC",
+                    "org_code": org_code,
                     "txn_type_2": refund_txn_type,
-                    # "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn,
-                    # "auth_code_2": refund_auth_code,
-                    # "auth_code": auth_code,
+                    "org_code_2": org_code,
                     "date": date,
                     "date_2": refund_date,
                 }
@@ -666,7 +639,6 @@ def test_d102_101_027():
                 mid_api_original = response["mid"]
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
-                # auth_code_api_original = response["authCode"]
                 date_api_original = response["createdTime"]
                 order_id_api_original = response["orderNumber"]
                 customer_name_api = response["customerName"]
@@ -683,16 +655,11 @@ def test_d102_101_027():
                 status_api_refunded = response["status"]
                 amount_api_refunded = float(response["amount"])
                 payment_mode_api_refunded = response["paymentMode"]
-                # rrn_api_refunded = response["rrNumber"]
                 state_api_refunded = response["states"][0]
                 settlement_status_api_refunded = response["settlementStatus"]
-                # issuer_code_api_refunded = response["issuerCode"]
                 acquirer_code_api_refunded = response["acquirerCode"]
                 org_code_api_refunded = response["orgCode"]
-                # mid_api_refunded = response["mid"]
-                # tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                # auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["createdTime"]
                 order_id_api_refunded = response["orderNumber"]
                 customer_name_api_refunded = response["customerName"]
@@ -716,19 +683,14 @@ def test_d102_101_027():
                     "order_id": order_id_api_original,
                     "order_id_2": order_id_api_refunded,
                     "rrn": str(rrn_api_original),
-                    # "rrn_2": str(rrn_api_refunded),
                     "acquirer_code": acquirer_code_api_original,
                     "issuer_code": issuer_code_api_original,
                     "txn_type": txn_type_api_original,
                     "mid": mid_api_original, "tid": tid_api_original,
                     "org_code": org_code_api_original,
                     "acquirer_code_2": acquirer_code_api_refunded,
-                    # "issuer_code_refunded": issuer_code_api_refunded,
                     "txn_type_2": txn_type_api_refunded,
-                    # "mid_2": mid_api_refunded, "tid_2": tid_api_refunded,
                     "org_code_2": org_code_api_refunded,
-                    # "auth_code_2": auth_code_api_refunded,
-                    # "auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded),
                 }
@@ -765,7 +727,6 @@ def test_d102_101_027():
                     "error_msg_2": None,
                     "acquirer_code_2": "ICICI",
                     "bank_code": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "upi_txn_type": "PAY_QR",
@@ -776,8 +737,6 @@ def test_d102_101_027():
                     "upi_mc_id_2": upi_mc_id,
                     "mid": virtual_mid,
                     "tid": virtual_tid,
-                    # "mid_2": virtual_mid,
-                    # "tid_2": virtual_tid,
                     "rrn": rrn
                 }
 
@@ -793,10 +752,7 @@ def test_d102_101_027():
                 state_db_refunded = result["state"].iloc[0]
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                # bank_code_db_refunded = result["bank_code"].iloc[0]
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                # tid_db_refunded = result['tid'].values[0]
-                # mid_db_refunded = result['mid'].values[0]
                 order_id_db_refunded = result['external_ref'].values[0]
                 error_msg_db_refunded = result['error_message'].values[0]
 
@@ -854,7 +810,6 @@ def test_d102_101_027():
                     "acquirer_code": acquirer_code_db_original,
                     "acquirer_code_2": acquirer_code_db_refunded,
                     "bank_code": bank_code_db_original,
-                    # "bank_code_2": bank_code_db_refunded,
                     "pmt_gateway": payment_gateway_db_original,
                     "pmt_gateway_2": payment_gateway_db_refunded,
                     "upi_txn_type": upi_txn_type_db_original,
@@ -865,8 +820,6 @@ def test_d102_101_027():
                     "upi_mc_id_2": upi_mc_id_db_refunded,
                     "mid": mid_db_original,
                     "tid": tid_db_original,
-                    # "mid_2": mid_db_refunded,
-                    # "tid_2": tid_db_refunded,
                     "error_msg": error_msg_db_original,
                     "error_msg_2": error_msg_db_refunded,
                     "rrn": rrn_db_original,
@@ -958,7 +911,7 @@ def test_d102_101_028():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = 300
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -993,8 +946,6 @@ def test_d102_101_028():
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -1024,8 +975,6 @@ def test_d102_101_028():
             logger.debug(f"fetched txn_id_refunded from txn table is : {refund_txn_id}")
             refund_payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched refund_payer_name from txn table is : {refund_payer_name}")
-            refund_org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched refund_org_code_txn from txn table is : {refund_org_code_txn}")
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched refund_txn_type from txn table is : {refund_txn_type}")
             refund_created_time = result['created_time'].values[0]
@@ -1075,9 +1024,9 @@ def test_d102_101_028():
                     "txn_amt": float(amount),
                     "txn_amt_2": float(refund_amount),
                     "customer_name": customer_name,
-                    "customer_name_2": customer_name,
+                    "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
-                    "payer_name_2": payer_name,
+                    "payer_name_2": refund_payer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "rrn": str(rrn),
@@ -1086,14 +1035,11 @@ def test_d102_101_028():
                     "issuer_code": "ICICI",
                     "txn_type": txn_type,
                     "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
+                    "org_code": org_code,
                     "acquirer_code_2": "ICICI",
-                    # "issuer_code_2": "HDFC",
                     "txn_type_2": refund_txn_type,
                     "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn,
-                    # "auth_code_2": refund_auth_code,
-                    # "auth_code": auth_code,
+                    "org_code_2": org_code,
                     "date": date_and_time,
                     "date_2": refund_date_and_time,
                     "err_msg": "Amount to refund is greater than refundable amount."
@@ -1121,7 +1067,6 @@ def test_d102_101_028():
                 mid_api_original = elements["mid"]
                 tid_api_original = elements["tid"]
                 txn_type_api_original = elements["txnType"]
-                # auth_code_api_original = elements["authCode"]
                 date_api_original = elements["createdTime"]
                 order_id_api_original = elements["orderNumber"]
 
@@ -1139,13 +1084,11 @@ def test_d102_101_028():
                 rrn_api_refunded = elements["rrNumber"]
                 state_api_refunded = elements["states"][0]
                 settlement_status_api_refunded = elements["settlementStatus"]
-                # issuer_code_api_refunded = elements["issuerCode"]
                 acquirer_code_api_refunded = elements["acquirerCode"]
                 org_code_api_refunded = elements["orgCode"]
                 mid_api_refunded = elements["mid"]
                 tid_api_refunded = elements["tid"]
                 txn_type_api_refunded = elements["txnType"]
-                # auth_code_api_refunded = elements["authCode"]
                 date_api_refunded = elements["createdTime"]
                 order_id_api_refunded = elements["orderNumber"]
 
@@ -1174,12 +1117,9 @@ def test_d102_101_028():
                     "mid": mid_api_original, "tid": tid_api_original,
                     "org_code": org_code_api_original,
                     "acquirer_code_2": acquirer_code_api_refunded,
-                    # "issuer_code_2": issuer_code_api_refunded,
                     "txn_type_2": txn_type_api_refunded,
                     "mid_2": mid_api_refunded, "tid_2": tid_api_refunded,
                     "org_code_2": org_code_api_refunded,
-                    # "auth_code_2": auth_code_api_refunded,
-                    # "auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded),
                     "err_msg": api_error_message
@@ -1213,7 +1153,6 @@ def test_d102_101_028():
                     "acquirer_code": "ICICI",
                     "acquirer_code_2": "ICICI",
                     "bank_code": "ICICI",
-                    # "bank_code_2": "ICICI",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "upi_txn_type": "PAY_QR",
@@ -1246,9 +1185,7 @@ def test_d102_101_028():
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
                 tid_db_refunded = result['tid'].values[0]
                 mid_db_refunded = result['mid'].values[0]
-                # device_serial_db_refunded = result['device_serial'].values[0]
                 order_id_db_refunded = result['external_ref'].values[0]
-                bank_code_db_refunded = result["bank_code"].iloc[0]
 
                 query = "select * from upi_txn where txn_id='" + refund_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -1301,7 +1238,6 @@ def test_d102_101_028():
                     "acquirer_code": acquirer_code_db_original,
                     "acquirer_code_2": acquirer_code_db_refunded,
                     "bank_code": bank_code_db_original,
-                    # "bank_code_2": bank_code_db_refunded,
                     "pmt_gateway": payment_gateway_db_original,
                     "pmt_gateway_2": payment_gateway_db_refunded,
                     "upi_txn_type": upi_txn_type_db_original,
@@ -1401,7 +1337,7 @@ def test_d102_101_029():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             amount = random.randint(301, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -1436,8 +1372,6 @@ def test_d102_101_029():
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             created_time = result['created_time'].values[0]
@@ -1465,8 +1399,6 @@ def test_d102_101_029():
             logger.debug(f"fetched refund_customer_name from txn table is : {refund_customer_name}")
             refund_payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched refund_payer_name from txn table is : {refund_payer_name}")
-            refund_org_code_txn = result['org_code'].values[0]
-            logger.debug(f"fetched refund_org_code_txn from txn table is : {refund_org_code_txn}")
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched refund_txn_type from txn table is : {refund_txn_type}")
             refund_created_time = result['created_time'].values[0]
@@ -1508,7 +1440,7 @@ def test_d102_101_029():
                     "customer_name": customer_name,
                     "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
-                    "payer_name_2": payer_name,
+                    "payer_name_2": refund_payer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "rrn": str(rrn),
@@ -1518,13 +1450,10 @@ def test_d102_101_029():
                     "issuer_code": "ICICI",
                     "txn_type": txn_type,
                     "mid": virtual_mid, "tid": virtual_tid,
-                    "org_code": org_code_txn,
-                    # "issuer_code_refunded": "HDFC",
+                    "org_code": org_code,
                     "txn_type_2": refund_txn_type,
                     "mid_2": virtual_mid, "tid_2": virtual_tid,
-                    "org_code_2": org_code_txn,
-                    # "auth_code_2": refund_auth_code,
-                    # "auth_code": auth_code,
+                    "org_code_2": org_code,
                     "date": date,
                     "date_2": refund_date,
                 }
@@ -1551,7 +1480,6 @@ def test_d102_101_029():
                 mid_api_original = response["mid"]
                 tid_api_original = response["tid"]
                 txn_type_api_original = response["txnType"]
-                # auth_code_api_original = response["authCode"]
                 date_api_original = response["createdTime"]
                 order_id_api_original = response["orderNumber"]
                 customer_name_api = response["customerName"]
@@ -1571,13 +1499,11 @@ def test_d102_101_029():
                 rrn_api_refunded = response["rrNumber"]
                 state_api_refunded = response["states"][0]
                 settlement_status_api_refunded = response["settlementStatus"]
-                # issuer_code_api_refunded = response["issuerCode"]
                 acquirer_code_api_refunded = response["acquirerCode"]
                 org_code_api_refunded = response["orgCode"]
                 mid_api_refunded = response["mid"]
                 tid_api_refunded = response["tid"]
                 txn_type_api_refunded = response["txnType"]
-                # auth_code_api_refunded = response["authCode"]
                 date_api_refunded = response["createdTime"]
                 order_id_api_refunded = response["orderNumber"]
                 customer_name_api_refunded = response["customerName"]
@@ -1608,12 +1534,9 @@ def test_d102_101_029():
                     "mid": mid_api_original, "tid": tid_api_original,
                     "org_code": org_code_api_original,
                     "acquirer_code_2": acquirer_code_api_refunded,
-                    # "issuer_code_refunded": issuer_code_api_refunded,
                     "txn_type_2": txn_type_api_refunded,
                     "mid_2": mid_api_refunded, "tid_2": tid_api_refunded,
                     "org_code_2": org_code_api_refunded,
-                    # "auth_code_2": auth_code_api_refunded,
-                    # "auth_code": auth_code_api_original,
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_refunded),
                 }
@@ -1650,7 +1573,6 @@ def test_d102_101_029():
                     "error_msg_2": None,
                     "acquirer_code_2": "ICICI",
                     "bank_code": "ICICI",
-                    # "bank_code_2": "HDFC",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "upi_txn_type": "PAY_QR",
@@ -1678,7 +1600,6 @@ def test_d102_101_029():
                 state_db_refunded = result["state"].iloc[0]
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                bank_code_db_refunded = result["bank_code"].iloc[0]
                 settlement_status_db_refunded = result["settlement_status"].iloc[0]
                 tid_db_refunded = result['tid'].values[0]
                 mid_db_refunded = result['mid'].values[0]
@@ -1739,7 +1660,6 @@ def test_d102_101_029():
                     "acquirer_code": acquirer_code_db_original,
                     "acquirer_code_2": acquirer_code_db_refunded,
                     "bank_code": bank_code_db_original,
-                    # "bank_code_2": bank_code_db_refunded,
                     "pmt_gateway": payment_gateway_db_original,
                     "pmt_gateway_2": payment_gateway_db_refunded,
                     "upi_txn_type": upi_txn_type_db_original,
@@ -1846,7 +1766,7 @@ def test_d102_101_030():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
@@ -1882,8 +1802,6 @@ def test_d102_101_030():
             logger.debug(f"Fetching original_payer_name from txn table : {payer_name} ")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching original_auth_code from txn table : {auth_code} ")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Fetching original_org_code_txn from txn table : {org_code_txn} ")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching original_txn_type from txn table : {txn_type} ")
             created_date_time = result['created_time'].values[0]
@@ -1995,9 +1913,6 @@ def test_d102_101_030():
                     "rrn": str(rrn),
                     "rrn_2": str(partial_refund_rrn_1),
                     "rrn_3": str(partial_refund_rrn_2),
-                    # "auth_code": auth_code,
-                    # "partial_refund_auth_code_1": partial_refund_auth_code_1,
-                    # "partial_refund_auth_code_2": partial_refund_auth_code_2,
                     "date": date_and_time,
                     "date_2": partial_refund_date_and_time_1,
                     "date_3": partial_refund_date_and_time_2,
@@ -2005,17 +1920,15 @@ def test_d102_101_030():
                     "acquirer_code_2": "ICICI",
                     "acquirer_code_3": "ICICI",
                     "issuer_code": "ICICI",
-                    # "partial_refund_issuer_code_1": "HDFC",
-                    # "partial_refund_issuer_code_2": "HDFC",
                     "txn_type": txn_type,
                     "txn_type_2": partial_refund_txn_type_1,
                     "txn_type_3": partial_refund_txn_type_2,
                     "mid": virtual_mid, "tid": virtual_tid,
                     "mid_2": virtual_mid, "tid_2": virtual_tid,
                     "mid_3": virtual_mid, "tid_3": virtual_tid,
-                    "org_code": org_code_txn,
-                    "org_code_2": org_code_txn,
-                    "org_code_3": org_code_txn,
+                    "org_code": org_code,
+                    "org_code_2": org_code,
+                    "org_code_3": org_code,
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -2041,7 +1954,6 @@ def test_d102_101_030():
                 mid_api_original = elements["mid"]
                 tid_api_original = elements["tid"]
                 txn_type_api_original = elements["txnType"]
-                # auth_code_api_original = elements["authCode"]
                 date_api_original = elements["createdTime"]
                 order_id_api_original = elements["orderNumber"]
                 customer_name_api_original = elements["customerName"]
@@ -2062,13 +1974,11 @@ def test_d102_101_030():
                 partial_refund_rrn_api_1 = elements["rrNumber"]
                 partial_refund_state_api_1 = elements["states"][0]
                 partial_refund_settle_status_api_1 = elements["settlementStatus"]
-                # partial_refund_issuer_code_api_1 = elements["issuerCode"]
                 partial_refund_acquirer_code_api_1 = elements["acquirerCode"]
                 partial_refund_org_code_api_1 = elements["orgCode"]
                 partial_refund_mid_api_1 = elements["mid"]
                 partial_refund_tid_api_1 = elements["tid"]
                 partial_refund_txn_type_api_1 = elements["txnType"]
-                # partial_refund_auth_code_api_1 = elements["authCode"]
                 partial_refund_date_api_1 = elements["createdTime"]
                 partial_refund_order_id_api_1 = elements["orderNumber"]
                 partial_refund_customer_name_api_1 = elements["customerName"]
@@ -2089,13 +1999,11 @@ def test_d102_101_030():
                 partial_refund_rrn_api_2 = elements["rrNumber"]
                 partial_refund_state_api_2 = elements["states"][0]
                 partial_refund_settle_status_api_2 = elements["settlementStatus"]
-                # partial_refund_issuer_code_api_2 = elements["issuerCode"]
                 partial_refund_acquirer_code_api_2 = elements["acquirerCode"]
                 partial_refund_org_code_api_2 = elements["orgCode"]
                 partial_refund_mid_api_2 = elements["mid"]
                 partial_refund_tid_api_2 = elements["tid"]
                 partial_refund_txn_type_api_2 = elements["txnType"]
-                # partial_refund_auth_code_api_2 = elements["authCode"]
                 partial_refund_date_api_2 = elements["createdTime"]
                 partial_refund_order_id_api_2 = elements["orderNumber"]
                 partial_refund_customer_name_api_2 = elements["customerName"]
@@ -2129,9 +2037,6 @@ def test_d102_101_030():
                     "rrn": str(rrn_api_original),
                     "rrn_2": str(partial_refund_rrn_api_1),
                     "rrn_3": str(partial_refund_rrn_api_2),
-                    # "auth_code": str(auth_code_api_original),
-                    # "partial_refund_auth_code_1": str(partial_refund_auth_code_api_1),
-                    # "partial_refund_auth_code_2": str(partial_refund_auth_code_api_2),
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "date_2": date_time_converter.from_api_to_datetime_format(partial_refund_date_api_1),
                     "date_3": date_time_converter.from_api_to_datetime_format(partial_refund_date_api_2),
@@ -2139,8 +2044,6 @@ def test_d102_101_030():
                     "acquirer_code_2": partial_refund_acquirer_code_api_1,
                     "acquirer_code_3": partial_refund_acquirer_code_api_2,
                     "issuer_code": issuer_code_api_original,
-                    # "partial_refund_issuer_code_1": partial_refund_issuer_code_api_1,
-                    # "partial_refund_issuer_code_2": partial_refund_issuer_code_api_2,
                     "txn_type": txn_type_api_original,
                     "txn_type_2": partial_refund_txn_type_api_1,
                     "txn_type_3": partial_refund_txn_type_api_2,
@@ -2187,8 +2090,6 @@ def test_d102_101_030():
                     "acquirer_code_2": "ICICI",
                     "acquirer_code_3": "ICICI",
                     "bank_code": "ICICI",
-                    # "partial_refund_bank_code_1": "HDFC",
-                    # "partial_refund_bank_code_2": "HDFC",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "pmt_gateway_3": "ICICI",
@@ -2248,7 +2149,6 @@ def test_d102_101_030():
                 partial_refund_state_db_1 = result["state"].iloc[0]
                 partial_refund_payment_gateway_db_1 = result["payment_gateway"].iloc[0]
                 partial_refund_acquirer_code_db_1 = result["acquirer_code"].iloc[0]
-                partial_refund_bank_code_db_1 = result["bank_code"].iloc[0]
                 partial_refund_settlement_status_db_1 = result["settlement_status"].iloc[0]
                 partial_refund_tid_db_1 = result['tid'].values[0]
                 partial_refund_mid_db_1 = result['mid'].values[0]
@@ -2273,7 +2173,6 @@ def test_d102_101_030():
                 partial_refund_state_db_2 = result["state"].iloc[0]
                 partial_refund_payment_gateway_db_2 = result["payment_gateway"].iloc[0]
                 partial_refund_acquirer_code_db_2 = result["acquirer_code"].iloc[0]
-                partial_refund_bank_code_db_2 = result["bank_code"].iloc[0]
                 partial_refund_settlement_status_db_2 = result["settlement_status"].iloc[0]
                 partial_refund_tid_db_2 = result['tid'].values[0]
                 partial_refund_mid_db_2 = result['mid'].values[0]
@@ -2311,8 +2210,6 @@ def test_d102_101_030():
                     "acquirer_code_2": partial_refund_acquirer_code_db_1,
                     "acquirer_code_3": partial_refund_acquirer_code_db_2,
                     "bank_code": bank_code_db,
-                    # "partial_refund_bank_code_1": partial_refund_bank_code_db_1,
-                    # "partial_refund_bank_code_2": partial_refund_bank_code_db_2,
                     "pmt_gateway": payment_gateway_db,
                     "pmt_gateway_2": partial_refund_payment_gateway_db_1,
                     "pmt_gateway_3": partial_refund_payment_gateway_db_2,
@@ -2422,7 +2319,7 @@ def test_d102_101_031():
             virtual_tid = result['virtual_tid'].values[0]
             logger.debug(f"fetched virtual_tid : {virtual_tid}")
             virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {virtual_mid}")
+            logger.debug(f"fetched virtual_mid : {virtual_mid}")
 
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
@@ -2458,8 +2355,6 @@ def test_d102_101_031():
             logger.debug(f"Fetching original_payer_name from txn table : {payer_name} ")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching original_auth_code from txn table : {auth_code} ")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Fetching original_org_code_txn from txn table : {org_code_txn} ")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching original_txn_type from txn table : {txn_type} ")
             created_date_time = result['created_time'].values[0]
@@ -2571,9 +2466,6 @@ def test_d102_101_031():
                     "rrn": str(rrn),
                     "rrn_2": str(partial_refund_rrn_1),
                     "rrn_3": str(partial_refund_rrn_2),
-                    # "auth_code": auth_code,
-                    # "partial_refund_auth_code_1": partial_refund_auth_code_1,
-                    # "partial_refund_auth_code_2": partial_refund_auth_code_2,
                     "date": date_and_time,
                     "date_2": partial_refund_date_and_time_1,
                     "date_3": partial_refund_date_and_time_2,
@@ -2581,17 +2473,15 @@ def test_d102_101_031():
                     "acquirer_code_2": "ICICI",
                     "acquirer_code_3": "ICICI",
                     "issuer_code": "ICICI",
-                    # "partial_refund_issuer_code_1": "HDFC",
-                    # "partial_refund_issuer_code_2": "HDFC",
                     "txn_type": txn_type,
                     "txn_type_2": partial_refund_txn_type_1,
                     "txn_type_3": partial_refund_txn_type_2,
                     "mid": virtual_mid, "tid": virtual_tid,
                     "mid_2": virtual_mid, "tid_2": virtual_tid,
                     "mid_3": virtual_mid, "tid_3": virtual_tid,
-                    "org_code": org_code_txn,
-                    "org_code_2": org_code_txn,
-                    "org_code_3": org_code_txn,
+                    "org_code": org_code,
+                    "org_code_2": org_code,
+                    "org_code_3": org_code,
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
@@ -2617,7 +2507,6 @@ def test_d102_101_031():
                 mid_api_original = elements["mid"]
                 tid_api_original = elements["tid"]
                 txn_type_api_original = elements["txnType"]
-                # auth_code_api_original = elements["authCode"]
                 date_api_original = elements["createdTime"]
                 order_id_api_original = elements["orderNumber"]
                 customer_name_api_original = elements["customerName"]
@@ -2638,13 +2527,11 @@ def test_d102_101_031():
                 partial_refund_rrn_api_1 = elements["rrNumber"]
                 partial_refund_state_api_1 = elements["states"][0]
                 partial_refund_settle_status_api_1 = elements["settlementStatus"]
-                # partial_refund_issuer_code_api_1 = elements["issuerCode"]
                 partial_refund_acquirer_code_api_1 = elements["acquirerCode"]
                 partial_refund_org_code_api_1 = elements["orgCode"]
                 partial_refund_mid_api_1 = elements["mid"]
                 partial_refund_tid_api_1 = elements["tid"]
                 partial_refund_txn_type_api_1 = elements["txnType"]
-                # partial_refund_auth_code_api_1 = elements["authCode"]
                 partial_refund_date_api_1 = elements["createdTime"]
                 partial_refund_order_id_api_1 = elements["orderNumber"]
                 partial_refund_customer_name_api_1 = elements["customerName"]
@@ -2665,13 +2552,11 @@ def test_d102_101_031():
                 partial_refund_rrn_api_2 = elements["rrNumber"]
                 partial_refund_state_api_2 = elements["states"][0]
                 partial_refund_settle_status_api_2 = elements["settlementStatus"]
-                # partial_refund_issuer_code_api_2 = elements["issuerCode"]
                 partial_refund_acquirer_code_api_2 = elements["acquirerCode"]
                 partial_refund_org_code_api_2 = elements["orgCode"]
                 partial_refund_mid_api_2 = elements["mid"]
                 partial_refund_tid_api_2 = elements["tid"]
                 partial_refund_txn_type_api_2 = elements["txnType"]
-                # partial_refund_auth_code_api_2 = elements["authCode"]
                 partial_refund_date_api_2 = elements["createdTime"]
                 partial_refund_order_id_api_2 = elements["orderNumber"]
                 partial_refund_customer_name_api_2 = elements["customerName"]
@@ -2705,9 +2590,6 @@ def test_d102_101_031():
                     "rrn": str(rrn_api_original),
                     "rrn_2": str(partial_refund_rrn_api_1),
                     "rrn_3": str(partial_refund_rrn_api_2),
-                    # "auth_code": str(auth_code_api_original),
-                    # "partial_refund_auth_code_1": str(partial_refund_auth_code_api_1),
-                    # "partial_refund_auth_code_2": str(partial_refund_auth_code_api_2),
                     "date": date_time_converter.from_api_to_datetime_format(date_api_original),
                     "date_2": date_time_converter.from_api_to_datetime_format(partial_refund_date_api_1),
                     "date_3": date_time_converter.from_api_to_datetime_format(partial_refund_date_api_2),
@@ -2715,8 +2597,6 @@ def test_d102_101_031():
                     "acquirer_code_2": partial_refund_acquirer_code_api_1,
                     "acquirer_code_3": partial_refund_acquirer_code_api_2,
                     "issuer_code": issuer_code_api_original,
-                    # "partial_refund_issuer_code_1": partial_refund_issuer_code_api_1,
-                    # "partial_refund_issuer_code_2": partial_refund_issuer_code_api_2,
                     "txn_type": txn_type_api_original,
                     "txn_type_2": partial_refund_txn_type_api_1,
                     "txn_type_3": partial_refund_txn_type_api_2,
@@ -2763,8 +2643,6 @@ def test_d102_101_031():
                     "acquirer_code_2": "ICICI",
                     "acquirer_code_3": "ICICI",
                     "bank_code": "ICICI",
-                    # "partial_refund_bank_code_1": "HDFC",
-                    # "partial_refund_bank_code_2": "HDFC",
                     "pmt_gateway": "ICICI",
                     "pmt_gateway_2": "ICICI",
                     "pmt_gateway_3": "ICICI",
@@ -2824,7 +2702,6 @@ def test_d102_101_031():
                 partial_refund_state_db_1 = result["state"].iloc[0]
                 partial_refund_payment_gateway_db_1 = result["payment_gateway"].iloc[0]
                 partial_refund_acquirer_code_db_1 = result["acquirer_code"].iloc[0]
-                partial_refund_bank_code_db_1 = result["bank_code"].iloc[0]
                 partial_refund_settlement_status_db_1 = result["settlement_status"].iloc[0]
                 partial_refund_tid_db_1 = result['tid'].values[0]
                 partial_refund_mid_db_1 = result['mid'].values[0]
@@ -2849,7 +2726,6 @@ def test_d102_101_031():
                 partial_refund_state_db_2 = result["state"].iloc[0]
                 partial_refund_payment_gateway_db_2 = result["payment_gateway"].iloc[0]
                 partial_refund_acquirer_code_db_2 = result["acquirer_code"].iloc[0]
-                partial_refund_bank_code_db_2 = result["bank_code"].iloc[0]
                 partial_refund_settlement_status_db_2 = result["settlement_status"].iloc[0]
                 partial_refund_tid_db_2 = result['tid'].values[0]
                 partial_refund_mid_db_2 = result['mid'].values[0]
@@ -2887,8 +2763,6 @@ def test_d102_101_031():
                     "acquirer_code_2": partial_refund_acquirer_code_db_1,
                     "acquirer_code_3": partial_refund_acquirer_code_db_2,
                     "bank_code": bank_code_db,
-                    # "partial_refund_bank_code_1": partial_refund_bank_code_db_1,
-                    # "partial_refund_bank_code_2": partial_refund_bank_code_db_2,
                     "pmt_gateway": payment_gateway_db,
                     "pmt_gateway_2": partial_refund_payment_gateway_db_1,
                     "pmt_gateway_3": partial_refund_payment_gateway_db_2,

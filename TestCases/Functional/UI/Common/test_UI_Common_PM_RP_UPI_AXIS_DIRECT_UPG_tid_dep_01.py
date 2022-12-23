@@ -1,19 +1,13 @@
 import random
-import shutil
 import sys
-from datetime import datetime
-
 import pytest
-from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
-    date_time_converter, receipt_validator
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -24,20 +18,16 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.appVal
 def test_common_100_103_170():
-
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_UPG_REFUND_PENDING_VIA_AXIS_DIRECT_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled_Tid_dep_Tid_dep
     Sub Feature Description: Tid Dep - Verification of a upg txn using success callback via AXIS_DIRECT when upg refund and upg autorefund are enabled
-    TC naming code description:
-    100: Payment Method
-    101: RemotePay
-    170: TC170
+    TC naming code description:100: Payment Method,101: RemotePay,170: TC170
     """
-
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -54,6 +44,7 @@ def test_common_100_103_170():
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_employee table is : {result}")
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
@@ -61,14 +52,15 @@ def test_common_100_103_170():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code
-                                                                                    }
-                                                  )
+        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={
+            "username": portal_username,
+            "password": portal_password,
+            "settingForOrgCode": org_code
+        })
 
         api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "true"
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
@@ -82,50 +74,62 @@ def test_common_100_103_170():
 
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password
-                                                                              })
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
         response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        # -----------------------------PreConditions(Setup to be done for the test case)----------------
-        # Set the below variables depending on the log capturing need of the test case.
+        # -----------------------------PreConditions(Setup to be done for the test case)------------------------------
+
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
-        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(300, 500)
+            logger.info(f"amount is: {amount}")
 
             query = "select * from upi_merchant_config where bank_code = 'AXIS_DIRECT' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug((f"upi_merchant_config query is :", result))
             pg_merchant_id = result['pgMerchantId'].values[0]
+            logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
             vpa = result['vpa'].values[0]
-            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
+            logger.debug(f"Query result, vpa : {vpa}")
+            mid_db = result['mid'].iloc[0]
+            logger.debug(f"Query result, mid : {mid_db}")
+            tid_db = result['tid'].iloc[0]
+            logger.debug(f"Query result, mid : {tid_db}")
 
             rrn = random.randint(1111110, 9999999)
-            request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             logger.debug(f"generated random rrn number is : {rrn}")
+            request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
+            logger.debug(f"generated random request_id is : {request_id}")
             ref_id = '211115084892E01' + str(rrn)
+            logger.debug(f"generated random ref_id is : {ref_id}")
 
-            logger.debug(f"replacing the Txn_id with {request_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
-            api_details = DBProcessor.get_api_details('axis_direct_upi_success_curl',
-                                                      curl_data={'merchantTransactionId': request_id,
-                                                                 'transactionAmount': amount,
-                                                                 'merchantId': str(pg_merchant_id),
-                                                                 'creditVpa': vpa,
-                                                                 'rrn': rrn,
-                                                                 'gatewayTransactionId': ref_id})
+            api_details = DBProcessor.get_api_details('axis_direct_upi_success_curl',curl_data={
+                'merchantTransactionId': request_id,
+                'transactionAmount': amount,
+                'merchantId': str(pg_merchant_id),
+                'creditVpa': vpa,
+                'rrn': rrn,
+                'gatewayTransactionId': ref_id
+            })
+
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
@@ -138,34 +142,34 @@ def test_common_100_103_170():
             logger.debug(f"OUTPUT : {data_buffer}")
 
             logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-            print(type(data_buffer))
             api_details = DBProcessor.get_api_details('confirm_axisdirect',request_body={"data": data_buffer})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response : {response}")
-            query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-            print(query)
+
+            query = "select * from invalid_pg_request where request_id ='" + request_id + "';"
+            logger.debug(f"Query result of invalid_pg_request table is : {query}")
             q_result = DBProcessor.getValueFromDB(query)
-            print(q_result)
+            logger.debug(f"q_result is :, {q_result}")
             txn_id = q_result['txn_id'].iloc[0]
+            logger.debug(f"txn_id is :, {txn_id}")
 
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            status = result['status'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
+            logger.debug(f"Query result of txn table is :, {result}")
             org_code_txn = result['org_code'].values[0]
+            logger.debug(f"org_code_txn is :, {org_code_txn}")
             txn_type = result['txn_type'].values[0]
-            auth_code = result['auth_code'].values[0]
+            logger.debug(f"txn_type is :, {txn_type}")
             posting_date = result['posting_date'].values[0]
+            logger.debug(f"posting_date is :, {posting_date}")
             external_ref = result['external_ref'].values[0]
+            logger.debug(f"external_ref is :, {external_ref}")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
+            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT';"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result of upi_merchant_config table is :, {result}")
             upi_mc_id = result['id'].values[0]
             logger.debug(f"upi_mc_id from upi_merchant_config table : {upi_mc_id}")
             mid = result['mid'].values[0]
@@ -175,41 +179,25 @@ def test_common_100_103_170():
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
 
         except Exception as e:
-            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-                GlobalVariables.time_calc.execution.pause()
-                print(colored(
-                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
-                        shutil.get_terminal_size().columns, "="), 'cyan'))
-            GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            GlobalVariables.EXCEL_TC_Execution = "Fail"
-            GlobalVariables.Incomplete_ExecutionCount += 1
-
-            GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            logger.exception(f"Execution is completed for the test case : {testcase_id}")
+            Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
+
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_REFUND_PENDING",
@@ -223,18 +211,15 @@ def test_common_100_103_170():
                 }
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
-                loginPage = LoginPage(app_driver)
+                login_page = LoginPage(app_driver)
                 logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-                loginPage.perform_login(app_username, app_password)
-
-                homePage = HomePage(app_driver)
-                homePage.wait_for_navigation_to_load()
-                homePage.wait_for_home_page_load()
-                homePage.check_home_page_logo()
-                homePage.click_on_history()
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -271,14 +256,8 @@ def test_common_100_103_170():
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_app_val_exe_failed()
-                print("App Validation failed due to exception - " + str(e))
-                logger.exception(f"App Validation failed due to exception - {e}")
-                msg = msg + "App Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_app_val_result = "Fail"
+                Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-
         # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
@@ -296,37 +275,47 @@ def test_common_100_103_170():
                     "txn_type": txn_type,
                     "mid": mid,
                     "tid": tid,
-                    "org_code": org_code_txn,
                     "date": date
-                     }
+                }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password
-                                                                        })
+                api_details = DBProcessor.get_api_details('txnlist',request_body={
+                    "username": app_username,
+                    "password": app_password
+                })
 
                 logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                responseInList = response["txns"]
-                logger.debug(f"Response received for transaction details api is : {responseInList}")
+                response_in_list = response["txns"]
+                logger.debug(f"Response received for transaction details api is : {response_in_list}")
 
-                for elements in responseInList:
+                for elements in response_in_list:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
-                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        logger.debug(f"status_api is : {status_api}")
+                        amount_api = int(elements["amount"])
+                        logger.debug(f"amount_api is : {amount_api}")
                         payment_mode_api = elements["paymentMode"]
+                        logger.debug(f"payment_mode_api is : {payment_mode_api}")
                         state_api = elements["states"][0]
+                        logger.debug(f"state_api is : {state_api}")
                         rrn_api = elements["rrNumber"]
+                        logger.debug(f"rrn_api is : {rrn_api}")
                         settlement_status_api = elements["settlementStatus"]
+                        logger.debug(f"settlement_status_api is : {settlement_status_api}")
                         issuer_code_api = elements["issuerCode"]
+                        logger.debug(f"issuer_code_api is : {issuer_code_api}")
                         acquirer_code_api = elements["acquirerCode"]
-                        orgCode_api = elements["orgCode"]
+                        logger.debug(f"acquirer_code_api is : {acquirer_code_api}")
                         mid_api = elements["mid"]
+                        logger.debug(f"mid_api is : {mid_api}")
                         tid_api = elements["tid"]
+                        logger.debug(f"tid_api is : {tid_api}")
                         txn_type_api = elements["txnType"]
+                        logger.debug(f"txn_type_api is : {txn_type_api}")
                         date_api = elements["postingDate"]
+                        logger.debug(f"date_api is : {date_api}")
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -340,19 +329,14 @@ def test_common_100_103_170():
                     "txn_type": txn_type_api,
                     "mid": mid_api,
                     "tid": tid_api,
-                    "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
 
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
-                print("API Validation failed due to exception - " + str(e))
-                logger.exception(f"API Validation failed due to exception : {e} ")
-                msg = msg + "API Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_api_val_result = 'Fail'
+                Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
@@ -360,6 +344,7 @@ def test_common_100_103_170():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
+
                 expected_db_values = {
                     "pmt_status": "UPG_REFUND_PENDING",
                     "pmt_state": "UPG_REFUND_PENDING",
@@ -390,45 +375,70 @@ def test_common_100_103_170():
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
+                query = "select * from txn where id='" + txn_id + "';"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from txn table : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"status_db is : {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                logger.debug(f"payment_mode_db is : {payment_mode_db}")
+                amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"amount_db is : {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"state_db is : {state_db}")
                 payment_gateway_db = result["payment_gateway"].iloc[0]
+                logger.debug(f"payment_gateway_db is : {payment_gateway_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"acquirer_code_db is : {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"bank_code_db is : {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"settlement_status_db is : {settlement_status_db}")
                 tid_db = result['tid'].values[0]
+                logger.debug(f"tid_db is : {tid_db}")
                 mid_db = result['mid'].values[0]
+                logger.debug(f"mid_db is : {mid_db}")
                 rrn_db = result['rr_number'].values[0]
+                logger.debug(f"rrn_db is : {rrn_db}")
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + txn_id + "';"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from upi_txn table : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"upi_status_db is : {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"upi_txn_type_db is : {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"upi_bank_code_db is : {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"upi_mc_id_db is : {upi_mc_id_db}")
 
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-                logger.debug(f"query : {query}")
+                query = "select * from invalid_pg_request where request_id ='" + request_id + "';"
+                logger.debug(f"Query to fetch data from invalid_pg_request table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from invalid_pg_request table : {result}")
                 ipr_payment_mode = result["payment_mode"].iloc[0]
+                logger.debug(f"ipr_payment_mode is : {ipr_payment_mode}")
                 ipr_bank_code = result["bank_code"].iloc[0]
+                logger.debug(f"ipr_bank_code is : {ipr_bank_code}")
                 ipr_org_code = result["org_code"].iloc[0]
+                logger.debug(f"ipr_org_code is : {ipr_org_code}")
                 ipr_amount = result["amount"].iloc[0]
+                logger.debug(f"ipr_amount is : {ipr_amount}")
                 ipr_rrn = result["rrn"].iloc[0]
+                logger.debug(f"ipr_rrn is : {ipr_rrn}")
                 ipr_mid = result["mid"].iloc[0]
+                logger.debug(f"ipr_mid is : {ipr_mid}")
                 ipr_tid = result["tid"].iloc[0]
+                logger.debug(f"ipr_tid is : {ipr_tid}")
                 ipr_config_id = result["config_id"].iloc[0]
+                logger.debug(f"ipr_config_id is : {ipr_config_id}")
                 ipr_vpa = result["vpa"].iloc[0]
+                logger.debug(f"ipr_vpa is : {ipr_vpa}")
                 ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+                logger.debug(f"ipr_pg_merchant_id is : {ipr_pg_merchant_id}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -461,46 +471,33 @@ def test_common_100_103_170():
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
-                print("DB Validation failed due to exception - " + str(e))
-                logger.exception(f"DB Validation failed due to exception :  {e}")
-                msg = msg + "DB Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_db_val_result = 'Fail'
+                Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
-        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
-                      'cyan'))
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
     # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-@pytest.mark.portalVal
 @pytest.mark.appVal
 def test_common_100_103_171():
-
     """
     Sub Feature Code: UI_Common_PM_RP_RP_UPI_UPG_FAILED_VIA_AXIS_DIRECT_when_UPGRefund_&_UPGAutoRefund_Disabled_Tid_dep
     Sub Feature Description: Tid Dep - Performing a upg txn using failed callback when upg refund and upg autorefund are disabled
-    TC naming code description:
-    100: Payment Method
-    103: RemotePay
-    171: TC171
+    TC naming code description:100: Payment Method,103: RemotePay,171: TC171
     """
-
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
-        print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -517,6 +514,7 @@ def test_common_100_103_171():
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result of org_employee table is : {result}")
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
@@ -526,11 +524,11 @@ def test_common_100_103_171():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
-                                                                                    "password": portal_password,
-                                                                                    "settingForOrgCode": org_code
-                                                                                    }
-                                                  )
+        api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={
+            "username": portal_username,
+            "password": portal_password,
+            "settingForOrgCode": org_code
+        })
 
         api_details["RequestBody"]["settings"]["upgRefundEnabled"] = "false"
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "false"
@@ -544,53 +542,60 @@ def test_common_100_103_171():
 
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password
-                                                                              })
-        response = APIProcessor.send_request(api_details)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
 
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
+        GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)------------------
 
-        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         msg = ""
         GlobalVariables.time_calc.setup.end()
-        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
-            print(
-                colored("Execution Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),'cyan'))
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(300, 500)
+            logger.info(f"amount is: {amount}")
 
             query = "select * from upi_merchant_config where bank_code = 'AXIS_DIRECT' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug((f"upi_merchant_config query is :", result))
             pg_merchant_id = result['pgMerchantId'].values[0]
+            logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
             vpa = result['vpa'].values[0]
-            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
+            logger.debug(f"Query result, vpa : {vpa}")
 
             rrn = random.randint(1111110, 9999999)
-            request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             logger.debug(f"generated random rrn number is : {rrn}")
+            request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
+            logger.debug(f"generated random request_id number is : {request_id}")
             ref_id = '211115084892E01' + str(rrn)
+            logger.debug(f"generated random ref_id number is : {ref_id}")
 
-            logger.debug(f"replacing the Txn_id with {request_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
-            api_details = DBProcessor.get_api_details('axis_direct_upi_failed_curl',
-                                                      curl_data={'merchantTransactionId': request_id,
-                                                                 'transactionAmount': amount,
-                                                                 'merchantId': str(pg_merchant_id),
-                                                                 'creditVpa': vpa,
-                                                                 'rrn': rrn,
-                                                                 'gatewayTransactionId': ref_id
-                                                                 })
+
+            api_details = DBProcessor.get_api_details('axis_direct_upi_failed_curl',curl_data={
+                'merchantTransactionId': request_id,
+                'transactionAmount': amount,
+                'merchantId': str(pg_merchant_id),
+                'creditVpa': vpa,
+                'rrn': rrn,
+                'gatewayTransactionId': ref_id
+            })
+
             curl_data = api_details['CurlData']
             logger.debug(f"After replacing the data the updated curl_data is : {curl_data}")
 
@@ -603,37 +608,35 @@ def test_common_100_103_171():
             logger.debug(f"OUTPUT : {data_buffer}")
 
             logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-            print(type(data_buffer))
-            api_details = DBProcessor.get_api_details('confirm_axisdirect',
-                                                      request_body={"data": data_buffer}
-                                                      )
 
+            api_details = DBProcessor.get_api_details('confirm_axisdirect',request_body={"data": data_buffer})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"response : {response}")
+            logger.debug(f"confirm_axisdirect response is : {response}")
 
             query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-            print(query)
+            logger.debug(f"Query to fetch invalid_pg_request from the DB : {query}")
             q_result = DBProcessor.getValueFromDB(query)
-            print(q_result)
+            logger.debug(f"Query result of invalid_pg_request table is : {q_result}")
             txn_id = q_result['txn_id'].iloc[0]
+            logger.debug(f"txn_id is : {txn_id}")
+
             query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to fetch transaction id from database : {query}")
+            logger.debug(f"Query to fetch transaction id from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            status = result['status'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
+            logger.debug(f"Query result of txn table: {result}")
             org_code_txn = result['org_code'].values[0]
+            logger.debug(f"org_code_txn is : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
-            auth_code = result['auth_code'].values[0]
+            logger.debug(f"txn_type is : {txn_type}")
             posting_date = result['posting_date'].values[0]
+            logger.debug(f"posting_date is : {posting_date}")
             external_ref = result['external_ref'].values[0]
+            logger.debug(f"external_ref is : {external_ref}")
 
             query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result of upi_merchant_config table: {result}")
             upi_mc_id = result['id'].values[0]
             logger.debug(f"upi_mc_id from upi_merchant_config table : {upi_mc_id}")
             mid = result['mid'].values[0]
@@ -643,41 +646,24 @@ def test_common_100_103_171():
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in try block of testcase function".center(shutil.get_terminal_size().columns,"="), 'cyan'))
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
-            if GlobalVariables.time_calc.execution.is_started and (not GlobalVariables.time_calc.execution.is_paused):
-                GlobalVariables.time_calc.execution.pause()
-                print(colored(
-                    "Execution Timer paused in except block (bcz not paused in try block) of testcase function".center(
-                        shutil.get_terminal_size().columns, "="), 'cyan'))
-            GlobalVariables.time_calc.execution.resume()
-            print(colored("Execution Timer resumed in execpt block of testcase function".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            GlobalVariables.EXCEL_TC_Execution = "Fail"
-            GlobalVariables.Incomplete_ExecutionCount += 1
-
-            GlobalVariables.time_calc.execution.pause()
-            print(colored("Execution Timer paused in except block of testcase function before pytest fails".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            logger.exception(f"Execution is completed for the test case : {testcase_id}")
+            Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
-        print(colored("Validation Timer started in testcase function".center(shutil.get_terminal_size().columns, "="),
-                      'cyan'))
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
 
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
+
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "UPG_FAILED",
@@ -691,19 +677,15 @@ def test_common_100_103_171():
                 }
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
-                loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-                loginPage.perform_login(app_username, app_password)
-
-                homePage = HomePage(app_driver)
-                homePage.wait_for_navigation_to_load()
-                homePage.wait_for_home_page_load()
-                homePage.check_home_page_logo()
-                homePage.click_on_history()
+                login_page = LoginPage(app_driver)
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -716,15 +698,13 @@ def test_common_100_103_171():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
-                logger.info(
-                    f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
                 actual_app_values = {
                     "pmt_status": app_payment_status.split(':')[1],
@@ -742,12 +722,7 @@ def test_common_100_103_171():
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_app_val_exe_failed()
-                print("App Validation failed due to exception - " + str(e))
-                logger.exception(f"App Validation failed due to exception - {e}")
-                msg = msg + "App Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_app_val_result = "Fail"
+                Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of App Validation---------------------------------------
@@ -757,6 +732,7 @@ def test_common_100_103_171():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(posting_date)
+
                 expected_api_values = {
                     "pmt_status": "UPG_FAILED",
                     "txn_amt": amount,
@@ -775,30 +751,42 @@ def test_common_100_103_171():
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnDetails',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password,
-                                                                        "txnId": txn_id})
-                print("API DETAILS for original_txn_id:", api_details)
+                api_details = DBProcessor.get_api_details('txnDetails',request_body={
+                    "username": app_username,
+                    "password": app_password,
+                    "txnId": txn_id
+                })
+
+                logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for transaction details api is : {response}")
-                print(response)
-
-                logger.debug("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                logger.debug("status_api is", status_api)
+                amount_api = int(response["amount"])
+                logger.debug("amount_api is", amount_api)
                 payment_mode_api = response["paymentMode"]
+                logger.debug("payment_mode_api is", payment_mode_api)
                 state_api = response["states"][0]
+                logger.debug("state_api is", state_api)
                 rrn_api = response["rrNumber"]
+                logger.debug("rrn_api is", rrn_api)
                 settlement_status_api = response["settlementStatus"]
+                logger.debug("settlement_status_api is", settlement_status_api)
                 issuer_code_api = response["issuerCode"]
+                logger.debug("issuer_code_api is", issuer_code_api)
                 acquirer_code_api = response["acquirerCode"]
-                orgCode_api = response["orgCode"]
+                logger.debug("acquirer_code_api is", acquirer_code_api)
+                org_code_api = response["orgCode"]
+                logger.debug("org_code_api is", org_code_api)
                 mid_api = response["mid"]
+                logger.debug("mid_api is", mid_api)
                 tid_api = response["tid"]
+                logger.debug("tid_api is", tid_api)
                 txn_type_api = response["txnType"]
+                logger.debug("txn_type_api is", txn_type_api)
                 date_api = response["postingDate"]
+                logger.debug("date_api is", date_api)
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -812,17 +800,15 @@ def test_common_100_103_171():
                     "txn_type": txn_type_api,
                     "mid": mid_api,
                     "tid": tid_api,
-                    "org_code": orgCode_api,
+                    "org_code": org_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
+
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
-                print("API Validation failed due to exception - " + str(e))
-                logger.exception(f"API Validation failed due to exception : {e} ")
-                msg = msg + "API Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_api_val_result = 'Fail'
+                Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
@@ -860,45 +846,70 @@ def test_common_100_103_171():
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
+                query = "select * from txn where id='" + txn_id + "';"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result of txn table is : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"status_db is : {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                logger.debug(f"payment_mode_db is : {payment_mode_db}")
+                amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"amount_db is : {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"state_db is : {state_db}")
                 payment_gateway_db = result["payment_gateway"].iloc[0]
+                logger.debug(f"payment_gateway_db is : {payment_gateway_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"acquirer_code_db is : {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"bank_code_db is : {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"settlement_status_db is : {settlement_status_db}")
                 tid_db = result['tid'].values[0]
+                logger.debug(f"tid_db is : {tid_db}")
                 mid_db = result['mid'].values[0]
+                logger.debug(f"mid_db is : {mid_db}")
                 rrn_db = result['rr_number'].values[0]
+                logger.debug(f"rrn_db is : {rrn_db}")
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                query = "select * from upi_txn where txn_id='" + txn_id + "';"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result of upi_txn table is : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"upi_status_db is : {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"upi_txn_type_db is : {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"upi_bank_code_db is : {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"upi_mc_id_db is : {upi_mc_id_db}")
 
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-                logger.debug(f"query : {query}")
+                query = "select * from invalid_pg_request where request_id ='" + request_id + "';"
+                logger.debug(f"Query to fetch data from invalid_pg_request table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from invalid_pg_request table : {result}")
                 ipr_payment_mode = result["payment_mode"].iloc[0]
+                logger.debug(f"ipr_payment_mode is : {ipr_payment_mode}")
                 ipr_bank_code = result["bank_code"].iloc[0]
+                logger.debug(f"ipr_bank_code is : {ipr_bank_code}")
                 ipr_org_code = result["org_code"].iloc[0]
+                logger.debug(f"ipr_org_code is : {ipr_org_code}")
                 ipr_amount = result["amount"].iloc[0]
+                logger.debug(f"ipr_amount is : {ipr_amount}")
                 ipr_rrn = result["rrn"].iloc[0]
+                logger.debug(f"ipr_rrn is : {ipr_rrn}")
                 ipr_mid = result["mid"].iloc[0]
+                logger.debug(f"ipr_mid is : {ipr_mid}")
                 ipr_tid = result["tid"].iloc[0]
+                logger.debug(f"ipr_tid is : {ipr_tid}")
                 ipr_config_id = result["config_id"].iloc[0]
+                logger.debug(f"ipr_config_id is : {ipr_config_id}")
                 ipr_vpa = result["vpa"].iloc[0]
+                logger.debug(f"ipr_vpa is : {ipr_vpa}")
                 ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
+                logger.debug(f"ipr_pg_merchant_id is : {ipr_pg_merchant_id}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -931,16 +942,11 @@ def test_common_100_103_171():
                 logger.debug(f"actual_db_values : {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
-                print("DB Validation failed due to exception - " + str(e))
-                logger.exception(f"DB Validation failed due to exception :  {e}")
-                msg = msg + "DB Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_db_val_result = 'Fail'
+                Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
-        print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
-                      'cyan'))
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
     # -------------------------------------------End of Validation---------------------------------------------
