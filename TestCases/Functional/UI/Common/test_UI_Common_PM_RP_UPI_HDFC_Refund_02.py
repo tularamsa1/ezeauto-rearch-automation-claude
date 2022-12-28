@@ -1146,7 +1146,7 @@ def test_common_100_103_075():
                     "pmt_mode_3": fully_refunded_app_payment_mode,
                     "settle_status_3": fully_refunded_app_settlement_status,
                     "txn_id_3": fully_refunded_app_txn_id,
-                    "txn_amt_3": "{:.2f}".format(fully_refunded_app_payment_amt),
+                    "txn_amt_3": str(fully_refunded_app_payment_amt),
                     "customer_name_3": fully_refunded_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": fully_refunded_payment_msg,
