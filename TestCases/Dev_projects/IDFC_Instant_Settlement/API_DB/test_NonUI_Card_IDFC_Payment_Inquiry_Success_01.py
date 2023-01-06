@@ -2,7 +2,7 @@ import time
 import pytest
 import random
 import sys
-from Configuration import Configuration
+from Configuration import Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
     merchant_creator
@@ -16,13 +16,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_038():
+def test_d100_d101_038():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_DEBIT_VISA
         Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV DEBIT VISA card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         038: TC038
     """
 
@@ -31,6 +31,9 @@ def test_D100_D101_038():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -38,12 +41,21 @@ def test_D100_D101_038():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -51,19 +63,19 @@ def test_D100_D101_038():
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
-                                                      "username": super_username ,
+                                                      "username": super_username,
                                                       "password": super_password,
-                                                      })
+                                                  })
 
-        #
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -73,34 +85,48 @@ def test_D100_D101_038():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                          request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                              org_code=org_code, acquisition="IDFC", payment_gateway="IDFC_FDC"),
+                                                        "username": app_username,
+                                                        "password": app_password,
+                                                        "amount": str(original_amount),
+                                                        "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                        "nonce": card_details['Nonce'],
+                                                        "externalRefNumber": str(card_details['External Ref']) + str(
+                                                            random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -258,13 +284,13 @@ def test_D100_D101_038():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_039():
+def test_d100_d101_039():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_DEBIT_MASTER
         Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV DEBIT MASTER card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         039: TC039
     """
 
@@ -273,6 +299,9 @@ def test_D100_D101_039():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -280,12 +309,21 @@ def test_D100_D101_039():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -293,21 +331,22 @@ def test_D100_D101_039():
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
-                                                      "username": super_username ,
+                                                      "username": super_username,
                                                       "password": super_password,
-                                                      })
+                                                  })
 
-        #
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             GlobalVariables.time_calc.execution.start()
@@ -315,34 +354,50 @@ def test_D100_D101_039():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -500,13 +555,13 @@ def test_D100_D101_039():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_040():
+def test_d100_d101_040():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_DEBIT_RUPAY
         Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         040: TC040
     """
 
@@ -515,6 +570,9 @@ def test_D100_D101_040():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -522,12 +580,21 @@ def test_D100_D101_040():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -535,21 +602,22 @@ def test_D100_D101_040():
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
-                                                      "username": super_username ,
+                                                      "username": super_username,
                                                       "password": super_password,
-                                                      })
+                                                  })
 
-        #
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             GlobalVariables.time_calc.execution.start()
@@ -557,34 +625,50 @@ def test_D100_D101_040():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -741,13 +825,13 @@ def test_D100_D101_040():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_041():
+def test_d100_d101_041():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_CREDIT_VISA
         Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV CREDIT VISA card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         041: TC041
     """
 
@@ -756,6 +840,9 @@ def test_D100_D101_041():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -763,12 +850,21 @@ def test_D100_D101_041():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -776,21 +872,22 @@ def test_D100_D101_041():
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
-                                                      "username": super_username ,
+                                                      "username": super_username,
                                                       "password": super_password,
-                                                      })
+                                                  })
 
-        #
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             GlobalVariables.time_calc.execution.start()
@@ -798,34 +895,50 @@ def test_D100_D101_041():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -983,13 +1096,13 @@ def test_D100_D101_041():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_042():
+def test_d100_d101_042():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_CREDIT_MASTER
         Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV CREDIT MASTER card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         042: TC042
     """
 
@@ -998,6 +1111,9 @@ def test_D100_D101_042():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -1005,12 +1121,21 @@ def test_D100_D101_042():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -1018,21 +1143,22 @@ def test_D100_D101_042():
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
-                                                      "username": super_username ,
+                                                      "username": super_username,
                                                       "password": super_password,
-                                                      })
+                                                  })
 
-        #
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             GlobalVariables.time_calc.execution.start()
@@ -1040,34 +1166,50 @@ def test_D100_D101_042():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1225,13 +1367,13 @@ def test_D100_D101_042():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_043():
+def test_d100_d101_043():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_Success_Inquiry_Instant_Settlement_EMV_CREDIT_RUPAY
         Sub Feature Description: API that performs success inquiry on IS settlement when IS call is Timeout for EMV CREDIT RUPAY card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         043: TC043
     """
 
@@ -1240,6 +1382,9 @@ def test_D100_D101_043():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -1247,12 +1392,21 @@ def test_D100_D101_043():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -1260,21 +1414,22 @@ def test_D100_D101_043():
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
-                                                      "username": super_username ,
+                                                      "username": super_username,
                                                       "password": super_password,
-                                                      })
+                                                  })
 
-        #
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         #-----------------------------------------Start of Test Execution-------------------------------------
         try:
             GlobalVariables.time_calc.execution.start()
@@ -1282,34 +1437,50 @@ def test_D100_D101_043():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()

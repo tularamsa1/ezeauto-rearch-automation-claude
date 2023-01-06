@@ -3,7 +3,7 @@ import time
 import pytest
 import random
 import sys
-from Configuration import Configuration
+from Configuration import Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
     merchant_creator
@@ -17,13 +17,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_019():
+def test_d100_d101_019():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_for_failed_txn
         Sub Feature Description: API that should not perform IDFC instant settlement for failed txn via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         019: TC019
     """
 
@@ -32,6 +32,9 @@ def test_D100_D101_019():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -39,12 +42,21 @@ def test_D100_D101_019():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -59,10 +71,11 @@ def test_D100_D101_019():
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
