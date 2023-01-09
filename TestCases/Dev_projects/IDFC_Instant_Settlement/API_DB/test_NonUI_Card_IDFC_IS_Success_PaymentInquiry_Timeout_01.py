@@ -1,5 +1,4 @@
 import time
-
 import pytest
 import random
 import sys
@@ -17,14 +16,14 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d100_d101_001():
+def test_d100_d101_092():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_DEBIT_VISA
-        Sub Feature Description: API that performs EMV IDFC instant settlement txn using DEBIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_Success_and_Inquiry_timeout_EMV_DEBIT_VISA
+        Sub Feature Description: API that performs IS Success and inquiry timeout on IS settlement for EMV DEBIT VISA card via IDFC_FDC
         TC naming code description:
         d100: Dev Projects
         d101: IDFC Instant Settlement
-        001: TC001
+        092: TC092
     """
 
     try:
@@ -60,6 +59,7 @@ def test_d100_d101_001():
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_idfc_inquiryApi_read_timeout('1')
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -74,7 +74,8 @@ def test_d100_d101_001():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -84,13 +85,17 @@ def test_d100_d101_001():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
@@ -101,10 +106,11 @@ def test_d100_d101_001():
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
@@ -196,16 +202,16 @@ def test_d100_d101_001():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_POSTED", "is_recon_status":"NULL",
                                     "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -264,6 +270,7 @@ def test_d100_d101_001():
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
+
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
                 logger.info(f"Completed DB validation for the test case : {testcase_id}")
@@ -281,17 +288,18 @@ def test_d100_d101_001():
 
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d100_d101_002():
+def test_d100_d101_093():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_DEBIT_MASTER
-        Sub Feature Description: API that performs EMV IDFC instanct settlement txn using DEBIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_Success_and_Inquiry_timeout_EMV_DEBIT_MASTER
+        Sub Feature Description: API that performs IS Success and inquiry timeout on IS settlement for EMV DEBIT MASTER card via IDFC_FDC
         TC naming code description:
         d100: Dev Projects
         d101: IDFC Instant Settlement
-        002: TC002
+        093: TC093
     """
 
     try:
@@ -327,6 +335,7 @@ def test_d100_d101_002():
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_idfc_inquiryApi_read_timeout('1')
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -356,12 +365,12 @@ def test_d100_d101_002():
                                                           "deviceSerial": merchant_creator.get_device_serial_of_merchant(
                                                               org_code=org_code, acquisition="IDFC",
                                                               payment_gateway="IDFC_FDC"),
-                                                           "username": app_username,
-                                                           "password": app_password,
-                                                           "amount": str(original_amount),
-                                                           "ezetapDeviceData": card_details['Ezetap Device Data'],
-                                                           "nonce": card_details['Nonce'],
-                                                           "externalRefNumber": str(card_details['External Ref']) + str(
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
                                                               random.randint(0, 9))})
 
             #
@@ -375,7 +384,8 @@ def test_d100_d101_002():
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
                                                           request_body={"username": app_username,
                                                                         "password": app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
                                                                         "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
@@ -420,7 +430,7 @@ def test_d100_d101_002():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -468,18 +478,16 @@ def test_d100_d101_002():
                 msf_per = float(result["prop_value"].iloc[0])
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
-                                    "is_txn_amt": float(original_amount), "is_msf_percentage": msf_per,
-                                    "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
-                                    "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
-                                    "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
-                                    "is_inquiry_resp_desc": "SUCCESS",
-                                    "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
+                                    "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
+                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_POSTED", "is_recon_status":"NULL",
                                     "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -559,14 +567,14 @@ def test_d100_d101_002():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d100_d101_003():
+def test_d100_d101_094():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_DEBIT_RUPAY
-        Sub Feature Description: API that performs EMV IDFC instant settlement txn using DEBIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_Success_and_Inquiry_timeout_EMV_DEBIT_RUPAY
+        Sub Feature Description: API that performs IS Success and inquiry timeout on IS settlement for EMV DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
         d100: Dev Projects
         d101: IDFC Instant Settlement
-        003: TC003
+        094: TC094
     """
 
     try:
@@ -602,6 +610,7 @@ def test_d100_d101_003():
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_idfc_inquiryApi_read_timeout('1')
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -696,7 +705,7 @@ def test_d100_d101_003():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -742,21 +751,18 @@ def test_d100_d101_003():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
-
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"DEBIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
-                                    "is_txn_amt": float(original_amount), "is_msf_percentage": msf_per,
-                                    "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
-                                    "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
-                                    "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
-                                    "is_inquiry_resp_desc": "SUCCESS",
-                                    "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
+                                    "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
+                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_POSTED", "is_recon_status":"NULL",
                                     "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -835,14 +841,14 @@ def test_d100_d101_003():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d100_d101_004():
+def test_d100_d101_095():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_CREDIT_VISA
-        Sub Feature Description: API that performs EMV IDFC instant settlement txn using CREDIT VISA card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_Success_and_Inquiry_timeout_EMV_CREDIT_VISA
+        Sub Feature Description: API that performs IS Success and inquiry timeout on IS settlement for EMV CREDIT VISA card via IDFC_FDC
         TC naming code description:
         d100: Dev Projects
         d101: IDFC Instant Settlement
-        004: TC004
+        095: TC095
     """
 
     try:
@@ -878,6 +884,7 @@ def test_d100_d101_004():
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_idfc_inquiryApi_read_timeout('1')
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -972,7 +979,7 @@ def test_d100_d101_004():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -1018,21 +1025,18 @@ def test_d100_d101_004():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
-
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"VISA", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
-                                    "is_txn_amt": float(original_amount), "is_msf_percentage": msf_per,
-                                    "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
-                                    "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
-                                    "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
-                                    "is_inquiry_resp_desc": "SUCCESS",
-                                    "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
+                                    "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
+                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_POSTED", "is_recon_status":"NULL",
                                     "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -1112,14 +1116,14 @@ def test_d100_d101_004():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d100_d101_005():
+def test_d100_d101_096():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_CREDIT_MASTER
-        Sub Feature Description: API that performs EMV IDFC instant settlement txn using CREDIT MASTER card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_Success_and_Inquiry_timeout_EMV_CREDIT_MASTER
+        Sub Feature Description: API that performs IS Success and inquiry timeout on IS settlement for EMV CREDIT MASTER card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
-        005: TC005
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
+        096: TC096
     """
 
     try:
@@ -1155,6 +1159,7 @@ def test_d100_d101_005():
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_idfc_inquiryApi_read_timeout('1')
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -1249,7 +1254,7 @@ def test_d100_d101_005():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -1295,21 +1300,18 @@ def test_d100_d101_005():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
-
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"MASTER_CARD", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
-                                    "is_txn_amt": float(original_amount), "is_msf_percentage": msf_per,
-                                    "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
-                                    "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
-                                    "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
-                                    "is_inquiry_resp_desc": "SUCCESS",
-                                    "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
+                                    "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
+                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_POSTED", "is_recon_status":"NULL",
                                     "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
@@ -1389,14 +1391,14 @@ def test_d100_d101_005():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_d100_d101_006():
+def test_d100_d101_097():
     """
-        Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_CREDIT_RUPAY
-        Sub Feature Description: API that performs EMV IDFC instant settlement txn using CREDIT RUPAY card via IDFC_FDC
+        Sub Feature Code: NonUI_Common_IDFC_Card_IS_Success_and_Inquiry_timeout_EMV_CREDIT_RUPAY
+        Sub Feature Description: API that performs IS Success and inquiry timeout on IS settlement for EMV CREDIT RUPAY card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
-        006: TC006
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
+        097: TC097
     """
 
     try:
@@ -1432,6 +1434,7 @@ def test_d100_d101_006():
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
+        card_processor.update_idfc_inquiryApi_read_timeout('1')
         card_processor.update_instant_settle_clientcode('EZETAP')
         api_details = DBProcessor.get_api_details('DB Refresh',
                                                   request_body={
@@ -1526,7 +1529,7 @@ def test_d100_d101_006():
                                         "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
                                          "pmt_card_bin":bin_no,
                                          "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT", "card_txn_type":"EMV",
-                                         "txn_type":"CHARGE", "acq_code":"IDFC","voidable":False, "refundable":False}
+                                         "txn_type":"CHARGE", "acq_code":"IDFC", "voidable":False, "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     amount = float(confirm_response['amount'])
@@ -1572,21 +1575,18 @@ def test_d100_d101_006():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
-
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
-                                    "pmt_state":"IS_SETTLED", "settle_status": "IS_SETTLED",
+                                    "pmt_state":"IS_PENDING", "settle_status": "IS_PENDING",
                                     "pmt_card_bin":bin_no,
                                     "pmt_card_brand":"RUPAY", "pmt_card_type":"CREDIT",
                                     "txn_type":"CHARGE", "acq_code":"IDFC", "pmt_gateway":"IDFC_FDC",
-                                    "is_txn_amt": float(original_amount), "is_msf_percentage": msf_per,
-                                    "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
-                                    "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
-                                    "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
-                                    "is_inquiry_resp_desc": "SUCCESS",
-                                    "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
+                                    "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
+                                    "is_resp_desc":"SUCCESS","is_error_code":"NULL",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"TIMEOUT",
+                                    "is_inquiry_error_code":"NULL",
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_POSTED", "is_recon_status":"NULL",
                                     "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 

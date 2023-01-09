@@ -223,7 +223,9 @@ def test_d100_d101_056():
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
+                                    "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"Sorry!! No Matching Information found for the given input values"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -261,6 +263,8 @@ def test_d100_d101_056():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -273,7 +277,9 @@ def test_d100_d101_056():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -504,7 +510,9 @@ def test_d100_d101_057():
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
+                                    "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"Sorry!! No Matching Information found for the given input values"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -542,6 +550,8 @@ def test_d100_d101_057():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -554,7 +564,9 @@ def test_d100_d101_057():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -784,7 +796,9 @@ def test_d100_d101_058():
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
+                                    "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"Sorry!! No Matching Information found for the given input values"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -822,6 +836,8 @@ def test_d100_d101_058():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -834,7 +850,9 @@ def test_d100_d101_058():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1063,7 +1081,9 @@ def test_d100_d101_059():
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
+                                    "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"Sorry!! No Matching Information found for the given input values"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1101,6 +1121,8 @@ def test_d100_d101_059():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -1113,7 +1135,9 @@ def test_d100_d101_059():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1343,7 +1367,9 @@ def test_d100_d101_060():
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
+                                    "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"Sorry!! No Matching Information found for the given input values"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1381,6 +1407,8 @@ def test_d100_d101_060():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -1393,7 +1421,9 @@ def test_d100_d101_060():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1623,7 +1653,9 @@ def test_d100_d101_061():
                                     "is_resp_desc":"TIMEOUT","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
-                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values","is_settle_status":"IS_FAILED"}
+                                    "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
+                                    "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"Sorry!! No Matching Information found for the given input values"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1661,6 +1693,8 @@ def test_d100_d101_061():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -1673,7 +1707,9 @@ def test_d100_d101_061():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
