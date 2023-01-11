@@ -195,7 +195,8 @@ def test_d100_d101_013():
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -233,6 +234,8 @@ def test_d100_d101_013():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -245,7 +248,9 @@ def test_d100_d101_013():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -447,7 +452,8 @@ def test_d100_d101_014():
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -485,6 +491,8 @@ def test_d100_d101_014():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -497,7 +505,9 @@ def test_d100_d101_014():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -700,7 +710,8 @@ def test_d100_d101_015():
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -738,6 +749,8 @@ def test_d100_d101_015():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -750,7 +763,9 @@ def test_d100_d101_015():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -953,7 +968,8 @@ def test_d100_d101_016():
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -991,6 +1007,8 @@ def test_d100_d101_016():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -1003,7 +1021,9 @@ def test_d100_d101_016():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1205,7 +1225,8 @@ def test_d100_d101_017():
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1243,6 +1264,8 @@ def test_d100_d101_017():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -1255,7 +1278,9 @@ def test_d100_d101_017():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
@@ -1458,7 +1483,8 @@ def test_d100_d101_018():
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
                                     "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -1496,6 +1522,8 @@ def test_d100_d101_018():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -1508,7 +1536,9 @@ def test_d100_d101_018():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
