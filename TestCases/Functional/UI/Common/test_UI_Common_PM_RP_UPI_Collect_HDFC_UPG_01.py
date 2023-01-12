@@ -75,6 +75,21 @@ def test_common_100_103_033():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"Query result from upi_merchant_config : {upi_mc_id}")
+        mid = result['mid'].values[0]
+        logger.debug(f"Query result from upi_merchant_config : {mid}")
+        tid = result['tid'].values[0]
+        logger.debug(f"Query result from upi_merchant_config : {tid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -158,17 +173,6 @@ def test_common_100_103_033():
             logger.debug(f"Query result from txn_id : {auth_code}")
             posting_date = result['created_time'].values[0]
             logger.debug(f"Query result from txn_id : {posting_date}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"Query result from upi_merchant_config : {upi_mc_id}")
-            mid = result['mid'].values[0]
-            logger.debug(f"Query result from upi_merchant_config : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"Query result from upi_merchant_config : {tid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -539,6 +543,21 @@ def test_common_100_103_034():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"upi_mc_id from txn table are : {upi_mc_id}")
+        mid = result['mid'].values[0]
+        logger.debug(f"mid from txn table are : {mid}")
+        tid = result['tid'].values[0]
+        logger.debug(f"tid from txn table are : {tid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -622,17 +641,6 @@ def test_common_100_103_034():
             logger.debug(f"auth_code from txn table are : {auth_code}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"posting_date from txn table are : {posting_date}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"upi_mc_id from txn table are : {upi_mc_id}")
-            mid = result['mid'].values[0]
-            logger.debug(f"mid from txn table are : {mid}")
-            tid = result['tid'].values[0]
-            logger.debug(f"tid from txn table are : {tid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1034,6 +1042,8 @@ def test_common_100_103_035():
             pgMerchantId = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pgMerchantId}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             vpa = 'abccccc@ybl'
@@ -1562,7 +1572,10 @@ def test_common_100_103_036():
             mid = result['mid'].values[0]
             tid = result['tid'].values[0]
             upi_mc_id = result['id'].values[0]
-            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id} and upi_mc_id :{upi_mc_id} and mid :{mid} and tid :{tid} and posting date:{posting_date}")
+            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id} and upi_mc_id :{upi_mc_id} "
+                         f"and mid :{mid} and tid :{tid} and posting date:{posting_date}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             vpa = 'abccccc@ybl'
@@ -2028,7 +2041,7 @@ def test_common_100_103_037():
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
 
-            logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"

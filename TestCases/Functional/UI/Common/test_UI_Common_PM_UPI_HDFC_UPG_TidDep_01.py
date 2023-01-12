@@ -97,6 +97,11 @@ def test_common_100_101_108():
             logger.debug(f"mid from upi_merchant_config table : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from upi_merchant_config table : {tid}")
+            vpa = result['vpa'].values[0]
+            logger.debug(f"fetching vpa from db: {vpa}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+
             query = "select device_serial from terminal_info where tid = '" + str(tid) + "';"
             logger.debug(f"Query to fetch device serial number from the terminal_info for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
