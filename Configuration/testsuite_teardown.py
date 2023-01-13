@@ -252,3 +252,33 @@ def delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, 
                                                                           "password": portal_password})
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for DB refresh is : {response}")
+
+
+def delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code):
+    """
+    This method is to delete the static_qr data from staticqr_intent table based on org code
+    """
+
+    query = "delete from staticqr_intent where org_code ='"+str(org_code)+"';"
+    result = DBProcessor.delete_value_from_db(query)
+    logger.debug(f"Result for the query '{query}' is : {result} ")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                          "password": portal_password})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for DB refresh is : {response}")
+
+
+def set_default_account(org_code: str, portal_un: str, portal_pw: str):
+    conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT AccountLabel1 from acquisitions limit 1;")
+    account_label_1 = cursor.fetchone()
+    api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_un,
+                                                                                   "password": portal_pw,
+                                                                                   "settingForOrgCode": org_code})
+    api_details["RequestBody"]["settings"] = {"defaultAccount": f"{account_label_1[0]}"}
+    logger.debug(f"API details  : {api_details} ")
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting preconditions is : {response}")
+    return account_label_1[0]

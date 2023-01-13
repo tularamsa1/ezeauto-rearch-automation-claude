@@ -65,6 +65,23 @@ def test_common_100_101_020():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {mid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -148,18 +165,6 @@ def test_common_100_101_020():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            tid = result['tid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {tid}")
-            mid = result['mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -527,6 +532,23 @@ def test_common_100_101_021():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {mid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -610,18 +632,6 @@ def test_common_100_101_021():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            tid = result['tid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {tid}")
-            mid = result['mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -999,6 +1009,22 @@ def test_common_100_101_022():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {mid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1111,18 +1137,6 @@ def test_common_100_101_022():
             logger.debug(f"fetched auth_code from txn table is : {auth_code_2}")
             rrn_2 = result['rr_number'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {rrn_2}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            tid = result['tid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {tid}")
-            mid = result['mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1649,6 +1663,22 @@ def test_common_100_101_023():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {mid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1732,18 +1762,6 @@ def test_common_100_101_023():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            tid = result['tid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {tid}")
-            mid = result['mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2121,6 +2139,22 @@ def test_common_100_101_025():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {mid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetching vpa from db: {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -2243,18 +2277,6 @@ def test_common_100_101_025():
             logger.debug(f"fetched auth_code from txn table is : {auth_code_2}")
             rrn_2 = result['rr_number'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {rrn_2}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            tid = result['tid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {tid}")
-            mid = result['mid'].values[0]
-            logger.debug(f"fetched upi_mc_id : {mid}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
