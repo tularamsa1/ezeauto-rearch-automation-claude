@@ -106,7 +106,8 @@ def test_common_100_102_239():
             logger.debug(
                 f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {merchant_pan}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             amount = random.randint(401, 999)
             provider_ref_id = "A220823E010"+str(random.randint(1111111, 9999999))
@@ -604,7 +605,8 @@ def test_common_100_102_240():
             pg_merchant_id = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             logger.info(

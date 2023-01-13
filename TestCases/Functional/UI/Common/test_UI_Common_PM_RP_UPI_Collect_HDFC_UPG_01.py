@@ -88,7 +88,7 @@ def test_common_100_103_033():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -556,7 +556,7 @@ def test_common_100_103_034():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1043,7 +1043,8 @@ def test_common_100_103_035():
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pgMerchantId}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             vpa = 'abccccc@ybl'
@@ -1575,7 +1576,8 @@ def test_common_100_103_036():
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id} and upi_mc_id :{upi_mc_id} "
                          f"and mid :{mid} and tid :{tid} and posting date:{posting_date}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             vpa = 'abccccc@ybl'
@@ -1935,7 +1937,6 @@ def test_common_100_103_036():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -2041,7 +2042,8 @@ def test_common_100_103_037():
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"

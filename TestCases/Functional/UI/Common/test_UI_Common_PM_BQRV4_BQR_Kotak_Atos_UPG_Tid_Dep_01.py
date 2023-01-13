@@ -78,7 +78,7 @@ def test_common_100_102_272():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -542,7 +542,7 @@ def test_common_100_102_273():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

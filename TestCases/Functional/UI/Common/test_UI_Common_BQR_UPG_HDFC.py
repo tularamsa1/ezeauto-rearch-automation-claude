@@ -85,7 +85,7 @@ def test_common_100_102_019():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, bqr_mc_id)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -464,7 +464,7 @@ def test_common_100_102_020():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, bqr_mc_id)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -825,6 +825,7 @@ def test_common_100_102_021():
         api_details["RequestBody"]["settings"]["upgAutoRefundEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -837,8 +838,8 @@ def test_common_100_102_021():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, bqr_mc_id)
-        logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info("Finished performing preconditions before starting test case execution")
         # Set the below variables depending on the log capturing need of the test case.
@@ -1163,7 +1164,7 @@ def test_common_100_102_022():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, bqr_mc_id)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1674,7 +1675,7 @@ def test_common_100_102_023():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, bqr_mc_id)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

@@ -1,11 +1,8 @@
 import random
-import shutil
 import sys
 import time
 from datetime import datetime
-
 import pytest
-from termcolor import colored
 
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
@@ -123,7 +120,8 @@ def test_common_100_103_049():
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -635,7 +633,8 @@ def test_common_100_103_050():
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and txn_type= 'REMOTE_PAY';"

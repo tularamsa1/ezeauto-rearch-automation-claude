@@ -100,7 +100,8 @@ def test_common_100_101_108():
             vpa = result['vpa'].values[0]
             logger.debug(f"fetching vpa from db: {vpa}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             query = "select device_serial from terminal_info where tid = '" + str(tid) + "';"
             logger.debug(f"Query to fetch device serial number from the terminal_info for the {org_code} : {query}")

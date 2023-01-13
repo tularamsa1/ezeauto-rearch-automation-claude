@@ -80,7 +80,7 @@ def test_common_100_101_020():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -547,7 +547,7 @@ def test_common_100_101_021():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1023,7 +1023,7 @@ def test_common_100_101_022():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1677,7 +1677,7 @@ def test_common_100_101_023():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2153,7 +2153,7 @@ def test_common_100_101_025():
         vpa = result['vpa'].values[0]
         logger.debug(f"fetching vpa from db: {vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
