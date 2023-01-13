@@ -82,7 +82,7 @@ def test_common_400_401_001():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            expected_device_identifier = expected_device_identifier = randint(0, 10 ** 15)
+            expected_device_identifier = randint(0, 10 ** 15)
             expected_app_id = "ezetap_android"
             expected_device_identifier_type = "imei"
 
