@@ -98,6 +98,10 @@ def test_common_100_102_268():
             logger.info(f"fetched upi_tid is : {upi_tid}")
             upi_mid = result['mid'].values[0]
             logger.info(f"fetched upi_mid is : {upi_mid}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
+
             query = "select device_serial from terminal_info where tid = '" + str(upi_tid) + "';"
             logger.debug(f"Query to fetch device serial number from the terminal_info for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -584,6 +588,9 @@ def test_common_100_102_269():
             merchant_config_id = result['id'].values[0]
             logger.debug(
                 f"Fetching merchant_config_id from the bharatqr_merchant_config table : merchant_config_id : {merchant_config_id}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             amount = random.randint(301, 400)
             provider_ref_id = "A220823E010"+str(random.randint(1111111, 9999999))

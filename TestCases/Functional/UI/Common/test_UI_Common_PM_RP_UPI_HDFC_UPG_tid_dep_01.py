@@ -114,6 +114,9 @@ def test_common_100_103_159():
             upi_mc_tid = result['tid'].iloc[0]
             logger.info(f"result of upi_mc_tid from upi_merchant_config table is: {upi_mc_tid}")
 
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
+
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             logger.debug(f"generated random request_id is : {request_id}")
             vpa = 'abccccc@ybl'
@@ -544,6 +547,9 @@ def test_common_100_103_160():
             logger.debug(f"Query result of pg_merchant_id from upi_merchant_config table is : {pg_merchant_id}")
             vpa = result['vpa'].values[0]
             logger.debug(f"Query result of vpa from upi_merchant_config table is : {vpa}")
+
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             request_id = '220518115526031E' + str(random.randint(10000000, 999999999))
             logger.debug(f"generated random request_id is : {request_id}")
