@@ -56,8 +56,14 @@ def test_500_502_016():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
+        query = "select id from org_employee where username ='" + str(app_username) + "'"
+        logger.debug(f"Query to fetch user id from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        user_id = result['id'].values[0]
+        logger.debug(f"Query result, user id : {user_id}")
+
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch dterminal_info from the DB : {query}")
+        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
@@ -103,7 +109,19 @@ def test_500_502_016():
         api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled is : {response}")
+        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
+
+        # Enable 'Only P2P allowed User'
+        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
+            user_id) + "';"
+        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Query result : {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
+                                                                              "password": portal_password})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -144,14 +162,14 @@ def test_500_502_016():
             app_driver.open_notifications()
             logger.info(f"Pulled notification bar")
 
-            notifications = app_driver.find_element(By.ID,"com.ezetap.service.demo:id/title")
+            actual_notification = home_page.check_p2p_notification()
 
-            notification_mssg = "Push 2 Pay is ON"
-            if notifications.text == notification_mssg:
+            expected_notification = "Push 2 Pay is ON"
+            if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
             else:
                 logger.error(f"Could not find P2P connection notification on device")
-                raise Exception ("Could not find P2P connection notification on device")
+                raise Exception("Could not find P2P connection notification on device")
 
             app_driver.back()
 
