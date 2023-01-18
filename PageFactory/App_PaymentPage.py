@@ -33,6 +33,7 @@ class PaymentPage(BasePage):
     lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
+    btn_cancel_p2p_request = (By.ID, "com.ezetap.service.demo:id/btnYesCancelPayment")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -138,5 +139,20 @@ class PaymentPage(BasePage):
             else:
                 pass
 
+
+    def is_qrcode_displayed(self):
+        try:
+            self.wait_for_element(self.lbl_scanQRCode, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            pmt_status = self.fetch_text(self.lbl_paymentStatus)
+            return pmt_status
+
+
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
+
+
+    def click_on_cancel_p2p_request_ok(self):
+        self.perform_click(self.btn_cancel_p2p_request)

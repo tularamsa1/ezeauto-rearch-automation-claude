@@ -15,6 +15,7 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -817,13 +818,15 @@ def test_500_501_022():
             query = "select * from p2p_request where id='" + str(request_id_bqr) + "';"
             logger.debug(f"Query to fetch details from DB table p2p_request after receiving BQR to device : {query}")
             result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetch BQR request data from p2p_request table after receiving to device: {result}")
             db_p2p_request_status_bqr_1 = result['status'].values[0]
 
             # Fetch values from DB table p2p_request of queued UPI
             query = "select * from p2p_request where id='" + str(request_id_upi) + "';"
             logger.debug(f"Query to fetch details from DB table p2p_request of queued UPI : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            db_p2p_request_status_upi_1 = result['status'].values[0]
+            result_upi_DB = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetch queued UPI request data from p2p_request table : {result_upi_DB}")
+            db_p2p_request_status_upi_1 = result_upi_DB['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
             payment_page.validate_upi_bqr_payment_screen()
@@ -895,6 +898,8 @@ def test_500_501_022():
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
+            logger.debug(f"status of BQR request : {resp_status_bqr}")
+            logger.debug(f"status of queued UPI : {resp_status_upi}")
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
@@ -1517,6 +1522,20 @@ def test_500_501_023():
             request_id_card = resp_start_card['p2pRequestId']
             start_success_card = resp_start_card['success']
 
+            # Check status of card request after receiving to the device
+            api_details = DBProcessor.get_api_details('p2p_status', request_body={
+                "username": app_username,
+                "appKey": app_key,
+                "origP2pRequestId": request_id_card
+            })
+            resp_status_card = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for P2P status API after card request received is : {resp_status_card}")
+
+            status_received_success_card = resp_status_card['success']
+            status_received_mssg_card = resp_status_card['message']
+            status_received_mssgcode_card = resp_status_card['messageCode']
+            status_received_realcode_card = resp_status_card['realCode']
+
             # Start API for UPI
             amount_upi = random.randint(201, 300)
             logger.info(f"Generated amount: {amount_upi}")
@@ -1539,20 +1558,6 @@ def test_500_501_023():
             start_success_upi = resp_start_upi['success']
 
             sleep(1)
-
-            # Check status of card request after receiving to the device
-            api_details = DBProcessor.get_api_details('p2p_status', request_body={
-                "username": app_username,
-                "appKey": app_key,
-                "origP2pRequestId": request_id_card
-            })
-            resp_status_card = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for P2P status API after card request received is : {resp_status_card}")
-
-            status_received_success_card = resp_status_card['success']
-            status_received_mssg_card = resp_status_card['message']
-            status_received_mssgcode_card = resp_status_card['messageCode']
-            status_received_realcode_card = resp_status_card['realCode']
 
             # Check status of UPI request which is in queue
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -1583,16 +1588,30 @@ def test_500_501_023():
             payment_page = PaymentPage(app_driver)
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            sleep(2)
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page for card payment")
+            # sleep(2)
 
-            payment_page.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            sleep(2)
-            payment_page.click_on_proceed_homepage()
+            pmt_status = payment_page.is_qrcode_displayed()
+            logger.info(f"Checked for QR code display")
+            logger.debug(f"Payment status of last txn : {pmt_status}")
+
+            if pmt_status == "Payment Successful":
+                pass
+            elif pmt_status == "Payment Failed":
+                payment_page.perform_click(payment_page.btn_proceedToHomepage)
+            elif pmt_status == "Payment Pending":
+                payment_page.perform_click(payment_page.btn_proceedToHomepage)
+                payment_page.perform_click(payment_page.lbl_skip)
+            elif pmt_status == "":
+                logger.info(f"Payment status : {pmt_status}")
+            else:
+                payment_page.validate_upi_bqr_payment_screen()
+                logger.info("Payment QR generated and displayed successfully")
+                payment_page.click_on_back_btn()
+                payment_page.click_on_transaction_cancel_yes()
+                logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+                sleep(2)
+                payment_page.click_on_proceed_homepage()
 
             # Check status of request after canceling card txn from device
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -2114,9 +2133,23 @@ def test_500_501_024():
             request_id_card = resp_start_card['p2pRequestId']
             start_success_card = resp_start_card['success']
 
+            # Check status of card request after receiving to the device
+            api_details = DBProcessor.get_api_details('p2p_status', request_body={
+                "username": app_username,
+                "appKey": app_key,
+                "origP2pRequestId": request_id_card
+            })
+            resp_status_card = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for P2P status API after card request received is : {resp_status_card}")
+
+            status_received_success_card = resp_status_card['success']
+            status_received_mssg_card = resp_status_card['message']
+            status_received_mssgcode_card = resp_status_card['messageCode']
+            status_received_realcode_card = resp_status_card['realCode']
+
             # Start API for UPI
             amount_upi = random.randint(201, 300)
-            logger.info(f"Generated amount: {amount_upi}")
+            logger.info(f"Generated amount for UPI txn: {amount_upi}")
             ext_ref_number_upi = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of UPI:  {ext_ref_number_upi}")
             push_to = {"deviceId": "" + device_serial + "|ezetap_android"}
@@ -2136,20 +2169,6 @@ def test_500_501_024():
             start_success_upi = resp_start_upi['success']
 
             sleep(1)
-
-            # Check status of card request after receiving to the device
-            api_details = DBProcessor.get_api_details('p2p_status', request_body={
-                "username": app_username,
-                "appKey": app_key,
-                "origP2pRequestId": request_id_card
-            })
-            resp_status_card = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for P2P status API after card request received is : {resp_status_card}")
-
-            status_received_success_card = resp_status_card['success']
-            status_received_mssg_card = resp_status_card['message']
-            status_received_mssgcode_card = resp_status_card['messageCode']
-            status_received_realcode_card = resp_status_card['realCode']
 
             # Check status of UPI request which is in queue
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -2177,28 +2196,55 @@ def test_500_501_024():
             result = DBProcessor.getValueFromDB(query)
             db_p2p_request_status_upi_1 = result['status'].values[0]
 
+            # Cancel card pmt request
+            api_details = DBProcessor.get_api_details('p2p_cancel', request_body={
+                "username": app_username,
+                "appKey": app_key,
+                "origP2pRequestId": request_id_card
+            })
+            resp_cancel_card = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for P2P cancel API of card pmt request : {resp_cancel_card}")
+
+            cancel_card_success = resp_cancel_card['success']
+            cancel_card_mssg = resp_cancel_card['message']
+            cancel_card_mssgcode = resp_cancel_card['messageCode']
+            cancel_card_realcode = resp_cancel_card['realCode']
+
             payment_page = PaymentPage(app_driver)
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            payment_page.click_on_cancel_p2p_request_ok()
+            logger.debug("Clicked Ok on p2p transaction cancel for card payment")
             sleep(2)
 
-            payment_page.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            sleep(2)
-            payment_page.click_on_proceed_homepage()
+            pmt_status = payment_page.is_qrcode_displayed()
+            logger.info(f"Checked for QR code display")
+            logger.debug(f"Payment status of last txn : {pmt_status}")
 
-            # Check status of request after canceling card txn from device
+            if pmt_status == "Payment Successful":
+                pass
+            elif pmt_status == "Payment Failed":
+                payment_page.perform_click(payment_page.btn_proceedToHomepage)
+            elif pmt_status == "Payment Pending":
+                payment_page.perform_click(payment_page.btn_proceedToHomepage)
+                payment_page.perform_click(payment_page.lbl_skip)
+            elif pmt_status == "":
+                logger.info(f"Payment status : {pmt_status}")
+            else:
+                payment_page.validate_upi_bqr_payment_screen()
+                logger.info("Payment QR generated and displayed successfully")
+                payment_page.click_on_back_btn()
+                payment_page.click_on_transaction_cancel_yes()
+                logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+                sleep(2)
+                payment_page.click_on_proceed_homepage()
+
+            # Check status of request after canceling card txn using cancel API
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
                 "username": app_username,
                 "appKey": app_key,
                 "origP2pRequestId": request_id_card
             })
             resp_status_card_1 = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for P2P status API after canceling card from device is : {resp_status_card_1}")
+            logger.debug(f"Response received for P2P status API after canceling card txn using API is : {resp_status_card_1}")
 
             status_after_cancel_success_card = resp_status_card_1['success']
             status_after_cancel_mssgcode_card = resp_status_card_1['messageCode']
@@ -2313,22 +2359,22 @@ def test_500_501_024():
                     "status_mssg_code": "P2P_DEVICE_RECEIVED",
                     "status_real_code": "P2P_DEVICE_RECEIVED",
 
-                    # UPI txn
+                    # Queued UPI txn request status
                     "start_success_1": True,
                     "status_success_1": True,
                     "status_mssg_1": "P2P_STATUS_QUEUED",
                     "status_mssg_code_1": "P2P_STATUS_QUEUED",
                     "status_real_code_1": "P2P_STATUS_IN_QUEUE",
 
-                    # Card txn cancel
+                    # Card txn cancel API
                     "status_success_2": True,
-                    "status_mssg_code_2": "P2P_DEVICE_CANCELED",
-                    "status_real_code_2": "P2P_DEVICE_CANCELED",
-                    "status_mssg_2": "PushToPay Notification has been Canceled on Receiving device.",
+                    "status_mssg_code_2": "P2P_STATUS_IN_CANCELED_FROM_EXTERNAL_SYSTEM",
+                    "status_real_code_2": "P2P_STATUS_IN_CANCELED_FROM_EXTERNAL_SYSTEM",
+                    "status_mssg_2": "PushToPay Notification has been Canceled from Billing/External System.",
                     "status_username_2": app_username,
                     "status_req_id_2": request_id_card,
 
-                    # UPI txn success
+                    # success UPI txn status
                     "status_success_3": True,
                     "status_mssg_code_3": "P2P_DEVICE_TXN_DONE",
                     "status_real_code_3": "P2P_DEVICE_TXN_DONE",
@@ -2357,9 +2403,6 @@ def test_500_501_024():
                 tid_api_upi = response_api_upi["tid"]
                 txn_type_api_upi = response_api_upi["txnType"]
                 date_api_upi = response_api_upi["createdTime"]
-
-                # -------------------------------------------------------
-
 
                 actual_api_values = {
                                      "pmt_status": status_api_upi,
@@ -2432,7 +2475,7 @@ def test_500_501_024():
                     "upi_org_code": org_code,
 
                     "p2p_status_card_1": "RECEIVED",
-                    "p2p_status_card_2": "CANCELED",
+                    "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
 
                     "p2p_status_upi_1": "QUEUED",
                     "p2p_status_upi_2": "COMPLETED",
@@ -2475,7 +2518,6 @@ def test_500_501_024():
                 logger.debug(f"Query result : {result}")
 
                 db_p2p_request_status_card_2 = result['status'].values[0]
-                db_p2p_request_txn_id_card = result['transactionId'].values[0]
 
                 query = "select * from p2p_request where id='" + str(request_id_upi) + "';"
                 logger.debug(f"Query to fetch upi data from p2p_request table : {query}")
