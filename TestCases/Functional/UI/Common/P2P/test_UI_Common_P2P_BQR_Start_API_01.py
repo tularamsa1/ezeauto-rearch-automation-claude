@@ -710,6 +710,21 @@ def test_500_502_007():
             status_received_mssgcode = resp_status_1['messageCode']
             status_received_realcode = resp_status_1['realCode']
 
+            # Cancel UPI pmt request
+            api_details = DBProcessor.get_api_details('p2p_cancel', request_body={
+                "username": app_username,
+                "appKey": app_key,
+                "origP2pRequestId": request_id
+            })
+            resp_cancel_bqr = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for P2P cancel API of BQR pmt request : {resp_cancel_bqr}")
+
+            cancel_bqr_success = resp_cancel_bqr['success']
+            cancel_bqr_mssg = resp_cancel_bqr['message']
+            cancel_bqr_errorcode = resp_cancel_bqr['errorCode']
+            cancel_bqr_errormssg = resp_cancel_bqr['errorMessage']
+            cancel_bqr_realcode = resp_cancel_bqr['realCode']
+
             # Fetch values from DB table p2p_request after receiving to device
             query = "select * from p2p_request where id='" + str(request_id) + "';"
             logger.debug(f"Query to fetch details from DB table p2p_request after receiving to device : {query}")
@@ -725,7 +740,6 @@ def test_500_502_007():
             logger.debug("Pressed back button and clicked Yes on transaction cancel page")
             sleep(2)
             payment_page.click_on_proceed_homepage()
-            # app_driver.reset()
 
             # Check status of request after payment
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -825,6 +839,7 @@ def test_500_502_007():
                     "tid": db_bqr_config_tid,
                     "org_code": org_code,
                     "date": date,
+
                     "start_success": True,
                     "status_success": True,
                     "status_mssg": "Notification has been received on POS Device.",
@@ -836,6 +851,12 @@ def test_500_502_007():
                     "status_mssg_1": "Transaction done on device, Please look at Txn status.",
                     "status_username_1": app_username,
                     "status_req_id_1": request_id,
+
+                    "cancel_bqr_success": False,
+                    "cancel_bqr_mssg": "Transaction already initiated, cant initiate cancellation.",
+                    "cancel_bqr_errorcode": "EZETAP_0000610",
+                    "cancel_bqr_errormssg": "Transaction already initiated, cant initiate cancellation.",
+                    "cancel_bqr_realcode": "P2P_PAYMENT_INITIATED",
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -871,6 +892,7 @@ def test_500_502_007():
                                      "tid": tid_api,
                                      "org_code": org_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
+
                                      "start_success": start_success,
                                      "status_success": status_received_success,
                                      "status_mssg": status_received_mssg,
@@ -882,6 +904,12 @@ def test_500_502_007():
                                      "status_mssg_1": status_after_pmt_mssg,
                                      "status_username_1": status_after_pmt_username,
                                      "status_req_id_1": status_after_pmt_rqst_id,
+
+                                     "cancel_bqr_success": cancel_bqr_success,
+                                     "cancel_bqr_mssg": cancel_bqr_mssg,
+                                     "cancel_bqr_errorcode": cancel_bqr_errorcode,
+                                     "cancel_bqr_errormssg": cancel_bqr_errormssg,
+                                     "cancel_bqr_realcode": cancel_bqr_realcode,
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)

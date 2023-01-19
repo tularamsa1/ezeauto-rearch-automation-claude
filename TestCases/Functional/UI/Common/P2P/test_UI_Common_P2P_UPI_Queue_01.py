@@ -1864,7 +1864,7 @@ def test_500_501_023():
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from txn where id='" + txn_id_upi + "'"
-                logger.debug(f"Query to fetch BQR txn data from txn table : {query}")
+                logger.debug(f"Query to fetch UPI txn data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
 
