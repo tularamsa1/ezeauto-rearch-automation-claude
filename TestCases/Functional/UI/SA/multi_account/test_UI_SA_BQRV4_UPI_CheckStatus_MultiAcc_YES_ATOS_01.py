@@ -226,12 +226,19 @@ def test_sa_100_110_021():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
-                expected_api_values = {"pmt_status": "AUTHORIZED","txn_amt": float(amount),"pmt_mode": "UPI",
-                                       "pmt_state": "SETTLED", "rrn": str(rrn),"settle_status": "SETTLED",
-                                       "acquirer_code": "YES", "issuer_code": "YES","txn_type": "CHARGE",
-                                       "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
+                expected_api_values = {"pmt_status": "AUTHORIZED",
+                                       "txn_amt": float(amount),
+                                       "pmt_mode": "UPI",
+                                       "pmt_state": "SETTLED",
+                                       "rrn": str(rrn),
+                                       "settle_status": "SETTLED",
+                                       "acquirer_code": "YES",
+                                       "issuer_code": "YES","txn_type": "CHARGE",
+                                       "mid": mid, "tid": tid,
+                                       "org_code": org_code,
+                                       "auth_code": auth_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -259,13 +266,20 @@ def test_sa_100_110_021():
                 date_api = response["createdTime"]
                 account_label_name_api = response["accountLabel"]
 
-                actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
-                                     "pmt_state": state_api, "rrn": str(rrn_api),"settle_status": settlement_status_api,
-                                     "acquirer_code": acquirer_code_api,"issuer_code": issuer_code_api,"mid": mid_api,
-                                     "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
+                actual_api_values = {"pmt_status": status_api,
+                                     "txn_amt": amount_api,
+                                     "pmt_mode": payment_mode_api,
+                                     "pmt_state": state_api,
+                                     "rrn": str(rrn_api),
+                                     "settle_status": settlement_status_api,
+                                     "acquirer_code": acquirer_code_api,
+                                     "issuer_code": issuer_code_api,
+                                     "mid": mid_api,
+                                     "txn_type": txn_type_api,
+                                     "tid": tid_api, "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -603,12 +617,18 @@ def test_sa_100_110_022():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
-                expected_api_values = {"pmt_status": "FAILED","txn_amt": float(amount),"pmt_mode": "UPI",
-                                       "pmt_state": "FAILED","settle_status": "FAILED",
-                                       "acquirer_code": "YES", "issuer_code": "YES","txn_type": "CHARGE",
-                                       "mid": mid, "tid": tid, "org_code": org_code,
+                expected_api_values = {"pmt_status": "FAILED",
+                                       "txn_amt": float(amount),
+                                       "pmt_mode": "UPI",
+                                       "pmt_state": "FAILED",
+                                       "settle_status": "FAILED",
+                                       "acquirer_code": "YES",
+                                       "issuer_code": "YES",
+                                       "txn_type": "CHARGE",
+                                       "mid": mid, "tid": tid,
+                                       "org_code": org_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -634,12 +654,18 @@ def test_sa_100_110_022():
                 date_api = response["createdTime"]
                 account_label_name_api = response["accountLabel"]
 
-                actual_api_values = {"pmt_status": status_api, "txn_amt": amount_api,"pmt_mode": payment_mode_api,
-                                     "pmt_state": state_api,"settle_status": settlement_status_api,
-                                     "acquirer_code": acquirer_code_api,"issuer_code": issuer_code_api,"mid": mid_api,
-                                     "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
+                actual_api_values = {"pmt_status": status_api,
+                                     "txn_amt": amount_api,
+                                     "pmt_mode": payment_mode_api,
+                                     "pmt_state": state_api,
+                                     "settle_status": settlement_status_api,
+                                     "acquirer_code": acquirer_code_api,
+                                     "issuer_code": issuer_code_api,
+                                     "mid": mid_api,
+                                     "txn_type": txn_type_api,
+                                     "tid": tid_api, "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -980,7 +1006,7 @@ def test_sa_100_110_038():
                                        "acquirer_code": "YES", "issuer_code": "YES","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -1014,7 +1040,7 @@ def test_sa_100_110_038():
                                      "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)

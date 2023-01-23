@@ -246,7 +246,7 @@ def test_sa_100_110_015():
                                        "org_code": org_code,
                                        "auth_code": auth_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -288,7 +288,7 @@ def test_sa_100_110_015():
                                      "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -577,10 +577,15 @@ def test_sa_100_110_016():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "FAILED","txn_amt": str(amount)+".00",
-                                       "settle_status": "FAILED","txn_id": txn_id,
-                                       "order_id": order_id,"pmt_msg": "PAYMENT FAILED",
-                                       "date": date_and_time}
+                expected_app_values = {"pmt_mode": "BHARAT QR",
+                                       "pmt_status": "FAILED",
+                                       "txn_amt": str(amount)+".00",
+                                       "settle_status": "FAILED",
+                                       "txn_id": txn_id,
+                                       "order_id": order_id,
+                                       "pmt_msg": "PAYMENT FAILED",
+                                       "date": date_and_time
+                                       }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 login_page = LoginPage(app_driver)
@@ -640,7 +645,7 @@ def test_sa_100_110_016():
                                        "issuer_code": "YES","txn_type": "CHARGE",
                                        "mid": mid, "tid": tid,
                                        "org_code": org_code,
-                                       "date": date, "accountLabel": str(account_label_name)
+                                       "date": date, "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -677,7 +682,7 @@ def test_sa_100_110_016():
                                      "txn_type": txn_type_api,
                                      "tid": tid_api, "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1030,7 +1035,7 @@ def test_sa_100_110_037():
                                        "org_code": org_code,
                                        "auth_code": auth_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -1072,7 +1077,7 @@ def test_sa_100_110_037():
                                      "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)

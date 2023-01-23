@@ -324,8 +324,8 @@ def test_common_100_110_029():
                     "org_code_2": org_code,
                     "date_2": date_new_2,
                     "order_id_2": order_id,
-                    "accountLabel": str(account_label_name),
-                    "accountLabel_2": str(account_label_name)
+                    "account_label": str(account_label_name),
+                    "account_label_2": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -382,7 +382,7 @@ def test_common_100_110_029():
                     "auth_code": auth_code_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "accountLabel": str(account_label_name_api),
+                    "account_label": str(account_label_name_api),
                     "pmt_status_2": status_api_new_2, "txn_amt_2": amount_api_new_2,
                     "pmt_mode_2": payment_mode_api_new_2,
                     "pmt_state_2": state_api_new_2,
@@ -394,7 +394,7 @@ def test_common_100_110_029():
                     "org_code_2": org_code_api_new_2,
                     "order_id_2": order_id_api_new_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
-                    "accountLabel_2": str(account_label_name_api_new_2),
+                    "account_label_2": str(account_label_name_api_new_2),
                     }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -869,8 +869,8 @@ def test_common_100_110_030():
                                        "org_code_2": org_code,
                                        "date_2": date_new_2,
                                        "order_id_2": order_id,
-                                       "accountLabel": str(account_label_name),
-                                       "accountLabel_2": str(account_label_name)
+                                       "account_label": str(account_label_name),
+                                       "account_label_2": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -933,8 +933,8 @@ def test_common_100_110_030():
                                      "org_code_2": org_code_api_new_2,
                                      "order_id_2": order_id_api_new_2,
                                      "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2),
-                                     "accountLabel": str(account_label_name_api),
-                                     "accountLabel_2": str(account_label_name_api_new_2),
+                                     "account_label": str(account_label_name_api),
+                                     "account_label_2": str(account_label_name_api_new_2),
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)

@@ -250,7 +250,7 @@ def test_sa_100_110_035():
                                        "org_code": org_code,
                                        "auth_code": auth_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -292,7 +292,7 @@ def test_sa_100_110_035():
                                      "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -665,7 +665,7 @@ def test_sa_100_110_036():
                                        "mid": mid, "tid": tid,
                                        "org_code": org_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -703,7 +703,7 @@ def test_sa_100_110_036():
                                      "tid": tid_api,
                                      "org_code": orgCode_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1079,7 +1079,7 @@ def test_sa_100_110_040():
                                        "org_code": org_code,
                                        "auth_code": auth_code,
                                        "date": date,
-                                       "accountLabel": str(account_label_name)
+                                       "account_label": str(account_label_name)
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -1121,7 +1121,7 @@ def test_sa_100_110_040():
                                      "org_code": orgCode_api,
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "accountLabel": str(account_label_name_api)
+                                     "account_label": str(account_label_name_api)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
