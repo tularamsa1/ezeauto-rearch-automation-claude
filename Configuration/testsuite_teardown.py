@@ -269,16 +269,29 @@ def delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_passw
     logger.debug(f"Response received for DB refresh is : {response}")
 
 
-def set_default_account(org_code: str, portal_un: str, portal_pw: str):
-    conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT AccountLabel1 from acquisitions limit 1;")
-    account_label_1 = cursor.fetchone()
-    api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_un,
-                                                                                   "password": portal_pw,
-                                                                                   "settingForOrgCode": org_code})
-    api_details["RequestBody"]["settings"] = {"defaultAccount": f"{account_label_1[0]}"}
-    logger.debug(f"API details  : {api_details} ")
-    response = APIProcessor.send_request(api_details)
-    logger.debug(f"Response received for setting preconditions is : {response}")
-    return account_label_1[0]
+def get_account_labels_and_set_default_account(org_code: str, portal_un: str, portal_pw: str) -> dict:
+    """
+    This method is used to do the setup for default account parameter in the org setting for the current org_code and
+    return the account_labels dictionary.
+    :param org_code str
+    :param portal_un str
+    :param portal_pw str
+    :return: dict
+    """
+    account_labels = {}
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT AccountLabel1, AccountLabel2 from acquisitions limit 1;")
+        _account_labels = cursor.fetchone()
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
+            "username": portal_un, "password": portal_pw, "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"] = {"defaultAccount": f"{_account_labels[0]}"}
+        logger.debug(f"API details  : {api_details} ")
+        account_labels['name1'] = _account_labels[0]
+        account_labels['name2'] = _account_labels[1]
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting defaultAccount is : {response}")
+        return account_labels
+    except Exception as e:
+        logger.debug(f"Unable to get the entity id of merchant due to error {str(e)}")
