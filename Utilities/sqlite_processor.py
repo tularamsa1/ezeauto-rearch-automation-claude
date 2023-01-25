@@ -212,7 +212,6 @@ def check_merchant_exists_in_automation_db(merchant):
     return exists
 
 
-# Manasa
 def update_acquisitions_to_db():
     """
     This method is used to read the acquisition details from excel and update the db.
@@ -267,6 +266,8 @@ def update_acquisitions_to_db():
                         f"BqrSettingRequired = '{acquisition_details.iloc[i]['BQR settings required']}', " \
                         f"UpiSettingRequired = '{acquisition_details.iloc[i]['UPI settings required']}', " \
                         f"EncKeyForUpi = '{acquisition_details.iloc[i]['Enc Key for UPI']}' " \
+                        f"AccountLabel1 = '{acquisition_details.iloc[i]['Account Label 1']}' " \
+                        f"AccountLabel2 = '{acquisition_details.iloc[i]['Account Label 2']}' " \
                         f"where AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' and " \
                         f"PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
                 cursor.execute(query)
