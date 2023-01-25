@@ -1,5 +1,4 @@
 import json
-import random
 import sqlite3
 
 import requests
@@ -20,10 +19,15 @@ def create_merchants():
     This method is used to create the merchants for execution.
     """
     create_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
+    create_merchant_with_multi_account_required = ConfigReader.read_config("Setup", "create_and_configure_merchants_"
+                                                                                    "with_multi_account").lower()
     sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     sqlite_processor.update_acquisitions_to_db()
-    if create_merchant_required == "true":
+    # if create_merchant_required == "true" and create_merchant_with_multi_account_required == "true":
+    #     raise ValueError("Both Configurations are True, Make sure only one configuration is enabled for Merchant "
+    #                      "Creation. Whatever type of Merchant you want to create.")
+    if create_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
         create_merchants_with_users()
     else:
         set_merchants_users_available()
@@ -33,7 +37,6 @@ def create_merchants():
     sqlite_processor.update_terminal_details_of_all_merchants()
 
 
-# Manasa
 def check_if_acc_label_exist(org_code: str, setting_value: str) -> bool:
     """
     This method is used for checking if the account label is already available in the system.
@@ -57,7 +60,6 @@ def check_if_acc_label_exist(org_code: str, setting_value: str) -> bool:
         return False
 
 
-# Manasa
 def insert_acc_label_data():
     """
     This method is used to insert the account label data in the system.
@@ -96,7 +98,6 @@ def insert_acc_label_data():
         logger.error(f"Unable to insert the account label data due to error {str(e)}")
 
 
-# Manasa
 def check_if_label_exist(org_code: str, label: str) -> bool:
     """
     This method is used for checking if the label is already available in the system.
@@ -119,7 +120,6 @@ def check_if_label_exist(org_code: str, label: str) -> bool:
         return False
 
 
-# Manasa
 def insert_label_data():
     """
     This method is used to insert the account label data in the system.
