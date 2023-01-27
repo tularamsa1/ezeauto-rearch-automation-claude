@@ -263,7 +263,7 @@ def test_common_100_110_007():
                     "pmt_state": "SETTLED", "rrn": str(rrn), "settle_status": "SETTLED",
                     "acquirer_code": "HDFC", "issuer_code": "HDFC", "txn_type": "CHARGE",
                     "mid": mid, "tid": tid, "org_code": org_code, "auth_code": auth_code,
-                    "date": date, "accountLabel": str(account_label_name)}
+                    "date": date, "account_label": str(account_label_name)}
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 api_details = DBProcessor.get_api_details('txnlist', request_body={
@@ -298,7 +298,7 @@ def test_common_100_110_007():
                     "txn_type": txn_type_api, "tid": tid_api, "org_code": orgCode_api,
                     "auth_code": auth_code_api,
                     "date": date_time_val.date_and_time_val_against_api(date_api),
-                    "accountLabel": str(account_label_name_api)
+                    "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -691,7 +691,7 @@ def test_common_100_110_008():
                     "org_code": org_code,
                     "date": date,
                     "order_id": order_id,
-                    "accountLabel": str(account_label_name)
+                    "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -731,7 +731,7 @@ def test_common_100_110_008():
                     "org_code": orgCode_api,
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "accountLabel": str(account_label_name_api)
+                    "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
