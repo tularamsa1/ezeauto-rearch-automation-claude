@@ -38,8 +38,8 @@ class PaxTransHistoryPage(BasePage):
     txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView")
     txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView")
     txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView")
-    txt_settlement_status = (By.XPATH, "//*[@text='Settlement Status']/following-sibling::android.widget.TextView")
-    txt_date_time = (By.XPATH, "//*[@text='Date']/following-sibling::android.widget.TextView")
+    txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
+    txt_date_time = (By.XPATH, "//*[@text='DATE']/following-sibling::android.widget.TextView")
 
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
 
