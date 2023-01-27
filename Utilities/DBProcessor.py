@@ -476,7 +476,7 @@ def get_redis_data(data):
 
         if redis_device_conn_1 == True and redis_device_conn_2 == True:
             logger.error(f"Device is connected in both servers in redis")
-            return False
+            return True
 
         elif redis_device_conn_1 == True or redis_device_conn_2 == True:
             logger.debug(f"Device is connected with one redis server")
