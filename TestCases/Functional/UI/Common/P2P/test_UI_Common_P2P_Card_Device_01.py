@@ -61,41 +61,14 @@ def test_500_503_018():
         device_serial = result['device_serial'].values[0]
         logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
 
-        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        bqr_config_mid_db = result['mid'].values[0]
-        logger.info(f"from bharatqr_merchant_config, mid is : {bqr_config_mid_db}")
-        bqr_config_tid_db = result['tid'].values[0]
-        logger.info(f"from bharatqr_merchant_config, tid is : {bqr_config_tid_db}")
-        bqr_config_id_db = result['id'].values[0]
-        logger.info(f"from bharatqr_merchant_config, bqr_config_id is : {bqr_config_id_db}")
-        bqr_terminal_info_id_db = result['terminal_info_id'].values[0]
-        logger.info(f"from bharatqr_merchant_config, bqr_terminal_info_id_db is : {bqr_terminal_info_id_db}")
-        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
-        logger.info(f"from bharatqr_merchant_config, db_bqr_config_merchant_pan is : {db_bqr_config_merchant_pan}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        # Autologin by token enabled, Autologin by token logout enabled ,Enable P2P
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled, autoLoginByTokenLogOutEnabled and p2pEnabled is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -429,26 +402,13 @@ def test_500_503_019():
         logger.info(f"from bharatqr_merchant_config, db_bqr_config_merchant_pan is : {db_bqr_config_merchant_pan}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        # Autologin by token enabled, Autologin by token logout enabled ,Enable P2P
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled, autoLoginByTokenLogOutEnabled and p2pEnabled is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

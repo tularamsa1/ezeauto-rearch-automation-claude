@@ -3,7 +3,8 @@ import string
 import sys
 import pytest
 from time import sleep
-from selenium.webdriver.common.by import By
+import requests
+import json
 from datetime import datetime
 from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
@@ -49,12 +50,6 @@ def test_500_502_006():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from app_key where org_code ='" + str(org_code) + "'"
         logger.debug(f"Query to fetch app_key from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -93,35 +88,12 @@ def test_500_502_006():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQR')
+
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password,app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
-
-        # Enable 'Only P2P allowed User'
-        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-            user_id) + "';"
-        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -596,35 +568,13 @@ def test_500_502_007():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQR')
+
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
-
-        # Enable 'Only P2P allowed User'
-        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-            user_id) + "';"
-        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1078,12 +1028,6 @@ def test_500_502_010():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1116,34 +1060,27 @@ def test_500_502_010():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQR')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        current_setting_val = result['setting_value'].values[0]
+        logger.debug(f"Query result, 'onlyP2PUser' setting_value of app user: {current_setting_val}")
 
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
-
-        # Disable 'Only P2P allowed User'
-        query = "update setting set setting_value ='false' where setting_name='onlyP2PUser' and entity_id ='"+str(user_id)+"';"
-        logger.debug(f"Query to update user as 'allow only P2P' as disabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result  : {result}")
-
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for DB refresh is : {response}")
+        # If current app_user is onlyP2P allowed user
+        if current_setting_val == "true":
+            logger.info(f"Current app user is only P2P allowed user")
+            app_username = testsuite_teardown.get_normal_p2p_allowed_user(portal_username, portal_password, app_username, app_password, org_code)
+            logger.info(f"New user to do normal transaction is {app_username}")
+        else:
+            logger.info(f"Current app user can do normal transactions as well")
+            pass
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1744,12 +1681,6 @@ def test_500_502_036():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1782,35 +1713,11 @@ def test_500_502_036():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQR')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions for autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
-
-        # Enable 'Only P2P allowed User'
-        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-            user_id) + "';"
-        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1915,11 +1822,6 @@ def test_500_502_036():
             cancel_bqr_realcode = resp_cancel_bqr['realCode']
 
             payment_page = PaymentPage(app_driver)
-            # payment_page.validate_upi_bqr_payment_screen()
-            # logger.info("Payment QR generated and displayed successfully")
-            # payment_page.click_on_back_btn()
-            # payment_page.click_on_transaction_cancel_yes()
-            # logger.debug("Pressed back button and clicked Yes on transaction cancel page")
             sleep(2)
             payment_page.click_on_proceed_homepage()
 
@@ -1932,14 +1834,14 @@ def test_500_502_036():
             resp_status_2 = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after BQR payment is : {resp_status_2}")
 
-            status_after_cancel_success = resp_status_2['success']
-            status_after_cancel_mssgcode = resp_status_2['messageCode']
-            status_after_cancel_mssg = resp_status_2['message']
-            status_after_cancel_realcode = resp_status_2['realCode']
-            status_after_cancel_username = resp_status_2['username']
-            status_after_cancel_rqst_id = resp_status_2['p2pRequestId']
             txn_id = resp_status_2['txnId']
             logger.debug(f"Transaction ID of BQR request cancel: {txn_id}")
+
+            # Fetch values from DB table txn after payment
+            query = "select * from txn where id='" + str(txn_id) + "';"
+            logger.debug(f"Query to fetch details from DB table txn after BQR payment : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            txn_created_time = result['created_time'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1953,6 +1855,50 @@ def test_500_502_036():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            try:
+                expected_app_values = {
+                    "pmt_mode": "BHARAT QR",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str(amount) + ".00",
+                    "settle_status": "SETTLED",
+                    "txn_id": txn_id,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expectedAppValues: {expected_app_values}")
+
+                home_page.click_on_history()
+                pax_txn_history_page = PaxTransHistoryPage(app_driver)
+                pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
+
+                payment_status = pax_txn_history_page.fetch_txn_status_text()
+                payment_mode = pax_txn_history_page.fetch_txn_type_text()
+                app_txn_id = pax_txn_history_page.fetch_txn_id_text()
+                app_amount = pax_txn_history_page.fetch_txn_amount_text()
+                app_settlement_status = pax_txn_history_page.fetch_settlement_status_text()
+                app_payment_msg = pax_txn_history_page.fetch_txn_payment_message_text()
+                app_date_and_time = pax_txn_history_page.fetch_date_time_text()
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "settle_status": app_settlement_status,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
@@ -1997,8 +1943,7 @@ def test_500_502_036():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status_1": "CANCEL",
-
+                    "p2p_status_1": "COMPLETED",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 

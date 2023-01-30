@@ -51,12 +51,6 @@ def test_500_503_030():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from terminal_info where org_code='" + str(
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
@@ -72,41 +66,11 @@ def test_500_503_030():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQR')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(
-            f"Response received for updating org_settings is : {response}")
-
-        # Enable 'Only P2P allowed User'
-        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-            user_id) + "';"
-        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        query = "update p2p_setting set disable_queue=0 where org_code='" + str(org_code) + "';"
-        logger.debug(f"Query to update queue as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -426,12 +390,6 @@ def test_500_503_031():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from terminal_info where org_code='" + str(
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
@@ -447,31 +405,11 @@ def test_500_503_031():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(
-            f"Response received for updating org settings is : {response}")
-
-        # Enable 'Only P2P allowed User'
-        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-            user_id) + "';"
-        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
 
         query = "update p2p_setting set disable_queue=1 where org_code='" + str(org_code) + "';"
         logger.debug(f"Query to update queue as disabled in DB : {query}")
@@ -718,12 +656,6 @@ def test_500_503_034():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from terminal_info where org_code='" + str(
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
@@ -757,41 +689,11 @@ def test_500_503_034():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "settingForOrgCode": org_code
-        })
-
-        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "true"
-        logger.debug(f"API details  : {api_details}")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(
-            f"Response received for updating org_settings is : {response}")
-
-        # Enable 'Only P2P allowed User'
-        query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-            user_id) + "';"
-        logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        query = "update p2p_setting set disable_queue=0 where org_code='" + str(org_code) + "';"
-        logger.debug(f"Query to update queue as enabled in DB : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result : {result}")
-
-        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
-                                                                              "password": portal_password})
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

@@ -1,8 +1,9 @@
 import sqlite3
+import string
 
 from Configuration.TestSuiteSetup import logger
 from DataProvider import GlobalConstants
-from Utilities import DBProcessor, APIProcessor
+from Utilities import DBProcessor, APIProcessor, ConfigReader
 
 
 def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_mode=None, bank_code_bqr=None):
@@ -295,3 +296,122 @@ def get_account_labels_and_set_default_account(org_code: str, portal_un: str, po
         return account_labels
     except Exception as e:
         logger.debug(f"Unable to get the entity id of merchant due to error {str(e)}")
+
+
+def revert_p2p_settings(portal_un, portal_pw, app_un, app_pw, org_code):
+    # query = "select id from org_employee where username ='" + str(app_un) + "'"
+    # logger.debug(f"Query to fetch user id from the DB : {query}")
+    # result = DBProcessor.getValueFromDB(query)
+    # user_id = result['id'].values[0]
+    # logger.debug(f"Query result, user id : {user_id}")
+
+    # Enable P2P, Autologin, and disable AutologinForLogout
+    api_details = DBProcessor.get_api_details('org_settings_update', request_body={
+        "username": portal_un,
+        "password": portal_pw,
+        "settingForOrgCode": org_code
+    })
+
+    api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
+    api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
+    api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "false"
+    logger.debug(f"API details  : {api_details}")
+    response = APIProcessor.send_request(api_details)
+    logger.debug(
+        f"Response received for setting preconditions for p2p, autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
+
+    # # Enable 'Only P2P allowed User'
+    # query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
+    #     user_id) + "';"
+    # logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
+    # result = DBProcessor.setValueToDB(query)
+    # logger.debug(f"Query result : {result}")
+
+    # Enable queue functionality
+    query = "update p2p_setting set disable_queue=0 where org_code='" + str(org_code) + "';"
+    logger.debug(f"Query to update queue as enabled in DB : {query}")
+    result = DBProcessor.setValueToDB(query)
+    logger.debug(f"Query result : {result}")
+
+    api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
+                                                                          "password": portal_pw})
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for DB refresh is : {response}")
+
+
+
+def get_normal_p2p_allowed_user(portal_un, portal_pw, app_un, app_pw, org_code):
+    """
+    This method is used to create an user which allowed to do normal txns and P2P txns
+    :param portal_un str
+    :param portal_pw str
+    :param app_un str
+    :param org_code str
+    :return: string
+    """
+    import requests
+    import json
+    import random
+
+    query = "select * from org_employee where org_code ='"+str(org_code)+"' and roles = 'ROLE_CLAGENT' and username!='"+str(app_un)+"';"
+    result_users = DBProcessor.getValueFromDB(query)
+    if len(result_users) >=1:
+        app_username = result_users['username'][0]
+    else:
+
+    # Fetching users other than current user
+    logger.info(f"Fetching all users from the org other than current user")
+    query = "select empl.username,sett.setting_value from org_employee empl LEFT JOIN setting sett on empl.org_code = sett.org_code and sett.entity_id =empl.id and empl.username!='" + str(
+        app_un) + "' and empl.roles = 'ROLE_CLAGENT' where sett.org_code='" + str(org_code) + "' and sett.setting_name='onlyP2PUser';"
+    result_all_users = DBProcessor.getValueFromDB(query)
+    is_user_required = True
+    logger.debug(f"Other users under the org {org_code} is {str(result_all_users)}")
+    logger.debug(f"Number of users selected from DB under the org_code is : {len(result_all_users)}")
+
+    for i in range(len(result_all_users)):
+        if result_all_users['setting_value'][i] == "true":
+            logger.info(f"setting_value of the user selected is True")
+            is_user_required = True
+            logger.debug(f"user creation is required")
+            continue
+        else:
+            is_user_required = False
+            app_username = result_all_users['username'][i]
+            logger.debug(f"user creation is not required")
+            logger.info(f"New user selected is {app_username}")
+            break
+    if is_user_required:  # Create a new user via API
+        app_username = str(random.randint(1000000000, 9999999999))
+        logger.info(f"Creating new user in agent role with username {app_username}")
+        name = "EzeAuto" + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
+        api_details = DBProcessor.get_api_details('createUser', request_body={
+            "mobileNumber": app_username,
+            "name": name,
+            "roles": ["ROLE_CLAGENT"],
+            "userPassword": app_pw,
+            "userToken": app_username,
+            "username": portal_un,
+            "password": portal_pw
+        })
+        payload = api_details['RequestBody']
+        endPoint = api_details['EndPoint']
+        method = api_details['Method']
+        headers = api_details['Header']
+        url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+        url = url.replace('EZETAP', org_code)
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        APIProcessor.update_api_details_to_report_variables(resp)
+        response = json.loads(resp.text)
+        logger.debug(f"response received for createUser api is : {response}")
+        if response["success"]:
+            logger.debug(f"Created new user with agent role")
+            return app_username
+        else:
+            logger.error(f"User creation failed : {response}")
+            # add exception
+    else:  # If user creation is not required
+        return app_username
+
+
+#
+# def get_only_p2p_allowed_user():
