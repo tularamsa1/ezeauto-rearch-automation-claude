@@ -70,6 +70,22 @@ def test_500_503_043():
 
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -324,6 +340,22 @@ def test_500_503_044():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
 
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -581,6 +613,22 @@ def test_500_503_045():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
 
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -840,6 +888,22 @@ def test_500_503_046():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
 
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

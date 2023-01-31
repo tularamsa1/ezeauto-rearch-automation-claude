@@ -109,6 +109,22 @@ def test_500_501_020():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -420,6 +436,22 @@ def test_500_501_021():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for DB refresh is : {response}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -519,7 +551,7 @@ def test_500_501_021():
             start_upi_error_code = resp_start_upi['errorCode']
             start_upi_error_mssg = resp_start_upi['errorMessage']
 
-            sleep(1)
+            sleep(2)
 
             # Check status of BQR request after receiving to the device
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -945,6 +977,22 @@ def test_500_501_022():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1040,7 +1088,7 @@ def test_500_501_022():
             request_id_upi = resp_start_upi['p2pRequestId']
             start_success_upi = resp_start_upi['success']
 
-            sleep(1)
+            sleep(2)
 
             # Check status of BQR request after receiving to the device
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -1669,6 +1717,22 @@ def test_500_501_023():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1812,29 +1876,37 @@ def test_500_501_023():
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page for card payment")
-            # sleep(2)
+            sleep(2)
 
-            pmt_status = payment_page.is_qrcode_displayed()
-            logger.info(f"Checked for QR code display")
-            logger.debug(f"Payment status of last txn : {pmt_status}")
+            # pmt_status = payment_page.is_qrcode_displayed()
+            # logger.info(f"Checked for QR code display")
+            # logger.debug(f"Payment status of last txn : {pmt_status}")
+            #
+            # if pmt_status == "Payment Successful":
+            #     pass
+            # elif pmt_status == "Payment Failed":
+            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
+            # elif pmt_status == "Payment Pending":
+            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
+            #     payment_page.perform_click(payment_page.lbl_skip)
+            # elif pmt_status == "":
+            #     logger.info(f"Payment status : {pmt_status}")
+            # else:
+            #     payment_page.validate_upi_bqr_payment_screen()
+            #     logger.info("Payment QR generated and displayed successfully")
+            #     payment_page.click_on_back_btn()
+            #     payment_page.click_on_transaction_cancel_yes()
+            #     logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            #     sleep(2)
+            #     payment_page.click_on_proceed_homepage()
 
-            if pmt_status == "Payment Successful":
-                pass
-            elif pmt_status == "Payment Failed":
-                payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            elif pmt_status == "Payment Pending":
-                payment_page.perform_click(payment_page.btn_proceedToHomepage)
-                payment_page.perform_click(payment_page.lbl_skip)
-            elif pmt_status == "":
-                logger.info(f"Payment status : {pmt_status}")
-            else:
-                payment_page.validate_upi_bqr_payment_screen()
-                logger.info("Payment QR generated and displayed successfully")
-                payment_page.click_on_back_btn()
-                payment_page.click_on_transaction_cancel_yes()
-                logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-                sleep(2)
-                payment_page.click_on_proceed_homepage()
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            sleep(2)
+            payment_page.click_on_proceed_homepage()
 
             sleep(2)
 
@@ -2248,6 +2320,22 @@ def test_500_501_024():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

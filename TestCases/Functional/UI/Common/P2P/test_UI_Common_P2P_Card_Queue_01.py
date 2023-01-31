@@ -72,6 +72,22 @@ def test_500_503_030():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -240,7 +256,7 @@ def test_500_503_030():
             logger.debug("Pressed back button and clicked Yes on transaction cancel page for BQR")
             sleep(2)
             payment_page.click_on_proceed_homepage()
-            sleep(5)
+            sleep(2)
 
             # Cancel card pmt request
             api_details = DBProcessor.get_api_details('p2p_cancel', request_body={
@@ -420,6 +436,22 @@ def test_500_503_031():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for DB refresh is : {response}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -695,6 +727,22 @@ def test_500_503_034():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -832,7 +880,7 @@ def test_500_503_034():
             logger.debug(f"Query to fetch details from DB table p2p_request of queued CARD : {query}")
             result = DBProcessor.getValueFromDB(query)
             db_p2p_request_status_card_1 = result['status'].values[0]
-            sleep(3)
+            sleep(2)
 
             # Cancel UPI pmt request
             api_details = DBProcessor.get_api_details('p2p_cancel', request_body={
@@ -848,6 +896,7 @@ def test_500_503_034():
             cancel_upi_errorcode = resp_cancel_upi['errorCode']
             cancel_upi_errormssg = resp_cancel_upi['errorMessage']
             cancel_upi_realcode = resp_cancel_upi['realCode']
+            sleep(2)
 
             payment_page = PaymentPage(app_driver)
             # pmt_status = payment_page.is_qrcode_displayed()
@@ -872,12 +921,12 @@ def test_500_503_034():
             #     sleep(2)
             #     payment_page.click_on_proceed_homepage()
 
-            payment_page.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            sleep(2)
+            # payment_page.validate_upi_bqr_payment_screen()
+            # logger.info("Payment QR generated and displayed successfully")
+            # payment_page.click_on_back_btn()
+            # payment_page.click_on_transaction_cancel_yes()
+            # logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            # sleep(2)
             payment_page.click_on_proceed_homepage()
             sleep(2)
 
