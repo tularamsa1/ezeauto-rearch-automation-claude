@@ -239,7 +239,7 @@ def test_sa_100_109_012():
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code,
                     "date": date,
-                    "accountLabel": str(account_label_name)
+                    "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnlist', request_body={
@@ -275,7 +275,7 @@ def test_sa_100_109_012():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "accountLabel": str(account_label_name_api)
+                    "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -640,7 +640,7 @@ def test_sa_100_109_013():
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code,
                     "date": date,
-                    "accountLabel": str(account_label_name)
+                    "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnlist', request_body={
@@ -675,7 +675,7 @@ def test_sa_100_109_013():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "accountLabel": str(account_label_name_api)
+                    "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1005,7 +1005,7 @@ def test_sa_100_109_016():
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code,
                     "date": date,
-                    "accountLabel": str(account_label_name)
+                    "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
                 api_details = DBProcessor.get_api_details('txnlist', request_body={
@@ -1041,7 +1041,7 @@ def test_sa_100_109_016():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "accountLabel": str(account_label_name_api)
+                    "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
