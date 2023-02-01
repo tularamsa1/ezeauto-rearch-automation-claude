@@ -300,12 +300,7 @@ def get_account_labels_and_set_default_account(org_code: str, portal_un: str, po
         logger.debug(f"Unable to get the entity id of merchant due to error {str(e)}")
 
 
-def revert_p2p_settings(portal_un, portal_pw, app_un, app_pw, org_code):
-    # query = "select id from org_employee where username ='" + str(app_un) + "'"
-    # logger.debug(f"Query to fetch user id from the DB : {query}")
-    # result = DBProcessor.getValueFromDB(query)
-    # user_id = result['id'].values[0]
-    # logger.debug(f"Query result, user id : {user_id}")
+def revert_p2p_settings(portal_un, portal_pw, app_username, app_password, org_code):
 
     # Enable P2P, Autologin, and disable AutologinForLogout
     api_details = DBProcessor.get_api_details('org_settings_update', request_body={
@@ -321,13 +316,6 @@ def revert_p2p_settings(portal_un, portal_pw, app_un, app_pw, org_code):
     response = APIProcessor.send_request(api_details)
     logger.debug(
         f"Response received for setting preconditions for p2p, autoLoginByTokenEnabled and autoLoginByTokenLogOutEnabled is : {response}")
-
-    # # Enable 'Only P2P allowed User'
-    # query = "update setting set setting_value ='true' where setting_name='onlyP2PUser' and entity_id ='" + str(
-    #     user_id) + "';"
-    # logger.debug(f"Query to update user as 'allow only P2P' as enabled in DB : {query}")
-    # result = DBProcessor.setValueToDB(query)
-    # logger.debug(f"Query result : {result}")
 
     # Enable queue functionality
     query = "update p2p_setting set disable_queue=0 where org_code='" + str(org_code) + "';"
@@ -355,9 +343,9 @@ def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
     result_all_users = DBProcessor.getValueFromDB(query_all_users)
     logger.info(f"Query to select all users under the org {org_code} with only Agent role except the current user {app_un}")
     logger.debug(f"Result of fetching all users with agent role except the current user: {result_all_users}")
-    logger.debug(f"Count of users selected except the current user : {len(result_all_users)}")
+    logger.debug(f"Count of users selected except the current user {app_un} : {len(result_all_users)}")
     if len(result_all_users) >= 1:
-        logger.info(f"There are other users under the org {org_code}")
+        logger.info(f"There are other active users under the org {org_code}")
         for i in range(len(result_all_users)):
             user = result_all_users['username'].values[i]
             logger.debug(f"Selected existing user is {user}")
@@ -377,140 +365,214 @@ def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
                 else:
                     # Change password of the newly selected existing user by calling create_user API
                     logger.info(f"Selected user {user} have an entry in setting table and can do normal transactions as well")
-                    app_user = user
-                    app_password = "P2P" + ''.join(random.choice(string.digits) for _ in range(7))
-                    name = "EzeAutoUser"
-                    logger.info(f"Changing password of new selected user {app_user}")
-                    logger.info(f"New password {app_password}")
-                    logger.info(f"New mobile number {app_user}")
-                    logger.info(f"New name {name}")
-
-                    api_details = DBProcessor.get_api_details('createUser', request_body={
-                        "mobileNumber": app_user,
-                        "name": name,
-                        "roles": ["ROLE_CLAGENT"],
-                        "userPassword": app_password,
-                        "userToken": app_user,
-                        "username": portal_un,
-                        "password": portal_pw
-                    })
-                    payload = api_details['RequestBody']
-                    endPoint = api_details['EndPoint']
-                    method = api_details['Method']
-                    headers = api_details['Header']
-                    url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
-                    url = url.replace('EZETAP', org_code)
-                    resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-                    APIProcessor.update_api_details_to_report_variables(resp)
-                    response_change_pwd = json.loads(resp.text)
-                    logger.debug(f"response received for changing the password using createUser api is : {response_change_pwd}")
-                    if response_change_pwd["success"]:
-                        logger.debug(f"Changed the current password of existing user to {app_password}")
-                        return app_user, app_password
-                    else:
-                        logger.error(f"Change password using create_user API failed : {response_change_pwd}")
-                        raise Exception("Could not change password of the existing user")
+                    app_user, app_password = p2p_change_password(portal_un, portal_pw, user, org_code)
+                    return app_user, app_password
+                    # app_user = user
+                    # app_password = "P2P" + ''.join(random.choice(string.digits) for _ in range(7))
+                    # name = "EzeAutoUser"
+                    # logger.info(f"Changing password of new selected user {app_user}")
+                    # logger.info(f"New password {app_password}")
+                    # logger.info(f"New mobile number {app_user}")
+                    # logger.info(f"New name {name}")
+                    #
+                    # api_details = DBProcessor.get_api_details('createUser', request_body={
+                    #     "mobileNumber": app_user,
+                    #     "name": name,
+                    #     "roles": ["ROLE_CLAGENT"],
+                    #     "userPassword": app_password,
+                    #     "userToken": app_user,
+                    #     "username": portal_un,
+                    #     "password": portal_pw
+                    # })
+                    # payload = api_details['RequestBody']
+                    # endPoint = api_details['EndPoint']
+                    # method = api_details['Method']
+                    # headers = api_details['Header']
+                    # url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+                    # url = url.replace('EZETAP', org_code)
+                    # resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+                    # APIProcessor.update_api_details_to_report_variables(resp)
+                    # response_change_pwd = json.loads(resp.text)
+                    # logger.debug(f"response received for changing the password using createUser api is : {response_change_pwd}")
+                    # if response_change_pwd["success"]:
+                    #     logger.debug(f"Changed the current password of existing user to {app_password}")
+                    #     return app_user, app_password
+                    # else:
+                    #     logger.error(f"Change password using create_user API failed : {response_change_pwd}")
+                    #     raise Exception("Could not change password of the existing user")
                     break
             else:
                 # Change password of the newly selected existing user by calling create_user API
                 logger.info(f"Selected user {user} can do normal transactions as well and does not have entry in setting table")
-                app_user = user
-                app_password = "P2P" + ''.join(random.choice(string.digits) for _ in range(7))
-                name = "EzeAutoUser"
-                logger.info(f"Changing password of new selected user {app_user}")
-                logger.info(f"New password {app_password}")
-                logger.info(f"New mobile number {app_user}")
-                logger.info(f"New name {name}")
-
-                api_details = DBProcessor.get_api_details('createUser', request_body={
-                    "mobileNumber": app_user,
-                    "name": name,
-                    "roles": ["ROLE_CLAGENT"],
-                    "userPassword": app_password,
-                    "userToken": app_user,
-                    "username": portal_un,
-                    "password": portal_pw
-                })
-                payload = api_details['RequestBody']
-                endPoint = api_details['EndPoint']
-                method = api_details['Method']
-                headers = api_details['Header']
-                url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
-                url = url.replace('EZETAP', org_code)
-                resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-                APIProcessor.update_api_details_to_report_variables(resp)
-                response_change_pwd = json.loads(resp.text)
-                logger.debug(
-                    f"response received for changing the password for {app_user} using createUser api is : {response_change_pwd}")
-                if response_change_pwd["success"]:
-                    logger.debug(f"Changed the current password of existing user to {app_password}")
-                    return app_user, app_password
-                else:
-                    logger.error(f"Change password for {app_user} using create_user API failed : {response_change_pwd}")
-                    raise Exception(f"Could not change password of the existing user {app_user}")
+                app_user, app_password = p2p_change_password(portal_un, portal_pw, user, org_code)
+                return app_user, app_password
+                # app_password = "P2P" + ''.join(random.choice(string.digits) for _ in range(7))
+                # name = "EzeAutoUser"
+                # logger.info(f"Changing password of new selected user {app_user}")
+                # logger.info(f"New password {app_password}")
+                # logger.info(f"New mobile number {app_user}")
+                # logger.info(f"New name {name}")
+                #
+                # api_details = DBProcessor.get_api_details('createUser', request_body={
+                #     "mobileNumber": app_user,
+                #     "name": name,
+                #     "roles": ["ROLE_CLAGENT"],
+                #     "userPassword": app_password,
+                #     "userToken": app_user,
+                #     "username": portal_un,
+                #     "password": portal_pw
+                # })
+                # payload = api_details['RequestBody']
+                # endPoint = api_details['EndPoint']
+                # method = api_details['Method']
+                # headers = api_details['Header']
+                # url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+                # url = url.replace('EZETAP', org_code)
+                # resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+                # APIProcessor.update_api_details_to_report_variables(resp)
+                # response_change_pwd = json.loads(resp.text)
+                # logger.debug(
+                #     f"response received for changing the password for {app_user} using createUser api is : {response_change_pwd}")
+                # if response_change_pwd["success"]:
+                #     logger.debug(f"Changed the current password of existing user to {app_password}")
+                #     return app_user, app_password
+                # else:
+                #     logger.error(f"Change password for {app_user} using create_user API failed : {response_change_pwd}")
+                #     raise Exception(f"Could not change password of the existing user {app_user}")
                 break
 
         # Create new user with agent role since there are no other normal users
-        logger.info(f"All users under {org_code} are only P2P allowed users. So creating new user.")
-        app_user = str(random.randint(1000000000, 9999999999))
-        app_password = app_pw
-        logger.info(f"Creating new user in agent role with username {app_user} and password {app_password}")
-        name = "EzeAutoUser"
-        api_details = DBProcessor.get_api_details('createUser', request_body={
-            "mobileNumber": app_user,
-            "name": name,
-            "roles": ["ROLE_CLAGENT"],
-            "userPassword": app_password,
-            "userToken": app_user,
-            "username": portal_un,
-            "password": portal_pw
-        })
-        payload = api_details['RequestBody']
-        endPoint = api_details['EndPoint']
-        method = api_details['Method']
-        headers = api_details['Header']
-        url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
-        url = url.replace('EZETAP', org_code)
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        APIProcessor.update_api_details_to_report_variables(resp)
-        response_new_user_creation = json.loads(resp.text)
-        logger.debug(f"response received for createUser api for {app_user} is : {response_new_user_creation}")
-        if response_new_user_creation["success"]:
-            logger.debug(f"Created new user {app_user} with agent role with password {app_password}")
-            return app_user, app_password
-        else:
-            logger.error(f"User creation failed for {app_user} : {response_new_user_creation}")
-            raise Exception(f"Could not create new user {app_user}")
+        logger.info(f"All active users under {org_code} are allowed to do only P2P txns. So creating new user.")
+        app_user, app_password = p2p_create_user(portal_un, portal_pw, app_pw, org_code)
+        return app_user, app_password
+        # app_user = str(random.randint(1000000000, 9999999999))
+        # app_password = app_pw
+        # logger.info(f"Creating new user in agent role with username {app_user} and password {app_password}")
+        # name = "EzeAutoUser"
+        # api_details = DBProcessor.get_api_details('createUser', request_body={
+        #     "mobileNumber": app_user,
+        #     "name": name,
+        #     "roles": ["ROLE_CLAGENT"],
+        #     "userPassword": app_password,
+        #     "userToken": app_user,
+        #     "username": portal_un,
+        #     "password": portal_pw
+        # })
+        # payload = api_details['RequestBody']
+        # endPoint = api_details['EndPoint']
+        # method = api_details['Method']
+        # headers = api_details['Header']
+        # url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+        # url = url.replace('EZETAP', org_code)
+        # resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        # APIProcessor.update_api_details_to_report_variables(resp)
+        # response_new_user_creation = json.loads(resp.text)
+        # logger.debug(f"response received for createUser api for {app_user} is : {response_new_user_creation}")
+        # if response_new_user_creation["success"]:
+        #     logger.debug(f"Created new user {app_user} with agent role with password {app_password}")
+        #     return app_user, app_password
+        # else:
+        #     logger.error(f"User creation failed for {app_user} : {response_new_user_creation}")
+        #     raise Exception(f"Could not create new user {app_user}")
 
     else:
         # Create new user with agent role
-        logger.info(f"No existing users under the org {org_code}. So creating new user.")
-        app_user = str(random.randint(1000000000, 9999999999))
-        app_password = app_pw
-        logger.info(f"Creating new user in agent role with username {app_user} and password {app_password}")
-        name = "EzeAutoUser"
-        api_details = DBProcessor.get_api_details('createUser', request_body={
-            "mobileNumber": app_user,
-            "name": name,
-            "roles": ["ROLE_CLAGENT"],
-            "userPassword": app_password,
-            "userToken": app_user,
-            "username": portal_un,
-            "password": portal_pw
-        })
-        payload = api_details['RequestBody']
-        endPoint = api_details['EndPoint']
-        method = api_details['Method']
-        headers = api_details['Header']
-        url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
-        url = url.replace('EZETAP', org_code)
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        APIProcessor.update_api_details_to_report_variables(resp)
-        response_new_user_creation = json.loads(resp.text)
-        logger.debug(f"response received for creating new user {app_user} using createUser api is : {response_new_user_creation}")
-        if response_new_user_creation["success"]:
-            logger.debug(f"Created new user {app_user} with agent role with password {app_password}")
-            return app_user, app_password
-        else:
-            logger.error(f"User creation failed for {app_user}: {response_new_user_creation}")
-            raise Exception(f"Could not create new user {app_user}")
+        logger.info(f"No existing active users under the org {org_code}. So creating new user.")
+        app_user, app_password = p2p_create_user(portal_un, portal_pw, app_pw, org_code)
+        return app_user, app_password
+        # app_user = str(random.randint(1000000000, 9999999999))
+        # app_password = app_pw
+        # logger.info(f"Creating new user in agent role with username {app_user} and password {app_password}")
+        # name = "EzeAutoUser"
+        # api_details = DBProcessor.get_api_details('createUser', request_body={
+        #     "mobileNumber": app_user,
+        #     "name": name,
+        #     "roles": ["ROLE_CLAGENT"],
+        #     "userPassword": app_password,
+        #     "userToken": app_user,
+        #     "username": portal_un,
+        #     "password": portal_pw
+        # })
+        # payload = api_details['RequestBody']
+        # endPoint = api_details['EndPoint']
+        # method = api_details['Method']
+        # headers = api_details['Header']
+        # url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+        # url = url.replace('EZETAP', org_code)
+        # resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        # APIProcessor.update_api_details_to_report_variables(resp)
+        # response_new_user_creation = json.loads(resp.text)
+        # logger.debug(f"response received for creating new user {app_user} using createUser api is : {response_new_user_creation}")
+        # if response_new_user_creation["success"]:
+        #     logger.debug(f"Created new user {app_user} with agent role with password {app_password}")
+        #     return app_user, app_password
+        # else:
+        #     logger.error(f"User creation failed for {app_user}: {response_new_user_creation}")
+        #     raise Exception(f"Could not create new user {app_user}")
+
+
+def p2p_create_user(portal_un, portal_pw, app_pw, org_code):
+    app_user = str(random.randint(1000000000, 9999999999))
+    app_password = app_pw
+    logger.info(f"Creating new user in agent role with username {app_user} and password {app_password}")
+    name = "EzeAutoUser"
+    api_details = DBProcessor.get_api_details('createUser', request_body={
+        "mobileNumber": app_user,
+        "name": name,
+        "roles": ["ROLE_CLAGENT"],
+        "userPassword": app_password,
+        "userToken": app_user,
+        "username": portal_un,
+        "password": portal_pw
+    })
+    payload = api_details['RequestBody']
+    endPoint = api_details['EndPoint']
+    method = api_details['Method']
+    headers = api_details['Header']
+    url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+    url = url.replace('EZETAP', org_code)
+    resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+    APIProcessor.update_api_details_to_report_variables(resp)
+    response_new_user_creation = json.loads(resp.text)
+    logger.debug(f"response received for createUser api for {app_user} is : {response_new_user_creation}")
+    if response_new_user_creation["success"]:
+        logger.debug(f"Created new user {app_user} with agent role with password {app_password}")
+        return app_user, app_password
+    else:
+        logger.error(f"User creation failed for {app_user} : {response_new_user_creation}")
+        raise Exception(f"Could not create new user {app_user}")
+
+def p2p_change_password(portal_un, portal_pw, app_user, org_code):
+    app_password = "P2P" + ''.join(random.choice(string.digits) for _ in range(7))
+    name = "EzeAutoUser"
+    logger.info(f"Changing password of new selected user {app_user}")
+    logger.info(f"New password {app_password}")
+    logger.info(f"New mobile number {app_user}")
+    logger.info(f"New name {name}")
+
+    api_details = DBProcessor.get_api_details('createUser', request_body={
+        "mobileNumber": app_user,
+        "name": name,
+        "roles": ["ROLE_CLAGENT"],
+        "userPassword": app_password,
+        "userToken": app_user,
+        "username": portal_un,
+        "password": portal_pw
+    })
+    payload = api_details['RequestBody']
+    endPoint = api_details['EndPoint']
+    method = api_details['Method']
+    headers = api_details['Header']
+    url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+    url = url.replace('EZETAP', org_code)
+    resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+    APIProcessor.update_api_details_to_report_variables(resp)
+    response_change_pwd = json.loads(resp.text)
+    logger.debug(
+        f"response received for changing the password for {app_user} using createUser api is : {response_change_pwd}")
+    if response_change_pwd["success"]:
+        logger.debug(f"Changed the current password of existing user to {app_password}")
+        return app_user, app_password
+    else:
+        logger.error(f"Change password for {app_user} using create_user API failed : {response_change_pwd}")
+        raise Exception(f"Could not change password of the existing user {app_user}")
