@@ -47,7 +47,7 @@ finally:
     create_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
     create_merchant_with_multi_account_required = ConfigReader.read_config("Setup", "create_and_configure_merchants_"
                                                                                     "with_multi_account").lower()
-    if not create_merchant_required == "true" and create_merchant_with_multi_account_required == "true":
+    if not (create_merchant_required == "true" and create_merchant_with_multi_account_required == "true"):
         update_report_excel_with_timing_info()
         ReportProcessor.setStylesForExcel()
     TestSuiteSetup.killEmulatorsAndAppiumServers()
