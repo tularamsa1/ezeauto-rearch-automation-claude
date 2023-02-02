@@ -222,7 +222,6 @@ def test_common_100_112_001():
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
 
-                # add prefix as app in variable names.
                 txnHistoryPage.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txnHistoryPage.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
@@ -253,7 +252,7 @@ def test_common_100_112_001():
                 actualAppValues = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
-                    "txn_amt": app_amount.split(' ')[1],  # santo's implementation needs to be added
+                    "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id, "rrn": payment_rrn,
                     "order_id": payment_orderId,
                     "msg": payment_status_msg,
@@ -299,7 +298,7 @@ def test_common_100_112_001():
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # Not a correct way of doing it.
+                amount_api = int(response["amount"])
                 acquirer_code__api = response["acquirerCode"]
                 settlementStatus_api = response["settlementStatus"]
                 rrNumber_api = response["rrNumber"]
@@ -333,7 +332,6 @@ def test_common_100_112_001():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                # Add other tables for validation as well.
                 expectedDBValues = {"pmt_status": "AUTHORIZED",
                                     "pmt_state": "SETTLED",
                                     "pmt_mode": "CNP",
@@ -368,19 +366,19 @@ def test_common_100_112_001():
                 payment_intent_status = result["status"].iloc[0]
 
                 actualDBValues = {
-                                "pmt_status": pmt_status_db,
-                                "pmt_state": pmt_state_db,
-                                "pmt_mode": pmt_mode_db,
-                                "txn_amt": txn_amt_db,
-                                "settle_status": settle_status_db,
-                                "pmt_gateway": payment_gateway_db,
-                                "auth_code": cnp_txn_auth_code,
-                                "cnp_pmt_gateway": cnp_payment_gateway,
-                                "cnpware_pmt_gateway": cnpware_payment_gateway,
-                                "pmt_flow": cnp_payment_flow,
-                                "pmt_intent_status": payment_intent_status,
-                                "tid": terminal_info_id,
-                                "acc_label_id": str(label_ids)
+                    "pmt_status": pmt_status_db,
+                    "pmt_state": pmt_state_db,
+                    "pmt_mode": pmt_mode_db,
+                    "txn_amt": txn_amt_db,
+                    "settle_status": settle_status_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "auth_code": cnp_txn_auth_code,
+                    "cnp_pmt_gateway": cnp_payment_gateway,
+                    "cnpware_pmt_gateway": cnpware_payment_gateway,
+                    "pmt_flow": cnp_payment_flow,
+                    "pmt_intent_status": payment_intent_status,
+                    "tid": terminal_info_id,
+                    "acc_label_id": str(label_ids)
 
                 }
 
@@ -435,7 +433,6 @@ def test_common_100_112_001():
                                   'RRN': str(cnp_txn_rrn),
                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                   'date': txn_date,
-                                  # Date and time small letter mein de rahe hai lekin UI mein captila mein hai.
                                   'time': txn_time,
                                   "AUTH CODE": txn_auth_code}
                 receipt_validator.perform_charge_slip_validations(txn_id,
@@ -451,9 +448,6 @@ def test_common_100_112_001():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -691,7 +685,7 @@ def test_common_100_112_002():
                 actualAppValues = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
-                    "txn_amt": app_amount.split(' ')[1],  # santo's implementation needs to be added
+                    "txn_amt": app_amount.split(' ')[1],
                     "txn_id": app_txn_id, "rrn": payment_rrn,
                     "order_id": payment_orderId,
                     "msg": payment_status_msg,
@@ -737,7 +731,7 @@ def test_common_100_112_002():
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # Not a correct way of doing it.
+                amount_api = int(response["amount"])
                 acquirer_code__api = response["acquirerCode"]
                 settlementStatus_api = response["settlementStatus"]
                 rrNumber_api = response["rrNumber"]
@@ -771,7 +765,6 @@ def test_common_100_112_002():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                # Add other tables for validation as well.
                 expectedDBValues = {"pmt_status": "AUTHORIZED",
                                     "pmt_state": "SETTLED",
                                     "pmt_mode": "CNP",
@@ -792,7 +785,6 @@ def test_common_100_112_002():
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                # Handle in the posting datetime method.
                 pmt_status_db = result["status"].iloc[0]
                 pmt_mode_db = result["payment_mode"].iloc[0]
                 txn_amt_db = int(result["amount"].iloc[0])
@@ -806,19 +798,19 @@ def test_common_100_112_002():
                 payment_intent_status = result["status"].iloc[0]
 
                 actualDBValues = {
-                                "pmt_status": pmt_status_db,
-                                "pmt_state": pmt_state_db,
-                                "pmt_mode": pmt_mode_db,
-                                "txn_amt": txn_amt_db,
-                                "settle_status": settle_status_db,
-                                "pmt_gateway": payment_gateway_db,
-                                "auth_code": cnp_txn_auth_code,
-                                "cnp_pmt_gateway": cnp_payment_gateway,
-                                "cnpware_pmt_gateway": cnpware_payment_gateway,
-                                "pmt_flow": cnp_payment_flow,
-                                "pmt_intent_status": payment_intent_status,
-                                "tid": terminal_info_id,
-                                "acc_label_id": str(label_ids)
+                    "pmt_status": pmt_status_db,
+                    "pmt_state": pmt_state_db,
+                    "pmt_mode": pmt_mode_db,
+                    "txn_amt": txn_amt_db,
+                    "settle_status": settle_status_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "auth_code": cnp_txn_auth_code,
+                    "cnp_pmt_gateway": cnp_payment_gateway,
+                    "cnpware_pmt_gateway": cnpware_payment_gateway,
+                    "pmt_flow": cnp_payment_flow,
+                    "pmt_intent_status": payment_intent_status,
+                    "tid": terminal_info_id,
+                    "acc_label_id": str(label_ids)
 
                 }
 
@@ -867,13 +859,11 @@ def test_common_100_112_002():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 logger.info(f"date and time is: {txn_date},{txn_time}")
-                # Python naming convention
                 expectedValues = {'CARD TYPE': 'VISA',
                                   'merchant_ref_no': 'Ref # ' + str(order_id),
                                   'RRN': str(cnp_txn_rrn),
                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                                   'date': txn_date,
-                                  # Date and time small letter mein de rahe hai lekin UI mein captila mein hai.
                                   'time': txn_time,
                                   "AUTH CODE": txn_auth_code}
                 receipt_validator.perform_charge_slip_validations(txn_id,

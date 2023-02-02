@@ -87,8 +87,9 @@ def test_common_100_112_003():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Initiate_MultiAcc',request_body={
-                "amount": amount, "externalRefNumber": order_id,"username": app_username, "password": app_password, "accountLabel": str(account_label_name)})
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate_MultiAcc', request_body={
+                "amount": amount, "externalRefNumber": order_id, "username": app_username, "password": app_password,
+                "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
@@ -157,7 +158,7 @@ def test_common_100_112_003():
 
             query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query,"cnpware")
+            result = DBProcessor.getValueFromDB(query, "cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
@@ -188,7 +189,7 @@ def test_common_100_112_003():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "txn_id": txn_id,
                                      "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -237,7 +238,7 @@ def test_common_100_112_003():
 
                 actualAppValues = {"pmt_mode": payment_mode,
                                    "pmt_status": payment_status.split(':')[1],
-                                   "txn_amt": app_amount.split(' ')[1],  # santo's implementation needs to be added
+                                   "txn_amt": app_amount.split(' ')[1],
                                    "txn_id": app_txn_id, "rrn": payment_rrn,
                                    "order_id": payment_orderId,
                                    "msg": payment_status_msg,
@@ -279,21 +280,8 @@ def test_common_100_112_003():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
-                # status_api = ''
-                # amount_api = ''
-                # for elements in responseInList:
-                #     if elements["txnId"] == txn_id:
-                #         status_api = elements["status"]
-                #         amount_api = int(elements["amount"])
-                #         acquirer_code__api = elements["acquirerCode"]
-                #         settlementStatus_api = elements["settlementStatus"]
-                #         rrNumber_api = elements["rrNumber"]
-                #         txnType_api = elements["txnType"]
-                #         orgCode_api = elements["orgCode"]
-                #         date_api = elements["postingDate"]
-
                 status_api = response["status"]
-                amount_api = int(response["amount"])  # Not a correct way of doing it.
+                amount_api = int(response["amount"])
                 acquirer_code_api = response["acquirerCode"]
                 settlementStatus_api = response["settlementStatus"]
                 rrNumber_api = response["rrNumber"]
@@ -324,7 +312,6 @@ def test_common_100_112_003():
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
-                # Add other tables for validation as well.
                 expectedDBValues = {"pmt_status": "AUTHORIZED",
                                     "pmt_state": "SETTLED",
                                     "pmt_flow": "REMOTEPAY",
@@ -352,10 +339,9 @@ def test_common_100_112_003():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
 
-                # Handle in the posting datetime method.
                 pmt_status_db = result["status"].iloc[0]
                 pmt_mode_db = result["payment_mode"].iloc[0]
-                txn_amt_db = int(result["amount"].iloc[0])  # Amount should not be converted to int
+                txn_amt_db = int(result["amount"].iloc[0])
                 settle_status_db = result["settlement_status"].iloc[0]
                 pmt_state_db = result["state"].iloc[0]
                 payment_gateway_db = result["payment_gateway"].iloc[0]
@@ -378,7 +364,7 @@ def test_common_100_112_003():
                                   "cnpware_txn_amt": amount,
                                   "cnpware_pmt_mode": cnpware_txn_payment_mode,
                                   "cnpware_pmt_state": cnpware_txn_state,
-                                  "cnpware_pmt_flow":cnpware_payment_flow,
+                                  "cnpware_pmt_flow": cnpware_payment_flow,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
@@ -450,7 +436,7 @@ def test_common_100_112_003():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -524,8 +510,10 @@ def test_common_100_112_004():
             # ------------------------------------------------------------------------------------------------
             amount = 11
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Initiate_MultiAcc',request_body={"amount": amount, "externalRefNumber": order_id,
-                                                                    "username": app_username, "password": app_password, "accountLabel": str(account_label_name)})
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate_MultiAcc',
+                                                      request_body={"amount": amount, "externalRefNumber": order_id,
+                                                                    "username": app_username, "password": app_password,
+                                                                    "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
@@ -590,7 +578,6 @@ def test_common_100_112_004():
             acc_label_id = result['id'].values[0]
             logger.debug(f"Query result, acc_label_id from db : {acc_label_id}")
 
-
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -613,7 +600,7 @@ def test_common_100_112_004():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "txn_id": txn_id,
                                      "order_id": order_id,
                                      "msg": "PAYMENT FAILED",
@@ -696,19 +683,6 @@ def test_common_100_112_004():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
-                # status_api = ''
-                # amount_api = ''
-                # for elements in responseInList:
-                #     if elements["txnId"] == txn_id:
-                #         status_api = elements["status"]
-                #         amount_api = int(elements["amount"])
-                #         acquirer_code__api = elements["acquirerCode"]
-                #         settlementStatus_api = elements["settlementStatus"]
-                #         rrNumber_api = elements["rrNumber"]
-                #         txnType_api = elements["txnType"]
-                #         orgCode_api = elements["orgCode"]
-                #         date_api = elements["postingDate"]
 
                 status_api = response["status"]
                 amount_api = int(response["amount"])
@@ -807,7 +781,7 @@ def test_common_100_112_004():
                                   "cnpware_txn_amt": amount,
                                   "cnpware_pmt_mode": cnpware_txn_payment_mode,
                                   "cnpware_pmt_state": cnpware_txn_state,
-                                  "cnpware_pmt_flow":cnpware_payment_flow,
+                                  "cnpware_pmt_flow": cnpware_payment_flow,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
@@ -863,10 +837,9 @@ def test_common_100_112_004():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -938,8 +911,9 @@ def test_common_100_112_005():
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(1, 10)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            api_details = DBProcessor.get_api_details('Remotepay_Initiate_MultiAcc',request_body={
-                "amount": amount, "externalRefNumber": order_id,"username": app_username, "password": app_password, "accountLabel": str(account_label_name)})
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate_MultiAcc', request_body={
+                "amount": amount, "externalRefNumber": order_id, "username": app_username, "password": app_password,
+                "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
@@ -1008,7 +982,7 @@ def test_common_100_112_005():
 
             query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query,"cnpware")
+            result = DBProcessor.getValueFromDB(query, "cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
@@ -1039,7 +1013,7 @@ def test_common_100_112_005():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "txn_id": txn_id,
                                      "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -1214,7 +1188,7 @@ def test_common_100_112_005():
                                   "cnpware_txn_amt": amount,
                                   "cnpware_pmt_mode": cnpware_txn_payment_mode,
                                   "cnpware_pmt_state": cnpware_txn_state,
-                                  "cnpware_pmt_flow":cnpware_payment_flow,
+                                  "cnpware_pmt_flow": cnpware_payment_flow,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
@@ -1241,7 +1215,8 @@ def test_common_100_112_005():
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
                 portal_driver = GlobalVariables.portalDriver
                 loginPagePortal = PortalLoginPage(portal_driver)
-                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(
+                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 loginPagePortal.perform_login_to_portal(portal_username, portal_password)
                 homePagePortal = PortalHomePage(portal_driver)
                 homePagePortal.search_merchant_name(str(org_code))
@@ -1285,6 +1260,6 @@ def test_common_100_112_005():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
