@@ -24,9 +24,6 @@ def create_merchants():
     sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     sqlite_processor.update_acquisitions_to_db()
-    # if create_merchant_required == "true" and create_merchant_with_multi_account_required == "true":
-    #     raise ValueError("Both Configurations are True, Make sure only one configuration is enabled for Merchant "
-    #                      "Creation. Whatever type of Merchant you want to create.")
     if create_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
         create_merchants_with_users()
     else:
