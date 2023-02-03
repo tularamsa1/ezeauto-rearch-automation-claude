@@ -165,16 +165,23 @@ def test_500_502_025():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -199,7 +206,7 @@ def test_500_502_025():
             request_id_upi = resp_start_upi['p2pRequestId']
 
             # Start API for BQR
-            amount_bqr = random.randint(401, 1000)
+            amount_bqr = random.randint(401, 999)
             logger.info(f"Generated amount for BQR: {amount_bqr}")
             ext_ref_number_bqr = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of BQR:  {ext_ref_number_bqr}")
@@ -492,16 +499,23 @@ def test_500_501_026():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -527,7 +541,7 @@ def test_500_501_026():
             start_success_upi = resp_start_upi['success']
 
             # Start API for BQR
-            amount_bqr = random.randint(401, 1000)
+            amount_bqr = random.randint(401, 999)
             logger.info(f"Generated amount for BQR: {amount_bqr}")
             ext_ref_number_bqr = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of BQR:  {ext_ref_number_bqr}")
@@ -1016,16 +1030,23 @@ def test_500_502_027():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -1051,7 +1072,7 @@ def test_500_502_027():
             start_success_upi = resp_start_upi['success']
 
             # Start API for BQR
-            amount_bqr = random.randint(401, 1000)
+            amount_bqr = random.randint(401, 999)
             logger.info(f"Generated amount for BQR: {amount_bqr}")
             ext_ref_number_bqr = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of BQR:  {ext_ref_number_bqr}")
@@ -1758,21 +1779,28 @@ def test_500_502_028():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
             # Start API for CARD
-            amount_card = random.randint(401, 1000)
+            amount_card = random.randint(401, 999)
             logger.info(f"Generated amount for card txn: {amount_card}")
             ext_ref_number_card = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of card:  {ext_ref_number_card}")
@@ -1809,7 +1837,7 @@ def test_500_502_028():
             status_received_realcode_card = resp_status_card['realCode']
 
             # Start API for BQR
-            amount_bqr = random.randint(401, 1000)
+            amount_bqr = random.randint(401, 999)
             logger.info(f"Generated amount for BQR: {amount_bqr}")
             ext_ref_number_bqr = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of BQR:  {ext_ref_number_bqr}")
@@ -2378,21 +2406,28 @@ def test_500_502_029():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
             # Start API for CARD
-            amount_card = random.randint(401, 1000)
+            amount_card = random.randint(401, 999)
             logger.info(f"Generated amount for card txn: {amount_card}")
             ext_ref_number_card = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of card:  {ext_ref_number_card}")
@@ -2428,7 +2463,7 @@ def test_500_502_029():
             status_received_realcode_card = resp_status_card['realCode']
 
             # Start API for BQR
-            amount_bqr = random.randint(401, 1000)
+            amount_bqr = random.randint(401, 999)
             logger.info(f"Generated amount for BQR txn: {amount_bqr}")
             ext_ref_number_bqr = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of BQR:  {ext_ref_number_bqr}")

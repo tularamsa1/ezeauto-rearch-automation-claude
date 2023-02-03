@@ -121,20 +121,27 @@ def test_500_503_048():
                 logger.error(f"Could not find P2P connection in redis server")
                 raise Exception("Could not find P2P connection in redis server")
 
-            # # Checking P2P notification
-            # app_driver.open_notifications()
-            # logger.info(f"Pulled notification bar")
-            #
-            # actual_notification = home_page.check_p2p_notification()
-            #
-            # expected_notification = "Push 2 Pay is ON"
-            # if actual_notification == expected_notification:
-            #     logger.debug(f"Located the P2P connection notification")
-            # else:
-            #     logger.error(f"Could not find P2P connection notification on device")
-            #     raise Exception("Could not find P2P connection notification on device")
-            #
-            # app_driver.back()
+            # Checking P2P notification
+            app_driver.open_notifications()
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
+            expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
+            if actual_notification == expected_notification:
+                logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
+            else:
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
+
+            app_driver.back()
 
             external_ref_num = random.randint(0, 10 ** 5)
             logger.debug(f"externalRefNum random number is: {external_ref_num}")
@@ -386,16 +393,23 @@ def test_500_503_049():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -649,16 +663,23 @@ def test_500_503_050():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -911,16 +932,23 @@ def test_500_503_051():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 

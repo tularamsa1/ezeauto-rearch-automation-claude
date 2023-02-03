@@ -404,6 +404,7 @@ def delete_value_from_db(query, db_name="ezetap_demo") -> str:
 
 def get_redis_data(data):
     try:
+        logger.info(f"Device data to be checked in redis is {data}")
         logger.info(f"Connecting to redis")
 
         try:
@@ -425,12 +426,15 @@ def get_redis_data(data):
 
         # Both servers are empty
         if len(result_server_1) == 0 and len(result_server_2) == 0:
+            logger.info(f"Both redis servers are empty")
             redis_device_conn_1 = False
             redis_device_conn_2 = False
 
         # Both the servers are not empty
         elif len(result_server_1) > 0 and len(result_server_2) > 0:
+            logger.info(f"Both redis servers are populated")
             for element in result_server_1:
+                logger.info(f"Element in server-1 is {element}")
                 if str(element) == data:
                     logger.debug(f"Element found in server-1 : {element}")
                     redis_device_conn_1 = True
@@ -440,6 +444,7 @@ def get_redis_data(data):
                     continue
 
             for element in result_server_2:
+                logger.info(f"Element in server-2 is {element}")
                 if str(element) == data:
                     logger.debug(f"Element found in server-2 : {element}")
                     redis_device_conn_2 = True
@@ -450,8 +455,11 @@ def get_redis_data(data):
 
         # One of the server is not empty
         else:
+            logger.info(f"One of the server is having data")
             if len(result_server_1) > 0:
+                logger.info(f"Server-1 has data, and server-2 is empty")
                 for element in result_server_1:
+                    logger.info(f"Element in server-1 is {element}")
                     if str(element) == data:
                         logger.debug(f"Element found in server-1 : {element}")
                         redis_device_conn_1 = True
@@ -463,7 +471,9 @@ def get_redis_data(data):
                 logger.info(f"Server-1 is empty")
 
             if len(result_server_2) > 0:
+                logger.info(f"Server-2 has data, and server-1 is empty")
                 for element in result_server_2:
+                    logger.info(f"Element in server-2 is {element}")
                     if str(element) == data:
                         logger.debug(f"Element found in server-2 : {element}")
                         redis_device_conn_2 = True

@@ -128,21 +128,28 @@ def test_500_503_030():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
             # Start API for BQR
-            amount_bqr = random.randint(401, 1000)
+            amount_bqr = random.randint(401, 999)
             logger.info(f"Generated amount for BQR txn: {amount_bqr}")
             ext_ref_number_bqr = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of BQR:  {ext_ref_number_bqr}")
@@ -178,7 +185,7 @@ def test_500_503_030():
             status_received_realcode_bqr = resp_status_bqr['realCode']
 
             # Start API for CARD
-            amount_card = random.randint(401, 1000)
+            amount_card = random.randint(401, 999)
             logger.info(f"Generated amount for CARD txn: {amount_card}")
             ext_ref_number_card = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of CARD:  {ext_ref_number_bqr}")
@@ -227,28 +234,6 @@ def test_500_503_030():
             db_p2p_request_status_card_1 = result['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
-            # pmt_status = payment_page.is_qrcode_displayed()
-            # logger.info(f"Checked for QR code display")
-            # logger.debug(f"Payment status of last txn : {pmt_status}")
-
-            # if pmt_status == "Payment Successful":
-            #     pass
-            # elif pmt_status == "Payment Failed":
-            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            # elif pmt_status == "Payment Pending":
-            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            #     payment_page.perform_click(payment_page.lbl_skip)
-            # elif pmt_status == "":
-            #     logger.info(f"Payment status : {pmt_status}")
-            # else:
-            #     payment_page.validate_upi_bqr_payment_screen()
-            #     logger.info("Payment QR generated and displayed successfully")
-            #     payment_page.click_on_back_btn()
-            #     payment_page.click_on_transaction_cancel_yes()
-            #     logger.debug("Pressed back button and clicked Yes on transaction cancel page for BQR")
-            #     sleep(2)
-            #     payment_page.click_on_proceed_homepage()
-
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -493,16 +478,23 @@ def test_500_503_031():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -528,7 +520,7 @@ def test_500_503_031():
             start_success_upi = resp_start_upi['success']
 
             # Start API for CARD
-            amount_card = random.randint(401, 1000)
+            amount_card = random.randint(401, 999)
             logger.info(f"Generated amount for CARD: {amount_card}")
             ext_ref_number_card = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of CARD:  {ext_ref_number_card}")
@@ -783,16 +775,23 @@ def test_500_503_034():
 
             # Checking P2P notification
             app_driver.open_notifications()
-            logger.info(f"Pulled notification bar")
-
-            actual_notification = home_page.check_p2p_notification()
-
+            logger.info(f"Pulled notification bar for checking P2P notification")
+            actual_notification = ""
+            try:
+                actual_notification = home_page.check_p2p_notification()
+            except:
+                logger.error(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
+            logger.info(f"Expected P2P notification message is : {expected_notification}")
+
             if actual_notification == expected_notification:
                 logger.debug(f"Located the P2P connection notification")
+                logger.info(f"P2P notification message on device is : {actual_notification}")
+                logger.info(f"P2P notification message on device is as expected")
             else:
-                logger.error(f"Could not find P2P connection notification on device")
-                raise Exception("Could not find P2P connection notification on device")
+                logger.error(f"Actual P2P notification message on device is : {actual_notification}")
+                app_driver.back()
+                raise Exception("P2P connection notification message mismatch on device")
 
             app_driver.back()
 
@@ -833,7 +832,7 @@ def test_500_503_034():
             status_received_realcode_upi = resp_status_upi['realCode']
 
             # Start API for CARD
-            amount_card = random.randint(401, 1000)
+            amount_card = random.randint(401, 999)
             logger.info(f"Generated amount for Card txn: {amount_upi}")
             ext_ref_number_card = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of CARD:  {ext_ref_number_card}")
@@ -899,34 +898,6 @@ def test_500_503_034():
             sleep(2)
 
             payment_page = PaymentPage(app_driver)
-            # pmt_status = payment_page.is_qrcode_displayed()
-            # logger.info(f"Checked for QR code display")
-            # logger.debug(f"Payment status of last txn : {pmt_status}")
-
-            # if pmt_status == "Payment Successful":
-            #     pass
-            # elif pmt_status == "Payment Failed":
-            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            # elif pmt_status == "Payment Pending":
-            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            #     payment_page.perform_click(payment_page.lbl_skip)
-            # elif pmt_status == "":
-            #     logger.info(f"Payment status : {pmt_status}")
-            # else:
-            #     payment_page.validate_upi_bqr_payment_screen()
-            #     logger.info("Payment QR generated and displayed successfully")
-            #     payment_page.click_on_back_btn()
-            #     payment_page.click_on_transaction_cancel_yes()
-            #     logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            #     sleep(2)
-            #     payment_page.click_on_proceed_homepage()
-
-            # payment_page.validate_upi_bqr_payment_screen()
-            # logger.info("Payment QR generated and displayed successfully")
-            # payment_page.click_on_back_btn()
-            # payment_page.click_on_transaction_cancel_yes()
-            # logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            # sleep(2)
             payment_page.click_on_proceed_homepage()
             sleep(2)
 
