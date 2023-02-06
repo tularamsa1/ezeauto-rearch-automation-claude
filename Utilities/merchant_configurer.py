@@ -8,14 +8,16 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
-# Manasa
+
 def configure_merchants():
     """
     This method is used to configure all the required settings for the merchant.
     """
     try:
         config_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
-        if config_merchant_required == "true":
+        create_merchant_with_multi_account_required = ConfigReader.read_config("Setup", "create_and_configure_merchants"
+                                                                                        "_with_multi_account").lower()
+        if config_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
             conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
             cursor = conn.cursor()
             cursor.execute("select * from merchants where CreationStatus = 'Created';")

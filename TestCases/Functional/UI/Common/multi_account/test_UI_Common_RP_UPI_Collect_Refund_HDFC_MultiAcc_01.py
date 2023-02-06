@@ -1148,7 +1148,7 @@ def test_common_100_111_012():
                 status_db_original = result["status"].iloc[0]
                 payment_mode_db_original = result["payment_mode"].iloc[0]
                 amount_db_original = int(
-                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                    result["amount"].iloc[0])
                 state_db_original = result["state"].iloc[0]
                 payment_gateway_db_original = result["payment_gateway"].iloc[0]
                 acquirer_code_db_original = result["acquirer_code"].iloc[0]

@@ -82,31 +82,19 @@ def test_common_100_107_001():
             mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {mid}")
 
-            testsuite_teardown.revert_config_FC(portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
-            query = "select * from staticqr_intent where config_id ='" + str(upi_mc_id) + "'"
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Result for the query : {query} is : {result}")
-            if result.empty:
-                api_details = DBProcessor.get_api_details('static_qrcode_generate_axisfc', request_body={
-                    "username": portal_username,
-                    "password": portal_password,
-                    "qrUserMobileNo": mobile_number,
-                    "qrUserName": app_username,
-                    "merchantVpa": vpa,
-                })
-                response = APIProcessor.send_request(api_details)
-                publish_id = response["publishId"]
-                logger.debug(f"fetching publish_id from api response is : {publish_id}")
-                logger.debug(f"Response received for static_qrcode_generate_axisfc api is : {response}")
-            else:
-                query = "select * from staticqr_intent where config_id='" + upi_mc_id + "'"
-                logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                publish_id = result["publish_id"].iloc[0]
-                mobile_number = result["user_mobile"].iloc[0]
-                app_username = result["user_name"].iloc[0]
+            api_details = DBProcessor.get_api_details('static_qrcode_generate_axisfc', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "qrUserMobileNo": mobile_number,
+                "qrUserName": app_username,
+                "merchantVpa": vpa,
+            })
+            response = APIProcessor.send_request(api_details)
+            publish_id = response["publishId"]
+            logger.debug(f"fetching publish_id from api response is : {publish_id}")
+            logger.debug(f"Response received for static_qrcode_generate_axisfc api is : {response}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -254,7 +242,7 @@ def test_common_100_107_002():
             mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {mid}")
 
-            testsuite_teardown.revert_config_FC(portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
             logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
             query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
@@ -452,11 +440,8 @@ def test_common_100_107_003():
             mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {mid}")
 
-            testsuite_teardown.revert_config_FC(portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
-            query = "select * from staticqr_intent where config_id ='" + str(upi_mc_id) + "'"
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result : {result}")
             api_details = DBProcessor.get_api_details('static_qrcode_generate_axisfc', request_body={
                 "username": app_username,
                 "password": app_password,
@@ -588,7 +573,7 @@ def test_common_100_107_004():
             mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {mid}")
 
-            testsuite_teardown.revert_config_FC(portal_username, portal_password)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
             logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
             query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
@@ -597,7 +582,7 @@ def test_common_100_107_004():
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                                   "password": portal_password})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+            logger.debug(f"Response received for DB refresh is : {response}")
 
             api_details = DBProcessor.get_api_details('static_qrcode_generate_axisfc', request_body={
                 "username": portal_username,
@@ -824,7 +809,7 @@ def test_common_100_107_024():
         mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {mid}")
 
-        testsuite_teardown.revert_config_FC(portal_username, portal_password)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
