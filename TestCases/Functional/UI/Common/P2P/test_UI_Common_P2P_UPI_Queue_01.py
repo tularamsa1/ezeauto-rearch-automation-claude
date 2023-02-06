@@ -56,10 +56,8 @@ def test_500_501_020():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -152,6 +150,8 @@ def test_500_501_020():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -398,10 +398,8 @@ def test_500_501_021():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -486,6 +484,8 @@ def test_500_501_021():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -938,10 +938,8 @@ def test_500_501_022():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -1034,6 +1032,8 @@ def test_500_501_022():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -1703,10 +1703,8 @@ def test_500_501_023():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -1781,6 +1779,8 @@ def test_500_501_023():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -2280,7 +2280,7 @@ def test_500_501_023():
 def test_500_501_024():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Queue_Cancel_First_Transaction_API_24
-    Sub Feature Description: Cancel first notification among two queued notifications (second notification for UPI) using cancel API from billing system
+    Sub Feature Description: Cancel first notification (card) among two queued notifications (second notification for UPI) using cancel API from billing system
     TC naming code description: 500: P2P, 501: P2P_UPI, 024: TC 024
     """
     try:
@@ -2314,10 +2314,8 @@ def test_500_501_024():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -2392,6 +2390,8 @@ def test_500_501_024():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"

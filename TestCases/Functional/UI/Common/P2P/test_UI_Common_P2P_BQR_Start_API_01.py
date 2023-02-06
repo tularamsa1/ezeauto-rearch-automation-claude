@@ -57,10 +57,8 @@ def test_500_502_006():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -134,6 +132,8 @@ def test_500_502_006():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -243,8 +243,6 @@ def test_500_502_006():
             result = DBProcessor.getValueFromDB(query)
             txn_created_time = result['created_time'].values[0]
 
-
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -286,15 +284,6 @@ def test_500_502_006():
                 app_payment_msg = pax_txn_history_page.fetch_txn_payment_message_text()
                 app_date_and_time = pax_txn_history_page.fetch_date_time_text()
 
-                # logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
-                # logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                # logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
-                # logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                # logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                # logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-
-
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
@@ -306,6 +295,7 @@ def test_500_502_006():
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+                app_driver.quit()
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
@@ -512,6 +502,7 @@ def test_500_502_006():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
+        app_driver.close_app()
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -560,10 +551,8 @@ def test_500_502_007():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -638,6 +627,8 @@ def test_500_502_007():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -1060,10 +1051,8 @@ def test_500_502_010():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -1138,6 +1127,8 @@ def test_500_502_010():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -1722,10 +1713,8 @@ def test_500_502_036():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -1798,6 +1787,8 @@ def test_500_502_036():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -1883,6 +1874,10 @@ def test_500_502_036():
             cancel_bqr_realcode = resp_cancel_bqr['realCode']
 
             payment_page = PaymentPage(app_driver)
+
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
             sleep(2)
             payment_page.click_on_proceed_homepage()
 

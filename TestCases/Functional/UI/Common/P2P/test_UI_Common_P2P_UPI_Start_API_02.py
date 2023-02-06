@@ -52,17 +52,6 @@ def test_500_501_038():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
-        logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
@@ -113,6 +102,8 @@ def test_500_501_038():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -269,12 +260,6 @@ def test_500_501_039():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
-        logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
@@ -327,6 +312,8 @@ def test_500_501_039():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -485,12 +472,6 @@ def test_500_501_040():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
-        logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
@@ -542,6 +523,8 @@ def test_500_501_040():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -690,19 +673,6 @@ def test_500_501_041():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = "select * from app_key where org_code = '" + str(org_code) + "' AND status = 'ACTIVE';"
-        logger.debug(f"Query to fetch app_key from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result of app_key table is : {result}")
-        app_key = result['app_key'].values[0]
-        logger.debug(f"Query result of app_key : {app_key}")
-
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
-        logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
@@ -754,6 +724,8 @@ def test_500_501_041():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -913,12 +885,6 @@ def test_500_501_042():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
-        logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
@@ -971,6 +937,8 @@ def test_500_501_042():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"

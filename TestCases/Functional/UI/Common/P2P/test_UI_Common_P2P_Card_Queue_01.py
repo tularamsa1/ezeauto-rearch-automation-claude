@@ -21,7 +21,7 @@ logger = EzeAutoLogger(__name__)
 def test_500_503_030():
     """
     Sub Feature Code: UI_common_P2P_Card_Queue_Status_API_30
-    Sub Feature Description: Sending two notifications and check the status of second notification (Card) as in queue using status API
+    Sub Feature Description: Sending two notifications (BQR and Card) and check the status of second notification (Card) as in queue using status API
     TC naming code description: 500: P2P, 503: P2P_CARD, 030: TC 030
     """
     try:
@@ -55,10 +55,8 @@ def test_500_503_030():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -115,6 +113,8 @@ def test_500_503_030():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -239,6 +239,7 @@ def test_500_503_030():
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page for BQR")
+
             sleep(2)
             payment_page.click_on_proceed_homepage()
             sleep(2)
@@ -395,10 +396,8 @@ def test_500_503_031():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -465,6 +464,8 @@ def test_500_503_031():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -684,10 +685,8 @@ def test_500_503_034():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -762,6 +761,8 @@ def test_500_503_034():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -895,9 +896,12 @@ def test_500_503_034():
             cancel_upi_errorcode = resp_cancel_upi['errorCode']
             cancel_upi_errormssg = resp_cancel_upi['errorMessage']
             cancel_upi_realcode = resp_cancel_upi['realCode']
-            sleep(2)
 
             payment_page = PaymentPage(app_driver)
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page on app")
+            sleep(2)
             payment_page.click_on_proceed_homepage()
             sleep(2)
 

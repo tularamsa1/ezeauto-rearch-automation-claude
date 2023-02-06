@@ -57,10 +57,8 @@ def test_500_501_011():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -132,6 +130,8 @@ def test_500_501_011():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'"+device_serial+"|ezetap_android|"+org_code+"'"
@@ -528,10 +528,8 @@ def test_500_501_012():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -603,6 +601,8 @@ def test_500_501_012():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'"+device_serial+"|ezetap_android|"+org_code+"'"
@@ -992,19 +992,11 @@ def test_500_501_015():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select id from org_employee where username ='" + str(app_username) + "'"
-        logger.debug(f"Query to fetch user id from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        user_id = result['id'].values[0]
-        logger.debug(f"Query result, user id : {user_id}")
-
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -1081,6 +1073,8 @@ def test_500_501_015():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -1637,10 +1631,8 @@ def test_500_501_035():
             org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -1715,6 +1707,8 @@ def test_500_501_035():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -1800,9 +1794,12 @@ def test_500_501_035():
             cancel_upi_errorcode = resp_cancel_upi['errorCode']
             cancel_upi_errormssg = resp_cancel_upi['errorMessage']
             cancel_upi_realcode = resp_cancel_upi['realCode']
-            sleep(2)
 
             payment_page = PaymentPage(app_driver)
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            sleep(2)
             payment_page.click_on_proceed_homepage()
 
             # Check status of request after payment

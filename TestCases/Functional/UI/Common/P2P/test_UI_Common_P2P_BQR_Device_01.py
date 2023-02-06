@@ -57,10 +57,8 @@ def test_500_502_016():
         query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
         logger.debug(f"Query to fetch terminal_info from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
         mid = result['mid'].values[0]
         tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, device_serial : {device_serial}")
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
@@ -133,6 +131,8 @@ def test_500_502_016():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
@@ -588,12 +588,6 @@ def test_500_502_017():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        device_serial = result['device_serial'].values[0]
-        logger.debug(f"Query to fetch device_serial from the DB is : {device_serial}")
-
         query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
         logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -660,6 +654,8 @@ def test_500_502_017():
             home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
+
+            device_serial = GlobalVariables.str_device_id
 
             # Checking redis connection
             redis_data = "b'" + device_serial + "|ezetap_android|" + org_code + "'"
