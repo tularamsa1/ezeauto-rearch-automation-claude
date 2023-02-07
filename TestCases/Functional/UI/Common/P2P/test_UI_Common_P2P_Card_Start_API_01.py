@@ -301,7 +301,6 @@ def test_500_503_004():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-        app_driver.close_app()
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
