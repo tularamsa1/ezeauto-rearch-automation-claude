@@ -329,7 +329,6 @@ def revert_p2p_settings(portal_un, portal_pw, app_username, app_password, org_co
     logger.debug(f"Response received for DB refresh is : {response}")
 
 
-
 def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
     """
     This method is used to select/ create new user which allowed to do normal txns along with P2P txns
@@ -417,6 +416,7 @@ def p2p_create_user(portal_un, portal_pw, app_pw, org_code):
     else:
         logger.error(f"User creation failed for {app_user} : {response_new_user_creation}")
         raise Exception(f"Could not create new user {app_user}")
+
 
 def p2p_change_password(portal_un, portal_pw, app_user, org_code):
     app_password = "P2P" + ''.join(random.choice(string.digits) for _ in range(7))
