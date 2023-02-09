@@ -80,6 +80,14 @@ def test_common_400_401_015():
         result = DBProcessor.setValueToDB(query, "ezetap_demo")
         logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
 
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
@@ -314,6 +322,14 @@ def test_common_400_401_016():
         logger.debug(f"Delete org_subscription based on org_code  : {query}")
         result = DBProcessor.setValueToDB(query, "ezetap_demo")
         logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -555,6 +571,14 @@ def test_common_400_401_017():
         logger.debug(f"Delete org_subscription based on org_code  : {query}")
         result = DBProcessor.setValueToDB(query, "ezetap_demo")
         logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -802,6 +826,14 @@ def test_common_400_401_018():
         logger.debug(f"Delete org_subscription based on org_code  : {query}")
         result = DBProcessor.setValueToDB(query, "ezetap_demo")
         logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1053,6 +1085,14 @@ def test_common_400_401_019():
         logger.debug(f"Delete org_subscription based on org_code  : {query}")
         result = DBProcessor.setValueToDB(query, "ezetap_demo")
         logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
