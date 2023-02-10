@@ -205,6 +205,7 @@ def test_500_502_006():
             db_p2p_request_txn_id = result['transactionId'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_P2P()
             payment_page.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
@@ -214,6 +215,7 @@ def test_500_502_006():
             logger.debug("Pressed back button and clicked Yes on transaction cancel page")
             sleep(2)
             payment_page.click_on_proceed_homepage()
+            sleep(2)
 
             # Check status of request after payment
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -694,9 +696,9 @@ def test_500_502_007():
             logger.debug(f"Query to fetch details from DB table p2p_request after receiving to device : {query}")
             result = DBProcessor.getValueFromDB(query)
             db_p2p_request_status = result['status'].values[0]
-            db_p2p_request_txn_id = result['transactionId'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -999,6 +1001,14 @@ def test_500_502_007():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        print("")
+        print("FIRST LINE")
+        try:
+            app_driver.terminate_app('com.ezetap.service.demo')
+        except Exception as e:
+            print("EXCEPT BLOCK")
+            print(f"EXCEPTION : {e}")
+        print("Killed SA")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1245,6 +1255,7 @@ def test_500_502_010():
             db_p2p_request_txn_id = result['transactionId'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_P2P()
             payment_page.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
@@ -1857,7 +1868,8 @@ def test_500_502_036():
             cancel_bqr_realcode = resp_cancel_bqr['realCode']
 
             payment_page = PaymentPage(app_driver)
-
+            payment_page.is_qrcode_displayed_P2P()
+            payment_page.validate_upi_bqr_payment_screen()
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page")

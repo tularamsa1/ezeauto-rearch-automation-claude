@@ -259,6 +259,7 @@ def test_500_501_020():
             db_p2p_request_status_upi_1 = result_upi_DB['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -578,8 +579,8 @@ def test_500_501_021():
             db_p2p_request_status_bqr_1 = result['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
-            logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page")
@@ -1139,6 +1140,7 @@ def test_500_501_022():
             db_p2p_request_status_upi_1 = result_upi_DB['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -1886,28 +1888,6 @@ def test_500_501_023():
             logger.debug("Pressed back button and clicked Yes on transaction cancel page for card payment")
             sleep(2)
 
-            # pmt_status = payment_page.is_qrcode_displayed()
-            # logger.info(f"Checked for QR code display")
-            # logger.debug(f"Payment status of last txn : {pmt_status}")
-            #
-            # if pmt_status == "Payment Successful":
-            #     pass
-            # elif pmt_status == "Payment Failed":
-            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            # elif pmt_status == "Payment Pending":
-            #     payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            #     payment_page.perform_click(payment_page.lbl_skip)
-            # elif pmt_status == "":
-            #     logger.info(f"Payment status : {pmt_status}")
-            # else:
-            #     payment_page.validate_upi_bqr_payment_screen()
-            #     logger.info("Payment QR generated and displayed successfully")
-            #     payment_page.click_on_back_btn()
-            #     payment_page.click_on_transaction_cancel_yes()
-            #     logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-            #     sleep(2)
-            #     payment_page.click_on_proceed_homepage()
-
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -2494,37 +2474,19 @@ def test_500_501_024():
             resp_cancel_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P cancel API of card pmt request : {resp_cancel_card}")
 
-            cancel_card_success = resp_cancel_card['success']
-            cancel_card_mssg = resp_cancel_card['message']
-            cancel_card_mssgcode = resp_cancel_card['messageCode']
-            cancel_card_realcode = resp_cancel_card['realCode']
-
             payment_page = PaymentPage(app_driver)
             payment_page.click_on_cancel_p2p_request_ok()
             logger.debug("Clicked Ok on p2p transaction cancel for card payment")
             sleep(2)
 
-            pmt_status = payment_page.is_qrcode_displayed()
-            logger.info(f"Checked for QR code display")
-            logger.debug(f"Payment status of last txn : {pmt_status}")
-
-            if pmt_status == "Payment Successful":
-                pass
-            elif pmt_status == "Payment Failed":
-                payment_page.perform_click(payment_page.btn_proceedToHomepage)
-            elif pmt_status == "Payment Pending":
-                payment_page.perform_click(payment_page.btn_proceedToHomepage)
-                payment_page.perform_click(payment_page.lbl_skip)
-            elif pmt_status == "":
-                logger.info(f"Payment status : {pmt_status}")
-            else:
-                payment_page.validate_upi_bqr_payment_screen()
-                logger.info("Payment QR generated and displayed successfully")
-                payment_page.click_on_back_btn()
-                payment_page.click_on_transaction_cancel_yes()
-                logger.debug("Pressed back button and clicked Yes on transaction cancel page")
-                sleep(2)
-                payment_page.click_on_proceed_homepage()
+            payment_page.is_qrcode_displayed()
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
+            sleep(2)
+            payment_page.click_on_proceed_homepage()
 
             # Check status of request after canceling card txn using cancel API
             api_details = DBProcessor.get_api_details('p2p_status', request_body={

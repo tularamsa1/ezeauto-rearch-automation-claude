@@ -230,6 +230,7 @@ def test_500_503_030():
             db_p2p_request_status_card_1 = result['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -358,7 +359,7 @@ def test_500_503_030():
 def test_500_503_031():
     """
     Sub Feature Code: UI_Common_P2P_Card_Queue_Disabled_31
-    Sub Feature Description: Send one BQR and card payment notifications using start API when Queue functionality is disabled and check status of both requests
+    Sub Feature Description: Send one UPI and card payment notifications using start API when Queue functionality is disabled and check status of both requests
     TC naming code description: 500: P2P, 503: P2P_CARD, 031: TC 031
     """
     try:
@@ -557,9 +558,9 @@ def test_500_503_031():
             query = "select * from p2p_request where id='" + str(request_id_upi) + "';"
             logger.debug(f"Query to fetch details from DB table p2p_request after receiving UPI request to device : {query}")
             result = DBProcessor.getValueFromDB(query)
-            db_p2p_request_status_upi_1 = result['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -886,6 +887,8 @@ def test_500_503_034():
             cancel_upi_realcode = resp_cancel_upi['realCode']
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
+            payment_page.validate_upi_bqr_payment_screen()
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page on app")

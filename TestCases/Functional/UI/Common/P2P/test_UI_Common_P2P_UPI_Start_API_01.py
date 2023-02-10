@@ -203,6 +203,7 @@ def test_500_501_011():
             db_p2p_request_txn_id = result['transactionId'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_P2P()
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             payment_page.validate_upi_bqr_payment_screen()
@@ -669,6 +670,7 @@ def test_500_501_012():
             db_p2p_request_status = result['status'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -1186,6 +1188,7 @@ def test_500_501_015():
             db_p2p_request_txn_id = result['transactionId'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_P2P()
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
             payment_page.validate_upi_bqr_payment_screen()
@@ -1574,7 +1577,16 @@ def test_500_501_015():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        # print("")
+        # print("FIRST LINE")
+        # try:
+        #     app_driver.terminate_app('com.ezetap.service.demo')
+        # except Exception as e:
+        #     print("EXCEPT BLOCK")
+        #     print(f"EXCEPTION : {e}")
+        # print("Killed SA")
         Configuration.executeFinallyBlock(testcase_id)
+
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -1777,6 +1789,8 @@ def test_500_501_035():
             cancel_upi_realcode = resp_cancel_upi['realCode']
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
+            payment_page.validate_upi_bqr_payment_screen()
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page")

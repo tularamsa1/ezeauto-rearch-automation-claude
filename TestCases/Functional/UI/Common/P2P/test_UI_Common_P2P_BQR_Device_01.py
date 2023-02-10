@@ -243,11 +243,12 @@ def test_500_502_016():
             db_p2p_request_txn_id = result['transactionId'].values[0]
 
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_P2P()
             payment_page.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
-            # payment_page.click_on_back_btn()  #Remove this comment
+            payment_page.click_on_back_btn()
             logger.info(f"Clicked on back button")
             payment_page.click_on_transaction_cancel_yes()
             logger.info(f"Confirmed to cancel payment")
@@ -537,7 +538,12 @@ def test_500_502_016():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-        app_driver.terminate_app('com.ezetap.service.demo')
+        # app_driver.terminate_app('com.ezetap.service.demo')
+        # print("Killed SA")
+        # print("Killed SA")
+        # print("Killed SA")
+        # print("Killed SA")
+        # print("Killed SA")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -763,6 +769,8 @@ def test_500_502_017():
 
             sleep(3)
             payment_page = PaymentPage(app_driver)
+            payment_page.is_qrcode_displayed_P2P()
+            payment_page.validate_upi_bqr_payment_screen()
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             payment_page.click_on_proceed_homepage()
