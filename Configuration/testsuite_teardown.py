@@ -253,7 +253,7 @@ def delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, 
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for DB refresh is : {response}")
 
-def delete_qrcode_aduit_table_entry(portal_username, portal_password, org_code):
+def delete_qrcode_audit_table_entry(portal_username, portal_password, org_code):
     """
     This method is to delete all the entries from qrcode_audit table based on org code
     """

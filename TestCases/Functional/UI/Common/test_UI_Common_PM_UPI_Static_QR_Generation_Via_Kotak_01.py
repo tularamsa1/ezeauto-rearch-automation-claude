@@ -70,7 +70,7 @@ def test_common_100_107_030():
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
         # to delete all entries from qrcode_audit table which was generated previously
-        testsuite_teardown.delete_qrcode_aduit_table_entry(portal_username, portal_password, org_code)
+        testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -244,7 +244,7 @@ def test_common_100_107_031():
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
         # to delete all entries from qrcode_audit table which was generated previously
-        testsuite_teardown.delete_qrcode_aduit_table_entry(portal_username, portal_password, org_code)
+        testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -529,7 +529,7 @@ def test_common_100_107_032():
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
         # to delete all entries from qrcode_audit table which was generated previously
-        testsuite_teardown.delete_qrcode_aduit_table_entry(portal_username, portal_password, org_code)
+        testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -682,7 +682,7 @@ def test_common_100_107_036():
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
         # to delete all entries from qrcode_audit table which was generated previously
-        testsuite_teardown.delete_qrcode_aduit_table_entry(portal_username, portal_password, org_code)
+        testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -837,7 +837,7 @@ def test_common_100_107_037():
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, config_id)
 
         # to delete all entries from qrcode_audit table which was generated previously
-        testsuite_teardown.delete_qrcode_aduit_table_entry(portal_username, portal_password, org_code)
+        testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
