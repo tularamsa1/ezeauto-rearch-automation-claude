@@ -15,6 +15,7 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
+@pytest.mark.dbVal
 def test_common_400_401_015():
     """
     Sub Feature Code: NonUI_Common_Generic_Autologin_Successtxn_AfterSessionExpiry
@@ -74,34 +75,18 @@ def test_common_400_401_015():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result_from_db = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
+        query = "delete from org_subscription where org_code='"+org_code+"';"
+        logger.debug(f"Delete org_subscription based on org_code  : {query}")
+        result = DBProcessor.setValueToDB(query, "ezetap_demo")
+        logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
 
-        if result_from_db.empty:
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
 
-            expected_device_identifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
-
-            api_details = DBProcessor.get_api_details('Login', request_body={
-                "username": app_username,
-                "password": app_password,
-                "deviceIdentifier": expected_device_identifier,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
-            })
-
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Login Response is id is : {response}")
-            expected_sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
-
-        else:
-            expected_device_identifier = result_from_db['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result_from_db['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -119,12 +104,16 @@ def test_common_400_401_015():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            expected_device_identifier_type = "imei"
+            expected_app_id = "ezetap_android"
+
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
                 "deviceIdentifier": expected_device_identifier,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
+                "appId": expected_app_id,
+                "deviceIdentifierType": expected_device_identifier_type
             })
 
             response = APIProcessor.send_request(api_details)
@@ -136,11 +125,10 @@ def test_common_400_401_015():
             logger.debug(f"username is : {login_username}")
             login_org_code = response['orgCode']
             logger.debug(f"orgCode is : {login_org_code}")
+            login_subscriber_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {login_subscriber_id}")
 
             if login_success == True:
-
-                login_subscriber_id = response['subscriberId']
-                logger.debug(f"Subscriber id is : {login_subscriber_id}")
 
                 logger.debug(f"Waiting for 65 seconds to expire session")
                 sleep(65)
@@ -156,7 +144,7 @@ def test_common_400_401_015():
                         "deviceIdentifier": expected_device_identifier,
                         "appId": "ezetap_android",
                         "deviceIdentifierType": "imei",
-                        "subscriberId": expected_sub_id
+                        "subscriberId": login_subscriber_id
                     }
                 )
 
@@ -192,25 +180,73 @@ def test_common_400_401_015():
             try:
                 expected_api_values = {
                     "success": True,
-                    "subscriber_id": expected_sub_id,
                     "autologin_by_token_enabled": True,
                     "orgCode": org_code,
                     "username": app_username
                 }
 
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
                 actual_api_values = {
                     "success": cash_txn_success,
-                    "subscriber_id": login_subscriber_id,
                     "autologin_by_token_enabled": login_autologin_by_token_enabled,
                     "orgCode": login_org_code,
                     "username": login_username
                 }
+
+                logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "subscriber_id": login_subscriber_id,
+                    "expected_device_identifier": str(expected_device_identifier),
+                    "org_code": login_org_code,
+                    "device_identifier_type": str(expected_device_identifier_type),
+                    "app_id": str(expected_app_id)
+                }
+
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from org_subscription where org_code='" + str(org_code) + "' and device_identifier_type = 'imei';"
+                logger.debug(f"Query to fetch deviceIdentifier and subscriberid from the DB : {query}")
+                result_from_db = DBProcessor.getValueFromDB(query, "ezetap_demo")
+                logger.debug(f"Query resultFromDB of org_subscription table : {result_from_db}")
+                device_identifier_db = result_from_db['device_identifier'].values[0]
+                logger.debug(f"Query result, device_identifier from db is : {device_identifier_db}")
+                subscriber_id_db = result_from_db['subscriber_id'].values[0]
+                logger.debug(f"Subscriber id from db is : {subscriber_id_db}")
+                device_identifier_type_db = result_from_db['device_identifier_type'].values[0]
+                logger.debug(f"Query result, device_identifier_type from db is : {device_identifier_type_db}")
+                app_id_db = result_from_db['app_id'].values[0]
+                logger.debug(f"Query result, app_id from db is : {app_id_db}")
+                org_code_db = result_from_db['org_code'].values[0]
+                logger.debug(f"Query result, org_code from db is : {org_code_db}")
+
+                actual_db_values = {
+                    "subscriber_id": subscriber_id_db,
+                    "expected_device_identifier": device_identifier_db,
+                    "org_code": org_code_db,
+                    "device_identifier_type": device_identifier_type_db,
+                    "app_id": app_id_db
+                }
+
+                logger.debug(f"actual_db_values: {actual_db_values}")
+
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -222,6 +258,7 @@ def test_common_400_401_015():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
+@pytest.mark.dbVal
 def test_common_400_401_016():
     """
     Sub Feature Code: NonUI_Common_Generic_Autologin_Successtxn_WithExpiredToken
@@ -281,33 +318,18 @@ def test_common_400_401_016():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result_from_db = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
+        query = "delete from org_subscription where org_code='" + org_code + "';"
+        logger.debug(f"Delete org_subscription based on org_code  : {query}")
+        result = DBProcessor.setValueToDB(query, "ezetap_demo")
+        logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
 
-        if result_from_db.empty:
-            expected_device_identifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
 
-            api_details = DBProcessor.get_api_details('Login', request_body={
-                "username": app_username,
-                "password": app_password,
-                "deviceIdentifier": expected_device_identifier ,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
-            })
-
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Login Response is : {response}")
-            expected_sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
-
-        else:
-            expected_device_identifier = result_from_db['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result_from_db['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -323,12 +345,16 @@ def test_common_400_401_016():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            expected_device_identifier_type = "imei"
+            expected_app_id = "ezetap_android"
+
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
                 "deviceIdentifier": expected_device_identifier,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
+                "appId":expected_app_id,
+                "deviceIdentifierType": expected_device_identifier_type
             })
 
             response = APIProcessor.send_request(api_details)
@@ -340,11 +366,11 @@ def test_common_400_401_016():
             logger.debug(f"username is : {login_username}")
             login_org_code = response['orgCode']
             logger.debug(f"orgCode is : {login_org_code}")
+            login_subscriber_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {login_subscriber_id}")
 
             if login_success == True:
 
-                login_subscriber_id = response['subscriberId']
-                logger.debug(f"Subscriber id is : {login_subscriber_id}")
                 logger.debug(f"Waiting for 65 seconds to expire session")
                 sleep(65)
 
@@ -365,7 +391,7 @@ def test_common_400_401_016():
                         "deviceIdentifier": expected_device_identifier,
                         "appId": "ezetap_android",
                         "deviceIdentifierType": "imei",
-                        "subscriberId": expected_sub_id
+                        "subscriberId": login_subscriber_id
                     }
                 )
 
@@ -401,7 +427,6 @@ def test_common_400_401_016():
             try:
                 expected_api_values =  {
                     "success": True,
-                    "subscriber_id": expected_sub_id,
                     "autologin_by_token_enabled": True,
                     "orgCode": org_code,
                     "username": app_username
@@ -411,7 +436,6 @@ def test_common_400_401_016():
 
                 actual_api_values = {
                     "success": cash_txn_success,
-                    "subscriber_id": login_subscriber_id,
                     "autologin_by_token_enabled": login_autologin_by_token_enabled,
                     "orgCode": login_org_code,
                     "username": login_username
@@ -425,6 +449,53 @@ def test_common_400_401_016():
             logger.info(f"Completed API validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "subscriber_id": login_subscriber_id,
+                    "expected_device_identifier": str(expected_device_identifier),
+                    "org_code": login_org_code,
+                    "device_identifier_type": str(expected_device_identifier_type),
+                    "app_id": str(expected_app_id)
+                }
+
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from org_subscription where org_code='" + str(
+                    org_code) + "' and device_identifier_type = 'imei';"
+                logger.debug(f"Query to fetch deviceIdentifier and subscriberid from the DB : {query}")
+                result_from_db = DBProcessor.getValueFromDB(query, "ezetap_demo")
+                logger.debug(f"Query resultFromDB of org_subscription table : {result_from_db}")
+                device_identifier_db = result_from_db['device_identifier'].values[0]
+                logger.debug(f"Query result, device_identifier from db is : {device_identifier_db}")
+                subscriber_id_db = result_from_db['subscriber_id'].values[0]
+                logger.debug(f"Subscriber id from db is : {subscriber_id_db}")
+                device_identifier_type_db = result_from_db['device_identifier_type'].values[0]
+                logger.debug(f"Query result, device_identifier_type from db is : {device_identifier_type_db}")
+                app_id_db = result_from_db['app_id'].values[0]
+                logger.debug(f"Query result, app_id from db is : {app_id_db}")
+                org_code_db = result_from_db['org_code'].values[0]
+                logger.debug(f"Query result, org_code from db is : {org_code_db}")
+
+                actual_db_values = {
+                    "subscriber_id": subscriber_id_db,
+                    "expected_device_identifier": device_identifier_db,
+                    "org_code": org_code_db,
+                    "device_identifier_type": device_identifier_type_db,
+                    "app_id": app_id_db
+                }
+
+                logger.debug(f"actual_db_values: {actual_db_values}")
+
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -436,6 +507,7 @@ def test_common_400_401_016():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
+@pytest.mark.dbVal
 def test_common_400_401_017():
     """
     Sub Feature Code: NonUI_Common_Generic_Autologin_SessionExpiry_InvalidAppID
@@ -495,33 +567,18 @@ def test_common_400_401_017():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result_from_db = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
+        query = "delete from org_subscription where org_code='"+org_code+"';"
+        logger.debug(f"Delete org_subscription based on org_code  : {query}")
+        result = DBProcessor.setValueToDB(query, "ezetap_demo")
+        logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
 
-        if result_from_db.empty:
-            expected_device_identifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
 
-            api_details = DBProcessor.get_api_details('Login', request_body={
-                "username": app_username,
-                "password": app_password,
-                "deviceIdentifier": expected_device_identifier ,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
-            })
-
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Login Response is : {response}")
-            expected_sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
-
-        else:
-            expected_device_identifier = result_from_db['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result_from_db['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -539,17 +596,25 @@ def test_common_400_401_017():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            expected_device_identifier_type = "imei"
+            expected_app_id = "ezetap_android"
+
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
                 "deviceIdentifier": expected_device_identifier,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
+                "appId": expected_app_id,
+                "deviceIdentifierType": expected_device_identifier_type
             })
 
             response = APIProcessor.send_request(api_details)
             login_success = response['success']
             logger.debug(f"success id is : {login_success}")
+            login_subscriber_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {login_subscriber_id}")
+            login_org_code = response['orgCode']
+            logger.debug(f"orgCode is : {login_org_code}")
 
             if login_success == True:
 
@@ -568,7 +633,7 @@ def test_common_400_401_017():
                         "deviceIdentifier": expected_device_identifier,
                         "appId": expected_appID,
                         "deviceIdentifierType": "imei",
-                        "subscriberId": expected_sub_id
+                        "subscriberId": login_subscriber_id
                 })
 
                 response = APIProcessor.send_request(api_details)
@@ -635,12 +700,57 @@ def test_common_400_401_017():
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "subscriber_id": login_subscriber_id,
+                    "expected_device_identifier": str(expected_device_identifier),
+                    "org_code": login_org_code,
+                    "device_identifier_type": str(expected_device_identifier_type),
+                    "app_id": str(expected_app_id)
+                }
+
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from org_subscription where org_code='" + str(org_code) + "' and device_identifier_type = 'imei';"
+                logger.debug(f"Query to fetch deviceIdentifier and subscriberid from the DB : {query}")
+                result_from_db = DBProcessor.getValueFromDB(query, "ezetap_demo")
+                logger.debug(f"Query resultFromDB of org_subscription table : {result_from_db}")
+                device_identifier_db = result_from_db['device_identifier'].values[0]
+                logger.debug(f"Query result, device_identifier from db is : {device_identifier_db}")
+                subscriber_id_db = result_from_db['subscriber_id'].values[0]
+                logger.debug(f"Subscriber id from db is : {subscriber_id_db}")
+                device_identifier_type_db = result_from_db['device_identifier_type'].values[0]
+                logger.debug(f"Query result, device_identifier_type from db is : {device_identifier_type_db}")
+                app_id_db = result_from_db['app_id'].values[0]
+                logger.debug(f"Query result, app_id from db is : {app_id_db}")
+                org_code_db = result_from_db['org_code'].values[0]
+                logger.debug(f"Query result, org_code from db is : {org_code_db}")
+
+                actual_db_values = {
+                    "subscriber_id": subscriber_id_db,
+                    "expected_device_identifier": device_identifier_db,
+                    "org_code": org_code_db,
+                    "device_identifier_type": device_identifier_type_db,
+                    "app_id": app_id_db
+                }
+
+                logger.debug(f"actual_db_values: {actual_db_values}")
+
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation-----------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -652,6 +762,7 @@ def test_common_400_401_017():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
+@pytest.mark.dbVal
 def test_common_400_401_018():
     """
     Sub Feature Code: NonUI_Common_Generic_Autologin_SessionExpiry_InvalidDeviceID
@@ -711,34 +822,18 @@ def test_common_400_401_018():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result_from_db = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
+        query = "delete from org_subscription where org_code='" + org_code + "';"
+        logger.debug(f"Delete org_subscription based on org_code  : {query}")
+        result = DBProcessor.setValueToDB(query, "ezetap_demo")
+        logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
 
-        if result_from_db.empty:
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
 
-            expected_device_identifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
-
-            api_details = DBProcessor.get_api_details('Login', request_body={
-                "username": app_username,
-                "password": app_password,
-                "deviceIdentifier": expected_device_identifier ,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
-            })
-
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Login Response is : {response}")
-            expected_sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
-
-        else:
-            expected_device_identifier = result_from_db['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result_from_db['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -756,18 +851,26 @@ def test_common_400_401_018():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            expected_device_identifier_type = "imei"
+            expected_app_id = "ezetap_android"
+
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
                 "deviceIdentifier": expected_device_identifier,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
+                "appId": expected_app_id,
+                "deviceIdentifierType": expected_device_identifier_type
             })
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Login response in execution is : {response}")
             login_success = response['success']
             logger.debug(f"success id is : {login_success}")
+            login_subscriber_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {login_subscriber_id}")
+            login_org_code = response['orgCode']
+            logger.debug(f"orgCode is : {login_org_code}")
 
             if login_success == True:
 
@@ -777,17 +880,17 @@ def test_common_400_401_018():
                 ext_ref_num = ''.join(secrets.choice(string.ascii_lowercase + string.digits)
                                       for i in range(20))
 
-                expected_device_identifier = 'zmxl'
+                expected_device_identifier_cash_payment = 'abc'
 
                 api_details = DBProcessor.get_api_details('cash_payment',request_body={
                     "username": app_username,
                     "amount": "109",
                     "nonce": random.randint(10000, 99999),
                     "externalRefNumber": ext_ref_num,
-                    "deviceIdentifier": expected_device_identifier,
+                    "deviceIdentifier": expected_device_identifier_cash_payment,
                     "appId": "ezetap_android",
                     "deviceIdentifierType": "imei",
-                    "subscriberId": expected_sub_id
+                    "subscriberId": login_subscriber_id
                 })
 
                 response = APIProcessor.send_request(api_details)
@@ -860,6 +963,53 @@ def test_common_400_401_018():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "subscriber_id": login_subscriber_id,
+                    "expected_device_identifier": str(expected_device_identifier),
+                    "org_code": login_org_code,
+                    "device_identifier_type": str(expected_device_identifier_type),
+                    "app_id": str(expected_app_id)
+                }
+
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from org_subscription where org_code='" + str(
+                    org_code) + "' and device_identifier_type = 'imei';"
+                logger.debug(f"Query to fetch deviceIdentifier and subscriberid from the DB : {query}")
+                result_from_db = DBProcessor.getValueFromDB(query, "ezetap_demo")
+                logger.debug(f"Query resultFromDB of org_subscription table : {result_from_db}")
+                device_identifier_db = result_from_db['device_identifier'].values[0]
+                logger.debug(f"Query result, device_identifier from db is : {device_identifier_db}")
+                subscriber_id_db = result_from_db['subscriber_id'].values[0]
+                logger.debug(f"Subscriber id from db is : {subscriber_id_db}")
+                device_identifier_type_db = result_from_db['device_identifier_type'].values[0]
+                logger.debug(f"Query result, device_identifier_type from db is : {device_identifier_type_db}")
+                app_id_db = result_from_db['app_id'].values[0]
+                logger.debug(f"Query result, app_id from db is : {app_id_db}")
+                org_code_db = result_from_db['org_code'].values[0]
+                logger.debug(f"Query result, org_code from db is : {org_code_db}")
+
+                actual_db_values = {
+                    "subscriber_id": subscriber_id_db,
+                    "expected_device_identifier": device_identifier_db,
+                    "org_code": org_code_db,
+                    "device_identifier_type": device_identifier_type_db,
+                    "app_id": app_id_db
+                }
+
+                logger.debug(f"actual_db_values: {actual_db_values}")
+
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation----------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -871,6 +1021,7 @@ def test_common_400_401_018():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
+@pytest.mark.dbVal
 def test_common_400_401_019():
     """
     Sub Feature Code: NonUI_Common_Generic_Autologin_SessionExpiry_InvalidDeviceID
@@ -930,33 +1081,18 @@ def test_common_400_401_019():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting sessionExpiry as 60sec is : {response}")
 
-        query = "select device_identifier, subscriber_id from org_subscription where org_code='" + str(org_code) + " and deviceIdentifierType = imei limit 1';"
-        logger.debug(f"Query to fetch org_code from the DB : {query}")
-        result_from_db = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result of org_code table from the DB : {result_from_db}")
+        query = "delete from org_subscription where org_code='" + org_code + "';"
+        logger.debug(f"Delete org_subscription based on org_code  : {query}")
+        result = DBProcessor.setValueToDB(query, "ezetap_demo")
+        logger.debug(f"Query result of Delete org_subscription based on org_code : {result}")
 
-        if result_from_db.empty:
-            expected_device_identifier = random.randint(0, 10 ** 15)
-            logger.debug(f"expected_deviceIdentifier is : {expected_device_identifier}")
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
 
-            api_details = DBProcessor.get_api_details('Login', request_body={
-                "username": app_username,
-                "password": app_password,
-                "deviceIdentifier": expected_device_identifier ,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
-            })
-
-            response = APIProcessor.send_request(api_details)
-            logger.debug(f"Login Response is : {response}")
-            expected_sub_id = response['subscriberId']
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
-
-        else:
-            expected_device_identifier = result_from_db['device_identifier'].values[0]
-            logger.debug(f"Query result, device_identifier : {expected_device_identifier}")
-            expected_sub_id = result_from_db['subscriberId'].values[0]
-            logger.debug(f"Subscriber id is : {expected_sub_id}")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -975,18 +1111,30 @@ def test_common_400_401_019():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
+            expected_app_id = 'ezetap_android'
+            expected_device_identifier = random.randint(0, 10 ** 15)
+            expected_device_identifier_type = "imei"
+
             api_details = DBProcessor.get_api_details('Login', request_body={
                 "username": app_username,
                 "password": app_password,
                 "deviceIdentifier": expected_device_identifier,
-                "appId": "ezetap_android",
-                "deviceIdentifierType": "imei"
+                "appId":  expected_app_id,
+                "deviceIdentifierType": expected_device_identifier_type
             })
 
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Login response in execution is : {response}")
             login_success = response['success']
             logger.debug(f"success id is : {login_success}")
+            login_subscriber_id = response['subscriberId']
+            logger.debug(f"Subscriber id is : {login_subscriber_id}")
+            login_autologin_by_token_enabled = response['setting']['autoLoginByTokenEnabled']
+            logger.debug(f"AutoLoginEnabled id is : {login_autologin_by_token_enabled}")
+            login_org_code = response['orgCode']
+            logger.debug(f"orgCode is : {login_org_code}")
+            login_username = response['username']
+            logger.debug(f"username is : {login_username}")
 
             if login_success == True:
 
@@ -996,17 +1144,19 @@ def test_common_400_401_019():
                 ext_ref_num = ''.join(secrets.choice(string.ascii_lowercase + string.digits)
                                       for i in range(20))
 
-                expected_deviceIdentifierType = 'zmx'
+                expected_device_identifier_cash_payment = 'zmx'
+                expected_app_id = "ezetap_android"
+                expected_device_identifier_type = "imei"
 
                 api_details = DBProcessor.get_api_details('cash_payment',request_body={
                         "username": app_username,
                         "amount": "109",
                         "nonce": random.randint(10000, 99999),
                         "externalRefNumber": ext_ref_num,
-                        "deviceIdentifier": expected_device_identifier,
-                        "appId": "ezetap_android",
-                        "deviceIdentifierType": expected_deviceIdentifierType,
-                        "subscriberId": expected_sub_id
+                        "deviceIdentifier": expected_device_identifier_cash_payment,
+                        "appId": expected_app_id,
+                        "deviceIdentifierType": expected_device_identifier_type,
+                        "subscriberId": login_subscriber_id
                 })
 
                 response = APIProcessor.send_request(api_details)
@@ -1048,14 +1198,28 @@ def test_common_400_401_019():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
+            expected_cash_txn_error_code = "EZETAP_0000073"
+            expected_cash_txn_error_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
+            expected_cash_txn_real_code = "AUTH_FAILED"
+            expected_cash_txn_message = "Invalid credentials. Verify your credentials, login again, or contact your supervisor."
+
             try:
                 expected_api_values = {
-                    "success": False
+                    "success": False,
+                    "errorCode": expected_cash_txn_error_code,
+                    "errorMessage": expected_cash_txn_error_message,
+                    "realCode": expected_cash_txn_real_code,
+                    "message": expected_cash_txn_message
                 }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
                     "success": actual_cash_txn_success,
+                    "errorCode": actual_cash_txn_error_code,
+                    "errorMessage": actual_cash_txn_error_message,
+                    "realCode": actual_cash_txn_real_code,
+                    "message": actual_cash_txn_message
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -1065,6 +1229,52 @@ def test_common_400_401_019():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                expected_db_values = {
+                    "subscriber_id": login_subscriber_id,
+                    "expected_device_identifier": str(expected_device_identifier),
+                    "org_code": login_org_code,
+                    "device_identifier_type": str(expected_device_identifier_type),
+                    "app_id": str(expected_app_id)
+                }
+
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from org_subscription where org_code='" + str(
+                    org_code) + "' and device_identifier_type = 'imei';"
+                logger.debug(f"Query to fetch deviceIdentifier and subscriberid from the DB : {query}")
+                result_from_db = DBProcessor.getValueFromDB(query, "ezetap_demo")
+                logger.debug(f"Query resultFromDB of org_subscription table : {result_from_db}")
+                device_identifier_db = result_from_db['device_identifier'].values[0]
+                logger.debug(f"Query result, device_identifier from db is : {device_identifier_db}")
+                subscriber_id_db = result_from_db['subscriber_id'].values[0]
+                logger.debug(f"Subscriber id from db is : {subscriber_id_db}")
+                device_identifier_type_db = result_from_db['device_identifier_type'].values[0]
+                logger.debug(f"Query result, device_identifier_type from db is : {device_identifier_type_db}")
+                app_id_db = result_from_db['app_id'].values[0]
+                logger.debug(f"Query result, app_id from db is : {app_id_db}")
+                org_code_db = result_from_db['org_code'].values[0]
+                logger.debug(f"Query result, org_code from db is : {org_code_db}")
+
+                actual_db_values = {
+                    "subscriber_id": subscriber_id_db,
+                    "expected_device_identifier": device_identifier_db,
+                    "org_code": org_code_db,
+                    "device_identifier_type": device_identifier_type_db,
+                    "app_id": app_id_db
+                }
+
+                logger.debug(f"actual_db_values: {actual_db_values}")
+
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation----------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
