@@ -54,32 +54,6 @@ def test_500_502_016():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result, app_key : {app_key}")
 
-        query = "select * from terminal_info where org_code='" + str(org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
-        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        mid = result['mid'].values[0]
-        tid = result['tid'].values[0]
-        logger.info(f"Query from terminal_info, mid : {mid}")
-        logger.info(f"Query from terminal_info, tid : {tid}")
-
-        # Get details from bharatqr_merchant_config table
-        query = "select * from bharatqr_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_bqr_config_id = result['id'].values[0]
-        db_bqr_config_mid = result['mid'].values[0]
-        db_bqr_config_tid = result['tid'].values[0]
-        db_bqr_terminal_info_id = result['terminal_info_id'].values[0]
-        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
-
-        logger.info(f"from bharatqr_merchant_config, config id is : {db_bqr_config_id}")
-        logger.info(f"from bharatqr_merchant_config, mid is : {db_bqr_config_mid}")
-        logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
-        logger.info(f"from bharatqr_merchant_config, terminal_info_id is : {db_bqr_terminal_info_id}")
-        logger.info(f"from bharatqr_merchant_config, merchant_pan is : {db_bqr_config_merchant_pan}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -105,6 +79,33 @@ def test_500_502_016():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        query = "select * from terminal_info where org_code='" + str(
+            org_code) + "' and payment_gateway ='HDFC' and acquirer_code = 'HDFC' and status='ACTIVE';"
+        logger.debug(f"Query to fetch terminal_info from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        mid = result['mid'].values[0]
+        tid = result['tid'].values[0]
+        logger.info(f"Query from terminal_info, mid : {mid}")
+        logger.info(f"Query from terminal_info, tid : {tid}")
+
+        # Get details from bharatqr_merchant_config table
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_bqr_config_id = result['id'].values[0]
+        db_bqr_config_mid = result['mid'].values[0]
+        db_bqr_config_tid = result['tid'].values[0]
+        db_bqr_terminal_info_id = result['terminal_info_id'].values[0]
+        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
+
+        logger.info(f"from bharatqr_merchant_config, config id is : {db_bqr_config_id}")
+        logger.info(f"from bharatqr_merchant_config, mid is : {db_bqr_config_mid}")
+        logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
+        logger.info(f"from bharatqr_merchant_config, terminal_info_id is : {db_bqr_terminal_info_id}")
+        logger.info(f"from bharatqr_merchant_config, merchant_pan is : {db_bqr_config_merchant_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -587,20 +588,6 @@ def test_500_502_017():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        bqr_config_mid_db = result['mid'].values[0]
-        logger.info(f"from bharatqr_merchant_config, mid is : {bqr_config_mid_db}")
-        bqr_config_tid_db = result['tid'].values[0]
-        logger.info(f"from bharatqr_merchant_config, tid is : {bqr_config_tid_db}")
-        bqr_config_id_db = result['id'].values[0]
-        logger.info(f"from bharatqr_merchant_config, bqr_config_id is : {bqr_config_id_db}")
-        bqr_terminal_info_id_db = result['terminal_info_id'].values[0]
-        logger.info(f"from bharatqr_merchant_config, bqr_terminal_info_id_db is : {bqr_terminal_info_id_db}")
-        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
-        logger.info(f"from bharatqr_merchant_config, db_bqr_config_merchant_pan is : {db_bqr_config_merchant_pan}")
-
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQR')
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
@@ -626,6 +613,21 @@ def test_500_502_017():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        bqr_config_mid_db = result['mid'].values[0]
+        logger.info(f"from bharatqr_merchant_config, mid is : {bqr_config_mid_db}")
+        bqr_config_tid_db = result['tid'].values[0]
+        logger.info(f"from bharatqr_merchant_config, tid is : {bqr_config_tid_db}")
+        bqr_config_id_db = result['id'].values[0]
+        logger.info(f"from bharatqr_merchant_config, bqr_config_id is : {bqr_config_id_db}")
+        bqr_terminal_info_id_db = result['terminal_info_id'].values[0]
+        logger.info(f"from bharatqr_merchant_config, bqr_terminal_info_id_db is : {bqr_terminal_info_id_db}")
+        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
+        logger.info(f"from bharatqr_merchant_config, db_bqr_config_merchant_pan is : {db_bqr_config_merchant_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

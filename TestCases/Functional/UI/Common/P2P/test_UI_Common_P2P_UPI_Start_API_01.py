@@ -62,23 +62,6 @@ def test_500_501_011():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from upi_merchant_config table
-        query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_upi_config_id = result['id'].values[0]
-        db_upi_config_mid = result['mid'].values[0]
-        db_upi_config_tid = result['tid'].values[0]
-        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
-        db_upi_vpa = result['vpa'].values[0]
-
-        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
-        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
-        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
-        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
-        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -104,6 +87,24 @@ def test_500_501_011():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        # Get details from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        db_upi_config_mid = result['mid'].values[0]
+        db_upi_config_tid = result['tid'].values[0]
+        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
+        db_upi_vpa = result['vpa'].values[0]
+
+        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
+        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
+        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
+        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
+        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -529,23 +530,6 @@ def test_500_501_012():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from upi_merchant_config table
-        query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_upi_config_id = result['id'].values[0]
-        db_upi_config_mid = result['mid'].values[0]
-        db_upi_config_tid = result['tid'].values[0]
-        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
-        db_upi_vpa = result['vpa'].values[0]
-
-        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
-        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
-        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
-        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
-        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -571,6 +555,24 @@ def test_500_501_012():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        # Get details from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        db_upi_config_mid = result['mid'].values[0]
+        db_upi_config_tid = result['tid'].values[0]
+        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
+        db_upi_vpa = result['vpa'].values[0]
+
+        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
+        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
+        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
+        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
+        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -992,24 +994,6 @@ def test_500_501_015():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from upi_merchant_config table
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_upi_config_id = result['id'].values[0]
-        db_upi_config_mid = result['mid'].values[0]
-        db_upi_config_tid = result['tid'].values[0]
-        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
-        db_upi_vpa = result['vpa'].values[0]
-
-        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
-        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
-        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
-        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
-        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -1039,6 +1023,24 @@ def test_500_501_015():
                 logger.info(f"Current app user can do normal transactions as well")
         else:
             logger.info(f"Current app user can do normal transactions as well")
+
+        # Get details from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        db_upi_config_mid = result['mid'].values[0]
+        db_upi_config_tid = result['tid'].values[0]
+        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
+        db_upi_vpa = result['vpa'].values[0]
+
+        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
+        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
+        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
+        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
+        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1634,24 +1636,6 @@ def test_500_501_035():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from upi_merchant_config table
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_upi_config_id = result['id'].values[0]
-        db_upi_config_mid = result['mid'].values[0]
-        db_upi_config_tid = result['tid'].values[0]
-        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
-        db_upi_vpa = result['vpa'].values[0]
-
-        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
-        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
-        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
-        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
-        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -1677,6 +1661,24 @@ def test_500_501_035():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        # Get details from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        db_upi_config_mid = result['mid'].values[0]
+        db_upi_config_tid = result['tid'].values[0]
+        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
+        db_upi_vpa = result['vpa'].values[0]
+
+        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
+        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
+        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
+        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
+        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

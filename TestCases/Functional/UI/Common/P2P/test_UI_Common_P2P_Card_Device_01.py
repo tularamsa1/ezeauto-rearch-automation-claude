@@ -399,20 +399,6 @@ def test_500_503_019():
         app_key = result['app_key'].values[0]
         logger.debug(f"Query result of app_key : {app_key}")
 
-        query = "select * from bharatqr_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        bqr_config_mid_db = result['mid'].values[0]
-        logger.info(f"from bharatqr_merchant_config, mid is : {bqr_config_mid_db}")
-        bqr_config_tid_db = result['tid'].values[0]
-        logger.info(f"from bharatqr_merchant_config, tid is : {bqr_config_tid_db}")
-        bqr_config_id_db = result['id'].values[0]
-        logger.info(f"from bharatqr_merchant_config, bqr_config_id is : {bqr_config_id_db}")
-        bqr_terminal_info_id_db = result['terminal_info_id'].values[0]
-        logger.info(f"from bharatqr_merchant_config, bqr_terminal_info_id_db is : {bqr_terminal_info_id_db}")
-        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
-        logger.info(f"from bharatqr_merchant_config, db_bqr_config_merchant_pan is : {db_bqr_config_merchant_pan}")
-
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 

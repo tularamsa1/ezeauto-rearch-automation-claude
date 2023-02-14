@@ -61,6 +61,32 @@ def test_500_501_020():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
@@ -96,32 +122,6 @@ def test_500_501_020():
         logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
         logger.info(f"from bharatqr_merchant_config, terminal_info_id is : {db_bqr_terminal_info_id}")
         logger.info(f"from bharatqr_merchant_config, merchant_pan is : {db_bqr_config_merchant_pan}")
-
-        # -------------------------------Reset Settings to default(started)--------------------------------------------
-        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQRV4')
-        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
-            app_username) + "'and sett.setting_name='onlyP2PUser';"
-        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        if (len(result)) >= 1:
-            # If current app_user is onlyP2P allowed user
-            current_setting_val = result['setting_value'].values[0]
-            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
-            if current_setting_val == "true":
-                logger.info(f"Current app user is only P2P allowed user")
-            else:
-                logger.error(f"Current app user can do normal transactions as well")
-        else:
-            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -399,24 +399,6 @@ def test_500_501_021():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from bharatqr_merchant_config table
-        query = "select * from bharatqr_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_bqr_config_id = result['id'].values[0]
-        db_bqr_config_mid = result['mid'].values[0]
-        db_bqr_config_tid = result['tid'].values[0]
-        db_bqr_terminal_info_id = result['terminal_info_id'].values[0]
-        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
-
-        logger.info(f"from bharatqr_merchant_config, config id is : {db_bqr_config_id}")
-        logger.info(f"from bharatqr_merchant_config, mid is : {db_bqr_config_mid}")
-        logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
-        logger.info(f"from bharatqr_merchant_config, terminal_info_id is : {db_bqr_terminal_info_id}")
-        logger.info(f"from bharatqr_merchant_config, merchant_pan is : {db_bqr_config_merchant_pan}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -452,6 +434,24 @@ def test_500_501_021():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        # Get details from bharatqr_merchant_config table
+        query = "select * from bharatqr_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_bqr_config_id = result['id'].values[0]
+        db_bqr_config_mid = result['mid'].values[0]
+        db_bqr_config_tid = result['tid'].values[0]
+        db_bqr_terminal_info_id = result['terminal_info_id'].values[0]
+        db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
+
+        logger.info(f"from bharatqr_merchant_config, config id is : {db_bqr_config_id}")
+        logger.info(f"from bharatqr_merchant_config, mid is : {db_bqr_config_mid}")
+        logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
+        logger.info(f"from bharatqr_merchant_config, terminal_info_id is : {db_bqr_terminal_info_id}")
+        logger.info(f"from bharatqr_merchant_config, merchant_pan is : {db_bqr_config_merchant_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -934,6 +934,32 @@ def test_500_501_022():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
+        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
+            app_username) + "'and sett.setting_name='onlyP2PUser';"
+        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        if (len(result)) >= 1:
+            # If current app_user is onlyP2P allowed user
+            current_setting_val = result['setting_value'].values[0]
+            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
+            if current_setting_val == "true":
+                logger.info(f"Current app user is only P2P allowed user")
+            else:
+                logger.error(f"Current app user can do normal transactions as well")
+        else:
+            logger.error(f"Current app user can do normal transactions as well")
+
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
@@ -969,32 +995,6 @@ def test_500_501_022():
         logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
         logger.info(f"from bharatqr_merchant_config, terminal_info_id is : {db_bqr_terminal_info_id}")
         logger.info(f"from bharatqr_merchant_config, merchant_pan is : {db_bqr_config_merchant_pan}")
-
-        # -------------------------------Reset Settings to default(started)--------------------------------------------
-        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQRV4')
-        testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
-        # -------------------------------Reset Settings to default(completed)-------------------------------------------
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
-        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        query = "select sett.setting_value from setting sett LEFT JOIN org_employee empl on empl.id=sett.entity_id where empl.username ='" + str(
-            app_username) + "'and sett.setting_name='onlyP2PUser';"
-        logger.debug(f"Query to fetch setting_value from the DB for the user {app_username}: {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        if (len(result)) >= 1:
-            # If current app_user is onlyP2P allowed user
-            current_setting_val = result['setting_value'].values[0]
-            logger.debug(f"Query result, 'onlyP2PUser' setting_value of {app_username}: {current_setting_val}")
-            if current_setting_val == "true":
-                logger.info(f"Current app user is only P2P allowed user")
-            else:
-                logger.error(f"Current app user can do normal transactions as well")
-        else:
-            logger.error(f"Current app user can do normal transactions as well")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1695,24 +1695,6 @@ def test_500_501_023():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from upi_merchant_config table
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_upi_config_id = result['id'].values[0]
-        db_upi_config_mid = result['mid'].values[0]
-        db_upi_config_tid = result['tid'].values[0]
-        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
-        db_upi_vpa = result['vpa'].values[0]
-
-        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
-        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
-        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
-        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
-        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -1738,6 +1720,24 @@ def test_500_501_023():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        # Get details from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        db_upi_config_mid = result['mid'].values[0]
+        db_upi_config_tid = result['tid'].values[0]
+        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
+        db_upi_vpa = result['vpa'].values[0]
+
+        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
+        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
+        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
+        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
+        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2279,24 +2279,6 @@ def test_500_501_024():
         logger.info(f"Query from terminal_info, mid : {mid}")
         logger.info(f"Query from terminal_info, tid : {tid}")
 
-        # Get details from upi_merchant_config table
-        query = "select * from upi_merchant_config where org_code ='" + str(
-            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
-        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query)
-
-        db_upi_config_id = result['id'].values[0]
-        db_upi_config_mid = result['mid'].values[0]
-        db_upi_config_tid = result['tid'].values[0]
-        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
-        db_upi_vpa = result['vpa'].values[0]
-
-        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
-        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
-        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
-        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
-        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
@@ -2322,6 +2304,24 @@ def test_500_501_024():
                 logger.error(f"Current app user can do normal transactions as well")
         else:
             logger.error(f"Current app user can do normal transactions as well")
+
+        # Get details from upi_merchant_config table
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
+        logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+
+        db_upi_config_id = result['id'].values[0]
+        db_upi_config_mid = result['mid'].values[0]
+        db_upi_config_tid = result['tid'].values[0]
+        db_upi_terminal_info_id = result['terminal_info_id'].values[0]
+        db_upi_vpa = result['vpa'].values[0]
+
+        logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
+        logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
+        logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
+        logger.info(f"from upi_merchant_config, terminal_info_id is : {db_upi_terminal_info_id}")
+        logger.info(f"from upi_merchant_config, vpa is : {db_upi_vpa}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2479,7 +2479,7 @@ def test_500_501_024():
             logger.debug("Clicked Ok on p2p transaction cancel for card payment")
             sleep(2)
 
-            payment_page.is_qrcode_displayed()
+            payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
