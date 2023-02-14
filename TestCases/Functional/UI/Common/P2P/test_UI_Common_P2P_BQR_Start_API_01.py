@@ -511,7 +511,7 @@ def test_500_502_007():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Start_API_With_Payment_Mode_07
     Sub Feature Description: Send notification with payment mode as BQR, do successful payment from device and validate status using status API
-    TC naming code description: 500: P2P, 502: P2P_BQR, 007: TC 006
+    TC naming code description: 500: P2P, 502: P2P_BQR, 007: TC 06
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
