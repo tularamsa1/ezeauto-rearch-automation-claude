@@ -294,7 +294,6 @@ def test_500_502_006():
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
-                app_driver.quit()
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
@@ -511,7 +510,7 @@ def test_500_502_007():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Start_API_With_Payment_Mode_07
     Sub Feature Description: Send notification with payment mode as BQR, do successful payment from device and validate status using status API
-    TC naming code description: 500: P2P, 502: P2P_BQR, 007: TC 06
+    TC naming code description: 500: P2P, 502: P2P_BQR, 007: TC 007
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -997,14 +996,6 @@ def test_500_502_007():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        # print("")
-        # print("FIRST LINE")
-        # try:
-        #     app_driver.terminate_app('com.ezetap.service.demo')
-        # except Exception as e:
-        #     print("EXCEPT BLOCK")
-        #     print(f"EXCEPTION : {e}")
-        # print("Killed SA")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1813,7 +1804,7 @@ def test_500_502_036():
 
             app_driver.back()
 
-            amount = random.randint(401, 999)
+            amount = random.randint(1, 99)
             logger.info(f"Generated amount: {amount}")
             ext_ref_number = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number:  {ext_ref_number}")
@@ -1860,19 +1851,10 @@ def test_500_502_036():
             logger.debug(f"Response received for P2P cancel API of BQR pmt request : {resp_cancel_bqr}")
 
             cancel_bqr_success = resp_cancel_bqr['success']
-            cancel_bqr_mssg = resp_cancel_bqr['message']
-            cancel_bqr_errorcode = resp_cancel_bqr['errorCode']
-            cancel_bqr_errormssg = resp_cancel_bqr['errorMessage']
-            cancel_bqr_realcode = resp_cancel_bqr['realCode']
 
             payment_page = PaymentPage(app_driver)
-            payment_page.is_qrcode_displayed_P2P()
-            payment_page.validate_upi_bqr_payment_screen()
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
             sleep(2)
-            payment_page.click_on_proceed_homepage()
+            flow_success = payment_page.click_on_goto_homepage()
 
             # Check status of request after payment
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -1883,14 +1865,22 @@ def test_500_502_036():
             resp_status_2 = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after BQR payment is : {resp_status_2}")
 
-            txn_id = resp_status_2['txnId']
-            logger.debug(f"Transaction ID of BQR request cancel: {txn_id}")
+            after_cancel_success = resp_status_2['success']
+            after_cancel_message_code = resp_status_2['messageCode']
+            after_cancel_message = resp_status_2['message']
+            after_cancel_realCode = resp_status_2['realCode']
 
             # Fetch values from DB table txn after payment
-            query = "select * from txn where id='" + str(txn_id) + "';"
-            logger.debug(f"Query to fetch details from DB table txn after BQR payment : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and external_ref = '" + ext_ref_number + "' order by created_time desc limit 1"
+            logger.debug(f"Query to fetch transaction id from txn : {query}")
             result = DBProcessor.getValueFromDB(query)
+            txn_id = result["id"].values[0]
             txn_created_time = result['created_time'].values[0]
+
+            if flow_success:
+                pass
+            else:
+                raise Exception(f"Had to cancel BQR payment from device by clicking Back button")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1912,11 +1902,11 @@ def test_500_502_036():
             try:
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
-                    "pmt_status": "AUTHORIZED",
+                    "pmt_status": "EXPIRED",
                     "txn_amt": str(amount) + ".00",
-                    "settle_status": "SETTLED",
+                    "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1960,27 +1950,31 @@ def test_500_502_036():
                     "status_mssg_code": "P2P_DEVICE_RECEIVED",
                     "status_real_code": "P2P_DEVICE_RECEIVED",
 
-                    "cancel_bqr_success": False,
-                    "cancel_bqr_mssg": "Transaction already initiated, cant initiate cancellation.",
-                    "cancel_bqr_errorcode": "EZETAP_0000610",
-                    "cancel_bqr_errormssg": "Transaction already initiated, cant initiate cancellation.",
-                    "cancel_bqr_realcode": "P2P_PAYMENT_INITIATED",
+                    "cancel_bqr_success": True,
+
+                    # Status after cancellation
+                    "after_cancel_success": True,
+                    "after_cancel_message_code": "P2P_STATUS_IN_CANCELED_FROM_EXTERNAL_SYSTEM",
+                    "after_cancel_message": "PushToPay Notification has been Canceled from Billing/External System.",
+                    "after_cancel_realCode": "P2P_STATUS_IN_CANCELED_FROM_EXTERNAL_SYSTEM"
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
-                                     "start_success": start_success,
-                                     "status_success": status_received_success,
-                                     "status_mssg": status_received_mssg,
-                                     "status_mssg_code": status_received_mssgcode,
-                                     "status_real_code": status_received_realcode,
+                    "start_success": start_success,
+                    "status_success": status_received_success,
+                    "status_mssg": status_received_mssg,
+                    "status_mssg_code": status_received_mssgcode,
+                    "status_real_code": status_received_realcode,
 
-                                     "cancel_bqr_success": cancel_bqr_success,
-                                     "cancel_bqr_mssg": cancel_bqr_mssg,
-                                     "cancel_bqr_errorcode": cancel_bqr_errorcode,
-                                     "cancel_bqr_errormssg": cancel_bqr_errormssg,
-                                     "cancel_bqr_realcode": cancel_bqr_realcode,
-                                     }
+                    "cancel_bqr_success": cancel_bqr_success,
+
+                    # Status after cancellation
+                    "after_cancel_success": after_cancel_success,
+                    "after_cancel_message_code": after_cancel_message_code,
+                    "after_cancel_message": after_cancel_message,
+                    "after_cancel_realCode": after_cancel_realCode
+                }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
@@ -1992,7 +1986,7 @@ def test_500_502_036():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status_1": "COMPLETED",
+                    "p2p_status_1": "CANCELED_FROM_EXTERNAL_SYSTEM",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 

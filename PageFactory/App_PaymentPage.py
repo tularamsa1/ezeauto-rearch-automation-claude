@@ -188,3 +188,15 @@ class PaymentPage(BasePage):
 
     def click_on_cancel_p2p_request_ok(self):
         self.perform_click(self.btn_cancel_p2p_request)
+
+
+    def click_on_goto_homepage(self):
+        try:
+            self.wait_for_element(self.btn_proceedToHomepage, 6)
+        except:
+            self.click_on_back_btn()
+            self.click_on_transaction_cancel_yes()
+            self.click_on_proceed_homepage()
+            return False
+        self.click_on_proceed_homepage()
+        return True

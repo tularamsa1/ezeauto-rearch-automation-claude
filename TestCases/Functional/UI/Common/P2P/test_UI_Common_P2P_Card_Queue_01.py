@@ -786,7 +786,7 @@ def test_500_503_034():
             app_driver.back()
 
             # Start API for UPI
-            amount_upi = random.randint(201, 300)
+            amount_upi = random.randint(1, 99)
             logger.info(f"Generated amount for UPI txn: {amount_upi}")
             ext_ref_number_upi = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of UPI:  {ext_ref_number_upi}")
@@ -823,7 +823,7 @@ def test_500_503_034():
 
             # Start API for CARD
             amount_card = random.randint(401, 999)
-            logger.info(f"Generated amount for Card txn: {amount_upi}")
+            logger.info(f"Generated amount for Card txn: {amount_card}")
             ext_ref_number_card = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of CARD:  {ext_ref_number_card}")
             push_to = {"deviceId": "" + device_serial + "|ezetap_android"}
@@ -881,19 +881,10 @@ def test_500_503_034():
             logger.debug(f"Response received for P2P cancel API of UPI pmt request : {resp_cancel_upi}")
 
             cancel_upi_success = resp_cancel_upi['success']
-            cancel_upi_mssg = resp_cancel_upi['message']
-            cancel_upi_errorcode = resp_cancel_upi['errorCode']
-            cancel_upi_errormssg = resp_cancel_upi['errorMessage']
-            cancel_upi_realcode = resp_cancel_upi['realCode']
 
             payment_page = PaymentPage(app_driver)
-            payment_page.is_qrcode_displayed_P2P()
-            payment_page.validate_upi_bqr_payment_screen()
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page on app")
             sleep(2)
-            payment_page.click_on_proceed_homepage()
+            flow_success = payment_page.click_on_goto_homepage()
             sleep(2)
 
             # Cancel CARD pmt request
@@ -911,6 +902,11 @@ def test_500_503_034():
             sleep(2)
             payment_page.click_on_cancel_p2p_request_ok()
             logger.debug("Clicked Ok on p2p transaction cancel for card payment")
+
+            if flow_success:
+                pass
+            else:
+                raise Exception(f"Had to cancel UPI payment from device by clicking Back button")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -945,12 +941,7 @@ def test_500_503_034():
                     "status_real_code_1": "P2P_STATUS_IN_QUEUE",
 
                     # UPI txn cancel API
-                    "cancel_upi_success": False,
-                    "cancel_upi_mssg": "Transaction already initiated, cant initiate cancellation.",
-                    "cancel_upi_errorcode": "EZETAP_0000610",
-                    "cancel_upi_errormssg": "Transaction already initiated, cant initiate cancellation.",
-                    "cancel_upi_realcode": "P2P_PAYMENT_INITIATED",
-
+                    "cancel_upi_success": True
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -968,11 +959,7 @@ def test_500_503_034():
                     "status_real_code_1": status_queue_realcode,
 
                     # UPI txn cancel API
-                    "cancel_upi_success": cancel_upi_success,
-                    "cancel_upi_mssg": cancel_upi_mssg,
-                    "cancel_upi_errorcode": cancel_upi_errorcode,
-                    "cancel_upi_errormssg": cancel_upi_errormssg,
-                    "cancel_upi_realcode": cancel_upi_realcode,
+                    "cancel_upi_success": cancel_upi_success
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -986,7 +973,7 @@ def test_500_503_034():
             try:
                 expected_db_values = {
                     "p2p_status_upi_1": "RECEIVED",
-                    "p2p_status_upi_2": "COMPLETED",
+                    "p2p_status_upi_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
 
                     "p2p_status_card_1": "QUEUED",
                     "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM"

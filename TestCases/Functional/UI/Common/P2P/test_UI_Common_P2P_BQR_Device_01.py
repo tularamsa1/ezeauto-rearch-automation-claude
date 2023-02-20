@@ -539,12 +539,6 @@ def test_500_502_016():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-        # app_driver.terminate_app('com.ezetap.service.demo')
-        # print("Killed SA")
-        # print("Killed SA")
-        # print("Killed SA")
-        # print("Killed SA")
-        # print("Killed SA")
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")

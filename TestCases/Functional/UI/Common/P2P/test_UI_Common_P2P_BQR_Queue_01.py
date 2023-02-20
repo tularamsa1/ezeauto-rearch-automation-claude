@@ -1631,51 +1631,6 @@ def test_500_502_027():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-        # app_driver.reset()
-        # try:
-        #     app_driver.terminate_app('com.ezetap.service.demo')
-        # except Exception as e:
-        #     print("EXCEPT BLOCK")
-        #     print(f"EXCEPTION : {e}")
-        # print("@@@@@@@@@@@@@@")
-        # app_driver.close_app('com.ezetap.service.demo')
-        # for i in range(3):
-        #     app_driver.swipe(500, 1700, 500, 100, 1000)
-
-        # recent_apps = app_driver.find_elements_by_id("com.android.systemui:id/thumbnail")
-        # print("")
-        # print("")
-        # print("")
-        # print(recent_apps)
-        # print(recent_apps.count())
-        # desired_caps = {
-        #     "platformName": "Android",
-        #     "deviceName": device_serial,
-        #     "appPackage": "com.ezetap.service.demo",
-        #     "appActivity": "com.ezetap.service.demorecents.RecentsActivity"
-        # }
-        # from appium import webdriver
-        # driver = webdriver.Remote("http://localhost:4723/wd/hub", desired_caps)
-        #
-        # # swipe up to find the app you want to kill
-        # for i in range(3):
-        #     driver.swipe(500, 1700, 500, 100, 1000)
-        #
-        # # get the list of recent apps
-        # recent_apps = driver.find_elements_by_id("com.android.systemui:id/thumbnail")
-        #
-        # # swipe up to kill the app you want to kill
-        # recent_apps[1].long_press()
-        # driver.swipe(500, 700, 500, 100, 1000)
-        #
-        # # driver.quit()
-        #
-        # print("@@@@@@@@@@@@@@@@")
-        # open the first recent app
-        # recent_apps[0].click()
-
-        # app_driver.press_keycode(3)
-        # app_driver.press_keycode(187)
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")

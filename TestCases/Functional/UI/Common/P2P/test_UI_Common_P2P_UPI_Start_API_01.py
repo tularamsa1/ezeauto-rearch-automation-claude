@@ -1579,14 +1579,6 @@ def test_500_501_015():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        # print("")
-        # print("FIRST LINE")
-        # try:
-        #     app_driver.terminate_app('com.ezetap.service.demo')
-        # except Exception as e:
-        #     print("EXCEPT BLOCK")
-        #     print(f"EXCEPTION : {e}")
-        # print("Killed SA")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1738,7 +1730,7 @@ def test_500_501_035():
             app_driver.back()
 
             # Start API for UPI
-            amount_upi = random.randint(201, 300)
+            amount_upi = random.randint(1, 99)
             logger.info(f"Generated amount for UPI txn: {amount_upi}")
             ext_ref_number_upi = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of UPI:  {ext_ref_number_upi}")
@@ -1785,19 +1777,10 @@ def test_500_501_035():
             logger.debug(f"Response received for P2P cancel API of UPI pmt request : {resp_cancel_upi}")
 
             cancel_upi_success = resp_cancel_upi['success']
-            cancel_upi_mssg = resp_cancel_upi['message']
-            cancel_upi_errorcode = resp_cancel_upi['errorCode']
-            cancel_upi_errormssg = resp_cancel_upi['errorMessage']
-            cancel_upi_realcode = resp_cancel_upi['realCode']
 
             payment_page = PaymentPage(app_driver)
-            payment_page.is_qrcode_displayed_P2P()
-            payment_page.validate_upi_bqr_payment_screen()
-            payment_page.click_on_back_btn()
-            payment_page.click_on_transaction_cancel_yes()
-            logger.debug("Pressed back button and clicked Yes on transaction cancel page")
             sleep(2)
-            payment_page.click_on_proceed_homepage()
+            flow_success = payment_page.click_on_goto_homepage()
 
             # Check status of request after payment
             api_details = DBProcessor.get_api_details('p2p_status', request_body={
@@ -1808,14 +1791,28 @@ def test_500_501_035():
             resp_status_2 = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after UPI payment is : {resp_status_2}")
 
-            txn_id = resp_status_2['txnId']
-            logger.debug(f"Transaction ID of UPI request cancel: {txn_id}")
+            after_cancel_success = resp_status_2['success']
+            after_cancel_message_code = resp_status_2['messageCode']
+            after_cancel_message = resp_status_2['message']
+            after_cancel_realCode = resp_status_2['realCode']
 
             # Fetch values from DB table txn after payment
-            query = "select * from txn where id='" + str(txn_id) + "';"
-            logger.debug(f"Query to fetch details from DB table txn after UPI payment : {query}")
+            query = "select * from txn where org_code='" + org_code + "' and external_ref = '"+ext_ref_number_upi+"' order by created_time desc limit 1"
+            logger.debug(f"Query to fetch transaction id from txn : {query}")
             result = DBProcessor.getValueFromDB(query)
+            txn_id = result["id"].values[0]
             txn_created_time = result['created_time'].values[0]
+
+            # # Fetch values from DB table txn after payment
+            # query = "select * from txn where id='" + str(txn_id) + "';"
+            # logger.debug(f"Query to fetch details from DB table txn after UPI payment : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+            # txn_created_time = result['created_time'].values[0]
+
+            if flow_success:
+                pass
+            else:
+                raise Exception(f"Had to cancel UPI payment from device by clicking Back button")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1837,11 +1834,11 @@ def test_500_501_035():
             try:
                 expected_app_values = {
                     "pmt_mode": "UPI",
-                    "pmt_status": "AUTHORIZED",
+                    "pmt_status": "EXPIRED",
                     "txn_amt": str(amount_upi) + ".00",
-                    "settle_status": "SETTLED",
+                    "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1886,11 +1883,13 @@ def test_500_501_035():
                     "status_real_code": "P2P_DEVICE_RECEIVED",
 
                     # UPI txn cancel API
-                    "cancel_upi_success": False,
-                    "cancel_upi_mssg": "Transaction already initiated, cant initiate cancellation.",
-                    "cancel_upi_errorcode": "EZETAP_0000610",
-                    "cancel_upi_errormssg": "Transaction already initiated, cant initiate cancellation.",
-                    "cancel_upi_realcode": "P2P_PAYMENT_INITIATED",
+                    "cancel_upi_success": True,
+
+                    # Status after cancellation
+                    "after_cancel_success": True,
+                    "after_cancel_message_code": "P2P_STATUS_IN_CANCELED_FROM_EXTERNAL_SYSTEM",
+                    "after_cancel_message": "PushToPay Notification has been Canceled from Billing/External System.",
+                    "after_cancel_realCode": "P2P_STATUS_IN_CANCELED_FROM_EXTERNAL_SYSTEM"
 
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
@@ -1904,10 +1903,12 @@ def test_500_501_035():
 
                     # UPI txn cancel API
                     "cancel_upi_success": cancel_upi_success,
-                    "cancel_upi_mssg": cancel_upi_mssg,
-                    "cancel_upi_errorcode": cancel_upi_errorcode,
-                    "cancel_upi_errormssg": cancel_upi_errormssg,
-                    "cancel_upi_realcode": cancel_upi_realcode,
+
+                    # Status after cancellation
+                    "after_cancel_success": after_cancel_success,
+                    "after_cancel_message_code": after_cancel_message_code,
+                    "after_cancel_message": after_cancel_message,
+                    "after_cancel_realCode": after_cancel_realCode
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1920,7 +1921,7 @@ def test_500_501_035():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status_upi_2": "COMPLETED",
+                    "p2p_status_upi_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
