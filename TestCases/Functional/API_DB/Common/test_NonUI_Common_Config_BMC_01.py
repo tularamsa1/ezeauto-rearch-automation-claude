@@ -283,7 +283,7 @@ def test_common_300_304_002():
                                       "ex_zone": "???? ???. 7" ,"ex_colony": "?? ?? ???" ,"ex_ward": "32 - ????? ??? ?????" ,
                                       "ex_address": "- 228 ?????? ???? ??.??. ???" ,"fy_1": "2019" ,"amt_1": "2484.0" ,"fy_2": "2020" ,
                                       "amt_2": "2484.0" , "fy_3": "2021" ,"amt_3": "2484.0" , "fy_4": "2022" ,"amt_4": "2520.0" ,
-                                      "success_1": True ,"txn_ref": "220927E1664279896495" ,"total_tax": 9972 ,"current_tax": 2520 ,"arrears":7452}
+                                      "success_1": True ,"txn_ref": "220927E1664279896495" ,"total_tax": 9972 ,"current_tax": 0 ,"arrears":9972}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
                 actualAPIValues1 = {"success": success, "ex_name":ex_name, "ex_father_name": ex_father_name ,"ex_connection_no": ex_connection_no ,
                                       "ex_zone": ex_zone ,"ex_colony": ex_colony,"ex_ward": ex_ward,
@@ -457,7 +457,7 @@ def test_common_300_304_003():
                                       "ex_property_id": "1000097140" , "ex_father_name": "???.???? ??????" ,"ex_zone": "???? ???. 18" ,
                                       "ex_circle": "?????????? ???. 4" ,"ex_colony": " ?????? ??????? ????? ???" ,"ex_ward": "82 - ????? ???" ,
                                       "ex_address": "??-402, ?????? ?????,?????" ,"success_1": True ,"txn_ref": "220927E1664281071721" ,
-                                      "total_tax": 4386 ,"current_tax": 4386 ,"arrears":0}
+                                      "total_tax": 4386 ,"current_tax": 0 ,"arrears":4386}
                 logger.debug(f"expectedAPIValues: {expectedAPIValues1}")
                 actualAPIValues1 = {"success": success, "ex_name":ex_name,"fy_1": fy_1 ,"amt_1":amt_1,"fy_2":fy_2 ,"amt_2":amt_2 ,
                                       "ex_property_id": ex_property_id , "ex_father_name": ex_father_name ,"ex_zone": ex_zone,

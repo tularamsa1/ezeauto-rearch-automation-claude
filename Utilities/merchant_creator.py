@@ -1,13 +1,13 @@
-import pandas
-import requests
 import json
 import sqlite3
-from Utilities import DBProcessor, ConfigReader,sqlite_processor
+
+import requests
+
 from DataProvider import GlobalConstants
+from Utilities import DBProcessor, ConfigReader, sqlite_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
-# dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/Database/ezeauto.db"
 excel_path = ConfigReader.read_config_paths("System",
                                             "automation_suite_path") + "/DataProvider/merchant_user_creation.xlsx"
 lst_unavailable_tid = []
@@ -19,10 +19,12 @@ def create_merchants():
     This method is used to create the merchants for execution.
     """
     create_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
+    create_merchant_with_multi_account_required = ConfigReader.read_config("Setup", "create_and_configure_merchants_"
+                                                                                    "with_multi_account").lower()
     sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     sqlite_processor.update_acquisitions_to_db()
-    if create_merchant_required == "true":
+    if create_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
         create_merchants_with_users()
     else:
         set_merchants_users_available()
@@ -32,12 +34,137 @@ def create_merchants():
     sqlite_processor.update_terminal_details_of_all_merchants()
 
 
+def check_if_acc_label_exist(org_code: str, setting_value: str) -> bool:
+    """
+    This method is used for checking if the account label is already available in the system.
+
+    :param org_code: str
+    :param setting_value: str
+    :return: bool
+    """
+    query = "select * from account_labels where org_code='" + str(org_code) + "' AND setting_value='" + str(
+        setting_value) + "';"
+    logger.debug(query)
+    result = DBProcessor.getValueFromDB(query)
+    no_of_entries = len(result)
+    if no_of_entries > 0:
+        logger.debug(f"account labels are available for {org_code} with setting value {setting_value} in the "
+                     f"account_labels table.")
+        return True
+    else:
+        logger.debug(f"account labels not available for {org_code} with setting value {setting_value} in the "
+                     f"account_labels table.")
+        return False
+
+
+def insert_acc_label_data():
+    """
+    This method is used to insert the account label data in the system.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM acquisitions;")
+        acquisition_details = cursor.fetchone()
+        cursor.execute(f"select * from merchants where MerchantCode!='EZETAP';")
+        merchants_details = cursor.fetchall()
+        for merchants_detail in merchants_details:
+            for j in range(int(acquisition_details[2])):
+                setting_value = '{"name":"' + f"{acquisition_details[14 + j]}" + '","status":"ACTIVE"}'
+                if not check_if_acc_label_exist(merchants_detail[0], setting_value):
+                    query = f"insert into account_labels(created_by,created_time,modified_by,modified_time,org_code," \
+                            f"setting_value) VALUES('ezetap', now(), 'ezetap', now(), '{str(merchants_detail[0])}', '{setting_value}');"
+                    logger.debug(query)
+                    print("insert_acc_label_data", query)
+                    result = DBProcessor.setValueToDB(query)
+                    rows_affected = len(result)
+                    if rows_affected > 0:
+                        if check_if_acc_label_exist(merchants_detail[0], acquisition_details[14 + j]):
+                            logger.debug(
+                                f"Data has been inserted successfully in account_labels table with org_code : {merchants_detail[0]} with setting_value : {setting_value}")
+                        else:
+                            logger.debug(
+                                f"Insert query execution failed for org_code : {merchants_detail[0]} with setting_value : {setting_value}")
+                    else:
+                        logger.debug(
+                            f"Insert query execution failed for org_code : {merchants_detail[0]} with setting_value : {setting_value}")
+                else:
+                    logger.debug(
+                        f"Data in account_labels table for org_code : {merchants_detail[0]} with setting_value : {setting_value} is already exist, so skipping the insertion part")
+    except Exception as e:
+        logger.error(f"Unable to insert the account label data due to error {str(e)}")
+
+
+def check_if_label_exist(org_code: str, label: str) -> bool:
+    """
+    This method is used for checking if the label is already available in the system.
+
+    :param org_code: str
+    :param label: str
+    :return: bool
+    """
+    query = "select * from label where org_code='" + str(org_code) + "' AND name='" + str(label) + "';"
+    logger.debug(query)
+    result = DBProcessor.getValueFromDB(query)
+    no_of_entries = len(result)
+    if no_of_entries > 0:
+        logger.debug(
+            f"label is available for org_code : {org_code} with name {label} in the label table.")
+        return True
+    else:
+        logger.debug(
+            f"label is not available for org_code : {org_code} with name {label} in the label table.")
+        return False
+
+
+def insert_label_data():
+    """
+    This method is used to insert the account label data in the system.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM acquisitions;")
+        acquisition_details = cursor.fetchone()
+        cursor.execute(f"select * from merchants where MerchantCode!='EZETAP';")
+        merchants_details = cursor.fetchall()
+        for merchants_detail in merchants_details:
+            for j in range(int(acquisition_details[2])):
+                name = f"{acquisition_details[14 + j]}"
+                if not check_if_label_exist(merchants_detail[0], name):
+                    query = f"insert into label(created_by, created_time, modified_by, modified_time,is_visible, name, " \
+                            f"org_code,status, type) VALUES('ezetap', now(), 'ezetap', now(), TRUE, '{name}','{str(merchants_detail[0])}', 'ACTIVE', 'ACCOUNT');"
+                    logger.debug(query)
+                    print("insert_label_data", query)
+                    result = DBProcessor.setValueToDB(query)
+                    rows_affected = len(result)
+                    if rows_affected > 0:
+                        if check_if_label_exist(merchants_detail[0], name):
+                            logger.debug(
+                                f"Data has been inserted successfully in label table with org_code : {merchants_detail[0]} with name : {name}")
+                        else:
+                            logger.debug(
+                                f"Insert query execution failed for org_code : {merchants_detail[0]} with name : {name}")
+                    else:
+                        logger.debug(
+                            f"Insert query execution failed for org_code : {merchants_detail[0]} with name : {name}")
+                else:
+                    logger.debug(
+                        f"Data in label table for org_code : {merchants_detail[0]} with name : {name} is "
+                        f"already exist, so skipping the insertion part")
+    except Exception as e:
+        logger.error(f"Unable to insert the label data due to error {str(e)}")
+
+
 def create_merchants_with_users():
     """
     This method is used to create the merchants along with the users.
     This calls the generate_merchant_creation_api_body method for getting the list of request bodies.
     Each request body represents a merchant.
     """
+    if str(ConfigReader.read_config("Setup", "create_and_configure_merchants_with_multi_account")).lower() == "true":
+        insert_label_data()
+        insert_acc_label_data()
     api_details = get_api_details_from_db("createMerchant")
     conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
     cursor = conn.cursor()
@@ -361,6 +488,13 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 terminal_details['mid'] = terminal_details_unique_value_fields['mid']
                 terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
                     tid_number_increment)
+                if str(ConfigReader.read_config("Setup", "create_and_configure_merchants_with_multi_account")).lower() == "true":
+                    # Below if conditions is to setup label with terminals if multi_account is enabled.
+                    if i == 0:
+                        terminal_details['labels'] = [acquisitions[14]]
+                    if i == 1:
+                        terminal_details['labels'] = [acquisitions[15]]
+                terminal_details['tid'] = trim_extra_digits_of_tid(tid=terminal_details['tid'], max_length=8)
                 while check_if_tid_exists(terminal_details['tid']):
                     tid_number_increment += 1
                     terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
@@ -424,6 +558,10 @@ def generate_terminal_details(merchant_id: str) -> dict:
         terminal_details['mid'] = "MIDIS" + username
         terminal_details['tid'] = username[-8:]
         terminal_details['device_id'] = "D" + username
+        # rand_int = str(random.randint(1111111111, 9999999999))
+        # terminal_details['mid'] = "MIDIS" + rand_int
+        # terminal_details['tid'] = rand_int
+        # terminal_details['device_id'] = "D" + rand_int
     else:
         terminal_details = None
     return terminal_details

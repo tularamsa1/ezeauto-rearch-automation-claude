@@ -230,7 +230,8 @@ def update_acquisitions_to_db():
                 cursor.execute(
                     f"""INSERT INTO acquisitions(AcquirerCode, PaymentGateway, NumberOfTerminals, HsmName, BankCode, 
                     BqrBankCode, UPIBankCode, BqrTerminalDependant, UpiTerminalDependant, AppKeyForUpi, 
-                    VirtualMidRequired, BqrSettingRequired, UpiSettingRequired, EncKeyForUpi)values(
+                    VirtualMidRequired, BqrSettingRequired, UpiSettingRequired, EncKeyForUpi,
+                    AccountLabel1, AccountLabel2)values(
                     "{acquisition_details.iloc[i]['Acquirer Code']}", 
                     "{acquisition_details.iloc[i]['Payment Gateway']}", 
                     "{acquisition_details.iloc[i]['Number of Terminals']}", 
@@ -244,7 +245,9 @@ def update_acquisitions_to_db():
                     "{acquisition_details.iloc[i]['virtual MID Required']}", 
                     "{acquisition_details.iloc[i]['BQR settings required']}", 
                     "{acquisition_details.iloc[i]['UPI settings required']}",
-                    "{acquisition_details.iloc[i]['Enc Key for UPI']}");""")
+                    "{acquisition_details.iloc[i]['Enc Key for UPI']}",
+                    "{acquisition_details.iloc[i]['Account Label 1']}",
+                    "{acquisition_details.iloc[i]['Account Label 2']}");""")
                 conn.commit()
                 logger.debug(f"Details of acquisition {acquisition_details.iloc[i]['Acquirer Code']} and "
                              f"payment gateway {acquisition_details.iloc[i]['Payment Gateway']} "
@@ -263,6 +266,8 @@ def update_acquisitions_to_db():
                         f"BqrSettingRequired = '{acquisition_details.iloc[i]['BQR settings required']}', " \
                         f"UpiSettingRequired = '{acquisition_details.iloc[i]['UPI settings required']}', " \
                         f"EncKeyForUpi = '{acquisition_details.iloc[i]['Enc Key for UPI']}' " \
+                        f"AccountLabel1 = '{acquisition_details.iloc[i]['Account Label 1']}' " \
+                        f"AccountLabel2 = '{acquisition_details.iloc[i]['Account Label 2']}' " \
                         f"where AcquirerCode = '{acquisition_details.iloc[i]['Acquirer Code']}' and " \
                         f"PaymentGateway = '{acquisition_details.iloc[i]['Payment Gateway']}';"
                 cursor.execute(query)

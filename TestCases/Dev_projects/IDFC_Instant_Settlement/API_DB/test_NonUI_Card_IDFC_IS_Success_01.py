@@ -3,7 +3,7 @@ import time
 import pytest
 import random
 import sys
-from Configuration import Configuration
+from Configuration import Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
     merchant_creator
@@ -17,13 +17,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_001():
+def test_d100_d101_001():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_DEBIT_VISA
         Sub Feature Description: API that performs EMV IDFC instant settlement txn using DEBIT VISA card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         001: TC001
     """
 
@@ -32,6 +32,9 @@ def test_D100_D101_001():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -39,12 +42,21 @@ def test_D100_D101_001():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -59,10 +71,10 @@ def test_D100_D101_001():
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -82,6 +94,7 @@ def test_D100_D101_001():
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
@@ -95,11 +108,21 @@ def test_D100_D101_001():
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -180,9 +203,10 @@ def test_D100_D101_001():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"SUCCESS","is_error_code":"NULL",
-                                    "is_error_desc":"NULL","is_inquiry_resp_code":"NULL", "is_inquiry_resp_desc":"NULL",
+                                    "is_error_desc":"NULL","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"SUCCESS",
                                     "is_inquiry_error_code":"NULL",
-                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED"}
+                                    "is_inquiry_error_rsn":"NULL","is_settle_status":"IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
                 query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
@@ -220,6 +244,8 @@ def test_D100_D101_001():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
                 actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
                                     "pmt_status":pmt_status,
@@ -232,11 +258,12 @@ def test_D100_D101_001():
                                     "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
                                     "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
                                     "is_inquiry_error_code":is_inquiry_error_code,
-                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
                                     }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
-
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
                 logger.info(f"Completed DB validation for the test case : {testcase_id}")
@@ -257,13 +284,13 @@ def test_D100_D101_001():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_002():
+def test_d100_d101_002():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_DEBIT_MASTER
         Sub Feature Description: API that performs EMV IDFC instanct settlement txn using DEBIT MASTER card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         002: TC002
     """
 
@@ -272,6 +299,9 @@ def test_D100_D101_002():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -279,12 +309,21 @@ def test_D100_D101_002():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -299,10 +338,11 @@ def test_D100_D101_002():
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -312,34 +352,49 @@ def test_D100_D101_002():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                           "username": app_username,
+                                                           "password": app_password,
+                                                           "amount": str(original_amount),
+                                                           "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                           "nonce": card_details['Nonce'],
+                                                           "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
                                                                         "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -421,13 +476,14 @@ def test_D100_D101_002():
                                     "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
                                     "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
                                     "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "NULL",
-                                    "is_inquiry_resp_desc": "NULL",
+                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
+                                    "is_inquiry_resp_desc": "SUCCESS",
                                     "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED"}
+                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '" + txnid + "';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -445,7 +501,7 @@ def test_D100_D101_002():
 
                 query_is_txn_details = "select  * from instant_settlement_details where id = '" + txnid + "';"
                 result_is_txn_details = DBProcessor.getValueFromDB(query_is_txn_details)
-                result_is_txn_details = result_is_txn_details.replace(np.nan, 'NULL', regex=True)
+                result_is_txn_details = result_is_txn_details.replace(np.nan,'NULL',regex=True)
                 logger.debug(f"Query result: {result_is_txn_details}")
 
                 is_txn_amt = float(result_is_txn_details["transaction_amount"].iloc[0])
@@ -462,22 +518,24 @@ def test_D100_D101_002():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
-                actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode,
-                                  "pmt_status": pmt_status,
-                                  "pmt_state": pmt_state, "settle_status": settle_status,
-                                  "pmt_card_bin": pmt_card_bin,
-                                  "pmt_card_brand": pmt_card_brand, "pmt_card_type": pmt_card_type,
-                                  "txn_type": txn_type, "acq_code": acq_code, "pmt_gateway": pmt_gateway,
-                                  "is_txn_amt": is_txn_amt, "is_msf_percentage": is_msf_percentage,
-                                  "is_settle_amt": is_settle_amt,
-                                  "is_org_code": is_org_code, "is_acq_code": is_acq_code, "is_resp_code": is_resp_code,
-                                  "is_resp_desc": is_resp_desc, "is_error_code": is_error_code,
-                                  "is_error_desc": is_error_desc, "is_inquiry_resp_code": is_inquiry_resp_code,
-                                  "is_inquiry_resp_desc": is_inquiry_resp_desc,
-                                  "is_inquiry_error_code": is_inquiry_error_code,
-                                  "is_inquiry_error_rsn": is_inquiry_error_rsn, "is_settle_status": is_settle_status
-                                  }
+                actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
+                                    "pmt_status":pmt_status,
+                                    "pmt_state":pmt_state, "settle_status": settle_status,
+                                    "pmt_card_bin":pmt_card_bin,
+                                    "pmt_card_brand":pmt_card_brand, "pmt_card_type":pmt_card_type,
+                                    "txn_type":txn_type, "acq_code":acq_code, "pmt_gateway":pmt_gateway,
+                                    "is_txn_amt":is_txn_amt, "is_msf_percentage":is_msf_percentage,"is_settle_amt":is_settle_amt,
+                                    "is_org_code":is_org_code,"is_acq_code":is_acq_code,"is_resp_code":is_resp_code,
+                                    "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
+                                    "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
+                                    "is_inquiry_error_code":is_inquiry_error_code,
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
+                                    }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -501,13 +559,13 @@ def test_D100_D101_002():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_003():
+def test_d100_d101_003():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_DEBIT_RUPAY
         Sub Feature Description: API that performs EMV IDFC instant settlement txn using DEBIT RUPAY card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         003: TC003
     """
 
@@ -516,6 +574,9 @@ def test_D100_D101_003():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -523,12 +584,21 @@ def test_D100_D101_003():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -543,10 +613,11 @@ def test_D100_D101_003():
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -556,34 +627,50 @@ def test_D100_D101_003():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -666,13 +753,14 @@ def test_D100_D101_003():
                                     "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
                                     "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
                                     "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "NULL",
-                                    "is_inquiry_resp_desc": "NULL",
+                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
+                                    "is_inquiry_resp_desc": "SUCCESS",
                                     "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED"}
+                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '" + txnid + "';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -690,7 +778,7 @@ def test_D100_D101_003():
 
                 query_is_txn_details = "select  * from instant_settlement_details where id = '" + txnid + "';"
                 result_is_txn_details = DBProcessor.getValueFromDB(query_is_txn_details)
-                result_is_txn_details = result_is_txn_details.replace(np.nan, 'NULL', regex=True)
+                result_is_txn_details = result_is_txn_details.replace(np.nan,'NULL',regex=True)
                 logger.debug(f"Query result: {result_is_txn_details}")
 
                 is_txn_amt = float(result_is_txn_details["transaction_amount"].iloc[0])
@@ -707,22 +795,24 @@ def test_D100_D101_003():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
-                actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode,
-                                  "pmt_status": pmt_status,
-                                  "pmt_state": pmt_state, "settle_status": settle_status,
-                                  "pmt_card_bin": pmt_card_bin,
-                                  "pmt_card_brand": pmt_card_brand, "pmt_card_type": pmt_card_type,
-                                  "txn_type": txn_type, "acq_code": acq_code, "pmt_gateway": pmt_gateway,
-                                  "is_txn_amt": is_txn_amt, "is_msf_percentage": is_msf_percentage,
-                                  "is_settle_amt": is_settle_amt,
-                                  "is_org_code": is_org_code, "is_acq_code": is_acq_code, "is_resp_code": is_resp_code,
-                                  "is_resp_desc": is_resp_desc, "is_error_code": is_error_code,
-                                  "is_error_desc": is_error_desc, "is_inquiry_resp_code": is_inquiry_resp_code,
-                                  "is_inquiry_resp_desc": is_inquiry_resp_desc,
-                                  "is_inquiry_error_code": is_inquiry_error_code,
-                                  "is_inquiry_error_rsn": is_inquiry_error_rsn, "is_settle_status": is_settle_status
-                                  }
+                actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
+                                    "pmt_status":pmt_status,
+                                    "pmt_state":pmt_state, "settle_status": settle_status,
+                                    "pmt_card_bin":pmt_card_bin,
+                                    "pmt_card_brand":pmt_card_brand, "pmt_card_type":pmt_card_type,
+                                    "txn_type":txn_type, "acq_code":acq_code, "pmt_gateway":pmt_gateway,
+                                    "is_txn_amt":is_txn_amt, "is_msf_percentage":is_msf_percentage,"is_settle_amt":is_settle_amt,
+                                    "is_org_code":is_org_code,"is_acq_code":is_acq_code,"is_resp_code":is_resp_code,
+                                    "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
+                                    "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
+                                    "is_inquiry_error_code":is_inquiry_error_code,
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
+                                    }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -745,13 +835,13 @@ def test_D100_D101_003():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_004():
+def test_d100_d101_004():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_CREDIT_VISA
         Sub Feature Description: API that performs EMV IDFC instant settlement txn using CREDIT VISA card via IDFC_FDC
         TC naming code description:
-        D100: Dev Projects
-        D101: IDFC Instant Settlement
+        d100: Dev Projects
+        d101: IDFC Instant Settlement
         004: TC004
     """
 
@@ -760,6 +850,9 @@ def test_D100_D101_004():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -767,12 +860,21 @@ def test_D100_D101_004():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -787,10 +889,11 @@ def test_D100_D101_004():
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -800,34 +903,50 @@ def test_D100_D101_004():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -910,13 +1029,14 @@ def test_D100_D101_004():
                                     "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
                                     "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
                                     "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "NULL",
-                                    "is_inquiry_resp_desc": "NULL",
+                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
+                                    "is_inquiry_resp_desc": "SUCCESS",
                                     "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED"}
+                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '" + txnid + "';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -934,7 +1054,7 @@ def test_D100_D101_004():
 
                 query_is_txn_details = "select  * from instant_settlement_details where id = '" + txnid + "';"
                 result_is_txn_details = DBProcessor.getValueFromDB(query_is_txn_details)
-                result_is_txn_details = result_is_txn_details.replace(np.nan, 'NULL', regex=True)
+                result_is_txn_details = result_is_txn_details.replace(np.nan,'NULL',regex=True)
                 logger.debug(f"Query result: {result_is_txn_details}")
 
                 is_txn_amt = float(result_is_txn_details["transaction_amount"].iloc[0])
@@ -951,22 +1071,24 @@ def test_D100_D101_004():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
-                actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode,
-                                  "pmt_status": pmt_status,
-                                  "pmt_state": pmt_state, "settle_status": settle_status,
-                                  "pmt_card_bin": pmt_card_bin,
-                                  "pmt_card_brand": pmt_card_brand, "pmt_card_type": pmt_card_type,
-                                  "txn_type": txn_type, "acq_code": acq_code, "pmt_gateway": pmt_gateway,
-                                  "is_txn_amt": is_txn_amt, "is_msf_percentage": is_msf_percentage,
-                                  "is_settle_amt": is_settle_amt,
-                                  "is_org_code": is_org_code, "is_acq_code": is_acq_code, "is_resp_code": is_resp_code,
-                                  "is_resp_desc": is_resp_desc, "is_error_code": is_error_code,
-                                  "is_error_desc": is_error_desc, "is_inquiry_resp_code": is_inquiry_resp_code,
-                                  "is_inquiry_resp_desc": is_inquiry_resp_desc,
-                                  "is_inquiry_error_code": is_inquiry_error_code,
-                                  "is_inquiry_error_rsn": is_inquiry_error_rsn, "is_settle_status": is_settle_status
-                                  }
+                actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
+                                    "pmt_status":pmt_status,
+                                    "pmt_state":pmt_state, "settle_status": settle_status,
+                                    "pmt_card_bin":pmt_card_bin,
+                                    "pmt_card_brand":pmt_card_brand, "pmt_card_type":pmt_card_type,
+                                    "txn_type":txn_type, "acq_code":acq_code, "pmt_gateway":pmt_gateway,
+                                    "is_txn_amt":is_txn_amt, "is_msf_percentage":is_msf_percentage,"is_settle_amt":is_settle_amt,
+                                    "is_org_code":is_org_code,"is_acq_code":is_acq_code,"is_resp_code":is_resp_code,
+                                    "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
+                                    "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
+                                    "is_inquiry_error_code":is_inquiry_error_code,
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
+                                    }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -990,7 +1112,7 @@ def test_D100_D101_004():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_005():
+def test_d100_d101_005():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_CREDIT_MASTER
         Sub Feature Description: API that performs EMV IDFC instant settlement txn using CREDIT MASTER card via IDFC_FDC
@@ -1005,6 +1127,9 @@ def test_D100_D101_005():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -1012,12 +1137,21 @@ def test_D100_D101_005():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -1032,10 +1166,11 @@ def test_D100_D101_005():
         logger.info(f"response of DB refresh: {response}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -1045,34 +1180,50 @@ def test_D100_D101_005():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1155,13 +1306,14 @@ def test_D100_D101_005():
                                     "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
                                     "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
                                     "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "NULL",
-                                    "is_inquiry_resp_desc": "NULL",
+                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
+                                    "is_inquiry_resp_desc": "SUCCESS",
                                     "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED"}
+                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '" + txnid + "';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -1177,9 +1329,9 @@ def test_D100_D101_005():
                 acq_code = result_txn["acquirer_code"].iloc[0]
                 pmt_gateway = result_txn["payment_gateway"].iloc[0]
 
-                query_is_txn_details = "select * from instant_settlement_details where id = '" + txnid + "';"
+                query_is_txn_details = "select  * from instant_settlement_details where id = '" + txnid + "';"
                 result_is_txn_details = DBProcessor.getValueFromDB(query_is_txn_details)
-                result_is_txn_details = result_is_txn_details.replace(np.nan, 'NULL', regex=True)
+                result_is_txn_details = result_is_txn_details.replace(np.nan,'NULL',regex=True)
                 logger.debug(f"Query result: {result_is_txn_details}")
 
                 is_txn_amt = float(result_is_txn_details["transaction_amount"].iloc[0])
@@ -1196,22 +1348,24 @@ def test_D100_D101_005():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
-                actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode,
-                                  "pmt_status": pmt_status,
-                                  "pmt_state": pmt_state, "settle_status": settle_status,
-                                  "pmt_card_bin": pmt_card_bin,
-                                  "pmt_card_brand": pmt_card_brand, "pmt_card_type": pmt_card_type,
-                                  "txn_type": txn_type, "acq_code": acq_code, "pmt_gateway": pmt_gateway,
-                                  "is_txn_amt": is_txn_amt, "is_msf_percentage": is_msf_percentage,
-                                  "is_settle_amt": is_settle_amt,
-                                  "is_org_code": is_org_code, "is_acq_code": is_acq_code, "is_resp_code": is_resp_code,
-                                  "is_resp_desc": is_resp_desc, "is_error_code": is_error_code,
-                                  "is_error_desc": is_error_desc, "is_inquiry_resp_code": is_inquiry_resp_code,
-                                  "is_inquiry_resp_desc": is_inquiry_resp_desc,
-                                  "is_inquiry_error_code": is_inquiry_error_code,
-                                  "is_inquiry_error_rsn": is_inquiry_error_rsn, "is_settle_status": is_settle_status
-                                  }
+                actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
+                                    "pmt_status":pmt_status,
+                                    "pmt_state":pmt_state, "settle_status": settle_status,
+                                    "pmt_card_bin":pmt_card_bin,
+                                    "pmt_card_brand":pmt_card_brand, "pmt_card_type":pmt_card_type,
+                                    "txn_type":txn_type, "acq_code":acq_code, "pmt_gateway":pmt_gateway,
+                                    "is_txn_amt":is_txn_amt, "is_msf_percentage":is_msf_percentage,"is_settle_amt":is_settle_amt,
+                                    "is_org_code":is_org_code,"is_acq_code":is_acq_code,"is_resp_code":is_resp_code,
+                                    "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
+                                    "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
+                                    "is_inquiry_error_code":is_inquiry_error_code,
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
+                                    }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 
@@ -1235,7 +1389,7 @@ def test_D100_D101_005():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_D100_D101_006():
+def test_d100_d101_006():
     """
         Sub Feature Code: NonUI_Common_IDFC_Card_InstantSettlement_EMV_CREDIT_RUPAY
         Sub Feature Description: API that performs EMV IDFC instant settlement txn using CREDIT RUPAY card via IDFC_FDC
@@ -1250,6 +1404,9 @@ def test_D100_D101_006():
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -1257,12 +1414,21 @@ def test_D100_D101_006():
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {portal_cred}")
         super_username = portal_cred['Username']
-        super_password = app_cred['Password']
+        super_password = portal_cred['Password']
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_org_settings_default(org_code=org_code, portal_un=super_username,
+                                                       portal_pw=super_password)
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         card_processor.update_valid_merchant_account_details(org_code=org_code)
         card_processor.update_idfc_timeout_properties('10000')
@@ -1276,12 +1442,12 @@ def test_D100_D101_006():
         response = APIProcessor.send_request(api_details)
         logger.info(f"response of DB refresh: {response}")
 
-
         GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
-
-        msg = ""
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=True,
+                                                   config_log=False, closedloop_log=False, q2_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -1291,34 +1457,50 @@ def test_D100_D101_006():
             original_amount = random.randint(10,1000)
             card_details = card_processor.get_card_details_from_excel("IDFC_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
-                                                      request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="IDFC",payment_gateway="IDFC_FDC"),
-                                                                    "username":app_username,
-                                                                    "password":app_password,
-                                                                    "amount": str(original_amount),
-                                                                    "ezetapDeviceData":card_details['Ezetap Device Data'],
-                                                                    "nonce":card_details['Nonce'],
-                                                                    "externalRefNumber" : str(card_details['External Ref']) + str(random.randint(0,9))})
+                                                      request_body={
+                                                          "deviceSerial": merchant_creator.get_device_serial_of_merchant(
+                                                              org_code=org_code, acquisition="IDFC",
+                                                              payment_gateway="IDFC_FDC"),
+                                                          "username": app_username,
+                                                          "password": app_password,
+                                                          "amount": str(original_amount),
+                                                          "ezetapDeviceData": card_details['Ezetap Device Data'],
+                                                          "nonce": card_details['Nonce'],
+                                                          "externalRefNumber": str(card_details['External Ref']) + str(
+                                                              random.randint(0, 9))})
 
             #
             response = APIProcessor.send_request(api_details)
+            logger.info(f"Response received from card payment is {response}")
             card_payment_success = response['success']
             if card_payment_success == True:
                 txn_id = response['txnId']
                 confirm_data = card_processor.get_card_details_from_excel("CONFIRM_DATA")
 
                 api_details = DBProcessor.get_api_details('Confirm_Card_Txn',
-                                                          request_body={"username":app_username,
-                                                                        "password":app_password,
-                                                                        "ezetapDeviceData": confirm_data["Ezetap Device Data"],
-                                                                        "txnId": txn_id ,
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password,
+                                                                        "ezetapDeviceData": confirm_data[
+                                                                            "Ezetap Device Data"],
+                                                                        "txnId": txn_id,
                                                                         })
                 confirm_response = APIProcessor.send_request(api_details)
                 confirm_success = confirm_response['success']
+                logger.info(f"Response received from confirm payment is {confirm_response}")
                 time.sleep(10)
+                if confirm_success == True:
+                    api_details = DBProcessor.get_api_details('paymentInquiry',
+                                                              request_body={"username": super_username,
+                                                                            "password": super_password,
+                                                                            "txnId": txn_id,
+                                                                            })
+                    paymentinquiry_response = APIProcessor.send_request(api_details)
+                    logger.info(f"Response received from payment Inquiry for {txn_id} is {paymentinquiry_response}")
+                else:
+                    logger.error("Confirm payment Failed")
+
             else:
                 logger.error("Card payment Failed")
-
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1401,13 +1583,14 @@ def test_D100_D101_006():
                                     "is_settle_amt": (float(original_amount) - (float(original_amount) * ((msf_per) / 100))),
                                     "is_org_code": org_code, "is_acq_code": "IDFC", "is_resp_code": "200",
                                     "is_resp_desc": "SUCCESS", "is_error_code": "NULL",
-                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "NULL",
-                                    "is_inquiry_resp_desc": "NULL",
+                                    "is_error_desc": "NULL", "is_inquiry_resp_code": "200",
+                                    "is_inquiry_resp_desc": "SUCCESS",
                                     "is_inquiry_error_code": "NULL",
-                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED"}
+                                    "is_inquiry_error_rsn": "NULL", "is_settle_status": "IS_SETTLED","is_recon_status":"DONE",
+                                    "is_recon_reject_rsn":"NULL"}
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
 
-                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '" + txnid + "';"
+                query_txn = "select amount, payment_mode, settlement_status, status, state, payment_card_bin, payment_card_brand, payment_card_type, payment_gateway, txn_type, acquirer_code from txn where id = '"+txnid+"';"
                 result_txn = DBProcessor.getValueFromDB(query_txn)
                 logger.debug(f"Query result: {result_txn}")
 
@@ -1425,7 +1608,7 @@ def test_D100_D101_006():
 
                 query_is_txn_details = "select  * from instant_settlement_details where id = '" + txnid + "';"
                 result_is_txn_details = DBProcessor.getValueFromDB(query_is_txn_details)
-                result_is_txn_details = result_is_txn_details.replace(np.nan, 'NULL', regex=True)
+                result_is_txn_details = result_is_txn_details.replace(np.nan,'NULL',regex=True)
                 logger.debug(f"Query result: {result_is_txn_details}")
 
                 is_txn_amt = float(result_is_txn_details["transaction_amount"].iloc[0])
@@ -1442,22 +1625,24 @@ def test_D100_D101_006():
                 is_inquiry_error_code = result_is_txn_details["inquiry_error_cd"].iloc[0]
                 is_inquiry_error_rsn = result_is_txn_details["inquiry_error_rsn"].iloc[0]
                 is_settle_status = result_is_txn_details["settlement_status"].iloc[0]
+                is_recon_status = result_is_txn_details["recon_status"].iloc[0]
+                is_recon_reject_rsn = result_is_txn_details["recon_reject_reason"].iloc[0]
 
-                actualDBValues = {"txn_amt": txn_amt, "pmt_mode": pmt_mode,
-                                  "pmt_status": pmt_status,
-                                  "pmt_state": pmt_state, "settle_status": settle_status,
-                                  "pmt_card_bin": pmt_card_bin,
-                                  "pmt_card_brand": pmt_card_brand, "pmt_card_type": pmt_card_type,
-                                  "txn_type": txn_type, "acq_code": acq_code, "pmt_gateway": pmt_gateway,
-                                  "is_txn_amt": is_txn_amt, "is_msf_percentage": is_msf_percentage,
-                                  "is_settle_amt": is_settle_amt,
-                                  "is_org_code": is_org_code, "is_acq_code": is_acq_code, "is_resp_code": is_resp_code,
-                                  "is_resp_desc": is_resp_desc, "is_error_code": is_error_code,
-                                  "is_error_desc": is_error_desc, "is_inquiry_resp_code": is_inquiry_resp_code,
-                                  "is_inquiry_resp_desc": is_inquiry_resp_desc,
-                                  "is_inquiry_error_code": is_inquiry_error_code,
-                                  "is_inquiry_error_rsn": is_inquiry_error_rsn, "is_settle_status": is_settle_status
-                                  }
+                actualDBValues = {"txn_amt": txn_amt, "pmt_mode":pmt_mode,
+                                    "pmt_status":pmt_status,
+                                    "pmt_state":pmt_state, "settle_status": settle_status,
+                                    "pmt_card_bin":pmt_card_bin,
+                                    "pmt_card_brand":pmt_card_brand, "pmt_card_type":pmt_card_type,
+                                    "txn_type":txn_type, "acq_code":acq_code, "pmt_gateway":pmt_gateway,
+                                    "is_txn_amt":is_txn_amt, "is_msf_percentage":is_msf_percentage,"is_settle_amt":is_settle_amt,
+                                    "is_org_code":is_org_code,"is_acq_code":is_acq_code,"is_resp_code":is_resp_code,
+                                    "is_resp_desc":is_resp_desc,"is_error_code":is_error_code,
+                                    "is_error_desc":is_error_desc,"is_inquiry_resp_code":is_inquiry_resp_code, "is_inquiry_resp_desc":is_inquiry_resp_desc,
+                                    "is_inquiry_error_code":is_inquiry_error_code,
+                                    "is_inquiry_error_rsn":is_inquiry_error_rsn,"is_settle_status":is_settle_status,
+                                    "is_recon_status": is_recon_status,
+                                    "is_recon_reject_rsn": is_recon_reject_rsn
+                                    }
                 logger.debug(f"actualDBValues : {actualDBValues}")
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
 

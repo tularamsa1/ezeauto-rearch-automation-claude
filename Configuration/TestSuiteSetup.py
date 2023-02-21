@@ -411,6 +411,12 @@ def getThreadCount():
 
 
 def prepareDevicesAndDB():
+    create_merchant_required = ConfigReader.read_config("Setup", "create_and_configure_merchants").lower()
+    create_merchant_with_multi_account_required = ConfigReader.read_config("Setup", "create_and_configure_merchants_"
+                                                                                    "with_multi_account").lower()
+    if create_merchant_required == "true" and create_merchant_with_multi_account_required == "true":
+        raise ValueError("Both Configurations are True, Make sure only one configuration is enabled for Merchant "
+                         "Creation. Whatever type of Merchant you want to create.")
     if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
         Ezewallet_processor.db_reset()
         sqlite_processor.clearAssignerTables()
