@@ -786,7 +786,7 @@ def test_500_503_034():
             app_driver.back()
 
             # Start API for UPI
-            amount_upi = random.randint(1, 99)
+            amount_upi = random.randint(1, 45)
             logger.info(f"Generated amount for UPI txn: {amount_upi}")
             ext_ref_number_upi = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number of UPI:  {ext_ref_number_upi}")

@@ -1804,7 +1804,7 @@ def test_500_502_036():
 
             app_driver.back()
 
-            amount = random.randint(1, 99)
+            amount = random.randint(1, 45)
             logger.info(f"Generated amount: {amount}")
             ext_ref_number = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             logger.info(f"Generated external reference number:  {ext_ref_number}")
