@@ -1,7 +1,6 @@
 import sys
 import pytest
 from numpy.random import randint
-
 from Configuration import testsuite_teardown, TestSuiteSetup
 from Configuration import Configuration
 from DataProvider import GlobalVariables

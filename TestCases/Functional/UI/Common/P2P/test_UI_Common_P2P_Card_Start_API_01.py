@@ -8,7 +8,6 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from PageFactory.PAX_TransHistoryPage import PaxTransHistoryPage
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, \
     APIProcessor, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger

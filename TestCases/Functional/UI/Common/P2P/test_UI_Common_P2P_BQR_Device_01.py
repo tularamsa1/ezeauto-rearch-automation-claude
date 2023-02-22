@@ -11,7 +11,6 @@ from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.PAX_TransHistoryPage import PaxTransHistoryPage
 from Utilities import ResourceAssigner, DBProcessor, APIProcessor, date_time_converter, ConfigReader, Validator
-
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -389,30 +388,31 @@ def test_500_502_016():
                 txn_type_api = response["txnType"]
                 date_api = response["createdTime"]
 
-                actual_api_values = {"pmt_status": status_api,
-                                     "txn_amt": amount_api,
-                                     "pmt_mode": payment_mode_api,
-                                     "pmt_state": state_api,
-                                     "settle_status": settlement_status_api,
-                                     "acquirer_code": acquirer_code_api,
-                                     "issuer_code": issuer_code_api,
-                                     "mid": mid_api,
-                                     "txn_type": txn_type_api,
-                                     "tid": tid_api,
-                                     "org_code": org_code_api,
-                                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                     "start_success": start_success,
-                                     "status_success": status_received_success,
-                                     "status_mssg": status_received_mssg,
-                                     "status_mssg_code": status_received_mssgcode,
-                                     "status_real_code": status_received_realcode,
-                                     "status_success_1": status_after_pmt_success,
-                                     "status_mssg_code_1": status_after_pmt_mssgcode,
-                                     "status_real_code_1": status_after_pmt_realcode,
-                                     "status_mssg_1": status_after_pmt_mssg,
-                                     "status_username_1": status_after_pmt_username,
-                                     "status_req_id_1": status_after_pmt_rqst_id,
-                                     }
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "mid": mid_api,
+                    "txn_type": txn_type_api,
+                    "tid": tid_api,
+                    "org_code": org_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api),
+                    "start_success": start_success,
+                    "status_success": status_received_success,
+                    "status_mssg": status_received_mssg,
+                    "status_mssg_code": status_received_mssgcode,
+                    "status_real_code": status_received_realcode,
+                    "status_success_1": status_after_pmt_success,
+                    "status_mssg_code_1": status_after_pmt_mssgcode,
+                    "status_real_code_1": status_after_pmt_realcode,
+                    "status_mssg_1": status_after_pmt_mssg,
+                    "status_username_1": status_after_pmt_username,
+                    "status_req_id_1": status_after_pmt_rqst_id,
+                }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:

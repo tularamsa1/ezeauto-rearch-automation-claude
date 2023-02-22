@@ -1582,7 +1582,6 @@ def test_500_501_015():
         Configuration.executeFinallyBlock(testcase_id)
 
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
