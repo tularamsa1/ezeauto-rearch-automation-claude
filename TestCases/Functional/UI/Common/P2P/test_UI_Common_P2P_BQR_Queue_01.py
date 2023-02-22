@@ -168,6 +168,7 @@ def test_500_502_025():
             try:
                 actual_notification = home_page.check_p2p_notification()
             except:
+                app_driver.back()
                 raise Exception(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
             logger.info(f"Expected P2P notification message is : {expected_notification}")
@@ -498,6 +499,7 @@ def test_500_501_026():
             try:
                 actual_notification = home_page.check_p2p_notification()
             except:
+                app_driver.back()
                 raise Exception(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
             logger.info(f"Expected P2P notification message is : {expected_notification}")
@@ -1025,6 +1027,7 @@ def test_500_502_027():
             try:
                 actual_notification = home_page.check_p2p_notification()
             except:
+                app_driver.back()
                 raise Exception(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
             logger.info(f"Expected P2P notification message is : {expected_notification}")
@@ -1768,6 +1771,7 @@ def test_500_502_028():
             try:
                 actual_notification = home_page.check_p2p_notification()
             except:
+                app_driver.back()
                 raise Exception(f"Exception in locating P2P notification on device")
             expected_notification = "Push 2 Pay is ON"
             logger.info(f"Expected P2P notification message is : {expected_notification}")
