@@ -149,15 +149,8 @@ class PaymentPage(BasePage):
                 self.perform_click(self.btn_proceedToHomepage)
             elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
                 self.perform_click(self.btn_proceedToHomepage)
-                # self.perform_click(self.btn_back_enter_amt_window)
-                # homePage = HomePage(self.driver)
-                # homePage.enter_amount_and_order_number(amount, order_id)
             elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
-                # self.perform_click(self.btn_proceedToHomepage)
                 self.perform_click(self.lbl_skip)
-                # self.perform_click(self.btn_back_enter_amt_window)
-                # homePage = HomePage(self.driver)
-                # homePage.enter_amount_and_order_number(amount, order_id)
             else:
                 pass
 
@@ -167,8 +160,6 @@ class PaymentPage(BasePage):
         except:
             self.wait_for_element(self.lbl_checkstatusTitle)
             self.perform_click(self.lbl_checkstatus)
-            # pmt_status = self.fetch_text(self.lbl_paymentStatus)
-            # return pmt_status
             if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
                 self.perform_click(self.btn_proceedToHomepage)
             elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
@@ -176,9 +167,6 @@ class PaymentPage(BasePage):
             elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
                 self.perform_click(self.btn_proceedToHomepage)
                 self.perform_click(self.lbl_skip)
-                # self.perform_click(self.btn_back_enter_amt_window)
-                # homePage = HomePage(self.driver)
-                # homePage.enter_amount_and_order_number(amount, order_id)
             else:
                 pass
 
