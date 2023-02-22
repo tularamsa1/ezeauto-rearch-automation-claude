@@ -1,6 +1,5 @@
 import sys
 import random
-import time
 import pytest
 from time import sleep
 from Configuration import testsuite_teardown, TestSuiteSetup
