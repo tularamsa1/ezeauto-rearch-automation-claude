@@ -21,7 +21,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_011():
+def test_common_500_501_011():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_Without_Payment_Mode_11
     Sub Feature Description: Send notification without payment mode, do successful UPI payment from device and validate status using status API
@@ -489,7 +489,7 @@ def test_500_501_011():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_012():
+def test_common_500_501_012():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_With_Payment_Mode_12
     Sub Feature Description: Send notification with payment mode as UPI, do successful payment from device and validate status using status API
@@ -953,7 +953,7 @@ def test_500_501_012():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_015():
+def test_common_500_501_015():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Normal_Txn_P2P_Enabled_15
     Sub Feature Description: Perform a normal UPI transaction and P2P transaction when P2P is enabled
@@ -1585,7 +1585,7 @@ def test_500_501_015():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_501_035():
+def test_common_500_501_035():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Cancel_API_35
     Sub Feature Description: Sending payment notification with payment mode as UPI and cancel the notification using cancel API and do status API

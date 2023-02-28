@@ -18,7 +18,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_004():
+def test_common_500_503_004():
     """
     Sub Feature Code: UI_Common_P2P_Card_Start_API_Cancel_From_Device_04
     Sub Feature Description: Send notification for card, cancel the payment from device and check the status using API
@@ -300,7 +300,7 @@ def test_500_503_004():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_037():
+def test_common_500_503_037():
     """
     Sub Feature Code: UI_Common_P2P_Card_Cancel_API_37
     Sub Feature Description: Sending payment notification with payment mode as Card in start API and cancel the notification using cancel API and do status API

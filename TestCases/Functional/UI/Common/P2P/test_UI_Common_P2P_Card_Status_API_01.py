@@ -17,7 +17,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_043():
+def test_common_500_503_043():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Status_API_Wrong_Password_43
     Sub Feature Description: Send status API for Card transaction with wrong password in API request
@@ -287,7 +287,7 @@ def test_500_503_043():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_044():
+def test_common_500_503_044():
     """
     Sub Feature Code: UI_Common_P2P_Card_Status_API_Wrong_Username_44
     Sub Feature Description: Send status API for Card transaction with wrong username in API request
@@ -559,7 +559,7 @@ def test_500_503_044():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_045():
+def test_common_500_503_045():
     """
     Sub Feature Code: UI_Common_P2P_Card_Status_API_Wrong_App_Key_45
     Sub Feature Description: Send status API for Card transaction with wrong appkey in API request
@@ -833,7 +833,7 @@ def test_500_503_045():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_046():
+def test_common_500_503_046():
     """
     Sub Feature Code: UI_Common_P2P_Card_Status_API_Wrong_P2PID_46
     Sub Feature Description: Send status API for Card transaction with wrong P2P id in API request

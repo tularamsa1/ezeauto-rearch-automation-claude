@@ -19,7 +19,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_501_020():
+def test_common_500_501_020():
     """
     Sub Feature Code: UI_common_P2P_UPI_Queue_Status_API_20
     Sub Feature Description: Sending BQR and UPI notifications, check the status of UPI request which is in queue using status API
@@ -357,7 +357,7 @@ def test_500_501_020():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_021():
+def test_common_500_501_021():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Queue_Disabled_21
     Sub Feature Description: Send two notifications, where second notification is UPI and check the status when queue functionality is disabled
@@ -892,7 +892,7 @@ def test_500_501_021():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_022():
+def test_common_500_501_022():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Queue_Success_Transactions_22
     Sub Feature Description: Send one BQR and UPI transactions and confirm both transactions where UPI transaction was in queue
@@ -1653,7 +1653,7 @@ def test_500_501_022():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_023():
+def test_common_500_501_023():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Queue_Cancel_First_Transaction_Device_23
     Sub Feature Description: Push one Card and one UPI notifications and first cancel card txn from device, then confirm success UPI txn which was in queue
@@ -2237,7 +2237,7 @@ def test_500_501_023():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_501_024():
+def test_common_500_501_024():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Queue_Cancel_First_Transaction_API_24
     Sub Feature Description: Cancel first notification (card) among two queued notifications (second notification for UPI) using cancel API from billing system

@@ -21,7 +21,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_502_006():
+def test_common_500_502_006():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Start_API_Without_Payment_Mode_06
     Sub Feature Description: Send notification without payment mode, do successful BQR payment from device and validate status
@@ -506,7 +506,7 @@ def test_500_502_006():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_502_007():
+def test_common_500_502_007():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Start_API_With_Payment_Mode_07
     Sub Feature Description: Send notification with payment mode as BQR, do successful payment from device and validate status using status API
@@ -1003,7 +1003,7 @@ def test_500_502_007():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_502_010():
+def test_common_500_502_010():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Normal_Txn_P2P_Enabled_10
     Sub Feature Description: Perform a normal BQR transaction and P2P transaction when P2P is enabled
@@ -1663,7 +1663,7 @@ def test_500_502_010():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_502_036():
+def test_common_500_502_036():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Cancel_API_36
     Sub Feature Description: Sending payment notification with payment mode as BQR and cancel the notification using cancel API and do status API

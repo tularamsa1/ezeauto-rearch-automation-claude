@@ -17,7 +17,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_018():
+def test_common_500_503_018():
     """
     Sub Feature Code: UI_Common_P2P_CARD_Reconnect_Network_Cancel_Transaction_Device_18
     Sub Feature Description: Turnoff network from device after receiving notification, cancel payment from device after network is back and check the status using status API
@@ -361,7 +361,7 @@ def test_500_503_018():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_019():
+def test_common_500_503_019():
     """
     Sub Feature Code: UI_Common_P2P_CARD_Reconnect_Network_Cancel_Transaction_API_19
     Sub Feature Description: Turnoff network from device after receiving notification, cancel payment using cancel API after network is back and check the status using status API

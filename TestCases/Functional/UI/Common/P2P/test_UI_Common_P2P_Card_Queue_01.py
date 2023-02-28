@@ -18,7 +18,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_030():
+def test_common_500_503_030():
     """
     Sub Feature Code: UI_common_P2P_Card_Queue_Status_API_30
     Sub Feature Description: Sending two notifications (BQR and Card) and check the status of second notification (Card) as in queue using status API
@@ -356,7 +356,7 @@ def test_500_503_030():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_500_503_031():
+def test_common_500_503_031():
     """
     Sub Feature Code: UI_Common_P2P_Card_Queue_Disabled_31
     Sub Feature Description: Send one UPI and card payment notifications using start API when Queue functionality is disabled and check status of both requests
@@ -641,7 +641,7 @@ def test_500_503_031():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_034():
+def test_common_500_503_034():
     """
     Sub Feature Code: UI_Common_P2P_Card_Queue_Cancel_First_Transaction_API_34
     Sub Feature Description: Cancel first notification among two queued notifications (second notification for Card) using cancel API from billing system

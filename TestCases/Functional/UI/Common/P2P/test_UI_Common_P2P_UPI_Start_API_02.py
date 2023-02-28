@@ -14,7 +14,7 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_500_501_038():
+def test_common_500_501_038():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_device_Serial_38
     Sub Feature Description: Send start API for UPI transaction with wrong device_serial in API request
@@ -218,7 +218,7 @@ def test_500_501_038():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_500_501_039():
+def test_common_500_501_039():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_App_Key_39
     Sub Feature Description: Send start API for UPI transaction with wrong appkey in API request
@@ -426,7 +426,7 @@ def test_500_501_039():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_500_501_040():
+def test_common_500_501_040():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_Without_App_Key_40
     Sub Feature Description: Send start API for UPI transaction without appkey in API request
@@ -630,7 +630,7 @@ def test_500_501_040():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_500_501_041():
+def test_common_500_501_041():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_Password_41
     Sub Feature Description: Send start API for UPI transaction with wrong password in API request
@@ -831,7 +831,7 @@ def test_500_501_041():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_500_501_042():
+def test_common_500_501_042():
     """
     Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_Username_42
     Sub Feature Description: Send start API for UPI transaction with wrong username in API request

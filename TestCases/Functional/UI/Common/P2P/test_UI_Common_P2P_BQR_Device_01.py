@@ -20,7 +20,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_502_016():
+def test_common_500_502_016():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Kill_App_With_Autologin_16
     Sub Feature Description: Kill the app and check P2P connection after relaunching the app, enabling autologin and do BQR txn
@@ -547,7 +547,7 @@ def test_500_502_016():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_500_502_017():
+def test_common_500_502_017():
     """
     Sub Feature Code: UI_Common_P2P_BQR_Reconnect_Network_Success_Transaction_17
     Sub Feature Description: Turnoff network from device after receiving notification and do successful transaction after network is back

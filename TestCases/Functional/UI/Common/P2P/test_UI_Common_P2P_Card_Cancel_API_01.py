@@ -17,7 +17,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_048():
+def test_common_500_503_048():
     """
     Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_Password_48
     Sub Feature Description: Send cancel API for Card transaction request with wrong password in API request
@@ -279,7 +279,7 @@ def test_500_503_048():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_049():
+def test_common_500_503_049():
     """
     Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_Username_49
     Sub Feature Description: Send cancel API for Card transaction request with wrong username in API request
@@ -541,7 +541,7 @@ def test_500_503_049():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_050():
+def test_common_500_503_050():
     """
     Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_App_Key_50
     Sub Feature Description: Send cancel API for Card transaction request with wrong appkey in API request
@@ -800,7 +800,7 @@ def test_500_503_050():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-def test_500_503_051():
+def test_common_500_503_051():
     """
     Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_P2PID_51
     Sub Feature Description: Send cancel API for Card transaction request with wrong P2P ID in API request
