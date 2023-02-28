@@ -44,6 +44,7 @@ class HomePage(BasePage):
     txt_cashAtPosSaleAmount = (By.ID, 'com.ezetap.basicapp:id/etSaleAmount')
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
+    lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
 
 
     def __init__(self, driver):
@@ -185,3 +186,6 @@ class HomePage(BasePage):
 
     def wait_for_navigation_to_load(self):
         self.wait_for_element_to_be_clickable(self.lbl_navigation)
+
+    def check_p2p_notification(self):
+        return self.fetch_text(self.lbl_p2p_notification, 30)
