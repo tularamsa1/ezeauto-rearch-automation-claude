@@ -189,6 +189,7 @@ def test_d100_d101_026():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
+                mer_account_no = card_processor.fetch_merchant_account_no(org_code)
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
                                     "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
@@ -198,7 +199,7 @@ def test_d100_d101_026():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"FAILED","is_error_code":"PAY005",
-                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_error_desc":f"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :{mer_account_no}","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
                                     "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
                                     "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
@@ -453,6 +454,7 @@ def test_d100_d101_027():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
+                mer_account_no = card_processor.fetch_merchant_account_no(org_code)
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
                                     "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
@@ -462,7 +464,7 @@ def test_d100_d101_027():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"FAILED","is_error_code":"PAY005",
-                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_error_desc":f"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :{mer_account_no}","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
                                     "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
                                     "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
@@ -717,6 +719,7 @@ def test_d100_d101_028():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
+                mer_account_no = card_processor.fetch_merchant_account_no(org_code)
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
                                     "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
@@ -726,7 +729,7 @@ def test_d100_d101_028():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"FAILED","is_error_code":"PAY005",
-                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_error_desc":f"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :{mer_account_no}","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
                                     "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
                                     "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
@@ -982,6 +985,7 @@ def test_d100_d101_029():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
+                mer_account_no = card_processor.fetch_merchant_account_no(org_code)
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
                                     "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
@@ -991,7 +995,7 @@ def test_d100_d101_029():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"FAILED","is_error_code":"PAY005",
-                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_error_desc":f"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :{mer_account_no}","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
                                     "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
                                     "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
@@ -1246,6 +1250,7 @@ def test_d100_d101_030():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
+                mer_account_no = card_processor.fetch_merchant_account_no(org_code)
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
                                     "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
@@ -1255,7 +1260,7 @@ def test_d100_d101_030():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"FAILED","is_error_code":"PAY005",
-                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_error_desc":f"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :{mer_account_no}","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
                                     "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
                                     "is_settle_status":"IS_FAILED","is_recon_status":"DONE",
@@ -1510,6 +1515,7 @@ def test_d100_d101_031():
             try:
                 result = DBProcessor.getValueFromDB("select * from ezetap_properties where type = 'INSTANT_SETTLEMENT' and prop_key = 'msfRateForInstantSettlement';")
                 msf_per = float(result["prop_value"].iloc[0])
+                mer_account_no = card_processor.fetch_merchant_account_no(org_code)
                 expectedDBValues = {"txn_amt": float(original_amount), "pmt_mode":"CARD",
                                     "pmt_status":"AUTHORIZED",
                                     "pmt_state":"AUTHORIZED", "settle_status": "PENDING",
@@ -1519,7 +1525,7 @@ def test_d100_d101_031():
                                     "is_txn_amt":float(original_amount), "is_msf_percentage":msf_per,"is_settle_amt":(float(original_amount)-(float(original_amount) * ((msf_per)/100))),
                                     "is_org_code":org_code,"is_acq_code":"IDFC","is_resp_code":"200",
                                     "is_resp_desc":"FAILED","is_error_code":"PAY005",
-                                    "is_error_desc":"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :21480649120","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
+                                    "is_error_desc":f"Error in validating Credit Account:CBSERROR:INVALID CHECK DIGIT FOR ACCOUNT ID :{mer_account_no}","is_inquiry_resp_code":"200", "is_inquiry_resp_desc":"FAILED",
                                     "is_inquiry_error_code":"ENQ007",
                                     "is_inquiry_error_rsn":"Sorry!! No Matching Information found for the given input values",
                                     "is_settle_status":"IS_FAILED","is_recon_status":"DONE",

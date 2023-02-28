@@ -162,7 +162,7 @@ def update_card_bin_details():
 
 def update_invalid_merchant_account_details(org_code: str):
     try:
-        query = f"UPDATE merchant_account_details set account_number = '21480649120' where org_code = '{org_code}';"
+        query = f"UPDATE merchant_account_details set account_number = '21482119450' where org_code = '{org_code}';"
         logger.debug(f"Query for updating merchant_account_details of {org_code} in merchant_account_details table: {query}")
         result = DBProcessor.setValueToDB(query)
         if DBProcessor.set_value_to_db_query_passed(result):
@@ -175,7 +175,7 @@ def update_invalid_merchant_account_details(org_code: str):
 
 def update_valid_merchant_account_details(org_code: str):
     try:
-        query = f"UPDATE merchant_account_details set account_number = '21480649121' where org_code = '{org_code}';"
+        query = f"UPDATE merchant_account_details set account_number = '21482119454' where org_code = '{org_code}';"
         logger.debug(f"Query for updating merchant_account_details of {org_code} in merchant_account_details table: {query}")
         result = DBProcessor.setValueToDB(query)
         if DBProcessor.set_value_to_db_query_passed(result):
@@ -248,3 +248,14 @@ def update_idfc_inquiryApi_read_timeout(prop_value: str):
             logger.debug(f"IDFC Inquiry read timeout property is not updated to the system as {prop_value} sec")
     except Exception as e:
         logger.error(f"Unable to update timeout property details to the system due to error {str(e)}")
+
+
+def fetch_merchant_account_no(org_code: str) -> str:
+    try:
+        query = f"SELECT account_number from merchant_account_details where org_code = '{org_code}';"
+        logger.debug(f"Query for updating idfc_InquiryApi_read_timeout properties: {query}")
+        result = DBProcessor.getValueFromDB(query)
+        account_no = result['account_number'].iloc[0]
+        return str(account_no)
+    except Exception as e:
+        logger.error(f"Unable to fetch account no from merchant_account_details table due to error {str(e)}")
