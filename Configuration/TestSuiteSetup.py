@@ -488,7 +488,7 @@ def initialize_firefox_driver():
     return GlobalVariables.portalDriver
 
 
-def initialize_app_driver(request):
+def initialize_app_driver(request, no_reset="false"):
     """
     This method is used for initializing the app driver for the app operations
     """
@@ -517,7 +517,7 @@ def initialize_app_driver(request):
         "appPackage": "com.ezetap.basicapp",
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
-        "noReset": "false",
+        "noReset": no_reset,
         "autoGrantPermissions": "true",
         "newCommandTimeout": 7000,
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
@@ -529,3 +529,45 @@ def initialize_app_driver(request):
     function_end_time = datetime.datetime.now()
     print("Time taken for appium driver initialization is : ", str(function_end_time-function_start_time))
     return GlobalVariables.appDriver
+
+# def initialize_app_driver(request):
+#     """
+#     This method is used for initializing the app driver for the app operations
+#     """
+#     # test_case_id = request.node.name
+#     function_start_time = datetime.datetime.now()
+#     test_case_id = request
+#     device_details = ResourceAssigner.getDeviceFromDB(test_case_id)
+#     GlobalVariables.str_device_id = device_details['DeviceId']
+#     appium_server_details = ResourceAssigner.getAppiumServerFromDB(test_case_id)
+#     print(test_case_id + " will be using the device " + device_details['DeviceId'])
+#     print(test_case_id + " will be running on the appium server port " + appium_server_details['PortNumber'])
+#     if str(ConfigReader.read_config("Applications", "install_apps")).lower() == 'true':
+#         mpos_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
+#             "Applications", "mpos")
+#         sa_app = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App/" + ConfigReader.read_config(
+#             "Applications", "SA")
+#         lst_applications = [mpos_app, sa_app]
+#         json_applications = json.dumps(lst_applications)
+#     else:
+#         json_applications = ""
+#     desired_cap = {
+#         "platformName": "Android",
+#         "deviceName": device_details['DeviceId'],
+#         "udid": device_details['DeviceId'],
+#         "otherApps": json_applications,
+#         "appPackage": "com.ezetap.basicapp",
+#         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
+#         "ignoreHiddenApiPolicyError": "true",
+#         "noReset": "false",
+#         "autoGrantPermissions": "true",
+#         "newCommandTimeout": 7000,
+#         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
+#         "MobileCapabilityType.NEW_COMMAND_TIMEOUT": "300"
+#     }
+#     print("appium server url:", 'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub')
+#     GlobalVariables.appDriver = app_webdriver.Remote(
+#         'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub', desired_cap)
+#     function_end_time = datetime.datetime.now()
+#     print("Time taken for appium driver initialization is : ", str(function_end_time-function_start_time))
+#     return GlobalVariables.appDriver

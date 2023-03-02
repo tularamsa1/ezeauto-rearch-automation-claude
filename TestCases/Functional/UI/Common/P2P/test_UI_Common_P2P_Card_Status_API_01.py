@@ -6,7 +6,6 @@ from Configuration import testsuite_teardown, TestSuiteSetup
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -96,10 +95,10 @@ def test_common_500_503_043():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -367,10 +366,10 @@ def test_common_500_503_044():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -639,11 +638,11 @@ def test_common_500_503_045():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -913,10 +912,10 @@ def test_common_500_503_046():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id,"true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()

@@ -121,16 +121,16 @@ def test_common_500_502_016():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.wait_for_navigation_to_load()
-            home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
-            logger.info(f"Logged in to the app")
-            logger.info(f"Loaded home page")
+            # home_page.wait_for_navigation_to_load()
+            # home_page.wait_for_home_page_load()
+            # home_page.check_home_page_logo()
+            # logger.info(f"Logged in to the app")
+            # logger.info(f"Loaded home page")
 
             device_serial = GlobalVariables.str_device_id
 
@@ -336,6 +336,9 @@ def test_common_500_502_016():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -641,10 +644,10 @@ def test_common_500_502_017():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -841,22 +844,23 @@ def test_common_500_502_017():
 
                 home_page.click_on_history()
                 sleep(2)
-                txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(str(external_ref_num))
+                # txn_history_page = TransHistoryPage(app_driver)
+                pax_txn_history_page = PaxTransHistoryPage(app_driver)
+                pax_txn_history_page.click_on_transaction_by_order_id(str(external_ref_num))
 
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = pax_txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {status_txn_id}, {payment_status}")
-                payment_mode = txn_history_page.fetch_txn_type_text()
+                payment_mode = pax_txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {status_txn_id}, {payment_mode}")
-                app_txn_id = txn_history_page.fetch_txn_id_text()
+                app_txn_id = pax_txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {status_txn_id}, {app_txn_id}")
-                app_amount = txn_history_page.fetch_txn_amount_text()
+                app_amount = pax_txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {status_txn_id}, {app_amount}")
-                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                app_settlement_status = pax_txn_history_page.fetch_settlement_status_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {status_txn_id}, {app_settlement_status}")
-                app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
+                app_payment_msg = pax_txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {status_txn_id}, {app_payment_msg}")
-                app_date_and_time = txn_history_page.fetch_date_time_text()
+                app_date_and_time = pax_txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {status_txn_id}, {app_date_and_time}")
 
                 actual_app_values = {
@@ -874,6 +878,9 @@ def test_common_500_502_017():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------

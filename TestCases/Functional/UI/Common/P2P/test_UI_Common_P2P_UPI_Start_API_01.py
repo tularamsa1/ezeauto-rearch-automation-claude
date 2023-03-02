@@ -121,10 +121,10 @@ def test_common_500_501_011():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -294,6 +294,9 @@ def test_common_500_501_011():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -589,10 +592,10 @@ def test_common_500_501_012():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -760,6 +763,9 @@ def test_common_500_501_012():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -1306,6 +1312,9 @@ def test_common_500_501_015():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -1687,11 +1696,11 @@ def test_common_500_501_035():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -1867,6 +1876,9 @@ def test_common_500_501_035():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------

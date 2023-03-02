@@ -139,11 +139,11 @@ def test_common_500_501_020():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -469,11 +469,11 @@ def test_common_500_501_021():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -666,6 +666,9 @@ def test_common_500_501_021():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -1012,11 +1015,11 @@ def test_common_500_501_022():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -1210,8 +1213,6 @@ def test_common_500_501_022():
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
         except Exception as e:
-            logger.debug(f"status of BQR request : {resp_status_bqr}")
-            logger.debug(f"status of queued UPI : {resp_status_upi}")
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
@@ -1288,6 +1289,9 @@ def test_common_500_501_022():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -1755,11 +1759,11 @@ def test_common_500_501_023():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -1991,6 +1995,9 @@ def test_common_500_501_023():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
@@ -2339,11 +2346,11 @@ def test_common_500_501_024():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            # logger.info(
+            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            # login_page = LoginPage(app_driver)
+            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -2581,6 +2588,9 @@ def test_common_500_501_024():
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
+            finally:
+                pax_txn_history_page.click_back_Btn_transaction_details()
+                pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
         # -----------------------------------------Start of API Validation------------------------------------
