@@ -7,6 +7,8 @@ import sqlite3
 import json
 from jinja2 import Template
 import redis
+from pymongo import MongoClient
+from pandas import DataFrame as df
 from DataProvider import GlobalConstants
 from PageFactory import Base_Actions
 from Utilities import ConfigReader
@@ -497,3 +499,27 @@ def get_redis_data(data):
             return False
     except:
         logger.error(f"Exception in retrieving data from redis server")
+
+
+def getvaluefromMongo(db_name: str, collection: str, query: str):
+    env_ip = ConfigReader.read_config("environment","str_exe_env_ip")
+    try:
+        conn = MongoClient(f"mongodb://{env_ip}:27017")
+        mydb = conn[db_name]
+        mycol = mydb[collection]
+        mydoc = df(mycol.find(query))
+        return mydoc
+    except Exception as e:
+        logger.error(f"Unable to connect to Mongo DB from Environment:{env_ip} due to error {str(e)}")
+
+
+def getAggregateValueFromMongo(db_name: str, collection: str, query: str):
+    env_ip = ConfigReader.read_config("environment","str_exe_env_ip")
+    try:
+        conn = MongoClient(f"mongodb://{env_ip}:27017")
+        mydb = conn[db_name]
+        mycol = mydb[collection]
+        mydoc = df(mycol.aggregate(query))
+        return mydoc
+    except Exception as e:
+        logger.error(f"Unable to connect to Mongo DB for aggregate method from Environment:{env_ip} due to error {str(e)}")
