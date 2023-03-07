@@ -109,6 +109,33 @@ def fetch_config_logs():
         raise Exception(f"Some Other Error while executing command over ssh connection. The following is the Error: {e}")
     return data_buffer
 
+# To Fetch Commx logs
+def fetchCommxLogs():
+    data_buffer = ''
+    startLineNo = GlobalVariables.startLineNumberCommx
+    logfileName = Base_Actions.pathToLogFile('commx')
+    ednLineNo = get_no_of_log_lines(logfileName)
+    command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + ednLineNo + " { print }' " + logfileName
+    print(command)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
+    return data_buffer
+
+
+# To Fetch ezestore logs
+def fetchEzestoreLogs():
+    data_buffer = ''
+    startLineNo = GlobalVariables.startLineNumberEzestore
+    logfileName = Base_Actions.pathToLogFile('ezestore')
+    ednLineNo = get_no_of_log_lines(logfileName)
+    command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + ednLineNo + " { print }' " + logfileName
+    print(command)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
+    return data_buffer
+
 
 class LogFileNotFoundError(Exception):
     pass
@@ -169,6 +196,10 @@ def startLineNoOfServerLogFile():
             GlobalVariables.start_line_number_closedloop = get_no_of_log_lines(Base_Actions.pathToLogFile('closedloop_logfile'))
         if Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
             GlobalVariables.start_line_number_q2 = get_no_of_log_lines(Base_Actions.pathToLogFile('q2_logfile'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+            GlobalVariables.startLineNumberCommx = get_no_of_log_lines(Base_Actions.pathToLogFile('commx'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+            GlobalVariables.startLineNumberEzestore = get_no_of_log_lines(Base_Actions.pathToLogFile('ezestore'))
         #========================================================================================
         # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
         if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":

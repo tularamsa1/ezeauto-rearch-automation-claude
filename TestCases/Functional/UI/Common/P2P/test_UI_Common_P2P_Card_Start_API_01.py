@@ -92,7 +92,7 @@ def test_common_500_503_004():
 
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+                                                   config_log=False, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -261,7 +261,7 @@ def test_common_500_503_004():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status": "RECEIVED",
+                    "p2p_status": "RECEIVEDDDD",
                     "p2p_txn_id": None,
                     "p2p_status_1": "CANCELED",
                     "p2p_txn_id_1": None

@@ -307,6 +307,16 @@ def captureLogs(request):
                 rerun_file = Path(path + "/q2.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+            if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                commxLogs = LogProcessor.fetchCommxLogs()
+                rerun_file = Path(path + "/commx.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+            if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                rerun_file = Path(path + "/ezestore.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
         if item.rep_call.failed:
             testCaseID = str(item.nodeid).split('/')
@@ -360,6 +370,16 @@ def captureLogs(request):
                 rerun_file = Path(path + "/q2.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+            if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                commxLogs = LogProcessor.fetchCommxLogs()
+                rerun_file = Path(path + "/commx.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+            if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                rerun_file = Path(path + "/ezestore.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
         if item.rep_call.passed:
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -404,6 +424,16 @@ def captureLogs(request):
                 rerun_file = Path(path + "/q2.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+            if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                commxLogs = LogProcessor.fetchCommxLogs()
+                rerun_file = Path(path + "/commx.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+            if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                rerun_file = Path(path + "/ezestore.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
     if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
         if item.rep_call.failed:
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -447,6 +477,16 @@ def captureLogs(request):
                 q2_logs = LogProcessor.fetch_q2_logs()
                 rerun_file = Path(path + "/q2.log")
                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+            if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                commxLogs = LogProcessor.fetchCommxLogs()
+                rerun_file = Path(path + "/commx.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+            if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                rerun_file = Path(path + "/ezestore.log")
+                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
 
 @pytest.fixture(scope="function")  # Executing once before every testcases
@@ -771,6 +811,16 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+                if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                    commxLogs = LogProcessor.fetchCommxLogs()
+                    rerun_file = Path(path + "/commx.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                    ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                    rerun_file = Path(path + "/ezestore.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                       "bool_rerun_at_the_end").lower() == "true":
@@ -830,6 +880,16 @@ def log_on_failure(request):
                             q2_logs = LogProcessor.fetch_q2_logs()
                             rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                        if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                            commxLogs = LogProcessor.fetchCommxLogs()
+                            rerun_file = Path(path + "/commx_Rerun.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                        if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                            ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                            rerun_file = Path(path + "/ezestore_Rerun.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
 
                     i -= 1
@@ -895,6 +955,16 @@ def log_on_failure(request):
                             rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+                        if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                            commxLogs = LogProcessor.fetchCommxLogs()
+                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                        if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                            ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
                     i -= 1
                     j += 1
 
@@ -942,6 +1012,16 @@ def log_on_failure(request):
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+                if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                    commxLogs = LogProcessor.fetchCommxLogs()
+                    rerun_file = Path(path + "/commx.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                    ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                    rerun_file = Path(path + "/ezestore.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True":
                 path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
@@ -986,6 +1066,16 @@ def log_on_failure(request):
                     q2_logs = LogProcessor.fetch_q2_logs()
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                    commxLogs = LogProcessor.fetchCommxLogs()
+                    rerun_file = Path(path + "/commx.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                    ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                    rerun_file = Path(path + "/ezestore.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in 'log on failure' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -1134,6 +1224,16 @@ def log_on_success(request):
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+                if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                    commxLogs = LogProcessor.fetchCommxLogs()
+                    rerun_file = Path(path + "/commx.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                    ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                    rerun_file = Path(path + "/ezestore.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
                                                                                       "bool_rerun_at_the_end").lower() == "true":
@@ -1193,6 +1293,16 @@ def log_on_success(request):
                             q2_logs = LogProcessor.fetch_q2_logs()
                             rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                        if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                            commxLogs = LogProcessor.fetchCommxLogs()
+                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                        if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                            ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
                     i -= 1
                     j += 1
@@ -1257,6 +1367,16 @@ def log_on_success(request):
                             rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+                        if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                            commxLogs = LogProcessor.fetchCommxLogs()
+                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                        if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                            ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
                     i -= 1
                     j += 1
 
@@ -1304,6 +1424,16 @@ def log_on_success(request):
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
+                if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                    commxLogs = LogProcessor.fetchCommxLogs()
+                    rerun_file = Path(path + "/commx.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                    ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                    rerun_file = Path(path + "/ezestore.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
             if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
                     "bool_capt_log_each_run") == "True":
                 path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -1348,6 +1478,16 @@ def log_on_success(request):
                     q2_logs = LogProcessor.fetch_q2_logs()
                     rerun_file = Path(path + "/q2.log")
                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                if GlobalVariables.commxLogs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                    commxLogs = LogProcessor.fetchCommxLogs()
+                    rerun_file = Path(path + "/commx.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                if GlobalVariables.ezestoreLogs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                    ezestoreLogs = LogProcessor.fetchEzestoreLogs()
+                    rerun_file = Path(path + "/ezestore.log")
+                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))

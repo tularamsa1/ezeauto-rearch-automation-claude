@@ -21,6 +21,8 @@ startLineNumberCnpware = ''
 start_line_number_config = ''
 start_line_number_closedloop = ''
 start_line_number_q2 = ''
+startLineNumberCommx = ''
+startLineNumberEzestore = ''
 
 
 apiLogs = False
@@ -30,6 +32,8 @@ middleWareLogs = False
 config_logs = False
 closedloop_logs = False
 q2_logs = False
+commxLogs = False
+ezestoreLogs = False
 
 # portalSS = False
 
@@ -107,12 +111,3 @@ refund_amt = 0
 refund_count = 0
 collection_amt = 0
 collection_count = 0
-
-
-
-
-
-
-
-
-
