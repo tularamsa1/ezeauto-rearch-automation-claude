@@ -488,7 +488,7 @@ def initialize_firefox_driver():
     return GlobalVariables.portalDriver
 
 
-def initialize_app_driver(request):
+def initialize_app_driver(request, no_reset="false"):
     """
     This method is used for initializing the app driver for the app operations
     """
@@ -509,6 +509,8 @@ def initialize_app_driver(request):
         json_applications = json.dumps(lst_applications)
     else:
         json_applications = ""
+    if no_reset == "false":
+        os.system("adb -s " + device_details['DeviceId'] + " shell pm clear com.ezetap.basicapp")
     desired_cap = {
         "platformName": "Android",
         "deviceName": device_details['DeviceId'],
@@ -517,7 +519,7 @@ def initialize_app_driver(request):
         "appPackage": "com.ezetap.basicapp",
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
-        "noReset": "false",
+        "noReset": no_reset,
         "autoGrantPermissions": "true",
         "newCommandTimeout": 7000,
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
