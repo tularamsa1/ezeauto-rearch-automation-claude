@@ -9,15 +9,15 @@ logger = EzeAutoLogger(__name__)
 
 
 def configureLogCaptureVariables(apiLog : bool = False, portalLog : bool = False, cnpwareLog : bool = False, middlewareLog : bool = False, config_log: bool=False, closedloop_log: bool=False, q2_log: bool=False, commx_log: bool=False, ezestore_log: bool=False):
-    GlobalVariables.apiLogs = apiLog
-    GlobalVariables.portalLogs = portalLog
-    GlobalVariables.cnpWareLogs = cnpwareLog
-    GlobalVariables.middleWareLogs = middlewareLog
+    GlobalVariables.api_logs = apiLog
+    GlobalVariables.portal_logs = portalLog
+    GlobalVariables.cnpware_logs = cnpwareLog
+    GlobalVariables.middleware_logs = middlewareLog
     GlobalVariables.config_logs = config_log
     GlobalVariables.closedloop_logs = closedloop_log
     GlobalVariables.q2_logs = q2_log
-    GlobalVariables.commxLogs = commx_log
-    GlobalVariables.ezestoreLogs = ezestore_log
+    GlobalVariables.commx_logs = commx_log
+    GlobalVariables.ezestore_logs = ezestore_log
 
 
 def executeFinallyBlock(testcase_Id):

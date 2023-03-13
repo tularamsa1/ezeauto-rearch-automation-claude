@@ -110,11 +110,11 @@ def createStatusTable():
     myTable1 = PrettyTable()
     myTable1.title = 'Debugging Info'
     myTable1.header = True
-    myTable1.field_names = ["Type", "API", "Config", "Middleware", "Cnpware", "Portal", "App", "ChargeSlip"]
+    myTable1.field_names = ["Type", "API", "Config", "Middleware", "Cnpware", "Portal", "Commx", "Ezestore", "App", "ChargeSlip"]
 
     if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True" or Base_Actions.is_log_capture_required(
             "bool_capt_log_pass") == "True":
-        if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True" and GlobalVariables.apiLogs:
+        if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True" and GlobalVariables.api_logs:
             apiLogs = 'Yes'
         else:
             apiLogs = 'No'
@@ -125,24 +125,36 @@ def createStatusTable():
             config_logs = 'No'
 
         if Base_Actions.is_log_capture_required(
-                "bool_capt_log_middleware") == "True" and GlobalVariables.middleWareLogs:
+                "bool_capt_log_middleware") == "True" and GlobalVariables.middleware_logs:
             mWareLogs = 'Yes'
         else:
             mWareLogs = 'No'
-        if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True" and GlobalVariables.cnpWareLogs:
+        if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True" and GlobalVariables.cnpware_logs:
             cnpWareLogs = 'Yes'
         else:
             cnpWareLogs = 'No'
-        if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True" and GlobalVariables.portalLogs:
+        if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True" and GlobalVariables.portal_logs:
             portalLogs = 'Yes'
         else:
             portalLogs = 'No'
+
+        if Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True" and GlobalVariables.commx_logs:
+            commxLogs = 'Yes'
+        else:
+            commxLogs = 'No'
+
+        if Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True" and GlobalVariables.ezestore_logs:
+            ezestoreLogs = 'Yes'
+        else:
+            ezestoreLogs = 'No'
     else:
         apiLogs = 'No'
         config_logs = 'No'
         mWareLogs = 'No'
         cnpWareLogs = 'No'
         portalLogs = 'No'
+        commxLogs = 'No'
+        ezestoreLogs = 'No'
 
     if GlobalVariables.EXCEL_TC_Execution == "Fail" \
         or GlobalVariables.str_api_val_result == "Fail" \
@@ -150,9 +162,9 @@ def createStatusTable():
                 or GlobalVariables.str_portal_val_result == "Fail" \
                     or GlobalVariables.str_app_val_result == "Fail" \
                         or GlobalVariables.str_ui_val_result == "Fail":
-        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, "N/A", 'N/A'])
+        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, commxLogs, ezestoreLogs, "N/A", 'N/A'])
     else:
-        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, "N/A", "N/A"])
+        myTable1.add_row(["Log Captured", apiLogs, config_logs, mWareLogs, cnpWareLogs, portalLogs, commxLogs, ezestoreLogs, "N/A", "N/A"])
 
     # SCREENSHOT INFO
     appSS = 'No'
@@ -179,7 +191,7 @@ def createStatusTable():
             chargeslipSS ="Yes"
 
 
-    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", "N/A", portalSS, appSS, chargeslipSS])
+    myTable1.add_row(["Screenshot Captured", "N/A", "N/A", "N/A", "N/A", portalSS, "N/A", "N/A", appSS, chargeslipSS])
     myTable1.align = 'l'
 
     print(myTable1)

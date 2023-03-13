@@ -91,8 +91,7 @@ def test_common_500_503_004():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, commx_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -261,7 +260,7 @@ def test_common_500_503_004():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status": "RECEIVEDDDD",
+                    "p2p_status": "RECEIVED",
                     "p2p_txn_id": None,
                     "p2p_status_1": "CANCELED",
                     "p2p_txn_id_1": None
@@ -391,8 +390,7 @@ def test_common_500_503_037():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -403,10 +401,6 @@ def test_common_500_503_037():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(
-            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()

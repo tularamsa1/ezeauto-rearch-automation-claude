@@ -57,7 +57,7 @@ def test_common_500_502_006():
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQR')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
 
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password,app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -113,8 +113,7 @@ def test_common_500_502_006():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, commx_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -125,9 +124,6 @@ def test_common_500_502_006():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -308,7 +304,7 @@ def test_common_500_502_006():
             date = date_time_converter.db_datetime(txn_created_time)
             try:
                 expected_api_values = {
-                    "pmt_status": "AUTHORIZED",
+                    "pmt_status": "AUTHORIZEDDDDDDDDDDDD",
                     "txn_amt": float(amount),
                     "pmt_mode": "BHARATQR",
                     "pmt_state": "SETTLED",
@@ -546,7 +542,7 @@ def test_common_500_502_007():
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQR')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
 
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
@@ -603,8 +599,7 @@ def test_common_500_502_007():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False, commx_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -615,9 +610,6 @@ def test_common_500_502_007():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -1047,7 +1039,7 @@ def test_common_500_502_010():
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQR')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
@@ -1130,7 +1122,7 @@ def test_common_500_502_010():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -2145,7 +2137,7 @@ def test_common_500_502_036():
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='BQR')
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -2200,7 +2192,7 @@ def test_common_500_502_036():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -2211,9 +2203,6 @@ def test_common_500_502_036():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()

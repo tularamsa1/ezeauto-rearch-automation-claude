@@ -16,10 +16,10 @@ from Utilities import Validator, ReportProcessor, ConfigReader
 @pytest.mark.apiVal
 @pytest.mark.usefixtures("log_on_success")
 def test_UI_SA_Upfront_Mobile_Number_01(method_setup,appium_driver):
-    GlobalVariables.apiLogs = True
-    GlobalVariables.portalLogs = False
-    GlobalVariables.cnpWareLogs = False
-    GlobalVariables.middleWareLogs = False
+    GlobalVariables.api_logs = True
+    GlobalVariables.portal_logs = False
+    GlobalVariables.cnpware_logs = False
+    GlobalVariables.middleware_logs = False
 
     global success_Val_Execution
     success_Val_Execution = True
