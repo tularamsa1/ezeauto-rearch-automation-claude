@@ -1,4 +1,5 @@
 import random
+import string
 import sys
 import pytest
 
@@ -128,6 +129,8 @@ def test_common_100_107_033():
             logger.debug(f"generated random ref_id is : {ref_id}")
             generate_random_secondary_id = str(random.randint(110000000, 110099999))
             logger.debug(f"generated random secondary id is : {generate_random_secondary_id}")
+            customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
+            logger.debug(f" Value of customer vpa is : {customer_vpa}")
 
             # UPI Success Callback , transaction_type: 2 is for upi
             api_details = DBProcessor.get_api_details('callbackKotak', request_body={
@@ -142,6 +145,7 @@ def test_common_100_107_033():
                 "settlement_amount": str(amount),
                 "primary_id": generateqr_publish_id,
                 "auth_code": auth_code,
+                "customer_vpa": customer_vpa,
                 "secondary_id": generate_random_secondary_id
             })
 
@@ -652,6 +656,8 @@ def test_common_100_107_034():
             logger.debug(f"generated random ref_id is : {ref_id}")
             generate_random_secondary_id = str(random.randint(110000000, 110099999))
             logger.debug(f"generated random secondary id is : {generate_random_secondary_id}")
+            customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
+            logger.debug(f" Value of customer vpa is : {customer_vpa}")
 
             # UPI Success Callback    #transaction_type: 2 is for upi
             api_details = DBProcessor.get_api_details('callbackKotak', request_body={
@@ -666,6 +672,7 @@ def test_common_100_107_034():
                 "settlement_amount": str(amount),
                 "primary_id": generateqr_publish_id,
                 "auth_code": auth_code,
+                "customer_vpa": customer_vpa,
                 "secondary_id": generate_random_secondary_id
             })
 
@@ -1166,6 +1173,8 @@ def test_common_100_107_035():
             logger.debug(f"generated random ref_id is : {ref_id}")
             generate_random_secondary_id = str(random.randint(110000000, 110099999))
             logger.debug(f"generated random secondary id is : {generate_random_secondary_id}")
+            customer_vpa = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) + "@upi"
+            logger.debug(f" Value of customer vpa is : {customer_vpa}")
 
             # UPI Success Callback
             api_details = DBProcessor.get_api_details('callbackKotak', request_body={
@@ -1180,6 +1189,7 @@ def test_common_100_107_035():
                 "settlement_amount": str(amount),
                 "primary_id": generateqr_publish_id,
                 "auth_code": auth_code,
+                "customer_vpa": customer_vpa,
                 "secondary_id": generate_random_secondary_id
             })
 
