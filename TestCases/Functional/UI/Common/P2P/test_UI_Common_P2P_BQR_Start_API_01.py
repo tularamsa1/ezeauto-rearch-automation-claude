@@ -304,7 +304,7 @@ def test_common_500_502_006():
             date = date_time_converter.db_datetime(txn_created_time)
             try:
                 expected_api_values = {
-                    "pmt_status": "AUTHORIZEDDDDDDDDDDDD",
+                    "pmt_status": "AUTHORIZED",
                     "txn_amt": float(amount),
                     "pmt_mode": "BHARATQR",
                     "pmt_state": "SETTLED",
