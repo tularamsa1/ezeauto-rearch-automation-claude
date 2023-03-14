@@ -111,7 +111,7 @@ def test_common_500_501_011():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -122,9 +122,6 @@ def test_common_500_501_011():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -582,7 +579,7 @@ def test_common_500_501_012():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -593,9 +590,6 @@ def test_common_500_501_012():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -1049,8 +1043,7 @@ def test_common_500_501_035():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, commx_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1061,10 +1054,6 @@ def test_common_500_501_035():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
-            # logger.info(
-            #     f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
-            # login_page = LoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()

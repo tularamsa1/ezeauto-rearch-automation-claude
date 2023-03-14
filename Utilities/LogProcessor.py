@@ -10,13 +10,16 @@ logger = EzeAutoLogger(__name__)
 env = Base_Actions.get_environment("str_exe_env")
 
 
-# To Fetch API logs
-def fetchAPILogs():
+def fetch_API_logs() -> str:
+    """
+    To fetch the API logs
+    :return: string
+    """
     data_buffer = ''
-    startLineNo = GlobalVariables.startLineNumberAPI
-    logfileName = Base_Actions.pathToLogFile('api')
-    ednLineNo = get_no_of_log_lines(logfileName)
-    command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + ednLineNo + " { print }' " + logfileName
+    start_line_num = GlobalVariables.start_line_number_API
+    log_file_name = Base_Actions.pathToLogFile('api')
+    end_line_num = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_num + " { print }' " + log_file_name
     print(command)
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
@@ -24,47 +27,59 @@ def fetchAPILogs():
     return data_buffer
 
 
-# To fetch Portal logs
-def fetchPortalLogs():
+def fetch_portal_logs() -> str:
+    """
+    To fetch the portal logs
+    :return: string
+    """
     data_buffer = ''
-    startLineNo = GlobalVariables.startLineNumberPortal
-    logfileName = Base_Actions.pathToLogFile("portal")
-    endLineNo = get_no_of_log_lines(logfileName)
-    command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
+    start_line_num = GlobalVariables.start_line_number_portal
+    log_file_name = Base_Actions.pathToLogFile("portal")
+    end_line_num = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_num + " { print }' " + log_file_name
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
         data_buffer += line
     return data_buffer
 
 
-# To fetch Middleware logs
-def fetchMiddlewareLogs():
+def fetch_middleware_logs() -> str:
+    """
+    To fetch the middleware logs
+    :return: string
+    """
     data_buffer = ''
-    startLineNo = GlobalVariables.startLineNumberMiddlewware
-    logfileName = Base_Actions.pathToLogFile("middleware")
-    endLineNo = get_no_of_log_lines(logfileName)
-    command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
+    start_line_num = GlobalVariables.start_line_number_middleware
+    log_file_name = Base_Actions.pathToLogFile("middleware")
+    end_line_num = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_num + " { print }' " + log_file_name
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
         data_buffer += line
     return data_buffer
 
 
-# To fetch CNP ware logs
-def fetchCnpwareLogs():
+def fetch_cnpware_logs() -> str:
+    """
+    To fetch the cnpware logs
+    :return: string
+    """
     data_buffer = ''
-    startLineNo = GlobalVariables.startLineNumberCnpware
-    logfileName = Base_Actions.pathToLogFile("cnpware")
-    endLineNo = get_no_of_log_lines(logfileName)
-    command = "awk " + "'NR>=" + startLineNo + " && " + "NR<=" + endLineNo + " { print }' " + logfileName
+    start_line_num = GlobalVariables.start_line_number_cnpware
+    log_file_name = Base_Actions.pathToLogFile("cnpware")
+    end_line_num = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_num + " { print }' " + log_file_name
     ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
     for line in iter(lambda: ssh_stdout.readline(), ''):
         data_buffer += line
     return data_buffer
 
 
-# To fetch closedloop logs
-def fetch_closed_loop_logs():
+def fetch_closed_loop_logs() -> str:
+    """
+    To fetch the closedloop logs
+    :return: string
+    """
     data_buffer = ''
     start_line_no = GlobalVariables.start_line_number_closedloop
     logfile_name = Base_Actions.pathToLogFile("closedloop_logfile")
@@ -75,7 +90,12 @@ def fetch_closed_loop_logs():
         data_buffer += line
     return data_buffer
 
-def fetch_q2_logs():
+
+def fetch_q2_logs() -> str:
+    """
+    To fetch the q2 logs
+    :return: string
+    """
     data_buffer = ''
     start_line_no = GlobalVariables.start_line_number_q2
     logfile_name = Base_Actions.pathToLogFile("q2_logfile")
@@ -87,8 +107,11 @@ def fetch_q2_logs():
     return data_buffer
 
 
-# To fetch config apps logs
-def fetch_config_logs():
+def fetch_config_logs() -> str:
+    """
+    To fetch the config logs
+    :return: string
+    """
     data_buffer = ''
     start_line_no = GlobalVariables.start_line_number_config
     log_filepath_template = Base_Actions.pathToLogFile("config_apps_log_filepath_format")
@@ -107,6 +130,40 @@ def fetch_config_logs():
     except Exception as e:
         logger.critical(f"Some Other Error while executing command over ssh connection. The following is the Error: {e}")
         raise Exception(f"Some Other Error while executing command over ssh connection. The following is the Error: {e}")
+    return data_buffer
+
+
+def fetch_commx_logs() -> str:
+    """
+    To fetch the commx logs
+    :return: string
+    """
+    data_buffer = ''
+    start_line_num = GlobalVariables.start_line_number_commx
+    log_file_name = Base_Actions.pathToLogFile('commx')
+    end_line_num = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_num + " { print }' " + log_file_name
+    print(command)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
+    return data_buffer
+
+
+def fetch_ezestore_logs() -> str:
+    """
+    To fetch the ezestore logs
+    :return: string
+    """
+    data_buffer = ''
+    start_line_num = GlobalVariables.start_line_number_ezestore
+    log_file_name = Base_Actions.pathToLogFile('ezestore')
+    ednLineNo = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + ednLineNo + " { print }' " + log_file_name
+    print(command)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
     return data_buffer
 
 
@@ -157,18 +214,22 @@ def startLineNoOfServerLogFile():
         current = datetime.now()
         LogColl_Starting_Time = current.strftime("%H:%M:%S")
         if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-            GlobalVariables.startLineNumberAPI = get_no_of_log_lines(Base_Actions.pathToLogFile('api'))
+            GlobalVariables.start_line_number_API = get_no_of_log_lines(Base_Actions.pathToLogFile('api'))
         if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-            GlobalVariables.startLineNumberPortal = get_no_of_log_lines(Base_Actions.pathToLogFile('portal'))
+            GlobalVariables.start_line_number_portal = get_no_of_log_lines(Base_Actions.pathToLogFile('portal'))
         if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-            GlobalVariables.startLineNumberMiddlewware = get_no_of_log_lines(
+            GlobalVariables.start_line_number_middleware = get_no_of_log_lines(
                 Base_Actions.pathToLogFile('middleware'))
         if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-            GlobalVariables.startLineNumberCnpware = get_no_of_log_lines(Base_Actions.pathToLogFile('cnpware'))
+            GlobalVariables.start_line_number_cnpware = get_no_of_log_lines(Base_Actions.pathToLogFile('cnpware'))
         if Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
             GlobalVariables.start_line_number_closedloop = get_no_of_log_lines(Base_Actions.pathToLogFile('closedloop_logfile'))
         if Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
             GlobalVariables.start_line_number_q2 = get_no_of_log_lines(Base_Actions.pathToLogFile('q2_logfile'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+            GlobalVariables.start_line_number_commx = get_no_of_log_lines(Base_Actions.pathToLogFile('commx'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+            GlobalVariables.start_line_number_ezestore = get_no_of_log_lines(Base_Actions.pathToLogFile('ezestore'))
         #========================================================================================
         # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
         if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
