@@ -465,8 +465,11 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
                         check.equal(expected_details[key], present_details[key])
                 else:
                     fields_that_are_not_present.add(key)
-                    print(f"The field '{key}' not present")
-                    logger.debug(f"The field '{key}' not present")
+                    print(f"The field '{key}' not present in actual values list")
+                    logger.debug(f"The field '{key}' not present in actual values list")
+
+                    check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                         f" the actual values list.")
             Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
 
         else:

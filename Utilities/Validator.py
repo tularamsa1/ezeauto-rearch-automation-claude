@@ -263,6 +263,9 @@ def validateAgainstUI(expectedUI, actualUI):
 
 
 def print_validation_result(expected_values: {}, acutal_values: {}, lst_passed_fields, lst_failed_fields):
+    tot_val = len(lst_passed_fields)+len(lst_failed_fields)
+    print("Total number of fields validated: "+str(tot_val))
+    print()
     if str(ConfigReader.read_config("Validations", "bool_print_val_log_pass")).lower() == "true":
         if lst_passed_fields:
             print("Passed validations:")
