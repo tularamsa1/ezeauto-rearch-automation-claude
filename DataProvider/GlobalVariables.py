@@ -111,3 +111,9 @@ refund_amt = 0
 refund_count = 0
 collection_amt = 0
 collection_count = 0
+
+# These are to get the total number of fields validated in each category
+tot_app_val = 0
+tot_api_val = 0
+tot_db_val = 0
+tot_chargeslip_val = 0

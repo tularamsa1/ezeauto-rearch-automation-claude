@@ -455,6 +455,7 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
         if present_details:
             for key in expected_details:
                 if key in present_details:
+                    GlobalVariables.tot_chargeslip_val +=1
                     logger.debug(f"{key} found")
                     if expected_details[key] == present_details[key]:
                         matching_fields.add(key)

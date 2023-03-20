@@ -81,6 +81,7 @@ def validateAgainstAPP(expectedApp, actualApp):
                 if not GlobalVariables.str_app_val_result == "Fail":
                     GlobalVariables.str_app_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
                 GlobalVariables.bool_ss_app_val = "Passed"
+                GlobalVariables.tot_app_val = len(expectedApp)
                 for key in expectedApp:
                     if key in actualApp:
                         if expectedApp[key] == actualApp[key]:
@@ -132,6 +133,7 @@ def validationAgainstAPI(expectedAPI, actualAPI):
             else:
                 if not GlobalVariables.str_api_val_result == "Fail":
                     GlobalVariables.str_api_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                GlobalVariables.tot_api_val = len(expectedAPI)
                 for key in expectedAPI:
                     if key in actualAPI:
                         if expectedAPI[key] == actualAPI[key]:
@@ -182,6 +184,7 @@ def validateAgainstDB(expectedDB, actualDB):
             else:
                 if not GlobalVariables.str_db_val_result == "Fail":
                     GlobalVariables.str_db_val_result = "Pass"  # To update the testcase result in the Excel report & Validation Table.
+                GlobalVariables.tot_db_val = len(expectedDB)
                 for key in expectedDB:
                     if key in actualDB:
                         if expectedDB[key] == actualDB[key]:
@@ -264,7 +267,7 @@ def validateAgainstUI(expectedUI, actualUI):
 
 def print_validation_result(expected_values: {}, acutal_values: {}, lst_passed_fields, lst_failed_fields):
     tot_val = len(lst_passed_fields)+len(lst_failed_fields)
-    print("Total number of fields validated: "+str(tot_val))
+    print("Number of fields validated: "+str(tot_val))
     print()
     if str(ConfigReader.read_config("Validations", "bool_print_val_log_pass")).lower() == "true":
         if lst_passed_fields:

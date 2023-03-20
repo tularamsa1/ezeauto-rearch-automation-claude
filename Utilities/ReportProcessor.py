@@ -90,6 +90,9 @@ def createStatusTable():
     print("portalVal: ", portal_val)
     print("")
     print("")
+    tot_val_fields = GlobalVariables.tot_app_val + GlobalVariables.tot_api_val + GlobalVariables.tot_db_val +GlobalVariables.tot_chargeslip_val
+    print("Total number of fields validated : ",tot_val_fields)
+    print("")
 
     # VALIDATION TABLE DETAILS
     myTable = PrettyTable(["Validation Type", "Validation Status"])
