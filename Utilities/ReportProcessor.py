@@ -89,7 +89,6 @@ def createStatusTable():
     get_TC_Val_Time()
     print("portalVal: ", portal_val)
     print("")
-    print("")
     tot_val_fields = GlobalVariables.tot_app_val + GlobalVariables.tot_api_val + GlobalVariables.tot_db_val +GlobalVariables.tot_chargeslip_val
     print("Total number of fields validated : ",tot_val_fields)
     print("")
@@ -202,7 +201,7 @@ def createStatusTable():
 
 
 
-def revert_excel_global_variables():
+def revert_global_variables_to_default():
     GlobalVariables.EXCEL_TC_Exe_Starting_Time = 00
     GlobalVariables.EXCEL_TC_Exe_completed_time = 00
     GlobalVariables.EXCEL_TC_Val_Starting_Time = 00
@@ -223,6 +222,10 @@ def revert_excel_global_variables():
     GlobalVariables.str_firmware_version = "N/A"
     GlobalVariables.str_MPOS_version = "N/A"
     GlobalVariables.str_SA_version = "N/A"
+    GlobalVariables.tot_app_val = 0
+    GlobalVariables.tot_api_val = 0
+    GlobalVariables.tot_db_val = 0
+    GlobalVariables.tot_chargeslip_val = 0
 
 
 def setStylesForExcel():
