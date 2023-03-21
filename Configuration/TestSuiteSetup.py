@@ -420,7 +420,6 @@ def prepareDevicesAndDB():
     if str(ConfigReader.read_config("Setup", "setup_for_Card")).lower() == "true":
         card_processor.update_card_bin_details()
     if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
-        # Ezewallet_processor.db_reset()
         sqlite_processor.clearAssignerTables()
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
         sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
