@@ -66,3 +66,13 @@ def delete_existing_ezegro_customer(customer: str):
         logger.error(f"Unable to delete customer details from the system due to error {str(e)}")
 
 
+def delete_existing_pickup_address(mobile_no: str):
+    try:
+        query = f"DELETE from address where mobile_number like '"+ str(mobile_no)+"';"
+        logger.debug(f"Query for deleting pickup address mobile number from address table: {query}")
+        result = DBProcessor.setValueToDB(query,"ezestore")
+        logger.debug(f"Query result for delete: {result}")
+    except Exception as e:
+        logger.error(f"Unable to delete pickup address details from the system due to error {str(e)}")
+
+
