@@ -50,7 +50,7 @@ try:
                     pass
                 else:
                     print("The testcase " + testcaseID + " is not present in file " + testcaseFile)
-        else: # If not testcases are present in sheet
+        else: # If no testcases are present in sheet
             print("No Data in sheet : "+sheet)
 finally:
     print("EXECUTING FINALLY BLOCK")
