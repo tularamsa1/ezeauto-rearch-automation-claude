@@ -23,7 +23,7 @@ import pytest
 from termcolor import colored
 from DataProvider import GlobalVariables
 from Utilities import ExcelProcessor
-from Utilities.ReportProcessor import revert_excel_global_variables, setStylesForExcel, \
+from Utilities.ReportProcessor import revert_global_variables_to_default, setStylesForExcel, \
     updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
 from Utilities.time_calculator import EzeAutoTimeCalculator
 
@@ -549,7 +549,7 @@ def method_setup(request):
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 print("Rerun skipped.")
 
-        revert_excel_global_variables()
+        revert_global_variables_to_default()
         GlobalVariables.time_calc.teardown.end()
         print(colored("Teardown Timer ended in 'fin' -> 'method_setup' fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
