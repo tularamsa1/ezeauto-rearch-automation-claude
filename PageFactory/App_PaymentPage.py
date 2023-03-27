@@ -33,6 +33,7 @@ class PaymentPage(BasePage):
     lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
+    btn_cancel_p2p_request = (By.ID, "com.ezetap.service.demo:id/btnYesCancelPayment")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -138,5 +139,52 @@ class PaymentPage(BasePage):
             else:
                 pass
 
+    def is_payment_page_displayed_P2P(self):
+        try:
+            self.wait_for_element(self.lbl_payWith, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
+                self.perform_click(self.lbl_skip)
+            else:
+                pass
+
+    def is_qrcode_displayed_P2P(self):
+        try:
+            self.wait_for_element(self.lbl_scanQRCode, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.lbl_skip)
+            else:
+                pass
+
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
+
+
+    def click_on_cancel_p2p_request_ok(self):
+        self.perform_click(self.btn_cancel_p2p_request)
+
+
+    def click_on_goto_homepage(self):
+        try:
+            self.wait_for_element(self.btn_proceedToHomepage, 6)
+        except:
+            self.click_on_back_btn()
+            self.click_on_transaction_cancel_yes()
+            self.click_on_proceed_homepage()
+            return False
+        self.click_on_proceed_homepage()
+        return True

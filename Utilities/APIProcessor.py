@@ -1,7 +1,6 @@
 import json
 from urllib.parse import urlencode
 import requests
-
 from PageFactory import Base_Actions
 from Utilities import ConfigReader, DBProcessor
 from DataProvider import GlobalVariables
@@ -41,9 +40,13 @@ def send_request(api_details):
             f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
         return json_resp
 
-    if api_details['ApiName'] == 'confirm_axisdirect':
-        payload = payload['data']
-        resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
+    if api_details['ApiName'] == 'confirm_axisdirect' or api_details['ApiName'] == 'Submit_review':
+        if api_details['ApiName'] == 'Submit_review':
+            payload = payload
+            resp = requests.request(method=method, url=str(url), data=payload)
+        else:
+            payload = payload['data']
+            resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
         update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)
         logger.debug(

@@ -18,10 +18,10 @@ from Utilities import Validator, ReportProcessor, ConfigReader
 @pytest.mark.portalVal
 @pytest.mark.appVal
 def test_UI_SA_TxnHistory_ChargeSlip_01(method_setup, appium_driver,ui_driver):
-    GlobalVariables.apiLogs = True
-    GlobalVariables.portalLogs = True
-    GlobalVariables.cnpWareLogs = False
-    GlobalVariables.middleWareLogs = False
+    GlobalVariables.api_logs = True
+    GlobalVariables.portal_logs = True
+    GlobalVariables.cnpware_logs = False
+    GlobalVariables.middleware_logs = False
 
     global success_Val_Execution
     success_Val_Execution = True

@@ -14,22 +14,26 @@ ui_ValidationFailureCount = 0
 
 
 # These values are for log collection and SS
-startLineNumberPortal = ''
-startLineNumberAPI = ''
-startLineNumberMiddlewware = ''
-startLineNumberCnpware = ''
+start_line_number_portal = ''
+start_line_number_API = ''
+start_line_number_middleware = ''
+start_line_number_cnpware = ''
 start_line_number_config = ''
 start_line_number_closedloop = ''
 start_line_number_q2 = ''
+start_line_number_commx = ''
+start_line_number_ezestore = ''
 
 
-apiLogs = False
-portalLogs = False
-cnpWareLogs = False
-middleWareLogs = False
+api_logs = False
+portal_logs = False
+cnpware_logs = False
+middleware_logs = False
 config_logs = False
 closedloop_logs = False
 q2_logs = False
+commx_logs = False
+ezestore_logs = False
 
 # portalSS = False
 
@@ -108,11 +112,8 @@ refund_count = 0
 collection_amt = 0
 collection_count = 0
 
-
-
-
-
-
-
-
-
+# These are to get the total number of fields validated in each category
+tot_app_val = 0
+tot_api_val = 0
+tot_db_val = 0
+tot_chargeslip_val = 0

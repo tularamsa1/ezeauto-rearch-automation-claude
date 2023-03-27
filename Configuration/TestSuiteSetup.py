@@ -417,8 +417,9 @@ def prepareDevicesAndDB():
     if create_merchant_required == "true" and create_merchant_with_multi_account_required == "true":
         raise ValueError("Both Configurations are True, Make sure only one configuration is enabled for Merchant "
                          "Creation. Whatever type of Merchant you want to create.")
+    if str(ConfigReader.read_config("Setup", "setup_for_Card")).lower() == "true":
+        card_processor.update_card_bin_details()
     if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
-        Ezewallet_processor.db_reset()
         sqlite_processor.clearAssignerTables()
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
         sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
@@ -426,7 +427,6 @@ def prepareDevicesAndDB():
         merchant_creator.create_merchants_with_users()
         sqlite_processor.update_app_users_to_db()
         sqlite_processor.update_portal_users_to_db()
-        card_processor.update_card_bin_details()
     else:
         global devices, appiumServerCount
         devices = getDevicesList()
@@ -488,7 +488,7 @@ def initialize_firefox_driver():
     return GlobalVariables.portalDriver
 
 
-def initialize_app_driver(request):
+def initialize_app_driver(request, no_reset="false"):
     """
     This method is used for initializing the app driver for the app operations
     """
@@ -509,6 +509,8 @@ def initialize_app_driver(request):
         json_applications = json.dumps(lst_applications)
     else:
         json_applications = ""
+    if no_reset == "false":
+        os.system("adb -s " + device_details['DeviceId'] + " shell pm clear com.ezetap.basicapp")
     desired_cap = {
         "platformName": "Android",
         "deviceName": device_details['DeviceId'],
@@ -517,7 +519,7 @@ def initialize_app_driver(request):
         "appPackage": "com.ezetap.basicapp",
         "appActivity": "com.ezetap.mposX.activity.SplashActivity",
         "ignoreHiddenApiPolicyError": "true",
-        "noReset": "false",
+        "noReset": no_reset,
         "autoGrantPermissions": "true",
         "newCommandTimeout": 7000,
         "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",

@@ -6,8 +6,11 @@ import os
 import sqlite3
 import json
 from jinja2 import Template
-
+import redis
+from pymongo import MongoClient
+from pandas import DataFrame as df
 from DataProvider import GlobalConstants
+from PageFactory import Base_Actions
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
@@ -399,3 +402,124 @@ def delete_value_from_db(query, db_name="ezetap_demo") -> str:
         print("Not able to connect to Database for running delete query")
         logger.error("Not able to connect to Database for running delete query")
     return data
+
+
+def get_redis_data(data):
+    try:
+        logger.info(f"Device data to be checked in redis is {data}")
+        logger.info(f"Connecting to redis")
+
+        try:
+            host_ip = Base_Actions.get_environment("str_exe_env_ip")
+            pool = redis.ConnectionPool(host=host_ip, port=6379)  # host= ip address of dev envi, port should be redis configured Port
+            r = redis.Redis(connection_pool=pool)
+
+            result_server_1 = r.smembers('LIVE_P2P_server-1')
+            result_server_2 = r.smembers('LIVE_P2P_server-2')
+        except:
+            logger.debug(f"Redis connection data, {r}")
+            logger.error(f"Exception in redis connection")
+
+        logger.info(f"Elements in server-1 , {result_server_1}")
+        logger.info(f"Elements in server-2 , {result_server_2}")
+
+        redis_device_conn_1 = False
+        redis_device_conn_2 = False
+
+        # Both servers are empty
+        if len(result_server_1) == 0 and len(result_server_2) == 0:
+            logger.info(f"Both redis servers are empty")
+            redis_device_conn_1 = False
+            redis_device_conn_2 = False
+
+        # Both the servers are not empty
+        elif len(result_server_1) > 0 and len(result_server_2) > 0:
+            logger.info(f"Both redis servers are populated")
+            for element in result_server_1:
+                logger.info(f"Element in server-1 is {element}")
+                if str(element) == data:
+                    logger.debug(f"Element found in server-1 : {element}")
+                    redis_device_conn_1 = True
+                    break
+                else:
+                    redis_device_conn_1 = False
+                    continue
+
+            for element in result_server_2:
+                logger.info(f"Element in server-2 is {element}")
+                if str(element) == data:
+                    logger.debug(f"Element found in server-2 : {element}")
+                    redis_device_conn_2 = True
+                    break
+                else:
+                    redis_device_conn_2 = False
+                    continue
+
+        # One of the server is not empty
+        else:
+            logger.info(f"One of the server is having data")
+            if len(result_server_1) > 0:
+                logger.info(f"Server-1 has data, and server-2 is empty")
+                for element in result_server_1:
+                    logger.info(f"Element in server-1 is {element}")
+                    if str(element) == data:
+                        logger.debug(f"Element found in server-1 : {element}")
+                        redis_device_conn_1 = True
+                        break
+                    else:
+                        redis_device_conn_1 = False
+                        continue
+            else:
+                logger.info(f"Server-1 is empty")
+
+            if len(result_server_2) > 0:
+                logger.info(f"Server-2 has data, and server-1 is empty")
+                for element in result_server_2:
+                    logger.info(f"Element in server-2 is {element}")
+                    if str(element) == data:
+                        logger.debug(f"Element found in server-2 : {element}")
+                        redis_device_conn_2 = True
+                        break
+                    else:
+                        redis_device_conn_2 = False
+                        continue
+            else:
+                logger.info(f"Server-2 is empty")
+
+        if redis_device_conn_1 == True and redis_device_conn_2 == True:
+            logger.error(f"Device is connected in both servers in redis")
+            return True
+
+        elif redis_device_conn_1 == True or redis_device_conn_2 == True:
+            logger.debug(f"Device is connected with one redis server")
+            return True
+
+        else:
+            logger.error(f"Device is not connected with redis server")
+            return False
+    except:
+        logger.error(f"Exception in retrieving data from redis server")
+
+
+def getvaluefromMongo(db_name: str, collection: str, query: str):
+    env_ip = ConfigReader.read_config("environment","str_exe_env_ip")
+    try:
+        conn = MongoClient(f"mongodb://{env_ip}:27017")
+        mydb = conn[db_name]
+        mycol = mydb[collection]
+        mydoc = df(mycol.find(query))
+        return mydoc
+    except Exception as e:
+        logger.error(f"Unable to connect to Mongo DB from Environment:{env_ip} due to error {str(e)}")
+
+
+def getAggregateValueFromMongo(db_name: str, collection: str, query: str):
+    env_ip = ConfigReader.read_config("environment","str_exe_env_ip")
+    try:
+        conn = MongoClient(f"mongodb://{env_ip}:27017")
+        mydb = conn[db_name]
+        mycol = mydb[collection]
+        mydoc = df(mycol.aggregate(query))
+        return mydoc
+    except Exception as e:
+        logger.error(f"Unable to connect to Mongo DB for aggregate method from Environment:{env_ip} due to error {str(e)}")

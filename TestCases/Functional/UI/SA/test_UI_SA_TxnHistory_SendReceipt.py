@@ -15,10 +15,10 @@ from Utilities import Validator, ReportProcessor, ConfigReader
 @pytest.mark.usefixtures("log_on_success")
 @pytest.mark.appVal
 def test_UI_SA_TxnHistory_SendReceipt_01(method_setup, appium_driver):
-    GlobalVariables.apiLogs = True
-    GlobalVariables.portalLogs = False
-    GlobalVariables.cnpWareLogs = False
-    GlobalVariables.middleWareLogs = False
+    GlobalVariables.api_logs = True
+    GlobalVariables.portal_logs = False
+    GlobalVariables.cnpware_logs = False
+    GlobalVariables.middleware_logs = False
 
     global success_Val_Execution
     success_Val_Execution = True
