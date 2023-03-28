@@ -53,4 +53,5 @@ try:
         else: # If no testcases are present in sheet
             print("No Data in sheet : "+sheet)
 finally:
+    print()
     print("EXECUTING FINALLY BLOCK")
