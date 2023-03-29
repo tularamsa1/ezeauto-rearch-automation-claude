@@ -49,7 +49,7 @@ try:
                 if data_in_file in testcases_in_script: # If testcase is available in framework
                     pass
                 else:
-                    print("The testcase " + testcaseID + " is not present in file " + testcaseFile+" in EzeAuto")
+                    print("Testcase " + testcaseID + " is not present inside file " + testcaseFile+" in EzeAuto/TestCases")
         else: # If no testcases are present in sheet
             print("No Data in sheet : "+sheet)
 finally:
