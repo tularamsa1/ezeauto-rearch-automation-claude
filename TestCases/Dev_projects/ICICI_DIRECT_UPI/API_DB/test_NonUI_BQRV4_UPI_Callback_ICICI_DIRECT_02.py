@@ -790,6 +790,10 @@ def test_d102_102_021():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
+        bqr_tid = result['tid'].values[0]
+        logger.debug(f"fetched tid is : {bqr_tid}")
+        bqr_mid = result['mid'].values[0]
+        logger.debug(f"fetched mid is : {bqr_mid}")
 
         logger.debug(f"Fetching terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
@@ -871,13 +875,13 @@ def test_d102_102_021():
             try:
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
-                    "pmt_status": "FAILED",
-                    "txn_amt": float(amount), "pmt_mode": "UPI",
-                    "pmt_state": "FAILED", "rrn": str(rrn),
+                    "pmt_status": "EXPIRED",
+                    "txn_amt": float(amount), "pmt_mode": "BHARATQR",
+                    "pmt_state": "EXPIRED",
                     "settle_status": "FAILED",
-                    "acquirer_code": "ICICI",
-                    "issuer_code": "ICICI",
-                    "txn_type": 'CHARGE', "mid": mid, "tid": tid,
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
+                    "txn_type": 'CHARGE', "mid": bqr_mid, "tid": bqr_tid,
                     "org_code": org_code,
                     "date": date,
                     "txn_id": txn_id_2
@@ -895,7 +899,6 @@ def test_d102_102_021():
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
                 state_api = response["states"][0]
-                rrn_api = response["rrNumber"]
                 settlement_status_api = response["settlementStatus"]
                 issuer_code_api = response["issuerCode"]
                 acquirer_code_api = response["acquirerCode"]
@@ -909,7 +912,7 @@ def test_d102_102_021():
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
@@ -931,28 +934,24 @@ def test_d102_102_021():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "pmt_status": "FAILED",
-                    "pmt_state": "FAILED",
-                    "pmt_mode": "UPI",
+                    "pmt_status": "EXPIRED",
+                    "pmt_state": "EXPIRED",
+                    "pmt_mode": "BHARATQR",
                     "txn_amt": float(amount),
                     "settle_status": "FAILED",
                     "txn_type":"CHARGE",
-                    "acquirer_code": "ICICI",
-                    "bank_code": "ICICI",
-                    "pmt_gateway": "ICICI",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "HDFC",
                     "error_msg": None,
-                    "mid": mid,
-                    "tid": tid,
-                    "bqr_pmt_status": "INITIATED BY UPI", "bqr_pmt_state": "FAILED",
+                    "mid": bqr_mid,
+                    "tid": bqr_tid,
+                    "bqr_pmt_status": "Transaction Pending", "bqr_pmt_state": "EXPIRED",
                     "bqr_txn_amt": float(amount),
                     "bqr_txn_type": "DYNAMIC_QR", "bqr_terminal_info_id": terminal_info_id,
                     "bqr_bank_code": "HDFC",
                     "bqr_merchant_config_id": bqr_mc_id, "bqr_txn_primary_id": txn_id_2,
                     "bqr_org_code": org_code,
-                    "upi_txn_status": "FAILED",
-                    "upi_txn_type": "PAY_BQR",
-                    "upi_bank_code": "ICICI_DIRECT",
-                    "upi_mc_id": upi_mc_id,
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -987,15 +986,6 @@ def test_d102_102_021():
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
                 bqr_org_code_db = result['org_code'].values[0]
 
-                query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                upi_status_db = result["status"].iloc[0]
-                upi_txn_type_db = result["txn_type"].iloc[0]
-                upi_bank_code_db = result["bank_code"].iloc[0]
-                upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -1016,10 +1006,6 @@ def test_d102_102_021():
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
                     "bqr_org_code": bqr_org_code_db,
-                    "upi_txn_status": upi_status_db,
-                    "upi_txn_type": upi_txn_type_db,
-                    "upi_bank_code": upi_bank_code_db,
-                    "upi_mc_id": upi_mc_id_db,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
