@@ -9,7 +9,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -132,7 +132,7 @@ def test_common_100_103_154():
             payment_intent_id = response.get('paymentIntentId')
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_driver.get(payment_link_url)
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
@@ -610,7 +610,7 @@ def test_common_100_103_155():
             payment_intent_id = response.get('paymentIntentId')
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_driver.get(payment_link_url)
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
@@ -1051,7 +1051,7 @@ def test_common_100_103_156():
             payment_intent_id = response.get('paymentIntentId')
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_driver.get(payment_link_url)
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()

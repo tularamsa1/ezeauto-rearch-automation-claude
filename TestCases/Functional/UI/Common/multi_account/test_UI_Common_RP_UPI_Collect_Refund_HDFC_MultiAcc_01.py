@@ -10,7 +10,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import  Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     date_time_converter, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -93,7 +93,7 @@ def test_common_100_111_011():
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             ui_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+            remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
@@ -732,7 +732,7 @@ def test_common_100_111_012():
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             ui_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+            remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()

@@ -10,7 +10,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -96,7 +96,7 @@ def test_common_100_112_001():
                 payment_intent_id = response.get('paymentIntentId')
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 portal_driver.get(paymentLinkUrl)
-                remotePayTxn = remotePayTxnPage(portal_driver)
+                remotePayTxn = RemotePayTxnPage(portal_driver)
                 remotePayTxn.clickOnCreditCardToExpand()
                 remotePayTxn.enterNameOnTheCard("Sandeep")
                 remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")
@@ -528,7 +528,7 @@ def test_common_100_112_002():
                 payment_intent_id = response.get('paymentIntentId')
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 portal_driver.get(paymentLinkUrl)
-                remotePayTxn = remotePayTxnPage(portal_driver)
+                remotePayTxn = RemotePayTxnPage(portal_driver)
                 remotePayTxn.clickOnCreditCardToExpand()
                 remotePayTxn.enterNameOnTheCard("Sandeep")
                 remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")

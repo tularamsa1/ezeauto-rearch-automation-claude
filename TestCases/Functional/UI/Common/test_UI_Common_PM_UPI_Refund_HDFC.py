@@ -724,6 +724,7 @@ def test_common_100_101_011():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        TestSuiteSetup.launch_browser_and_context_initialize()
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
@@ -1275,16 +1276,18 @@ def test_common_100_101_011():
 
                 logger.debug(f"expected_portal_values : {expected_portal_values} for the testcase_id : {testcase_id}")
 
-                driver_ui = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(driver_ui)
-                logger.info(f"Logging in Portal using username : {portal_username}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(driver_ui)
+                portal_browser = TestSuiteSetup.initialize_portal_browser()
+
+                login_page_portal = PortalLoginPage(portal_browser)
+                login_page_portal.perform_login_to_portal(username=portal_username, password=portal_password)
+                home_page_portal = PortalHomePage(portal_browser)
+                home_page_portal.wait_for_home_page_load()
                 home_page_portal.search_merchant_name(str(org_code))
-                logger.info(f"Switching to merchant : {org_code}")
-                home_page_portal.click_switch_button(org_code)
-                home_page_portal.click_transaction_search_menu()
-                portal_trans_history_page = PortalTransHistoryPage(driver_ui)
+                logger.debug(f"searching for the org_code : {str(org_code)}")
+                home_page_portal.click_switch_button(str(org_code))
+                home_page_portal.click_transaction_search_menu("2")
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
+
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(refund_txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_status = portal_values_dict['Status']

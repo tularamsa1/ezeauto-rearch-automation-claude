@@ -13,7 +13,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -105,7 +105,7 @@ def test_common_100_103_019():  # Make sure to add the test case name as same as
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiCollectTxn.clickOnRemotePayUPI()
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")
@@ -658,7 +658,7 @@ def test_common_100_103_020():
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiCollectTxn.clickOnRemotePayUPI()
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")
@@ -1198,7 +1198,7 @@ def test_common_100_103_021():
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiCollectTxn.clickOnRemotePayUPI()
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")
@@ -2190,7 +2190,7 @@ def test_common_100_103_022():
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiCollectTxn.clickOnRemotePayUPI()
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")
@@ -3149,7 +3149,7 @@ def test_common_100_103_023():
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiCollectTxn.clickOnRemotePayUPI()
                 remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")

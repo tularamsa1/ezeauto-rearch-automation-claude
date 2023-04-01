@@ -8,7 +8,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter, receipt_validator, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -116,7 +116,7 @@ def test_common_100_103_165():
                 payment_link_url = response['paymentLink']
                 portal_driver.get(payment_link_url)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -611,7 +611,7 @@ def test_common_100_103_166():
                 payment_link_url = response['paymentLink']
                 portal_driver.get(payment_link_url)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -1079,7 +1079,7 @@ def test_common_100_103_167():
                 payment_link_url = response['paymentLink']
                 logger.info("Opening the link in the browser")
                 ui_driver.get(payment_link_url)
-                remote_pay_upi_txn = remotePayTxnPage(ui_driver)
+                remote_pay_upi_txn = RemotePayTxnPage(ui_driver)
                 remote_pay_upi_txn.clickOnRemotePayUPI()
                 logger.info("Opening UPI intent to start the txn.")
                 remote_pay_upi_txn.clickOnRemotePayLaunchUPI()

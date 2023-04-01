@@ -81,6 +81,7 @@ def test_common_100_102_004():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        TestSuiteSetup.launch_browser_and_context_initialize()
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
@@ -364,19 +365,45 @@ def test_common_100_102_004():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                expected_portal_values = {
+                    "pmt_state": "Settled", "pmt_type": "BHARATQR",
+                    "txn_amt": "Rs." + str(amount) + ".00", "username": app_username, "auth_code": auth_code
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                portal_browser = TestSuiteSetup.initialize_portal_browser()
+                login_page_portal = PortalLoginPage(portal_browser)
+                login_page_portal.perform_login_to_portal(username=portal_username, password=portal_password)
+                home_page_portal = PortalHomePage(portal_browser)
+                home_page_portal.wait_for_home_page_load()
+                home_page_portal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
+                home_page_portal.click_switch_button(str(org_code))
+                home_page_portal.click_transaction_search_menu("1")
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
+                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
+                portal_type = portal_values_dict['Type']
+                portal_status = portal_values_dict['Status']
+                portal_amount = portal_values_dict['Total Amount']
+                portal_username = portal_values_dict['Username']
+                portal_auth_code = portal_values_dict['Auth Code']
+                actual_portal_values = {
+                    "pmt_state": str(portal_status),
+                    "pmt_type": portal_type,
+                    "txn_amt": portal_amount,
+                    "username": portal_username,
+                    "auth_code": portal_auth_code
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------

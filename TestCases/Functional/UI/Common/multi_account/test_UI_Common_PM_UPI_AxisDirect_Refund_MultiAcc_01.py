@@ -24,7 +24,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_109_029():
     """
-    Sub Feature Code: UI_Common_PM_UPI_Full_Refund_Via_API_AxisDirect
+    Sub Feature Code: UI_Common_PM_Pure_UPI_full_Refund_via_API_AxisDirect_MultiAcc
     Sub Feature Description: Multi Account - Verification of a full UPI refund using api for AxisDirect
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 029: TC029
     """
@@ -634,7 +634,7 @@ def test_common_100_109_029():
 @pytest.mark.chargeSlipVal
 def test_common_100_109_030():
     """
-    Sub Feature Code: UI_Common_PM_UPI_Partial_Refund_Via_API_AxisDirect
+    Sub Feature Code: UI_Common_PM_Pure_UPI_partial_Refund_via_API_AxisDirect_MultiAcc
     Sub Feature Description: Multi Account - Performing a UPI partial refund using api for AxisDirect
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 030: TC030
     """

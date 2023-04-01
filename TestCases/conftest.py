@@ -9,6 +9,7 @@ from selenium.webdriver.chrome import webdriver
 from allure_commons.types import AttachmentType
 import allure
 import paramiko
+from playwright.sync_api import Playwright
 from selenium import webdriver
 from appium import webdriver as app_webdriver
 from datetime import datetime
@@ -240,7 +241,7 @@ def captureLogs(request):
 
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
             Path(path).mkdir(parents=True, exist_ok=True)
-            print("Fetching Logs first time")
+            print("Fetching Logs first time 1st")
 
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
 
@@ -298,7 +299,7 @@ def captureLogs(request):
 
             path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
             Path(path).mkdir(parents=True, exist_ok=True)
-            print("Fetching Logs first time")
+            print("Fetching Logs first time 2nd")
 
             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
 
@@ -463,7 +464,7 @@ def captureLogs(request):
 
 
 @pytest.fixture(scope="function")  # Executing once before every testcases
-def method_setup(request):
+def method_setup(request, playwright: Playwright):
     if GlobalVariables.time_calc is not None:
         GlobalVariables.time_calc.setup.resume()
         print(colored("Setup Timer resumed in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -486,6 +487,16 @@ def method_setup(request):
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
+    GlobalVariables.play_wright = playwright
+    # browser = GlobalVariables.play_wright.chromium.launch(headless=False)
+    # GlobalVariables.context = browser.new_context(viewport={'width': 1920, 'height': 1080})
+    # context_1 = browser.new_context(
+    #     record_video_dir="videos/",
+    #     record_video_size={"width": 640, "height": 480}
+    # )
+
+    # GlobalVariables.portal_page = context.new_page()
+    # GlobalVariables.charge_slip_page = context.new_page()
     # breakpoint()
     print("***************End of setup")
 
@@ -497,8 +508,30 @@ def method_setup(request):
 
         print("Function teardown level")
         android_utilities.set_report_variables()
+        print("^^^^^^^^^^^^^^^^^^")
+        print(GlobalVariables.portal_page)
+        print(GlobalVariables.ui_page)
+        print(GlobalVariables.charge_slip_page)
+        print("+++++++++++++++++++")
         ss_on_failure(request)
         ss_on_success(request)
+        # time.sleep(10)
+        # context_1.close()
+        # if GlobalVariables.str_chargeslip_val_result == "Pass" and GlobalVariables.charge_slip_page != '' and Base_Actions.is_ss_capture_required(
+        #         "bool_capt_ss_pass") == "True":
+        #     allure.attach("videos/", name="video", attachment_type=AttachmentType.MP4)
+        if GlobalVariables.charge_slip_page != '':
+            GlobalVariables.charge_slip_page.close()
+            GlobalVariables.charge_slip_page = ''
+        if GlobalVariables.ui_page != '':
+            GlobalVariables.ui_page.close()
+            GlobalVariables.ui_page = ''
+        if GlobalVariables.portal_page != '':
+            GlobalVariables.portal_page.close()
+            GlobalVariables.portal_page = ''
+        if GlobalVariables.context != '':
+            GlobalVariables.context.close()
+            GlobalVariables.context = ''
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
@@ -674,6 +707,18 @@ def ss_on_failure(request):
                 "bool_capt_ss_fail") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
+        if GlobalVariables.str_chargeslip_val_result == "Fail" and GlobalVariables.charge_slip_page != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.charge_slip_page.screenshot(full_page=True), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
+        if GlobalVariables.EXCEL_TC_Execution == "Fail" and GlobalVariables.ui_page != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.ui_page.screenshot(full_page=True), name="Ui_browser",
+                          attachment_type=AttachmentType.PNG)
+        if GlobalVariables.str_portal_val_result == "Fail" and GlobalVariables.portal_page != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_fail") == "True":
+            allure.attach(GlobalVariables.portal_page.screenshot(full_page=True), name="portal_browser",
+                          attachment_type=AttachmentType.PNG)
         if GlobalVariables.portalDriver != '':
             # GlobalVariables.portalDriver.quit()
             GlobalVariables.portalDriver.close()
@@ -713,7 +758,7 @@ def log_on_failure(request):
 
                 path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                 Path(path).mkdir(parents=True, exist_ok=True)
-                print("Fetching Logs first time")
+                print("Fetching Logs first time 3rd")
 
                 TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
                 TCIdWithTimeStampForInsideFile = str(datetime.now().time())
@@ -1036,7 +1081,21 @@ def ss_on_success(request):
                 "bool_capt_ss_pass") == "True":
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
-
+        if GlobalVariables.str_chargeslip_val_result == "Pass" and GlobalVariables.charge_slip_page != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
+            # GlobalVariables.charge_slip_page.wait_for_load_state('networkidle', timeout=50000)
+            allure.attach(GlobalVariables.charge_slip_page.screenshot(full_page=True), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
+        if GlobalVariables.EXCEL_TC_Execution == "Pass" and GlobalVariables.ui_page != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
+            # if GlobalVariables.ui_page.wait_for_load_state('networkidle', timeout=50000):
+            allure.attach(GlobalVariables.ui_page.screenshot(full_page=True), name="ui_browser",
+                          attachment_type=AttachmentType.PNG)
+        if GlobalVariables.str_portal_val_result == "Pass" and GlobalVariables.portal_page != '' and Base_Actions.is_ss_capture_required(
+                "bool_capt_ss_pass") == "True":
+            # GlobalVariables.portal_page.wait_for_load_state('networkidle', timeout=50000)
+            allure.attach(GlobalVariables.portal_page.screenshot(full_page=True), name="portal_browser",
+                          attachment_type=AttachmentType.PNG)
         if GlobalVariables.portalDriver != '':
             GlobalVariables.portalDriver.close()
             GlobalVariables.portalDriver = ''
@@ -1077,7 +1136,7 @@ def log_on_success(request):
 
                 path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"+ logFileName
                 Path(path).mkdir(parents=True, exist_ok=True)
-                print("Fetching Logs first time")
+                print("Fetching Logs first time 4th")
 
                 TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
                 TCIdWithTimeStampForInsideFile = str(datetime.now().time())

@@ -1,4 +1,6 @@
 import re
+import time
+from playwright.sync_api import Playwright, sync_playwright
 import pandas as pd
 import requests
 import json
@@ -8,6 +10,7 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import pytest_check as check
 
+from Configuration import TestSuiteSetup
 from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
 from Utilities.charge_slip_validator import charge_slip_validator
@@ -171,11 +174,25 @@ def _check_if_receipt_is_found_on_page(driver):
     inner_html = ""
 
     # to identify element and obtain innerHTML with execute_script
-    possible_div_recipts = driver.find_elements(By.CLASS_NAME, 'receipt')
-    if possible_div_recipts:
-        l = possible_div_recipts[0]
-        inner_html = driver.execute_script("return arguments[0].innerHTML;", l)
-        receipt_found = True
+    # possible_div_recipts = driver.find_elements(By.CLASS_NAME, 'receipt')
+    # possible_div_recipts = (driver.query_selector(".receipt"))
+    # print(type(possible_div_recipts))
+    # if possible_div_recipts:
+    #     print(f"possible_div_recipts : {possible_div_recipts}")
+    #     l = possible_div_recipts[0]
+    # inner_html= driver.execute_script("return arguments[0].innerHTML;",l)
+    count = 0
+    while True:
+        if driver.locator(".receipt").is_visible():
+            inner_html = (driver.locator(".receipt").inner_html())
+            break
+        else:
+            count = count + 1
+            if count == 10:
+                inner_html = None
+                break
+    # print(f"inner_html : {inner_html}")
+    receipt_found = True
 
     return driver, inner_html, receipt_found
 
@@ -468,7 +485,7 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
             logger.info(f"Logo Validation is Passed")
         if logo_validation_1 is False:
             logger.info(f"Logo Validation is Failed")
-            
+
         expected_details['logo_validation'] = True
         present_details['logo_validation'] = logo_validation_1
 
@@ -516,6 +533,15 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
     }
 
 
+# def run(playwright, receipt_url:str):
+#     chromium = playwright.chromium
+#     browser = chromium.launch(headless=False, slow_mo=1000)
+#     context = browser.new_context()
+#     page = context.new_page()
+#     page.goto(receipt_url)
+#     GlobalVariables.portalDriver = page
+#     # GlobalVariables.portalDriver.pause()
+
 def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: dict, txn_id) -> bool:
     '''
     This function will validate the receipt info from the receipt url.\n
@@ -531,16 +557,29 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
         validation_successful: bool
 
     '''
-
+    # time.sleep(5)
     validation_successful = False
+    print("##########")
     if receipt_url:
         present_receipt_info_ = None
         try:
-            driver = initialize_webdriver()
-            driver.get(receipt_url)
-            present_receipt_info_ = get_current_charge_slip_data_from_receipt_loaded_webdriver(driver)
-            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details,
-                                                                              txn_id, receipt_url)
+            # driver = initialize_webdriver()
+            # driver.get(receipt_url)
+            # browser = playwright.firefox.launch(headless=False, slow_mo=1000)
+            # print("##########")
+            # context = browser.new_context()
+            # page = context.new_page()
+            # page.goto(receipt_url)
+            # driver = page
+            # with sync_playwright() as playwright:
+            #     run(playwright, receipt_url)
+            # driver = GlobalVariables.portalDriver
+            if GlobalVariables.context == '':
+                TestSuiteSetup.launch_browser_and_context_initialize()
+            TestSuiteSetup.initialize_chargeslip_browser()
+            GlobalVariables.charge_slip_page.goto(receipt_url)
+            present_receipt_info_ = get_current_charge_slip_data_from_receipt_loaded_webdriver(GlobalVariables.charge_slip_page)
+            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details)
 
             if results['fields_that_are_not_present']:
 
@@ -563,7 +602,9 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
             #     except Exception as e:
             #         logger.exception(f"Screenshot-taking not done due to the following error: {e}")
 
-            global_variables.charge_slip_driver = driver
+            
+            global_variables.charge_slip_driver = GlobalVariables.portalDriver
+            # global_variables.charge_slip_driver = driver
 
 
         except ReceiptValidationError as e:
@@ -701,7 +742,7 @@ def validate_logo_from_charge_slip(txn_id: str, url: str):
 def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_details: dict):
     validation_sucessful = False
 
-    validation_list = []
+    # validation_list = []
 
     json_response = get_json_response_of_txn_details(**credentials, txn_id=txn_id)
 
@@ -713,12 +754,17 @@ def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_det
                 receipt_url_field]  # check here and next lines if no url is found  -- issue from vineeth
             if receipt_url:
                 valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
+                print(f"valid_receipt_url : {valid_receipt_url}")
                 if valid_receipt_url:
+                    print("after valid receipt url")
                     logger.debug(valid_receipt_url)
                     print(valid_receipt_url)
                     validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details,
                                                                                   txn_id)
 
+                    # with sync_playwright() as playwright:
+                    #     print("with with")
+                    validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
                 else:
                     check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
             else:
@@ -732,3 +778,9 @@ def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_det
     if not global_variables.str_chargeslip_val_result == "Fail":
         global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
     return validation_sucessful
+
+# playwright = sync_playwright()
+# playwright.start()
+#
+# with sync_playwright() as playwright:
+#     validate_receipt_info_from_receipt_url('https://dev16.ezetap.com/r/o/1bqwH2u9/',{}, playwright)

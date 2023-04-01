@@ -14,7 +14,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -51,7 +51,7 @@ def test_common_100_103_004():
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
-        portal_username = portal_cred['Username']
+        txn_username = portal_cred['Username']
         portal_password = portal_cred['Password']
 
         query = "select org_code from org_employee where username='" + str(app_username) + "';"
@@ -60,7 +60,7 @@ def test_common_100_103_004():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=txn_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -69,6 +69,7 @@ def test_common_100_103_004():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        TestSuiteSetup.launch_browser_and_context_initialize()
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # Set the below variables depending on the log capturing need of the test case.
@@ -97,13 +98,13 @@ def test_common_100_103_004():
                                                                     "username": app_username, "password": app_password})
 
             response = APIProcessor.send_request(api_details)
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             paymentLinkUrl = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             logger.info("Opening the link in the browser")
-            ui_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+            ui_browser.goto(paymentLinkUrl)
+            remotePayUpiCollectTxn = RemotePayTxnPage(ui_browser)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             logger.info("Opening UPI Collect to start the txn.")
@@ -378,41 +379,35 @@ def test_common_100_103_004():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_portal_values = {
                     "pmt_state": "Settled", "pmt_type": "UPI",
                     "txn_amt": "Rs." + str(amount) + ".00", "username": app_username,
-                    'date': txn_date,
-                    'time': txn_time,
                     'AUTH CODE': auth_code
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                portal_driver = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(portal_driver)
+                portal_browser = TestSuiteSetup.initialize_portal_browser()
+                login_page_portal = PortalLoginPage(portal_browser)
+                login_page_portal.perform_login_to_portal(username=txn_username, password=portal_password)
+                home_page_portal = PortalHomePage(portal_browser)
                 home_page_portal.wait_for_home_page_load()
                 home_page_portal.search_merchant_name(str(org_code))
                 logger.debug(f"searching for the org_code : {str(org_code)}")
                 home_page_portal.click_switch_button(str(org_code))
-                home_page_portal.perform_merchant_switched_verfication()
-                home_page_portal.click_transaction_search_menu()
-
-                portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
-                portal_type = portal_values_dict['Type']
-                portal_status = portal_values_dict['Status']
-                portal_amount = portal_values_dict['Total Amount']
-                portal_username = portal_values_dict['Username']
+                home_page_portal.click_transaction_search_menu(no_of_txn_to_search="1")
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
+                txn_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
+                txn_type = txn_values_dict['Type']
+                txn_status = txn_values_dict['Status']
+                txn_amount = txn_values_dict['Total Amount']
+                txn_username = txn_values_dict['Username']
+                txn_auth_code = txn_values_dict['Auth Code']
 
                 actual_portal_values = {
-                    "pmt_state": str(portal_status), "pmt_type": portal_type,
-                    "txn_amt": portal_amount, "username": portal_username}
+                    "pmt_state": str(txn_status), "pmt_type": txn_type,
+                    "txn_amt": txn_amount, "username": txn_username,
+                    'AUTH CODE': txn_auth_code
+                }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
@@ -443,7 +438,6 @@ def test_common_100_103_004():
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
     # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -523,7 +517,7 @@ def test_common_100_103_005():
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             ui_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+            remotePayUpiCollectTxn = RemotePayTxnPage(ui_driver)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollectAppSelection()
@@ -950,7 +944,7 @@ def test_common_100_103_032():
                 paymentLinkUrl = response['paymentLink']
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remote_pay_upi_collect_txn = remotePayTxnPage(ui_driver)
+                remote_pay_upi_collect_txn = RemotePayTxnPage(ui_driver)
                 remote_pay_upi_collect_txn.clickOnRemotePayUPI()
                 remote_pay_upi_collect_txn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")
@@ -1318,7 +1312,7 @@ def test_common_100_103_089():
                 paymentLinkUrl = response['paymentLink']
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remote_pay_upi_collect_txn = remotePayTxnPage(ui_driver)
+                remote_pay_upi_collect_txn = RemotePayTxnPage(ui_driver)
                 remote_pay_upi_collect_txn.clickOnRemotePayUPI()
                 remote_pay_upi_collect_txn.clickOnRemotePayUpiCollect()
                 logger.info("Opening UPI Collect to start the txn.")

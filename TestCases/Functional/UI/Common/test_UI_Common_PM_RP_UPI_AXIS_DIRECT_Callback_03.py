@@ -13,7 +13,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     receipt_validator, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -117,7 +117,7 @@ def test_common_100_103_119():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -960,7 +960,7 @@ def test_common_100_103_120():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -1765,7 +1765,7 @@ def test_common_100_103_121():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -2209,7 +2209,7 @@ def test_common_100_103_122():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -2663,7 +2663,7 @@ def test_common_100_103_123():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")

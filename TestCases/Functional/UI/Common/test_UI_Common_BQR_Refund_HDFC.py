@@ -9,6 +9,9 @@ from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
+from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner, date_time_converter, ReportProcessor
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
@@ -649,6 +652,7 @@ def test_common_100_102_015():
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        TestSuiteSetup.launch_browser_and_context_initialize()
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
@@ -1113,14 +1117,57 @@ def test_common_100_102_015():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                expected_portal_values = {"pmt_status_2": "Refunded", "pmt_mode": "BHARATQR",
+                                          "txn_amt": str(amount),
+                                          "pmt_status": "Authorized Refunded",
+                                          "txn_amt_2": str(amount), "pmt_mode_2": "BHARATQR"}
+
+                logger.debug(f"expected_portal_values : {expected_portal_values} for the testcase_id : {testcase_id}")
+
+                portal_browser = TestSuiteSetup.initialize_portal_browser()
+
+                login_page_portal = PortalLoginPage(portal_browser)
+                login_page_portal.perform_login_to_portal(username=portal_username, password=portal_password)
+                home_page_portal = PortalHomePage(portal_browser)
+                home_page_portal.wait_for_home_page_load()
+                home_page_portal.search_merchant_name(str(org_code))
+                logger.debug(f"searching for the org_code : {str(org_code)}")
+                home_page_portal.click_switch_button(str(org_code))
+                home_page_portal.click_transaction_search_menu("2")
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
+
+                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id_refunded)
+                portal_txn_type = portal_values_dict['Type']
+                portal_status = portal_values_dict['Status']
+                portal_amt = portal_values_dict['Total Amount']
+                portal_username = portal_values_dict['Username']
+
+                logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
+                logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
+                logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
+                logger.debug(f"Fetching Username from portal : {portal_username} ")
+
+                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
+                portal_txn_type_original = portal_values_dict['Type']
+                portal_status_original = portal_values_dict['Status']
+                portal_amt_original = portal_values_dict['Total Amount']
+                portal_username_original = portal_values_dict['Username']
+
+                logger.debug(f"Fetching Transaction status from portal : {portal_status_original} ")
+                logger.debug(f"Fetching Transaction type from portal : {portal_txn_type_original} ")
+                logger.debug(f"Fetching Transaction amount from portal : {portal_amt_original} ")
+                logger.debug(f"Fetching Username from portal : {portal_username_original} ")
+
+                actual_portal_values = {"pmt_status_2": portal_status, "pmt_mode": portal_txn_type,
+                                        "txn_amt_2": str(portal_amt.split('.')[1]),
+                                        "pmt_status": portal_status_original,
+                                        "txn_amt": str(portal_amt_original.split('.')[1]),
+                                        "pmt_mode_2": portal_txn_type_original}
+
+                logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")

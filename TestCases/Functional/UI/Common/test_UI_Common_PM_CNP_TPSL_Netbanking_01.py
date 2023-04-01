@@ -13,7 +13,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -69,6 +69,7 @@ def test_common_100_103_038():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         GlobalVariables.setupCompletedSuccessfully = True
+        TestSuiteSetup.launch_browser_and_context_initialize()
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
@@ -94,9 +95,9 @@ def test_common_100_103_038():
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
             payment_intent_id = response.get('paymentIntentId')
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
-            ui_driver.get(paymentLinkUrl)
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
+            ui_browser.goto(paymentLinkUrl)
+            remote_pay_txn = RemotePayTxnPage(ui_browser)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
@@ -387,30 +388,28 @@ def test_common_100_103_038():
                                         "txn_amt": "Rs." + str(amount) + ".00",
                                         "username": app_username}
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
-                portal_driver = GlobalVariables.portalDriver
-                loginPagePortal = PortalLoginPage(portal_driver)
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
-                homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name(str(org_code))
+                portal_browser = TestSuiteSetup.initialize_portal_browser()
+                login_page_portal = PortalLoginPage(portal_browser)
+                login_page_portal.perform_login_to_portal(username=portal_username, password=portal_password)
+                home_page_portal = PortalHomePage(portal_browser)
+                home_page_portal.wait_for_home_page_load()
+                home_page_portal.search_merchant_name(str(org_code))
                 logger.debug(f"searching for the org_code : {str(org_code)}")
-                homePagePortal.click_switch_button(str(org_code))
-                homePagePortal.perform_merchant_switched_verfication()
-                homePagePortal.click_transaction_search_menu()
-                portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
-                portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(txn_id)
-                portalType = portalValuesDict['Type']
-                portalStatus = portalValuesDict['Status']
-                portalAmount = portalValuesDict['Total Amount']
-                portalUsername = portalValuesDict['Username']
-                actualPortalValues = {"Payment State": str(portalStatus), "Payment Type": portalType,
-                                      "Amount": portalAmount, "Username": portalUsername}
+                home_page_portal.click_switch_button(str(org_code))
+                home_page_portal.click_transaction_search_menu(no_of_txn_to_search="1")
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
+                txn_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
+                txn_type = txn_values_dict['Type']
+                txn_status = txn_values_dict['Status']
+                txn_amount = txn_values_dict['Total Amount']
+                txn_username = txn_values_dict['Username']
+                actualPortalValues = {"pmt_state": str(txn_status), "pmt_type": txn_type,
+                                      "txn_amt": txn_amount, "username": txn_username}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
             # -----------------------------------------End of Portal Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -514,7 +513,7 @@ def test_common_100_103_039():
             payment_intent_id = response.get('paymentIntentId')
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_driver.get(paymentLinkUrl)
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
@@ -925,7 +924,7 @@ def test_common_100_103_040():
             payment_intent_id = response.get('paymentIntentId')
             ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_driver.get(paymentLinkUrl)
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
