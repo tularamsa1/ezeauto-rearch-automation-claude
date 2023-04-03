@@ -1,0 +1,11 @@
+
+
+recursive-include charge_slip_validator/assets/ *
+recursive-include charge_slip_validator/assets/media/logos/ *
+recursive-include charge_slip_validator/assets/media/logos/ideal_references/ *
+recursive-include charge_slip_validator/assets/media/logos/manual_references/ *
+recursive-include charge_slip_validator/assets/media/screenshots/cropped/ *
+recursive-include charge_slip_validator/assets/media/screenshots/original/ *
+recursive-include charge_slip_validator/assets/media/screenshots/padded/ *
+
+

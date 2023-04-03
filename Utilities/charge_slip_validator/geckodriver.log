@@ -1,0 +1,940 @@
+1676620990052	geckodriver	INFO	Listening on 127.0.0.1:44469
+1676620990557	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "54721" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile3vZt5a"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676620997483	Marionette	INFO	Marionette enabled
+1676620997486	Marionette	INFO	Listening on port 33849
+Read port: 33849
+WebDriver BiDi listening on ws://127.0.0.1:54721
+1676620997628	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile3vZt5a/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:54721/devtools/browser/2ae5047c-888a-46a0-a459-6121ea26640f
+1676621001783	Marionette	INFO	Stopped listening on port 33849
+!!! error running onStopped callback: TypeError: callback is not a function
+1676621342262	geckodriver	INFO	Listening on 127.0.0.1:49641
+1676621342780	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "53915" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileZ9HzLo"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676621343677	Marionette	INFO	Marionette enabled
+1676621343681	Marionette	INFO	Listening on port 38671
+Read port: 38671
+WebDriver BiDi listening on ws://127.0.0.1:53915
+1676621343798	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileZ9HzLo/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:53915/devtools/browser/4a26c8c0-6a34-4f65-a70d-8eed88bb19b7
+1676621347970	Marionette	INFO	Stopped listening on port 38671
+1676624067259	geckodriver	INFO	Listening on 127.0.0.1:40849
+1676624067777	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "60035" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile7Kz96M"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676624068400	Marionette	INFO	Marionette enabled
+1676624068403	Marionette	INFO	Listening on port 46821
+Read port: 46821
+WebDriver BiDi listening on ws://127.0.0.1:60035
+1676624068563	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile7Kz96M/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:60035/devtools/browser/b61ebdee-8b29-464a-80e5-8a6da8494e5d
+1676624072541	Marionette	INFO	Stopped listening on port 46821
+1676636544512	geckodriver	INFO	Listening on 127.0.0.1:53961
+1676636545032	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "55105" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileAqvkyz"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676636545758	Marionette	INFO	Marionette enabled
+1676636545761	Marionette	INFO	Listening on port 40809
+Read port: 40809
+WebDriver BiDi listening on ws://127.0.0.1:55105
+1676636545950	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileAqvkyz/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:55105/devtools/browser/2608ca32-bdad-4e27-be93-78ce1927dc52
+1676636549450	Marionette	INFO	Stopped listening on port 40809
+1676636565678	geckodriver	INFO	Listening on 127.0.0.1:35393
+1676636566194	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "56641" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileEHRwKX"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676636566859	Marionette	INFO	Marionette enabled
+1676636566862	Marionette	INFO	Listening on port 33251
+Read port: 33251
+WebDriver BiDi listening on ws://127.0.0.1:56641
+1676636566991	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileEHRwKX/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:56641/devtools/browser/1d196714-f870-463c-86c3-ef559e2a6f15
+1676636571190	Marionette	INFO	Stopped listening on port 33251
+1676900750455	geckodriver	INFO	Listening on 127.0.0.1:44649
+1676900750979	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "35845" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile6diQLr"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676900752186	Marionette	INFO	Marionette enabled
+1676900752192	Marionette	INFO	Listening on port 33551
+Read port: 33551
+WebDriver BiDi listening on ws://127.0.0.1:35845
+1676900752463	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile6diQLr/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:35845/devtools/browser/cb99ef07-7ede-4166-9c93-c5c2ee5e0d94
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1678435212768	geckodriver	INFO	Listening on 127.0.0.1:54959
+1678435213285	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "36207" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilegAjqbI"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678435219405	Marionette	INFO	Marionette enabled
+1678435219408	Marionette	INFO	Listening on port 40409
+Read port: 40409
+WebDriver BiDi listening on ws://127.0.0.1:36207
+1678435219582	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilegAjqbI/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:36207/devtools/browser/3f637079-c43d-47b6-85c9-fb832a338f3c
+1678435225777	Marionette	INFO	Stopped listening on port 40409
+1678435471643	geckodriver	INFO	Listening on 127.0.0.1:50719
+1678435472149	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "48313" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile6JCDAu"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678435472795	Marionette	INFO	Marionette enabled
+1678435472798	Marionette	INFO	Listening on port 40479
+Read port: 40479
+WebDriver BiDi listening on ws://127.0.0.1:48313
+1678435472946	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile6JCDAu/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:48313/devtools/browser/1c732d61-7a7d-491d-8d20-29f045f7826a
+1678435477236	Marionette	INFO	Stopped listening on port 40479
+1678435849970	geckodriver	INFO	Listening on 127.0.0.1:49887
+1678435850487	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "36561" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileNxHLOX"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678435851280	Marionette	INFO	Marionette enabled
+1678435851283	Marionette	INFO	Listening on port 35299
+Read port: 35299
+WebDriver BiDi listening on ws://127.0.0.1:36561
+1678435851424	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileNxHLOX/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:36561/devtools/browser/b9bd8e6e-bfd5-4c2a-af45-effa5e020577
+1678435856828	Marionette	INFO	Stopped listening on port 35299
+1678435996997	geckodriver	INFO	Listening on 127.0.0.1:49803
+1678435997504	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "49219" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilev0DZoq"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678435998306	Marionette	INFO	Marionette enabled
+1678435998310	Marionette	INFO	Listening on port 46751
+Read port: 46751
+WebDriver BiDi listening on ws://127.0.0.1:49219
+1678435998463	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilev0DZoq/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:49219/devtools/browser/3f64159c-4eb0-4ae6-8218-b2ed8bea593b
+1678436002840	Marionette	INFO	Stopped listening on port 46751
+1678861160366	geckodriver	INFO	Listening on 127.0.0.1:35741
+1678861160871	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "57463" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileazNsBz"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678861161891	Marionette	INFO	Marionette enabled
+1678861161901	Marionette	INFO	Listening on port 44817
+Read port: 44817
+WebDriver BiDi listening on ws://127.0.0.1:57463
+1678861162280	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileazNsBz/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:57463/devtools/browser/49ecb87f-6645-472b-9ddd-9e5f5f0ad801
+1678861166115	Marionette	INFO	Stopped listening on port 44817
+1678865725889	geckodriver	INFO	Listening on 127.0.0.1:46057
+1678865726403	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "37473" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileNib4x8"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678865727291	Marionette	INFO	Marionette enabled
+1678865727295	Marionette	INFO	Listening on port 41729
+Read port: 41729
+WebDriver BiDi listening on ws://127.0.0.1:37473
+1678865727426	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileNib4x8/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37473/devtools/browser/ebff11ca-8da7-4e31-a823-633c707a4951
+1678865732939	Marionette	INFO	Stopped listening on port 41729
+1680169105597	geckodriver	INFO	Listening on 127.0.0.1:55615
+1680169106115	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "37397" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilea5Lgm1"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169106903	Marionette	INFO	Marionette enabled
+1680169106906	Marionette	INFO	Listening on port 42445
+Read port: 42445
+WebDriver BiDi listening on ws://127.0.0.1:37397
+1680169107097	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilea5Lgm1/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37397/devtools/browser/5f1a344c-2c4a-4d22-a197-547454001bf5
+1680169110747	Marionette	INFO	Stopped listening on port 42445
+1680169360860	geckodriver	INFO	Listening on 127.0.0.1:40919
+1680169361366	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "43999" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileCQHcd9"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169362045	Marionette	INFO	Marionette enabled
+1680169362048	Marionette	INFO	Listening on port 46085
+Read port: 46085
+WebDriver BiDi listening on ws://127.0.0.1:43999
+1680169362227	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileCQHcd9/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:43999/devtools/browser/92d4679a-87a0-44cf-b195-295972fa6a4b
+1680169367141	Marionette	INFO	Stopped listening on port 46085
+1680169615354	geckodriver	INFO	Listening on 127.0.0.1:38351
+1680169615859	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "60659" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileWPu4CR"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169616476	Marionette	INFO	Marionette enabled
+1680169616479	Marionette	INFO	Listening on port 40139
+Read port: 40139
+WebDriver BiDi listening on ws://127.0.0.1:60659
+1680169616622	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileWPu4CR/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:60659/devtools/browser/f01bd17a-eb87-428f-82c5-102d3e3402ed
+1680169620493	Marionette	INFO	Stopped listening on port 40139
+1680169621063	geckodriver	INFO	Listening on 127.0.0.1:48195
+1680169621567	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "58695" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileGCgcgf"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169622265	Marionette	INFO	Marionette enabled
+1680169622268	Marionette	INFO	Listening on port 43069
+Read port: 43069
+WebDriver BiDi listening on ws://127.0.0.1:58695
+1680169622415	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileGCgcgf/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:58695/devtools/browser/0fa1b593-4711-4d4a-b4d7-44cb8ad8c1e3
+1680169626082	Marionette	INFO	Stopped listening on port 43069
+1680169634400	geckodriver	INFO	Listening on 127.0.0.1:60457
+1680169634915	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "51547" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilePHkWnx"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169635565	Marionette	INFO	Marionette enabled
+1680169635568	Marionette	INFO	Listening on port 46399
+Read port: 46399
+WebDriver BiDi listening on ws://127.0.0.1:51547
+1680169635708	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilePHkWnx/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:51547/devtools/browser/d976975b-0fa6-44c1-adfb-8c355934da55
+1680169639552	Marionette	INFO	Stopped listening on port 46399
+1680169640164	geckodriver	INFO	Listening on 127.0.0.1:51857
+1680169640668	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "58121" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilehLHFBP"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169641305	Marionette	INFO	Marionette enabled
+1680169641308	Marionette	INFO	Listening on port 35633
+Read port: 35633
+WebDriver BiDi listening on ws://127.0.0.1:58121
+1680169641446	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilehLHFBP/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:58121/devtools/browser/2707071d-eda2-463e-b858-38599c961f6a
+1680169645272	Marionette	INFO	Stopped listening on port 35633
+1680169754824	geckodriver	INFO	Listening on 127.0.0.1:52755
+1680169755333	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "53877" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileev1hOM"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169756031	Marionette	INFO	Marionette enabled
+1680169756034	Marionette	INFO	Listening on port 46369
+Read port: 46369
+WebDriver BiDi listening on ws://127.0.0.1:53877
+1680169756199	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileev1hOM/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:53877/devtools/browser/af44984b-4a38-4f14-b210-3ca48389662b
+1680169759693	Marionette	INFO	Stopped listening on port 46369
+1680169816497	geckodriver	INFO	Listening on 127.0.0.1:51865
+1680169817013	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "55513" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileZSMo1j"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169817664	Marionette	INFO	Marionette enabled
+1680169817667	Marionette	INFO	Listening on port 41315
+Read port: 41315
+WebDriver BiDi listening on ws://127.0.0.1:55513
+1680169817839	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileZSMo1j/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:55513/devtools/browser/769bea50-64c0-4328-bc35-0a50f659571f
+1680169821334	Marionette	INFO	Stopped listening on port 41315
+1680169821888	geckodriver	INFO	Listening on 127.0.0.1:52545
+1680169822404	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "35505" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileIAoBQu"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169823130	Marionette	INFO	Marionette enabled
+1680169823133	Marionette	INFO	Listening on port 44299
+Read port: 44299
+WebDriver BiDi listening on ws://127.0.0.1:35505
+1680169823306	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileIAoBQu/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:35505/devtools/browser/bda889a7-d291-4633-9263-80f940eaa44f
+1680169827071	Marionette	INFO	Stopped listening on port 44299
+1680169932176	geckodriver	INFO	Listening on 127.0.0.1:39957
+1680169932691	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "40779" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilewQ1y4m"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169933358	Marionette	INFO	Marionette enabled
+1680169933361	Marionette	INFO	Listening on port 33665
+Read port: 33665
+WebDriver BiDi listening on ws://127.0.0.1:40779
+1680169933523	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilewQ1y4m/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:40779/devtools/browser/2c8306da-2a8b-4e86-bad6-188362f83261
+1680169937010	Marionette	INFO	Stopped listening on port 33665
+1680169937539	geckodriver	INFO	Listening on 127.0.0.1:50271
+1680169938045	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "34573" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileYbcYP5"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169938709	Marionette	INFO	Marionette enabled
+1680169938711	Marionette	INFO	Listening on port 40791
+Read port: 40791
+WebDriver BiDi listening on ws://127.0.0.1:34573
+1680169938839	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileYbcYP5/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:34573/devtools/browser/74fcbb9d-64aa-4a5a-b4ab-6fa64c2b2fc5
+1680169942326	Marionette	INFO	Stopped listening on port 40791
+1680169942850	geckodriver	INFO	Listening on 127.0.0.1:56153
+1680169943355	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "46325" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilethKZTG"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680169943974	Marionette	INFO	Marionette enabled
+1680169943977	Marionette	INFO	Listening on port 38189
+Read port: 38189
+WebDriver BiDi listening on ws://127.0.0.1:46325
+1680169944141	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilethKZTG/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:46325/devtools/browser/9e91e477-656d-42e4-acf8-1fbf3bd55a47
+1680169949155	Marionette	INFO	Stopped listening on port 38189
+1680170021692	geckodriver	INFO	Listening on 127.0.0.1:44857
+1680170022196	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "34669" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileeD7V1h"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680170022875	Marionette	INFO	Marionette enabled
+1680170022878	Marionette	INFO	Listening on port 38259
+Read port: 38259
+WebDriver BiDi listening on ws://127.0.0.1:34669
+1680170023012	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileeD7V1h/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:34669/devtools/browser/a40a45e7-2af0-44d0-9279-ad273435f9ea
+1680170028214	Marionette	INFO	Stopped listening on port 38259
+1680170028739	geckodriver	INFO	Listening on 127.0.0.1:34835
+1680170029249	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "56813" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile2Q6Ss3"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680170029978	Marionette	INFO	Marionette enabled
+1680170029981	Marionette	INFO	Listening on port 42521
+Read port: 42521
+WebDriver BiDi listening on ws://127.0.0.1:56813
+1680170030157	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile2Q6Ss3/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:56813/devtools/browser/c407c7cb-a7af-438e-8337-78e804cbbcff
+1680170033748	Marionette	INFO	Stopped listening on port 42521
+1680170034276	geckodriver	INFO	Listening on 127.0.0.1:44343
+1680170034780	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "46499" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileYOwOXR"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680170035416	Marionette	INFO	Marionette enabled
+1680170035420	Marionette	INFO	Listening on port 33485
+Read port: 33485
+WebDriver BiDi listening on ws://127.0.0.1:46499
+1680170035567	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileYOwOXR/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:46499/devtools/browser/bd3fb048-3022-48f3-898b-804382eb19be
+1680170039206	Marionette	INFO	Stopped listening on port 33485
+1680173131580	geckodriver	INFO	Listening on 127.0.0.1:55267
+1680173132083	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "46491" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilemTvqrW"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680173133257	Marionette	INFO	Marionette enabled
+1680173133263	Marionette	INFO	Listening on port 39063
+Read port: 39063
+WebDriver BiDi listening on ws://127.0.0.1:46491
+1680173133691	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilemTvqrW/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:46491/devtools/browser/fba52c61-4187-4c6d-9984-0856fda8dbe7
+1680173138619	Marionette	INFO	Stopped listening on port 39063
+1680179853482	geckodriver	INFO	Listening on 127.0.0.1:47005
+1680179853983	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "41927" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileZU1DD9"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680179854796	Marionette	INFO	Marionette enabled
+1680179854803	Marionette	INFO	Listening on port 42619
+Read port: 42619
+WebDriver BiDi listening on ws://127.0.0.1:41927
+1680179854983	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileZU1DD9/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:41927/devtools/browser/e1923cba-6f2b-4bdf-b2e7-8ae7b61f2612
+1680179858986	Marionette	INFO	Stopped listening on port 42619
+1680180314981	geckodriver	INFO	Listening on 127.0.0.1:54281
+1680180315497	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "50681" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileiHVSfM"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680180316133	Marionette	INFO	Marionette enabled
+1680180316136	Marionette	INFO	Listening on port 39339
+Read port: 39339
+WebDriver BiDi listening on ws://127.0.0.1:50681
+1680180316259	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileiHVSfM/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:50681/devtools/browser/2b444fc2-d49a-455e-a186-9130c356df9b
+1680180322913	Marionette	INFO	Stopped listening on port 39339
+1680180909636	geckodriver	INFO	Listening on 127.0.0.1:55093
+1680180910154	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "33873" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofiledG6cWw"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680180910821	Marionette	INFO	Marionette enabled
+1680180910824	Marionette	INFO	Listening on port 44593
+Read port: 44593
+WebDriver BiDi listening on ws://127.0.0.1:33873
+1680180910972	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofiledG6cWw/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:33873/devtools/browser/29c9769d-b394-4c81-9e2d-77b68662756f
+1680180914436	Marionette	INFO	Stopped listening on port 44593
+1680181080531	geckodriver	INFO	Listening on 127.0.0.1:58761
+1680181081048	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "48837" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofiledTRu9K"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680181081726	Marionette	INFO	Marionette enabled
+1680181081728	Marionette	INFO	Listening on port 40031
+Read port: 40031
+WebDriver BiDi listening on ws://127.0.0.1:48837
+1680181081872	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofiledTRu9K/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:48837/devtools/browser/e87f7986-b951-4f26-becf-7f69884cbc85
+1680181085576	Marionette	INFO	Stopped listening on port 40031
+1680181103960	geckodriver	INFO	Listening on 127.0.0.1:58677
+1680181104473	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "51141" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileJ9fr26"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680181105097	Marionette	INFO	Marionette enabled
+1680181105100	Marionette	INFO	Listening on port 45545
+Read port: 45545
+WebDriver BiDi listening on ws://127.0.0.1:51141
+1680181105224	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileJ9fr26/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:51141/devtools/browser/82f5b40a-ff63-4527-ae01-964d309e52d7
+1680181108794	Marionette	INFO	Stopped listening on port 45545
+1680183534207	geckodriver	INFO	Listening on 127.0.0.1:40157
+1680183534716	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "41705" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileV6gTGT"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680183535375	Marionette	INFO	Marionette enabled
+1680183535378	Marionette	INFO	Listening on port 33451
+Read port: 33451
+WebDriver BiDi listening on ws://127.0.0.1:41705
+1680183535546	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileV6gTGT/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:41705/devtools/browser/d13a6c3b-f480-412c-8d9d-e6836c88c29c
+1680183541526	Marionette	INFO	Stopped listening on port 33451
+1680183841687	geckodriver	INFO	Listening on 127.0.0.1:40653
+1680183842208	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "56213" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileXdFADX"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680183842878	Marionette	INFO	Marionette enabled
+1680183842881	Marionette	INFO	Listening on port 46089
+Read port: 46089
+WebDriver BiDi listening on ws://127.0.0.1:56213
+1680183843028	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileXdFADX/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:56213/devtools/browser/2c17d092-7ee3-41b6-8171-114788c11347
+1680183848148	Marionette	INFO	Stopped listening on port 46089
+1680183930152	geckodriver	INFO	Listening on 127.0.0.1:35867
+1680183930657	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "34725" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile1vs0P9"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680183931279	Marionette	INFO	Marionette enabled
+1680183931282	Marionette	INFO	Listening on port 33143
+Read port: 33143
+WebDriver BiDi listening on ws://127.0.0.1:34725
+1680183931415	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile1vs0P9/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:34725/devtools/browser/3d54aadb-c504-4b29-99b5-a50d1ad1eb7a
+1680183935023	Marionette	INFO	Stopped listening on port 33143
+1680184640032	geckodriver	INFO	Listening on 127.0.0.1:47999
+1680184640549	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "53301" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilexTLIwv"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680184641175	Marionette	INFO	Marionette enabled
+1680184641177	Marionette	INFO	Listening on port 41661
+Read port: 41661
+WebDriver BiDi listening on ws://127.0.0.1:53301
+1680184641353	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilexTLIwv/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:53301/devtools/browser/9ff18a9a-1699-4e36-86b2-3ab7f938863f
+1680184645710	Marionette	INFO	Stopped listening on port 41661
+1680503892277	geckodriver	INFO	Listening on 127.0.0.1:43843
+1680503892800	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "33813" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilerzoEED"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680503893907	Marionette	INFO	Marionette enabled
+1680503893912	Marionette	INFO	Listening on port 43797
+Read port: 43797
+WebDriver BiDi listening on ws://127.0.0.1:33813
+1680503894220	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilerzoEED/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:33813/devtools/browser/e0428267-6459-4791-b97c-7bad05f07889
+1680503898289	Marionette	INFO	Stopped listening on port 43797
+1680503898954	geckodriver	INFO	Listening on 127.0.0.1:56097
+1680503898966	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "42907" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile6OI4fM"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680503899690	Marionette	INFO	Marionette enabled
+1680503899693	Marionette	INFO	Listening on port 44569
+Read port: 44569
+WebDriver BiDi listening on ws://127.0.0.1:42907
+1680503899859	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile6OI4fM/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:42907/devtools/browser/a047d567-5186-4618-9bb6-4b6bf22df418
+1680503903146	Marionette	INFO	Stopped listening on port 44569
+1680503946217	geckodriver	INFO	Listening on 127.0.0.1:49309
+1680503946735	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "35929" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileVZ6gkd"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680503947437	Marionette	INFO	Marionette enabled
+1680503947440	Marionette	INFO	Listening on port 35333
+Read port: 35333
+WebDriver BiDi listening on ws://127.0.0.1:35929
+1680503947587	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileVZ6gkd/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:35929/devtools/browser/67b2fdf1-50f3-4f97-937f-16fb7025a1b6
+1680503950869	Marionette	INFO	Stopped listening on port 35333
+1680504443386	geckodriver	INFO	Listening on 127.0.0.1:40173
+1680504443902	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "37167" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileUqssGC"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504444545	Marionette	INFO	Marionette enabled
+1680504444548	Marionette	INFO	Listening on port 40403
+Read port: 40403
+WebDriver BiDi listening on ws://127.0.0.1:37167
+1680504444689	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileUqssGC/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37167/devtools/browser/8892b5f1-0c16-4015-93ee-4392ac94a0ee
+1680504448773	Marionette	INFO	Stopped listening on port 40403
+1680504545005	geckodriver	INFO	Listening on 127.0.0.1:46209
+1680504545519	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "55461" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileAjwXbd"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504546183	Marionette	INFO	Marionette enabled
+1680504546186	Marionette	INFO	Listening on port 33159
+Read port: 33159
+WebDriver BiDi listening on ws://127.0.0.1:55461
+1680504546320	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileAjwXbd/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:55461/devtools/browser/6f42c01f-0ab3-4da1-85ad-1c426150ce07
+1680504551585	Marionette	INFO	Stopped listening on port 33159
+1680504678568	geckodriver	INFO	Listening on 127.0.0.1:46935
+1680504679084	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "48565" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilea1ctoH"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504679729	Marionette	INFO	Marionette enabled
+1680504679732	Marionette	INFO	Listening on port 39203
+Read port: 39203
+WebDriver BiDi listening on ws://127.0.0.1:48565
+1680504679918	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilea1ctoH/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:48565/devtools/browser/af04c6a6-5418-4818-bd6d-34475c709289
+1680504683874	Marionette	INFO	Stopped listening on port 39203
+1680504743083	geckodriver	INFO	Listening on 127.0.0.1:38613
+1680504743598	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "50327" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileACPCK5"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504744243	Marionette	INFO	Marionette enabled
+1680504744247	Marionette	INFO	Listening on port 43871
+Read port: 43871
+WebDriver BiDi listening on ws://127.0.0.1:50327
+1680504744381	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileACPCK5/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:50327/devtools/browser/22b85013-fd02-4a45-87bd-f243382b9cae
+1680504749762	Marionette	INFO	Stopped listening on port 43871
+1680504783293	geckodriver	INFO	Listening on 127.0.0.1:55891
+1680504783800	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "48557" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilePjjMBO"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504789669	Marionette	INFO	Marionette enabled
+1680504789671	Marionette	INFO	Listening on port 38175
+Read port: 38175
+WebDriver BiDi listening on ws://127.0.0.1:48557
+1680504789839	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilePjjMBO/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:48557/devtools/browser/bc0cc0de-984a-46f3-9c69-ec6967f25067
+1680504794382	Marionette	INFO	Stopped listening on port 38175
+1680504899811	geckodriver	INFO	Listening on 127.0.0.1:50073
+1680504900322	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "44443" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile7oLJWh"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504900966	Marionette	INFO	Marionette enabled
+1680504900969	Marionette	INFO	Listening on port 45971
+Read port: 45971
+WebDriver BiDi listening on ws://127.0.0.1:44443
+1680504901135	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile7oLJWh/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:44443/devtools/browser/6f58371d-d7f0-4e8f-aeb4-a7fe36c0871d
+1680504904857	Marionette	INFO	Stopped listening on port 45971
+1680504933025	geckodriver	INFO	Listening on 127.0.0.1:47847
+1680504933533	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "53585" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileYmASW0"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680504934147	Marionette	INFO	Marionette enabled
+1680504934151	Marionette	INFO	Listening on port 40429
+Read port: 40429
+WebDriver BiDi listening on ws://127.0.0.1:53585
+1680504934310	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileYmASW0/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:53585/devtools/browser/8b251607-a064-47b0-b8db-e7c9c9305b8f
+1680504938206	Marionette	INFO	Stopped listening on port 40429
+1680505176529	geckodriver	INFO	Listening on 127.0.0.1:52709
+1680505177035	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "47727" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile77QVNP"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505177670	Marionette	INFO	Marionette enabled
+1680505177673	Marionette	INFO	Listening on port 41511
+Read port: 41511
+WebDriver BiDi listening on ws://127.0.0.1:47727
+1680505177803	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile77QVNP/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:47727/devtools/browser/08c18add-1770-404a-b854-30e7c53bea74
+1680505182436	Marionette	INFO	Stopped listening on port 41511
+1680505377099	geckodriver	INFO	Listening on 127.0.0.1:41821
+1680505377616	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "51781" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile0FdA3D"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505378282	Marionette	INFO	Marionette enabled
+1680505378286	Marionette	INFO	Listening on port 41141
+Read port: 41141
+WebDriver BiDi listening on ws://127.0.0.1:51781
+1680505378422	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile0FdA3D/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:51781/devtools/browser/9280e492-a79c-479b-927a-dd526c9d8283
+1680505385005	Marionette	INFO	Stopped listening on port 41141
+1680505441932	geckodriver	INFO	Listening on 127.0.0.1:33489
+1680505442438	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "57121" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileCvDBoX"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505443087	Marionette	INFO	Marionette enabled
+1680505443090	Marionette	INFO	Listening on port 33237
+Read port: 33237
+WebDriver BiDi listening on ws://127.0.0.1:57121
+1680505443230	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileCvDBoX/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:57121/devtools/browser/e4350f05-575f-486b-9036-c8910f634339
+1680505448280	Marionette	INFO	Stopped listening on port 33237
+1680505478095	geckodriver	INFO	Listening on 127.0.0.1:33733
+1680505478611	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "40765" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileZUJfVk"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505479238	Marionette	INFO	Marionette enabled
+1680505479241	Marionette	INFO	Listening on port 44051
+Read port: 44051
+WebDriver BiDi listening on ws://127.0.0.1:40765
+1680505479368	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileZUJfVk/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:40765/devtools/browser/c8d8ac1d-2d7b-4983-9d9a-4028f43d6a44
+1680505485645	Marionette	INFO	Stopped listening on port 44051
+1680505652510	geckodriver	INFO	Listening on 127.0.0.1:59957
+1680505653024	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "41227" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileNgdpY7"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505653665	Marionette	INFO	Marionette enabled
+1680505653668	Marionette	INFO	Listening on port 45545
+Read port: 45545
+WebDriver BiDi listening on ws://127.0.0.1:41227
+1680505653802	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileNgdpY7/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:41227/devtools/browser/f08c842c-f39d-41a0-9333-6579bab1ed79
+1680505659898	Marionette	INFO	Stopped listening on port 45545
+1680505690846	geckodriver	INFO	Listening on 127.0.0.1:42185
+1680505691362	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "59317" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile9P19Gi"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505692042	Marionette	INFO	Marionette enabled
+1680505692046	Marionette	INFO	Listening on port 46185
+Read port: 46185
+WebDriver BiDi listening on ws://127.0.0.1:59317
+1680505692170	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile9P19Gi/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:59317/devtools/browser/fc5444bf-714e-45dc-99c2-ade17de0aa4f
+1680505697676	Marionette	INFO	Stopped listening on port 46185
+1680505725651	geckodriver	INFO	Listening on 127.0.0.1:58483
+1680505726170	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "55331" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilegfoXje"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505726815	Marionette	INFO	Marionette enabled
+1680505726818	Marionette	INFO	Listening on port 39291
+Read port: 39291
+WebDriver BiDi listening on ws://127.0.0.1:55331
+1680505726956	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilegfoXje/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:55331/devtools/browser/22672e69-7e09-47db-a13d-b512a556f035
+1680505732079	Marionette	INFO	Stopped listening on port 39291
+1680505770976	geckodriver	INFO	Listening on 127.0.0.1:52561
+1680505771492	mozrunner::runner	INFO	Running command: "/usr/local/bin/firefox" "--marionette" "--remote-debugging-port" "52529" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileun4uR1"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1680505772122	Marionette	INFO	Marionette enabled
+1680505772124	Marionette	INFO	Listening on port 45211
+Read port: 45211
+WebDriver BiDi listening on ws://127.0.0.1:52529
+1680505772247	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileun4uR1/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:52529/devtools/browser/ecdeb0b5-9b96-4d76-a2f9-0adfe20b1716
+1680505777433	Marionette	INFO	Stopped listening on port 45211

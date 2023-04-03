@@ -1,5 +1,4 @@
 import re
-import pandas as pd
 import requests
 import json
 import chromedriver_autoinstaller
@@ -10,12 +9,12 @@ import pytest_check as check
 
 from Utilities.DBProcessor import get_value_from_db
 from Utilities.ConfigReader import read_config as get_config
-from Utilities.charge_slip_validator import charge_slip_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 from Utilities import Validator
 from DataProvider import GlobalVariables as global_variables, GlobalVariables, GlobalConstants
 
 logger = EzeAutoLogger(__name__)
+
 
 '''
 expected_details = {
@@ -56,14 +55,14 @@ def initialize_webdriver(maximize=False):
         logger.info("Initializing webdriver")
         opt = webdriver.ChromeOptions()
         if maximize is True:
-            opt.add_argument("--start-maximized")
+            opt.add_argument("--start-maximized") 
         chromedriver_autoinstaller.install()
         driver = webdriver.Chrome(options=opt)
     except Exception as e:
         logger.exception(e, exc_info=True)
         print(e)
         raise ReceiptValidationError("Unable to initialize webdriver")
-
+    
     return driver
 
 
@@ -71,32 +70,30 @@ def initialize_webdriver(maximize=False):
 
 # mapped dictionary that is used to identify each fields based on text
 mapped_identifier_keys_for_receipt_fields = dict(
-    datetime="Date/Time:",
-    signature_not_required_text="SIGNATURE NOT REQUIRED",
-    signature_not_available_text='SIGN: signature not available',
-    customer_copy_text="***** CUSTOMER COPY *****",
-    version_found="VERSION V-",
-    merchant_ref_no_text="Ref #",
-    pin_verified_section_text="PIN VERIFIED",
-    agreement_text="""I agree to pay as per the card issuer agreement and receive chargeslip by electronic means.""",
+    datetime = "Date/Time:",
+    signature_not_required_text = "SIGNATURE NOT REQUIRED",
+    signature_not_available_text = 'SIGN: signature not available',
+    customer_copy_text = "***** CUSTOMER COPY *****",
+    version_found = "VERSION V-",
+    merchant_ref_no_text = "Ref #",
+    pin_verified_section_text = "PIN VERIFIED",
+    agreement_text = """I agree to pay as per the card issuer agreement and receive chargeslip by electronic means.""",
 
 )
 
 present_receipt_info = {}
 index_locations = {}
-transaction_type = ['SALE', 'REVERSED', 'REFUND']
-
-
+transaction_type = ['SALE', 'REVERSED', 'REFUND'] 
 # -------------------------------------------------------
 
 
-# function definitions
+# function definitions 
 def _find_date_n_time_from_single_row(receipt_timestamp_row):
     global mapped_identifier_keys_for_receipt_fields
     global present_receipt_info
     date_time = " ".join([td.text.strip().replace(mapped_identifier_keys_for_receipt_fields['datetime'], '').strip() \
-                          for td in receipt_timestamp_row.find_all('td') if td.text.strip()])
-
+        for td in receipt_timestamp_row.find_all('td') if td.text.strip()])
+    
     # find date and time from '2022-06-13 14:44:36'
     date_results = re.findall(r'\d{4}-\d{2}-\d{2}', date_time)
     time_results = re.findall(r'\d{2}:\d{2}:\d{2}', date_time)
@@ -111,7 +108,7 @@ def _find_date_n_time_from_single_row(receipt_timestamp_row):
         return False
 
 
-# not ideal to iterate on each field check.
+# not ideal to iterate on each field check. 
 # Ideal is to run all checks in one single for loop. for now are taking which is not ideal
 def _find_datetime_from_rows(rows_with_fields):
     global index_locations
@@ -146,7 +143,7 @@ def _get_key_values_from_table_rows(section_rows):
                     # print(key_value_pair)
                     key = key_value_pair[0].strip()
                     value = key_value_pair[1].strip()
-
+                    
                     present_receipt_info[key] = value
 
 
@@ -162,7 +159,7 @@ def _switch_handles(driver) -> None:
     else:
         print("No child window found")
         logger.error("No child window found")
-
+    
     return driver  # use OOPs to work with same driver always
 
 
@@ -174,11 +171,10 @@ def _check_if_receipt_is_found_on_page(driver):
     possible_div_recipts = driver.find_elements(By.CLASS_NAME, 'receipt')
     if possible_div_recipts:
         l = possible_div_recipts[0]
-        inner_html = driver.execute_script("return arguments[0].innerHTML;", l)
+        inner_html= driver.execute_script("return arguments[0].innerHTML;",l)
         receipt_found = True
 
     return driver, inner_html, receipt_found
-
 
 def _check_if_receipt_table_is_found_on_page(soup):
     receipt_table_found = False
@@ -193,7 +189,6 @@ def _check_if_receipt_table_is_found_on_page(soup):
 
     return receipt_table, receipt_table_found
 
-
 def _extract_merchant_info(merchant_info_rows):
     global present_receipt_info
     global mapped_identifier_keys_for_receipt_fields
@@ -204,14 +199,12 @@ def _extract_merchant_info(merchant_info_rows):
         if mapped_identifier_keys_for_receipt_fields['merchant_ref_no_text'] in row:
             # get the merchant ref no as popped element
             present_receipt_info['merchant_ref_no'] = merchant_section_texts.pop(merchant_section_texts.index(row))
-
-    merchant_text_fields = [", ".join([l.strip() for l in text.replace("\t", "").split("\n") if l.strip()]) for text in
-                            merchant_section_texts]
+            
+    merchant_text_fields = [", ".join([l.strip() for l in text.replace("\t", "").split("\n") if l.strip()]) for text in merchant_section_texts]
 
     # TO BE CHECKED LATER IF MORE OTHER FIELDS ARE AVAILABLE
     merchant_info = ", ".join(merchant_text_fields)
     present_receipt_info['merchant_info'] = merchant_info
-
 
 def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_table):
     global present_receipt_info
@@ -247,8 +240,8 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
                 print("bank logo is not found")
                 logger.info("bank logo is not found")
                 # present_receipt_info['bank_logo'] = None     # ==== CHECK THIS>>>>>> EMRE
-
-
+                
+                
         # removing rows those are just used for giving space or padding
         elif hasattr(row, "class") and ('amount-padding' in row.get_attribute_list('class')):
             print("Found amount padding. Therefore not adding this row to present_receipt_info")
@@ -256,13 +249,13 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
         else:
             # print(row)
             rows_with_fields.append(row)
-    # print(rows_with_fields)
+    # print(rows_with_fields)     
     # getting index of datetime row from rows_with_fields list
 
     if not _find_datetime_from_rows(rows_with_fields):
         print("No datetime found")
         logger.warning("No datetime found")
-
+    
     # print(rows_with_fields)
     for row in rows_with_fields:
         if len(row.find_all('td')) == 1:
@@ -277,8 +270,7 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
     _extract_merchant_info(merchant_info_rows)
 
     # this section might be a problem if there are not receipt table middle section rows
-    receipt_table_middle_section_rows = rows_with_fields[
-                                        (index_locations['datetime'] + 1): index_locations['payment_option']]
+    receipt_table_middle_section_rows = rows_with_fields[(index_locations['datetime'] + 1): index_locations['payment_option']]
     # the above section contains TID, BATCH NO, INVOICE NO, AID, APP .. TSI etc
     _get_key_values_from_table_rows(receipt_table_middle_section_rows)
 
@@ -293,6 +285,7 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
     if ("CARD" in present_receipt_info) and ("\n" in present_receipt_info['CARD']):
         card_number_n_emv = [line.strip() for line in present_receipt_info['CARD'].split("\n") if line.strip()]
         present_receipt_info["CARD"] = " ".join(card_number_n_emv)
+
 
     # POST TABLE SECTION ===========================
     post_table_elements = payment_info_rows[-1].find_all_next('p')
@@ -316,7 +309,7 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
                 else:
                     print("No relevant image found though images are present")
                     logger.warning("No relevant image found though images are present")
-
+        
         if mapped_identifier_keys_for_receipt_fields['customer_copy_text'] in paragraph.text:
             present_receipt_info['customer_copy_text'] = paragraph.text.strip()
             indices['customer_copy'] = post_table_elements.index(paragraph)
@@ -326,28 +319,25 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
             if 'signature_section' in indices:
                 print("over-writing the signature index")
             indices['signature_section'] = post_table_elements.index(paragraph)
-
+        
         # added newly to fix -- on jul 13, 2022
-        if ('signature_section' not in indices) and (
-                mapped_identifier_keys_for_receipt_fields['signature_not_available_text'] in paragraph.text):
+        if ('signature_section' not in indices) and (mapped_identifier_keys_for_receipt_fields['signature_not_available_text'] in paragraph.text):
             present_receipt_info['signature_not_available_text'] = paragraph.text.strip()
             if 'signature_section' in indices:
                 print("over-writing the signature index")
             indices['signature_section'] = post_table_elements.index(paragraph)
-
+        
         if mapped_identifier_keys_for_receipt_fields['agreement_text'] in paragraph.text:
             present_receipt_info['agreement_text'] = paragraph.text.strip()
             indices['agreement_section'] = post_table_elements.index(paragraph)
 
             # processing agreement text
-            present_receipt_info['agreement_text'] = "\n".join(
-                [line.strip() for line in present_receipt_info['agreement_text'].replace("-", '').splitlines() if
-                 line.strip()])
+            present_receipt_info['agreement_text'] = "\n".join([line.strip() for line in present_receipt_info['agreement_text'].replace("-", '').splitlines() if line.strip()])
 
+    
     if 'customer_copy_text' in present_receipt_info:
         # cust_copy_text_lines includes customer copy text and version information
-        cust_copy_text_lines = [line.strip() for line in present_receipt_info['customer_copy_text'].splitlines() if
-                                line.strip()]
+        cust_copy_text_lines = [line.strip() for line in present_receipt_info['customer_copy_text'].splitlines() if line.strip()]
 
         # finding version
         for line in cust_copy_text_lines:
@@ -366,8 +356,7 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
     if ("agreement_section" in indices.keys()) and ("customer_copy" in indices.keys()):
         unnamed_sec_elements = post_table_elements[indices['signature_section'] + 1:indices['agreement_section']]
         unnamed_sec_elements_texts = [elem.text.strip() for elem in unnamed_sec_elements if elem.text.strip()]
-        unnamed_section_text = [" ".join([i.strip() for i in w.split("  ") if i.strip()]) for w in
-                                unnamed_sec_elements_texts]
+        unnamed_section_text = [" ".join([i.strip() for i in w.split("  ") if i.strip()]) for w in unnamed_sec_elements_texts ]
 
         unnamed_section_text = " ".join(unnamed_section_text)
 
@@ -375,32 +364,29 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
             present_receipt_info['unnamed_section_text'] = unnamed_section_text.strip()
 
     elif ("signature_section" in indices.keys()) and ("customer_copy" in indices.keys()):
-        unnamed_sec_elements = post_table_elements[indices['signature_section'] + 1:indices['customer_copy']]
-        unnamed_sec_elements_texts = [elem.text.strip() for elem in unnamed_sec_elements if elem.text.strip()]
-        unnamed_section_text = [" ".join([i.strip() for i in w.split("  ") if i.strip()]) for w in
-                                unnamed_sec_elements_texts]
+            unnamed_sec_elements = post_table_elements[indices['signature_section'] + 1:indices['customer_copy']]
+            unnamed_sec_elements_texts = [elem.text.strip() for elem in unnamed_sec_elements if elem.text.strip()]
+            unnamed_section_text = [" ".join([i.strip() for i in w.split("  ") if i.strip()]) for w in unnamed_sec_elements_texts ]
 
-        unnamed_section_text = " ".join(unnamed_section_text)
+            unnamed_section_text = " ".join(unnamed_section_text)
 
-        if unnamed_section_text.strip():
-            present_receipt_info['unnamed_section_text'] = unnamed_section_text.strip()
+            if unnamed_section_text.strip():
+                present_receipt_info['unnamed_section_text'] = unnamed_section_text.strip()
 
 
     else:
-        print(
-            "The customer copy or agreement section is not found! Therefore Unable to extract '[[ unnamed_section ]]'")
-        logger.warning(
-            "The customer copy or agreement section is not found! Therefore Unable to extract '[[ unnamed_section ]]'")
+        print("The customer copy or agreement section is not found! Therefore Unable to extract '[[ unnamed_section ]]'")
+        logger.warning("The customer copy or agreement section is not found! Therefore Unable to extract '[[ unnamed_section ]]'")
 
     # global present_receipt_info
-
+    
     logger.info("DETAILS THAT ARE FOUND IN CURRENT RECEIPT")
     logger.info(present_receipt_info)
-    logger.info(100 * "+")
+    logger.info(100*"+")
 
     print("DETAILS THAT ARE FOUND IN CURRENT RECEIPT".center(100, "-"))
     print(present_receipt_info)
-    print(100 * "+")
+    print(100*"+")
 
 
 def get_receipt_url_from_db(txn_id) -> str:
@@ -422,7 +408,7 @@ def get_receipt_url_from_db(txn_id) -> str:
     else:
         logger.warning(f"No receipt url info is found in DB for the given txn id '{txn_id}'. Please check the DB.")
         url = None
-
+    
     return url
 
 
@@ -450,30 +436,11 @@ def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:
     return present_receipt_info
 
 
-def compare_present_receipt_info_with_expected_receipt_info(present_details: dict, expected_details: dict, txn_id,
-                                                            valid_receipt_url) -> dict:
+def compare_present_receipt_info_with_expected_receipt_info(present_details: dict, expected_details: dict) -> dict:
     print("=======   CHARGE SLIP Validation Started    =======")
     fields_that_are_not_present = set()
     matching_fields = set()
     unmatching_fields = set()
-    # # logo validation
-    value_cs_logo_validation_enabled = get_config(section="Validations", key="cs_logo_validation")
-    cs_logo_validation_enabled = str(value_cs_logo_validation_enabled).strip().title() == 'True'
-    # # logo_validation = None
-    if cs_logo_validation_enabled:
-        logo_validation_1 = validate_logo_from_charge_slip(txn_id, url=valid_receipt_url)
-        # validation_list.append(logo_validation)
-
-        if logo_validation_1 is True:
-            # expected_details['logo_validation': "Passed"]
-            logger.info(f"Logo Validation is Passed")
-        if logo_validation_1 is False:
-            logger.info(f"Logo Validation is Failed")
-            # expected_details['logo_validation': "Failed"]
-        expected_details['logo_validation'] = True
-        present_details['logo_validation'] = logo_validation_1
-    # # combining results
-    # validation_sucessful = all(validation_list)
 
     expected_details, present_details = Validator.filter_values("chargeslip", expected_details, present_details)
     if expected_details == {} and present_details == {}:
@@ -516,7 +483,7 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
     }
 
 
-def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: dict, txn_id) -> bool:
+def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: dict) -> bool:
     '''
     This function will validate the receipt info from the receipt url.\n
     It will return a boolean value indicating if the receipt info is matching with the expected receipt info.\n
@@ -539,20 +506,18 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
             driver = initialize_webdriver()
             driver.get(receipt_url)
             present_receipt_info_ = get_current_charge_slip_data_from_receipt_loaded_webdriver(driver)
-            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details,
-                                                                              txn_id, receipt_url)
+            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details)
 
             if results['fields_that_are_not_present']:
-
-                logger.warning(
-                    f"The following fields are not present in the Charge Slip: {', '.join(results['fields_that_are_not_present'])}")
-            else:
+        
+                logger.warning(f"The following fields are not present in the Charge Slip: {', '.join(results['fields_that_are_not_present'])}")
+            else: 
                 validation_successful = True
 
             if results['unmatching_fields']:
                 # print("Some fields are not matching")
                 logger.warning("Some fields are not matching")
-
+        
                 # print("The following fields are not matching:", ", ".join(results['unmatching_fields']))
                 validation_successful = False
 
@@ -565,13 +530,14 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
             #     except Exception as e:
             #         logger.exception(f"Screenshot-taking not done due to the following error: {e}")
 
+            
             global_variables.charge_slip_driver = driver
 
 
         except ReceiptValidationError as e:
             print(e)
             logger.exception(f"Reciept Validation Error: {e}. Therefore Cannot proceed to validate", exc_info=True)
-
+        
         except Exception as e:
             print(e)
             logger.exception(f"Error: {e}. Therefore Cannot proceed to validate", exc_info=True)
@@ -631,79 +597,8 @@ def validate_n_get_working_receipt_url(receipt_url_from_api):
     return valid_receipt_url
 
 
-def get_txn_record_details(txn_id: str) -> pd.Series:
-    query = f'select * from txn where id="{txn_id}"'
-    result = get_value_from_db(query)
-
-    if result.shape[0]:
-        if result.shape[0] == 1:
-            pass  # the pass takes out of the if section. in all other cases exceptions are raised
-        else:
-            print(f"it seems multiple rows are there for txn_id: {txn_id}")
-            raise Exception(f"it seems multiple rows are there for txn_id: {txn_id}")
-    else:
-        print(f"No records found for the txn_id: {txn_id}")
-        raise Exception(f"No records found for the txn_id: {txn_id}")
-
-    txn_details_from_db = result.iloc[0]
-    return txn_details_from_db
-
-
-def get_acquirer_code_n_payment_gateway_from_txn_id(txn_id: str):
-    txn_details_from_db = get_txn_record_details(txn_id)
-    return dict(
-        acquirer_code=txn_details_from_db['acquirer_code'],
-        payment_gateway=txn_details_from_db['payment_gateway']
-    )
-
-
-def validate_logo_from_charge_slip(txn_id: str, url: str):
-    banks_with_fiserv_ezetap_logo = {
-        "ICICI": "FDC",
-        "IDFC": "IDFC_FDC",
-    }  # this could read of json file
-
-    logger.info(f"Getting acquirer code and payment gateway information from DB for {txn_id}")
-    acquirer_n_pg = get_acquirer_code_n_payment_gateway_from_txn_id(txn_id)
-    acquirer = acquirer_n_pg['acquirer_code']
-    pg = acquirer_n_pg['payment_gateway']
-
-    if pg in banks_with_fiserv_ezetap_logo.values():
-        ezetap_logo = 'fiserv.ezetap'
-    else:
-        ezetap_logo = 'ezetap'
-
-    company_logo_valid, bank_logo_valid = charge_slip_validator.validate_chargeslip_image_logos_from_url(url,
-                                                                                                         bank=acquirer,
-                                                                                                         company=ezetap_logo,
-                                                                                                         visualize=True)
-    if company_logo_valid and bank_logo_valid:
-        logger.info(f"Both Ezetap Logo and Bank Logo validations are successful")
-    elif company_logo_valid:
-        if company_logo_valid is True:
-            logger.info(f"Ezetap Logo Validation is successful")
-        elif company_logo_valid is False:
-            logger.info(f"Ezetap Logo Validation is unsuccessful")
-        else:
-            logger.info(f"It seems no ezetap logo is found for txn_id '{txn_id}'")
-    elif bank_logo_valid:
-        if bank_logo_valid is True:
-            logger.info(f"Bank Logo Validation is successful")
-        elif bank_logo_valid is False:
-            logger.info(f"Bank Logo Validation is unsuccessful")
-        else:
-            logger.info(f"It seems no Bank Logo is found for txn_id '{txn_id}'")
-    else:
-        logger.info(f"Both Ezetap Logo and Bank Logo validations are unsuccessful")
-
-    # company_logo_valid, bank_logo_valid
-    return all([company_logo_valid, bank_logo_valid])
-
-
-def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_details: dict):
+def perform_charge_slip_validations(txn_id:str, credentials:dict, expected_details:dict):
     validation_sucessful = False
-
-    validation_list = []
 
     json_response = get_json_response_of_txn_details(**credentials, txn_id=txn_id)
 
@@ -711,34 +606,13 @@ def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_det
         receipt_url_field = "receiptUrl"
         if receipt_url_field in json_response:
             logger.info(f"Receipt URL key('{receipt_url_field}') found from API response")
-            receipt_url = json_response[
-                receipt_url_field]  # check here and next lines if no url is found  -- issue from vineeth
+            receipt_url = json_response[receipt_url_field]  # check here and next lines if no url is found  -- issue from vineeth
             if receipt_url:
                 valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
                 if valid_receipt_url:
                     logger.debug(valid_receipt_url)
                     print(valid_receipt_url)
-                    validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details,
-                                                                                  txn_id)
-                    # validation_list.append(cs_text_validation)
-
-                    # # logo validation
-                    # value_cs_logo_validation_enabled = get_config(section="Validations", key="cs_logo_validation")
-                    # cs_logo_validation_enabled = str(value_cs_logo_validation_enabled).strip().title() == 'True'
-                    # # logo_validation = None
-                    # if cs_logo_validation_enabled:
-                    #     logo_validation = validate_logo_from_charge_slip(txn_id, url=valid_receipt_url)
-                    #     validation_list.append(logo_validation)
-                    #
-                    #     if logo_validation is True:
-                    #         # expected_details['logo_validation': "Passed"]
-                    #         logger.info(f"Logo Validation is Passed")
-                    #     if logo_validation is False:
-                    #         logger.info(f"Logo Validation is Failed")
-                    #         # expected_details['logo_validation': "Failed"]
-                    # # combining results
-                    # validation_sucessful = all(validation_list)
-
+                    validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
                 else:
                     check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
             else:
