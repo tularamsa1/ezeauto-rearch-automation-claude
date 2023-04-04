@@ -670,7 +670,7 @@ def test_d102_102_051():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = 49.60
+            amount = 49.65
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
@@ -1077,7 +1077,7 @@ def test_d102_102_052():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            amount = 49.60
+            amount = 49.65
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating bqrv4 qr for the amount of {amount} and order id is {order_id}")
             api_details = DBProcessor.get_api_details('bqrGenerate', request_body={
