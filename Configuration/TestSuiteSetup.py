@@ -416,7 +416,6 @@ def prepareDevicesAndDB():
         raise ValueError("Both Configurations are True, Make sure only one configuration is enabled for Merchant "
                          "Creation. Whatever type of Merchant you want to create.")
     if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
-        Ezewallet_processor.db_reset()
         sqlite_processor.clearAssignerTables()
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
         merchant_creator.create_merchants()
