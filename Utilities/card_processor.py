@@ -162,7 +162,7 @@ def update_card_bin_details():
 
 def update_invalid_merchant_account_details(org_code: str):
     try:
-        query = f"UPDATE merchant_account_details set account_number = '21482119450' where org_code = '{org_code}';"
+        query = f"UPDATE merchant_account_details set account_number = '21480649120' where org_code = '{org_code}';"
         logger.debug(f"Query for updating merchant_account_details of {org_code} in merchant_account_details table: {query}")
         result = DBProcessor.setValueToDB(query)
         if DBProcessor.set_value_to_db_query_passed(result):
