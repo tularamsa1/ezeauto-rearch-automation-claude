@@ -92,6 +92,7 @@ def test_common_100_108_024():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
+        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -199,7 +200,6 @@ def test_common_100_108_024():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -279,7 +279,6 @@ def test_common_100_108_024():
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
-                # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -463,6 +462,7 @@ def test_common_100_108_024():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation------------------------------------------
+
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -478,6 +478,7 @@ def test_common_100_108_024():
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_charge_slip_values)
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
