@@ -1,8 +1,6 @@
 import json
 import sqlite3
-
 import requests
-
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, ConfigReader, sqlite_processor
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -515,7 +513,7 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                         if condition == False:
                             try:
                                 DBProcessor.setValueToDB(
-                                    f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0007',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                                    f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0026',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
                                 logger.info(f"Device {terminal_details['deviceSerial']} added to environment.")
                             except Exception as e:
                                 logger.error(f"Unable to insert device details into db due to error {str(e)}")
@@ -523,7 +521,7 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 else:
                     try:
                         DBProcessor.setValueToDB(
-                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0007',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0026',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
                         logger.info(f"Device {terminal_details['deviceSerial']} added to environment.")
                     except Exception as e:
                         logger.error(f"Unable to insert device details into db due to error {str(e)}")
