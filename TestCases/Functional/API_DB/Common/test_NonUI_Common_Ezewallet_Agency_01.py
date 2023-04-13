@@ -32,6 +32,7 @@ def test_common_200_201_001():
         GlobalVariables.time_calc.setup.resume()
         print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        Ezewallet_processor.db_reset()
 
         agency_bal_check = "select balance from account where account_type = 'LEDGER_ACCOUNT' and entity_id = '" + Ezewallet_processor.org_code + "';"
         balance = DBProcessor.getValueFromDB(agency_bal_check, "closedloop")

@@ -1,12 +1,14 @@
 import json
 import random
 import sqlite3
+import pandas
 import requests
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
+excel_path = GlobalConstants.DATAPROVIDER_DIR+"/"+GlobalConstants.STR_CARD_DETAILS_FILE
 
 
 def configure_merchants():
@@ -28,17 +30,19 @@ def configure_merchants():
                 sqlite_processor.update_pg_details()
                 sqlite_processor.update_remotepay_settings()
                 configure_org_settings()
-                if str(ConfigReader.read_config("Setup",
-                                                "create_and_configure_merchants_with_multi_account")).lower() == "true":
-                    configure_bqr_settings_through_db_multi_account()
-                    configure_upi_settings_through_db_multi_account()
+                if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
+                    configure_card_pg_config_through_db()
                 else:
-                    configure_bqr_settings_through_api()
-                    configure_upi_settings_through_api()
-                    configure_bqr_settings_through_db()
-                    configure_upi_settings_through_db()
-                configure_cnp_settings_through_db()
-                configure_pg_settings_through_db()
+                    if str(ConfigReader.read_config("Setup","create_and_configure_merchants_with_multi_account")).lower() == "true":
+                        configure_bqr_settings_through_db_multi_account()
+                        configure_upi_settings_through_db_multi_account()
+                    else:
+                        configure_bqr_settings_through_api()
+                        configure_upi_settings_through_api()
+                        configure_bqr_settings_through_db()
+                        configure_upi_settings_through_db()
+                    configure_cnp_settings_through_db()
+                    configure_pg_settings_through_db()
                 refresh_db()
             else:
                 logger.debug("Merchant configuration skipped since there are no new merchants created.")
@@ -1936,3 +1940,164 @@ def configure_pg_settings_for_merchant_multi_account(merchant_code: str):
             configure_terminal_dependency(merchant_code, acquirer_code, cnp_payment_gateway, "CNP")
     except Exception as e:
         logger.error(f"Unable to generate the query for pg configuration due to error {str(e)}")
+
+
+def get_card_brand_details() -> set:
+    """
+       This method is used to get the card brand details from card_details xlsx file.
+       :return: set
+    """
+    card_set = set()
+    df_bin_details = pandas.read_excel(excel_path, sheet_name="bin_info")
+    df_bin_details.fillna("", inplace=True)
+    for index, data in df_bin_details.iterrows():
+            card_brand = str(data['card_brand'])
+            card_set.add(card_brand)
+    return card_set
+
+
+def check_if_card_setting_exists(org_code: str, brand: str, payment_gateway: str, payment_mode: str, txn_type: str) -> bool or None:
+    """
+    This method is used to check if the card setting exists for a merchant and given brand,payment_gateway, payment_mode, txn_type in bin_info product table.
+    :param org_code str
+    :param brand str
+    :param payment_gateway str
+    :param payment_mode str
+    :param txn_type str
+    :return: bool or None
+    """
+    try:
+        query = f"SELECT * FROM pg_config_data where org_code = '{org_code}' and " \
+                f"payment_card_brand = '{brand}' and payment_gateway = '{payment_gateway}'" \
+                f" and txn_type = '{txn_type}' and payment_mode = '{payment_mode}';"
+        result = DBProcessor.getValueFromDB(query)
+        no_of_entries = len(result)
+        if no_of_entries > 0:
+            logger.debug(f"Card setting available for {org_code}, Brand: {brand}, payment_gateway: {payment_gateway}, paymet_mode: {payment_mode}, txn_type: {txn_type}.")
+            return True
+        else:
+            logger.debug(f"Card setting is not available for {org_code}, Brand: {brand}, payment_gateway: {payment_gateway}, paymet_mode: {payment_mode}, txn_type: {txn_type}.")
+            return False
+    except Exception as e:
+        logger.error(f"Unable to check if the card setting is available for {org_code}, due to error {str(e)}")
+        return None
+
+
+def generate_card_settings_query_template() -> str:
+    """
+    This method is used to generate the query templated for card pg_config_data setting on the card brand,acquisition, payment gateway. payment_mode and txn_type
+    :return: str
+    """
+    try:
+        query = f"INSERT INTO pg_config_data (payment_gateway, Acquirer, device_type, is_active, payment_mode, payment_card_brand," \
+                f" cvm_limit, floor_limit, txn_limit, tac_denial, tac_default, tac_online, org_code, created_by, created_time, " \
+                f"modified_by, modified_time, lock_id, is_blocking, service_type, txn_type) VALUES " \
+                f"('<payment_gateway>','<acquirer_code>','A910',b'1','<payment_mode>','<card_brand>',500.00,0.00,5000.00,'0400000000','F85084800C','F85084800C'," \
+                f"'<org_code>','7204644212',now(),'7204644212'," \
+                f"now(),1,b'0','','<txn_type>');"
+        return query
+    except Exception as e:
+        logger.debug(f"Unable to generate the pg_config_data insert query template due to error {str(e)}")
+
+
+def configure_card_pg_config_through_db():
+    """
+            This method is used to configure the pg config data for all the merchants for card Transactions.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT MerchantCode from merchants WHERE CreationStatus='Created' AND MerchantCode!='EZETAP';")
+        merchant_code_list = cursor.fetchall()
+        cursor.execute(f"SELECT AcquirerCode, PaymentGateway from acquisitions;")
+        lst_acquisition_details = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        brand_details = get_card_brand_details()
+        for merchant_code in merchant_code_list:
+            if merchant_code:
+                for acquisition_details in lst_acquisition_details:
+                    for brand_detail in brand_details:
+                        if not check_if_card_setting_exists(merchant_code[0], brand_detail, acquisition_details[1], "CTLS","CHARGE"):
+                            query_list = generate_card_settings_query_template()
+                            logger.debug(query_list)
+                            query = query_list
+                            query = query.replace('<acquirer_code>', acquisition_details[0])
+                            query = query.replace('<payment_gateway>', acquisition_details[1])
+                            query = query.replace('<payment_mode>', 'CTLS')
+                            query = query.replace('<card_brand>', brand_detail)
+                            query = query.replace('<org_code>', merchant_code[0])
+                            query = query.replace('<txn_type>', 'CHARGE')
+                            logger.debug(query)
+                            result = DBProcessor.setValueToDB(query)
+                            rows_affected = len(result)
+                            if rows_affected > 0:
+                                if check_if_card_setting_exists(merchant_code[0], brand_detail, acquisition_details[1],"CTLS","CHARGE"):
+                                    logger.debug(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                            f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                            f" payment_mode: 'CTLS', txn_type: 'CHARGE' successful.")
+                                else:
+                                    logger.error(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                        f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                        f" payment_mode: 'CTLS', txn_type: 'CHARGE' is unsuccessful.")
+                            else:
+                                logger.error(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                        f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                        f" payment_mode: 'CTLS', txn_type: 'CHARGE' is unsuccessful.")
+                        if acquisition_details[1] == "ATOS_TLE":
+                            if not check_if_card_setting_exists(merchant_code[0], brand_detail, acquisition_details[1], "CONTACT","REFUND"):
+                                query_list = generate_card_settings_query_template()
+                                logger.debug(query_list)
+                                query = query_list
+                                query = query.replace('<acquirer_code>', acquisition_details[0])
+                                query = query.replace('<payment_gateway>', acquisition_details[1])
+                                query = query.replace('<payment_mode>', 'CONTACT')
+                                query = query.replace('<card_brand>', brand_detail)
+                                query = query.replace('<org_code>', merchant_code[0])
+                                query = query.replace('<txn_type>', 'REFUND')
+                                logger.debug(query)
+                                result = DBProcessor.setValueToDB(query)
+                                rows_affected = len(result)
+                                if rows_affected > 0:
+                                    if check_if_card_setting_exists(merchant_code[0], brand_detail, acquisition_details[1],"CONTACT","REFUND"):
+                                        logger.debug(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                                    f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                                    f" payment_mode: 'CONTACT', txn_type: 'REFUND' successful.")
+                                    else:
+                                        logger.error(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                                    f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                                    f" payment_mode: 'CONTACT', txn_type: 'REFUND' is unsuccessful.")
+                                else:
+                                    logger.error(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                                    f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                                    f" payment_mode: 'CONTACT', txn_type: 'REFUND' is unsuccessful.")
+                            if not check_if_card_setting_exists(merchant_code[0], brand_detail, acquisition_details[1], "CTLS","REFUND"):
+                                query_list = generate_card_settings_query_template()
+                                logger.debug(query_list)
+                                query = query_list
+                                query = query.replace('<acquirer_code>', acquisition_details[0])
+                                query = query.replace('<payment_gateway>', acquisition_details[1])
+                                query = query.replace('<payment_mode>', 'CTLS')
+                                query = query.replace('<card_brand>', brand_detail)
+                                query = query.replace('<org_code>', merchant_code[0])
+                                query = query.replace('<txn_type>', 'REFUND')
+                                logger.debug(query)
+                                result = DBProcessor.setValueToDB(query)
+                                rows_affected = len(result)
+                                if rows_affected > 0:
+                                    if check_if_card_setting_exists(merchant_code[0], brand_detail, acquisition_details[1],"CONTACT","REFUND"):
+                                        logger.debug(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                                    f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                                    f" payment_mode: 'CTLS', txn_type: 'REFUND' successful.")
+                                    else:
+                                        logger.error(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                                    f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                                    f" payment_mode: 'CTLS', txn_type: 'REFUND' is unsuccessful.")
+                                else:
+                                    logger.error(f"card pg_config_data for merchant: {merchant_code[0]}, acquisition: {acquisition_details[0]} "
+                                                    f"payment_gateway: {acquisition_details[1]}, card_brand: {brand_detail},"
+                                                    f" payment_mode: 'CTLS', txn_type: 'REFUND' is unsuccessful.")
+            else:
+                logger.debug(f"No merchants available for configuring card pg_config_data through db.")
+    except Exception as e:
+        logger.error(f"Unable to configure the card pg_config_data setting due to error {str(e)}")

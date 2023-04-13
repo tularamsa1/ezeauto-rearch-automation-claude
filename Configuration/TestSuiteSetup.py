@@ -5,7 +5,6 @@ import os
 import subprocess
 import threading
 import time
-
 import chromedriver_autoinstaller
 import geckodriver_autoinstaller
 import pandas as pd
@@ -13,7 +12,6 @@ import paramiko
 from appium import webdriver as app_webdriver
 from appium.webdriver.appium_service import AppiumService
 from selenium import webdriver
-
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import DirectoryCreator, Ezewallet_processor, card_processor
@@ -417,16 +415,13 @@ def prepareDevicesAndDB():
     if create_merchant_required == "true" and create_merchant_with_multi_account_required == "true":
         raise ValueError("Both Configurations are True, Make sure only one configuration is enabled for Merchant "
                          "Creation. Whatever type of Merchant you want to create.")
-    if str(ConfigReader.read_config("Setup", "setup_for_Card")).lower() == "true":
-        card_processor.update_card_bin_details()
     if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
         sqlite_processor.clearAssignerTables()
         DBProcessor.update_api_details_db(DBProcessor.get_api_details_list_from_excel())
-        sqlite_processor.update_merchants_to_db(sqlite_processor.get_merchants_list_from_excel())
-        sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
-        merchant_creator.create_merchants_with_users()
-        sqlite_processor.update_app_users_to_db()
-        sqlite_processor.update_portal_users_to_db()
+        merchant_creator.create_merchants()
+        merchant_configurer.configure_merchants()
+        if str(ConfigReader.read_config("standalone_features", "setup_for_card")).lower() == "true":
+            card_processor.update_card_bin_details()
     else:
         global devices, appiumServerCount
         devices = getDevicesList()

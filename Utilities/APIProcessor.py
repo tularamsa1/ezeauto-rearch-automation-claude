@@ -31,6 +31,10 @@ def send_request(api_details):
     headers = api_details['Header']
     url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
 
+    if api_details['ApiName'] == 'cybersource_success_callback':
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+        return resp
+
     if api_details['ApiName'] == 'callBackUpiMerchantRes':
         payload = urlencode(payload)
         resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
