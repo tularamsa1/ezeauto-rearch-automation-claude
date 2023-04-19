@@ -45,26 +45,23 @@ def test_common_100_107_013():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
         result = DBProcessor.getValueFromDB(query)
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
@@ -72,12 +69,14 @@ def test_common_100_107_013():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)--------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -96,7 +95,6 @@ def test_common_100_107_013():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_generateqr_success = response["success"]
             res_generateqr_username = response["username"]
             res_generateqr_publish_id = response["publishId"]
@@ -111,13 +109,13 @@ def test_common_100_107_013():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -135,11 +133,13 @@ def test_common_100_107_013():
                                      "mid": res_generateqr_mid,
                                      "merchantCode": res_generateqr_org_code
                                     }
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -158,10 +158,8 @@ def test_common_100_107_013():
 
                 query = "select * from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
-
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 db_staticqrIntent_org_code = result["org_code"].iloc[0]
                 db_staticqrIntent_vpa = result["vpa"].iloc[0]
                 db_staticqrIntent_user_mobile = result["user_mobile"].iloc[0]
@@ -192,8 +190,7 @@ def test_common_100_107_013():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -231,34 +228,33 @@ def test_common_100_107_014():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
         result = DBProcessor.getValueFromDB(query)
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
 
         logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
+
         query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
         result = DBProcessor.delete_value_from_db(query)
         logger.debug(f"Query result : {result}")
+
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
@@ -291,7 +287,6 @@ def test_common_100_107_014():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_generateqr_publish_id = response["publishId"]
 
             # Select another user for regenerating static QR for same org
@@ -375,12 +370,13 @@ def test_common_100_107_014():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -404,10 +400,8 @@ def test_common_100_107_014():
 
                 query = "select * from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
-
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 db_staticqrIntent_publish_id = result["publish_id"].iloc[0]
                 db_staticqrIntent_org_code = result["org_code"].iloc[0]
                 db_staticqrIntent_vpa = result["vpa"].iloc[0]
@@ -453,8 +447,7 @@ def test_common_100_107_014():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -494,26 +487,23 @@ def test_common_100_107_015():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
         result = DBProcessor.getValueFromDB(query)
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
@@ -521,12 +511,14 @@ def test_common_100_107_015():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)----------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -545,7 +537,6 @@ def test_common_100_107_015():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_success = response["success"]
             res_message = response["message"]
             res_errorCode = response["errorCode"]
@@ -559,13 +550,13 @@ def test_common_100_107_015():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -576,6 +567,7 @@ def test_common_100_107_015():
                                        "errorMessage": "You do not have permission to perform this operation.",
                                        "realCode": "UNAUTHORIZED_OPERATION"
                                        }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {"success": res_success,
@@ -584,7 +576,9 @@ def test_common_100_107_015():
                                      "errorMessage": res_errorMessage,
                                      "realCode": res_realCode
                                      }
+
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -594,8 +588,7 @@ def test_common_100_107_015():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -633,26 +626,23 @@ def test_common_100_107_027():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
         result = DBProcessor.getValueFromDB(query)
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
@@ -660,12 +650,14 @@ def test_common_100_107_027():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -688,7 +680,6 @@ def test_common_100_107_027():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_success = response["success"]
             res_error_code = response["errorCode"]
             res_error_message = response["errorMessage"]
@@ -700,13 +691,13 @@ def test_common_100_107_027():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -715,12 +706,14 @@ def test_common_100_107_027():
                                        "errorCode": "EZETAP_500083",
                                        "errorMessage": "UPI_MERCHANT_CONFIG_NOT_FOUND"
                                        }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {"success": res_success,
                                      "errorCode": res_error_code,
                                      "errorMessage": res_error_message,
                                      }
+
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -732,8 +725,7 @@ def test_common_100_107_027():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -771,26 +763,23 @@ def test_common_100_107_028():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         # Get details from upi_merchant_config table
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'IDFC';"
-
         result = DBProcessor.getValueFromDB(query)
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
@@ -798,12 +787,14 @@ def test_common_100_107_028():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -826,7 +817,6 @@ def test_common_100_107_028():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_success = response["success"]
             res_error_code = response["errorCode"]
             res_error_message = response["errorMessage"]
@@ -838,10 +828,9 @@ def test_common_100_107_028():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -853,12 +842,14 @@ def test_common_100_107_028():
                                        "errorCode": "EZETAP_0001606",
                                        "errorMessage": "USER_DETAILS_NOT_MATCHED"
                                        }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {"success": res_success,
                                      "errorCode": res_error_code,
                                      "errorMessage": res_error_message,
                                      }
+
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -870,7 +861,6 @@ def test_common_100_107_028():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

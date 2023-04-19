@@ -54,12 +54,17 @@ def test_common_100_107_005():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_FC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -106,6 +111,7 @@ def test_common_100_107_005():
             bank_txn_id = str(random.randint(100000000000, 999999999999))
             merchant_id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
             amount = 255
+
             api_details = DBProcessor.get_api_details('axisfc_hash', request_body={
                 "amount": amount,
                 "errMsg": "Transaction Successful",
@@ -164,7 +170,6 @@ def test_common_100_107_005():
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -269,6 +274,7 @@ def test_common_100_107_005():
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})
@@ -386,7 +392,7 @@ def test_common_100_107_005():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {}
@@ -398,7 +404,7 @@ def test_common_100_107_005():
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -421,7 +427,7 @@ def test_common_100_107_005():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -464,12 +470,17 @@ def test_common_100_107_006():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_FC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -516,6 +527,7 @@ def test_common_100_107_006():
             bank_txn_id = str(random.randint(100000000000, 999999999999))
             merchant_id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
             amount = 255
+
             api_details = DBProcessor.get_api_details('axisfc_hash', request_body={
                 "amount": amount,
                 "errMsg": "Transaction Failed",
@@ -571,11 +583,9 @@ def test_common_100_107_006():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -678,7 +688,9 @@ def test_common_100_107_006():
                     "order_id": order_id,
                     "date": date
                 }
+
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})
@@ -714,6 +726,7 @@ def test_common_100_107_006():
                     "order_id": order_id_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
+
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -742,6 +755,7 @@ def test_common_100_107_006():
                     "mid": mid,
                     "tid": tid
                 }
+
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from txn where id='" + txn_id + "'"
@@ -784,6 +798,7 @@ def test_common_100_107_006():
                     "mid": mid_db,
                     "tid": tid_db
                 }
+
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -794,9 +809,8 @@ def test_common_100_107_006():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
                 expected_portal_values = {}
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -806,14 +820,13 @@ def test_common_100_107_006():
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -857,12 +870,17 @@ def test_common_100_107_007():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_FC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -909,6 +927,7 @@ def test_common_100_107_007():
             bank_txn_id = str(random.randint(100000000000, 999999999999))
             merchant_id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
             amount = 255
+
             api_details = DBProcessor.get_api_details('axisfc_hash', request_body={
                 "amount": amount,
                 "errMsg": "Transaction Successful",
@@ -963,6 +982,7 @@ def test_common_100_107_007():
             bank_txn_id_2 = str(random.randint(100000000000, 999999999999))
             merchant_id_2 = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
             amount_2 = 255 + 1
+
             api_details = DBProcessor.get_api_details('axisfc_hash', request_body={
                 "amount": str(amount_2),
                 "errMsg": "Transaction Successful",
@@ -1019,11 +1039,9 @@ def test_common_100_107_007():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -1186,6 +1204,7 @@ def test_common_100_107_007():
                     "date_2": date_2
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})
@@ -1386,7 +1405,7 @@ def test_common_100_107_007():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {}
@@ -1399,7 +1418,7 @@ def test_common_100_107_007():
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -1408,16 +1427,20 @@ def test_common_100_107_007():
             try:
                 new_txn_date_1, new_txn_time_1 = date_time_converter.to_chargeslip_format(created_time)
                 new_txn_date_2, new_txn_time_2 = date_time_converter.to_chargeslip_format(created_time_2)
+
                 expected_charge_slip_values_1 = {
                     'PAID BY:': 'UPI', 'RRN': str(rrn), 'date': new_txn_date_1, 'time': new_txn_time_1,
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                 }
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'UPI', 'RRN': str(rrn_2), 'date': new_txn_date_2, 'time': new_txn_time_2,
                     'BASE AMOUNT:': "Rs." + str(amount_2) + ".00",
                 }
+
                 charge_slip_val_result_1 = receipt_validator.perform_charge_slip_validations(
                     txn_id, {"username": app_username, "password": app_password}, expected_charge_slip_values_1)
+
                 charge_slip_val_result_2 = receipt_validator.perform_charge_slip_validations(
                     txn_id_2, {"username": app_username, "password": app_password}, expected_charge_slip_values_2)
 
@@ -1425,6 +1448,7 @@ def test_common_100_107_007():
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
@@ -1433,8 +1457,7 @@ def test_common_100_107_007():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1448,7 +1471,7 @@ def test_common_100_107_007():
 def test_common_100_107_026():
     """
     Sub Feature Code: UI_Common_PM_StaticQR_2_UPI_Success_Callback_With_Same_RRN_Via_FC_Auto_Refund_Disabled
-    Sub Feature Description: Performing two upi success callback with same rrn via FC when autorefund is disabled.
+    Sub Feature Description: Duplicate Callback case for Static QR - we should not create new txn when duplicate callback is received. Same rrn and same txn ref
     TC naming code description: 100: Payment Method, 107: UPI STATIC QR, 026: TC026
     """
     try:
@@ -1478,12 +1501,17 @@ def test_common_100_107_026():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_FC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)---------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -1619,11 +1647,9 @@ def test_common_100_107_026():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -1646,6 +1672,7 @@ def test_common_100_107_026():
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                 }
+
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -1698,6 +1725,7 @@ def test_common_100_107_026():
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                 }
+
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -1725,6 +1753,7 @@ def test_common_100_107_026():
                     "txn_id": str(txn_id)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})
@@ -1843,7 +1872,7 @@ def test_common_100_107_026():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {}
@@ -1856,7 +1885,7 @@ def test_common_100_107_026():
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -1870,6 +1899,7 @@ def test_common_100_107_026():
                 }
                 receipt_validator.perform_charge_slip_validations(
                     txn_id, {"username": app_username, "password": app_password}, expected_charge_slip_values_1)
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
@@ -1878,7 +1908,6 @@ def test_common_100_107_026():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

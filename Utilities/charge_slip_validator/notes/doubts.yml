@@ -1,0 +1,15 @@
+
+CONCERNS: 
+- Will they work on every environment?
+- Will there be same txn id in all environments?
+- Is logos are same in all environments where these logo validator is supposed to run?
+
+FOCUS DEV 11:
+- Currently we have a function which recieves receipt url and checks if logo exists
+- Needed to pull the code
+- Transaction ids to test atleast one per acquirer - 
+- NEED TO SAVE THE LOGOS: txn id # and receipt url
+- new system.. last worked on Nov. setup ezeauto and many changes might have been there after I last worked
+
+
+

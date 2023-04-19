@@ -50,8 +50,10 @@ def test_common_100_108_010():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -66,7 +68,9 @@ def test_common_100_108_010():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
+        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -83,19 +87,14 @@ def test_common_100_108_010():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_bqr_config_id = result['id'].values[0]
             logger.info(f"fetched config id is : {db_bqr_config_id}")
-
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
-
             db_bqr_config_tid = result['tid'].values[0]
             logger.info(f"fetched tid is : {db_bqr_config_tid}")
-
             db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
             logger.info(f"fetched merchant_pan is : {db_bqr_config_merchant_pan}")
-
             db_bqr_config_terminal_info_id = result["terminal_info_id"].iloc[0]
             logger.info(f"fetched terminal_info_id is : {db_bqr_config_terminal_info_id}")
 
@@ -104,10 +103,8 @@ def test_common_100_108_010():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_upi_config_vpa = result['vpa'].values[0]
             logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
             db_upi_config_merchant_id = result['pgMerchantId'].values[0]
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
@@ -132,7 +129,6 @@ def test_common_100_108_010():
 
             amount = random.randint(301, 399)
             logger.debug(f"generated random amount is : {amount}")
-
             auth_code = "A" + publish_id[-10:]
             rrn_num = "R" + publish_id[-10:]
 
@@ -152,10 +148,8 @@ def test_common_100_108_010():
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn_num) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
-
             txn_id = result["id"].iloc[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
@@ -168,7 +162,6 @@ def test_common_100_108_010():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
@@ -416,7 +409,7 @@ def test_common_100_108_010():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -458,12 +451,13 @@ def test_common_100_108_011():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        # Enable auto refund
 
+        # Enable auto refund
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
                                                                               "settingForOrgCode": org_code})
@@ -474,7 +468,9 @@ def test_common_100_108_011():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
+        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -491,19 +487,14 @@ def test_common_100_108_011():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_bqr_config_id = result['id'].values[0]
             logger.info(f"fetched config id is : {db_bqr_config_id}")
-
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
-
             db_bqr_conig_tid = result['tid'].values[0]
             logger.info(f"fetched tid is : {db_bqr_conig_tid}")
-
             db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
             logger.info(f"fetched merchant_pan is : {db_bqr_config_merchant_pan}")
-
             db_bqr_config_terminal_info_id = result["terminal_info_id"].iloc[0]
             logger.info(f"fetched terminal_info_id is : {db_bqr_config_terminal_info_id}")
 
@@ -512,10 +503,8 @@ def test_common_100_108_011():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_upi_config_vpa = result['vpa'].values[0]
             logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
             db_upi_config_merchant_id = result['pgMerchantId'].values[0]
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
@@ -540,7 +529,6 @@ def test_common_100_108_011():
 
             amount = random.randint(301, 399)
             logger.debug(f"generated random amount is : {amount}")
-
             auth_code = "A" + publish_id[-10:]
             rrn_num = "R" + publish_id[-10:]
 
@@ -560,10 +548,8 @@ def test_common_100_108_011():
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn_num) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
-
             txn_id = result["id"].iloc[0]
             db_txn_created_time = result['created_time'].values[0]
 
@@ -574,11 +560,9 @@ def test_common_100_108_011():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -831,7 +815,7 @@ def test_common_100_108_011():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -872,12 +856,14 @@ def test_common_100_108_019():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        # Enable auto refund
 
+        # Enable auto refund
         api_details = DBProcessor.get_api_details('AutoRefund', request_body={"username": portal_username,
                                                                               "password": portal_password,
                                                                               "settingForOrgCode": org_code})
@@ -888,7 +874,9 @@ def test_common_100_108_019():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
+        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -905,19 +893,14 @@ def test_common_100_108_019():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_bqr_config_id = result['id'].values[0]
             logger.info(f"fetched config id is : {db_bqr_config_id}")
-
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
-
             db_bqr_conig_tid = result['tid'].values[0]
             logger.info(f"fetched tid is : {db_bqr_conig_tid}")
-
             db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
             logger.info(f"fetched merchant_pan is : {db_bqr_config_merchant_pan}")
-
             db_bqr_config_terminal_info_id = result["terminal_info_id"].iloc[0]
             logger.info(f"fetched terminal_info_id is : {db_bqr_config_terminal_info_id}")
 
@@ -926,10 +909,8 @@ def test_common_100_108_019():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_upi_config_vpa = result['vpa'].values[0]
             logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
             db_upi_config_merchant_id = result['pgMerchantId'].values[0]
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
@@ -954,7 +935,6 @@ def test_common_100_108_019():
 
             amount = random.randint(101, 200)
             logger.debug(f"generated random amount is : {amount}")
-
             auth_code = "A" + publish_id[-10:]
             rrn_num = "R" + publish_id[-10:]
 
@@ -976,10 +956,8 @@ def test_common_100_108_019():
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn_num) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
-
             txn_id = result["id"].iloc[0]
             db_txn_created_time = result['created_time'].values[0]
 
@@ -990,11 +968,9 @@ def test_common_100_108_019():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -1209,7 +1185,7 @@ def test_common_100_108_019():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1250,8 +1226,10 @@ def test_common_100_108_032():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -1275,19 +1253,14 @@ def test_common_100_108_032():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_bqr_config_id = result['id'].values[0]
             logger.info(f"fetched config id is : {db_bqr_config_id}")
-
             db_bqr_config_mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {db_bqr_config_mid}")
-
             db_bqr_config_tid = result['tid'].values[0]
             logger.info(f"fetched tid is : {db_bqr_config_tid}")
-
             db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
             logger.info(f"fetched merchant_pan is : {db_bqr_config_merchant_pan}")
-
             db_bqr_config_terminal_info_id = result["terminal_info_id"].iloc[0]
             logger.info(f"fetched terminal_info_id is : {db_bqr_config_terminal_info_id}")
 
@@ -1296,10 +1269,8 @@ def test_common_100_108_032():
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-
             db_upi_config_vpa = result['vpa'].values[0]
             logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
             db_upi_config_merchant_id = result['pgMerchantId'].values[0]
             logger.info(f"fetched merchantId is : {db_upi_config_merchant_id}")
 
@@ -1324,7 +1295,6 @@ def test_common_100_108_032():
 
             amount = random.randint(301, 399)
             logger.debug(f"generated random amount is : {amount}")
-
             auth_code = "A" + publish_id[-10:]
             rrn_num = "R" + publish_id[-10:]
 
@@ -1345,10 +1315,8 @@ def test_common_100_108_032():
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn_num) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
-
             txn_id = result["id"].iloc[0]
             db_txn_amount = result["amount"].iloc[0]
             db_org_code = result["org_code"].iloc[0]
@@ -1377,10 +1345,8 @@ def test_common_100_108_032():
             query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
                 rrn_num) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result_2 = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result_2}")
-
             txn_id_2 = result_2["id"].iloc[0]
             db_txn_amount_2 = result_2["amount"].iloc[0]
             db_org_code_2 = result_2["org_code"].iloc[0]
@@ -1399,8 +1365,8 @@ def test_common_100_108_032():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -1461,6 +1427,7 @@ def test_common_100_108_032():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -1541,6 +1508,7 @@ def test_common_100_108_032():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -1636,6 +1604,6 @@ def test_common_100_108_032():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
