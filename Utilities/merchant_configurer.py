@@ -3,6 +3,7 @@ import random
 import sqlite3
 import pandas
 import requests
+from datetime import datetime
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -32,6 +33,7 @@ def configure_merchants():
                 configure_org_settings()
                 if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
                     configure_card_pg_config_through_db()
+                    configure_idfc_is_settings_through_db()
                 else:
                     if str(ConfigReader.read_config("Setup","create_and_configure_merchants_with_multi_account")).lower() == "true":
                         configure_bqr_settings_through_db_multi_account()
@@ -118,7 +120,11 @@ def configure_upi_settings_through_api():
         for upi_setting_api_body in lst_upi_settings_api_body:
             merchant_code = get_merchant_code_using_mid(upi_setting_api_body['acquisitions'][0]['terminals'][0]['mid'])
             acquirer_code = upi_setting_api_body['acquisitions'][0]['acquirerCode']
-            payment_gateway = upi_setting_api_body['acquisitions'][0]['paymentGateway']
+            # Added condition check for AXIS_FC pspbankcode to initialize FC as Payment_Gateway
+            if upi_setting_api_body['pspBankCode'] == 'AXIS_FC':
+                payment_gateway = 'FC'
+            else:
+                payment_gateway = upi_setting_api_body['acquisitions'][0]['paymentGateway']
             configure_terminal_dependency(merchant_code, acquirer_code, payment_gateway, "UPI")
             payload = json.dumps(upi_setting_api_body)
             logger.debug(payload)
@@ -215,14 +221,17 @@ def configure_upi_settings_through_db():
                                                         setting_details['payment_gateway'],
                                                         setting_details['mid'],
                                                         setting_details['tid'])
-                if not check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
+                if not check_if_upi_setting_exists(merchant_details[0], terminal_info_id, setting_details['upi_bank_code']):
                     query = generate_upi_settings_query_for_merchant(merchant_details[0], merchant_details[1],
                                                                      merchant_details[2])
                     logger.debug(query)
+                    # Added condition check for query which contains AXIS_FC to initialize FC as payment gateway
+                    if query.__contains__('AXIS_FC'):
+                        setting_details['payment_gateway'] ='FC'
                     result = DBProcessor.setValueToDB(query)
                     rows_affected = len(result)
                     if rows_affected > 0:
-                        if check_if_upi_setting_exists(merchant_details[0], terminal_info_id):
+                        if check_if_upi_setting_exists(merchant_details[0], terminal_info_id, setting_details['upi_bank_code']):
                             logger.debug(f"Setting for {setting_details['acquirer_code']} with "
                                          f"{setting_details['payment_gateway']} of {merchant_details[0]} successful.")
                             update_config_result(setting_details['merchant_code'], setting_details['acquirer_code'],
@@ -585,16 +594,22 @@ def generate_upi_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         merchant_configuration_api["password"] = ConfigReader.read_config("SuperUserCredentials", "password")
         merchant_configuration_api['bankCode'] = settings['bank_code']
         merchant_configuration_api['pspBankCode'] = settings['upi_bank_code']
-        merchant_configuration_api['categoryCode'] = settings['category_code']
-        merchant_configuration_api['name'] = settings['merchant_name']
         merchant_configuration_api['merchantCode'] = merchant_code
-        merchant_configuration_api['pgMerchantId'] = settings['tid']
+        merchant_configuration_api['name'] = settings['merchant_name']
         merchant_configuration_api['acquisitions'][0]['acquirerCode'] = settings['acquirer_code']
         merchant_configuration_api['acquisitions'][0]['paymentGateway'] = settings['payment_gateway']
+        merchant_configuration_api['categoryCode'] = settings['category_code']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['mid'] = settings['mid']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['tid'] = settings['tid']
+        # Added condition check for FC Payment Gateway to Initialize unique pgmerchantid and VPA
+        if payment_gateway == 'FC':
+            pgmerchantid_value = datetime.now().strftime('%m%d%y%H%M')
+            merchant_configuration_api['pgMerchantId'] = pgmerchantid_value
+            merchant_configuration_api['vpa'] = pgmerchantid_value + "@upi"
+        else:
+            merchant_configuration_api['pgMerchantId'] = settings['tid']
+            merchant_configuration_api['vpa'] = settings['tid'] + "@upi"
         add_key_to_upi_setting_api_body(merchant_configuration_api)
-        merchant_configuration_api['vpa'] = settings['tid'] + "@upi"
         logger.debug(merchant_configuration_api)
         return merchant_configuration_api
     except Exception as e:
@@ -694,7 +709,8 @@ def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str
             query = query.replace(", '<encKey>', '<vmid>', '<vtid>'","")
         elif acquirer_code == "YES" and payment_gateway == "ATOS" or \
                 acquirer_code == "AXIS" and payment_gateway == "ATOS_TLE" or \
-                acquirer_code == "KOTAK" and payment_gateway == "KOTAK_WL":
+                acquirer_code == "KOTAK" and payment_gateway == "KOTAK_WL" or \
+                acquirer_code == "AXIS" and payment_gateway == "FC":
             query = query.replace(", upi_app_key, encKey, virtual_mid, virtual_tid", "")
             query = query.replace(", '<upi_app_key>', '<encKey>', '<vmid>', '<vtid>'", "")
         elif acquirer_code == "AIRP" and payment_gateway == "APB":
@@ -778,9 +794,15 @@ def generate_upi_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         bank_code = setting_details['upi_bank_code']
         category_code = setting_details['category_code']
         merchant_name = setting_details['merchant_name']
-        pg_merchant_id = tid
+        # Added condition check for AXIS_FC upi_bank_code to initialize unique pgmerchantid and VPA
+        if bank_code == 'AXIS_FC':
+            pgmerchantid_value = datetime.now().strftime('%m%d%y%H%M')
+            pg_merchant_id = pgmerchantid_value
+            vpa = pgmerchantid_value + "@upi"
+        else:
+            pg_merchant_id = tid
+            vpa = tid + "@upi"
         terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
-        vpa = tid + "@upi"
         upi_app_key = setting_details['app_key_for_upi']
         enc_key = setting_details['enc_key_for_upi']
         if upi_app_key == 'N/A':
@@ -887,7 +909,6 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
                        f"PaymentGateway = '{payment_gateway}';")
         acquisition_details = cursor.fetchone()
         setting_details['acquirer_code'] = acquisition_details[0]
-        setting_details['payment_gateway'] = acquisition_details[1]
         setting_details['number_of_terminals'] = acquisition_details[2]
         setting_details['hsm_name'] = acquisition_details[3]
         setting_details['bank_code'] = acquisition_details[4]
@@ -900,16 +921,30 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
         setting_details['bqr_settings_required'] = acquisition_details[11]
         setting_details['upi_settings_required'] = acquisition_details[12]
         setting_details['enc_key_for_upi'] = acquisition_details[13]
-        cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
-                       f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
-                       f"PaymentGateway = '{payment_gateway}';")
-        terminal_details = cursor.fetchone()
-        setting_details['tid'] = terminal_details[0]
-        setting_details['device_serial'] = terminal_details[1]
-        setting_details['category_code'] = terminal_details[2]
-        setting_details['mid'] = terminal_details[3]
-        setting_details['merchant_code'] = terminal_details[4]
-        setting_details['merchant_name'] = terminal_details[5]
+        # Added condition check for FC payment_gateway to fetch the terminal_details of ATOS_TLE for AXIS_FC bank code
+        if payment_gateway !='FC':
+            cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
+                           f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
+                           f"PaymentGateway = '{payment_gateway}';")
+            terminal_details = cursor.fetchone()
+            setting_details['tid'] = terminal_details[0]
+            setting_details['device_serial'] = terminal_details[1]
+            setting_details['category_code'] = terminal_details[2]
+            setting_details['mid'] = terminal_details[3]
+            setting_details['merchant_code'] = terminal_details[4]
+            setting_details['merchant_name'] = terminal_details[5]
+            setting_details['payment_gateway'] = acquisition_details[1]
+        else:
+            cursor.execute(f"SELECT TID, CategoryCode, MID, MerchantName, MerchantCode FROM terminal_details "
+                           f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
+                           f"PaymentGateway = 'ATOS_TLE';")
+            terminal_details = cursor.fetchone()
+            setting_details['tid'] = terminal_details[0]
+            setting_details['category_code'] = terminal_details[1]
+            setting_details['mid'] = terminal_details[2]
+            setting_details['merchant_name'] = terminal_details[3]
+            setting_details['merchant_code'] = terminal_details[4]
+            setting_details['payment_gateway'] = 'ATOS_TLE'
     except Exception as e:
         logger.error(f"Unable to get the setting details due to error {str(e)}")
     cursor.close()
@@ -1161,7 +1196,12 @@ def get_terminal_info_id(org_code: str, acquirer_code: str, payment_gateway: str
     :return: str
     """
     try:
-        query = f"select id from terminal_info where org_code='{org_code}' and acquirer_code='{acquirer_code}' and " \
+        # Added condition check for FC payment_gateway to fetch terminal_info_id of ATOS_TLE terminal for AXIS_FC bank code
+        if payment_gateway == 'FC':
+            query = f"select id from terminal_info where org_code='{org_code}' and acquirer_code='{acquirer_code}' and " \
+                    f"payment_gateway='ATOS_TLE';"
+        else:
+            query = f"select id from terminal_info where org_code='{org_code}' and acquirer_code='{acquirer_code}' and " \
                 f"payment_gateway='{payment_gateway}' and mid='{mid}' and tid='{tid}';"
         result = DBProcessor.getValueFromDB(query=query)
         return result['id'][0]
@@ -1210,7 +1250,7 @@ def get_payment_gateway_from_terminal_details(acquirer_code: str) -> str:
         logger.error(f"Unable to get the pg due to error {str(e)}")
 
 
-def check_if_upi_setting_exists(org_code: str, terminal_info_id: str) -> bool or None:
+def check_if_upi_setting_exists(org_code: str, terminal_info_id: str, bank_code: str) -> bool or None:
     """
     This method is used to check if the upi setting exists for a merchant.
     :param org_code str
@@ -1219,7 +1259,7 @@ def check_if_upi_setting_exists(org_code: str, terminal_info_id: str) -> bool or
     """
     try:
         query = f"SELECT * FROM upi_merchant_config where org_code = '{org_code}' and " \
-                f"terminal_info_id = '{terminal_info_id}';"
+                f"terminal_info_id = '{terminal_info_id}' and bank_code = '{bank_code}';"
         result = DBProcessor.getValueFromDB(query)
         no_of_entries = len(result)
         if no_of_entries > 0:
@@ -1515,19 +1555,35 @@ def get_setting_details_multi_account(merchant_code: str, acquirer_code: str, pa
         setting_details['bqr_settings_required'] = acquisition_details[11]
         setting_details['upi_settings_required'] = acquisition_details[12]
         setting_details['enc_key_for_upi'] = acquisition_details[13]
-        cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
+        # Added condition check for FC payment_gateway to fetch the terminal_details of ATOS_TLE for AXIS_FC bank code
+        if payment_gateway != 'FC':
+            cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
                        f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
                        f"PaymentGateway = '{payment_gateway}';")
-        terminal_details = cursor.fetchall()
-        for i in range(acquisition_details[2]):
-            setting_details['tid'] = terminal_details[i][0]
-            setting_details['device_serial'] = terminal_details[i][1]
-            setting_details['category_code'] = terminal_details[i][2]
-            setting_details['mid'] = terminal_details[i][3]
-            setting_details['merchant_code'] = terminal_details[i][4]
-            setting_details['merchant_name'] = terminal_details[i][5]
-            setting_details['acc_label_id'] = acquisition_details[14 + i]
-            setting_details_list.append(setting_details.copy())
+            terminal_details = cursor.fetchall()
+            for i in range(acquisition_details[2]):
+                setting_details['tid'] = terminal_details[i][0]
+                setting_details['device_serial'] = terminal_details[i][1]
+                setting_details['category_code'] = terminal_details[i][2]
+                setting_details['mid'] = terminal_details[i][3]
+                setting_details['merchant_code'] = terminal_details[i][4]
+                setting_details['merchant_name'] = terminal_details[i][5]
+                setting_details['acc_label_id'] = acquisition_details[14 + i]
+                setting_details_list.append(setting_details.copy())
+        else:
+            cursor.execute(f"SELECT TID, CategoryCode, MID, MerchantName, MerchantCode FROM terminal_details "
+                           f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
+                           f"PaymentGateway = 'ATOS_TLE';")
+            terminal_details = cursor.fetchall()
+            for i in range(acquisition_details[2]):
+                setting_details['tid'] = terminal_details[i][0]
+                setting_details['category_code'] = terminal_details[i][1]
+                setting_details['mid'] = terminal_details[i][2]
+                setting_details['merchant_name'] = terminal_details[i][3]
+                setting_details['merchant_code'] = terminal_details[i][4]
+                setting_details['acc_label_id'] = acquisition_details[14 + i]
+                setting_details['payment_gateway'] = 'ATOS_TLE'
+                setting_details_list.append(setting_details.copy())
     except Exception as e:
         logger.error(f"Unable to get the setting details due to error {str(e)}")
     cursor.close()
@@ -1558,6 +1614,7 @@ def generate_upi_query_template_multi_account(acquirer_code: str, payment_gatewa
             query = query.replace(", '<encKey>', '<vmid>', '<vtid>'","")
         elif acquirer_code == "YES" and payment_gateway == "ATOS" or \
                 acquirer_code == "AXIS" and payment_gateway == "ATOS_TLE" or \
+                acquirer_code == "AXIS" and payment_gateway == "FC" or \
                 acquirer_code == "KOTAK" and payment_gateway == "KOTAK_ATOS":
             query = query.replace(", upi_app_key, encKey, virtual_mid, virtual_tid", "")
             query = query.replace(", '<upi_app_key>', '<encKey>', '<vmid>', '<vtid>'", "")
@@ -1589,9 +1646,15 @@ def generate_upi_settings_query_for_merchant_multi_account(org_code: str, acquir
             bank_code = setting_details[i]['upi_bank_code']
             category_code = setting_details[i]['category_code']
             merchant_name = setting_details[i]['merchant_name']
-            pg_merchant_id = tid
+            # Added condition check for AXIS_FC upi_bank_code to initialize unique pgmerchantid and VPA
+            if bank_code == 'AXIS_FC':
+                pgmerchantid_value = datetime.now().strftime('%m%d%y%H%M')
+                pg_merchant_id = pgmerchantid_value
+                vpa = pgmerchantid_value + "@upi"
+            else:
+                pg_merchant_id = tid
+                vpa = tid + "@upi"
             terminal_info_id = get_terminal_info_id(org_code, acquirer_code, payment_gateway, mid, tid)
-            vpa = tid + "@upi"
             upi_app_key = setting_details[i]['app_key_for_upi']
             enc_key = setting_details[i]['enc_key_for_upi']
             acc_label_id = setting_details[i]['acc_label_id']
@@ -1647,17 +1710,19 @@ def configure_upi_settings_through_db_multi_account():
                                                                 setting_details[i]['payment_gateway'],
                                                                 setting_details[i]['mid'],
                                                                 setting_details[i]['tid'])
-                        if not check_if_upi_setting_exists(merchant_code[0], terminal_info_id):
+                        if not check_if_upi_setting_exists(merchant_code[0], terminal_info_id, setting_details[i]['upi_bank_code']):
                             query_list = generate_upi_settings_query_for_merchant_multi_account(merchant_code[0],
                                                                                                 acquisition_details[0],
                                                                                                 acquisition_details[1])
                             for j in range(len(query_list)):
                                 query = query_list[j]
                                 logger.debug(query)
+                                if query.__contains__('AXIS_FC'):
+                                    setting_details[j]['payment_gateway'] = 'FC'
                                 result = DBProcessor.setValueToDB(query)
                                 rows_affected = len(result)
                                 if rows_affected > 0:
-                                    if check_if_upi_setting_exists(merchant_code[0], terminal_info_id):
+                                    if check_if_upi_setting_exists(merchant_code[0], terminal_info_id, setting_details[j]['upi_bank_code']):
                                         logger.debug(f"Setting for {setting_details[j]['acquirer_code']} with "
                                                      f"{setting_details[j]['payment_gateway']} of {merchant_code[0]} successful.")
                                         update_config_result(setting_details[j]['merchant_code'],
@@ -2101,3 +2166,39 @@ def configure_card_pg_config_through_db():
                 logger.debug(f"No merchants available for configuring card pg_config_data through db.")
     except Exception as e:
         logger.error(f"Unable to configure the card pg_config_data setting due to error {str(e)}")
+
+
+def configure_idfc_is_settings_through_db():
+    """
+       This method is used to set the Rule_mapping and merchant account details required for IDFC instant settlement.
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT MerchantCode from merchants WHERE CreationStatus='Created' AND MerchantCode!='EZETAP';")
+        merchant_code_list = cursor.fetchall()
+        for merchant_code in merchant_code_list:
+            cursor.execute(f"SELECT MID, TID from terminal_details where MerchantCode = '{merchant_code[0]}' AND PaymentGateway = 'IDFC_FDC';")
+            terminal_details = cursor.fetchall()
+            queries_lst = []
+            queries_lst.append("INSERT INTO rule_mapping (created_by,created_time,lock_id,modified_by,modified_time, blocker_predicate,filter_criteria,parameter_value,rule_id,rule_instance,rule_parameter_id) VALUES ('ezetap',now(),0,'ezetap',now(),'','<merchant_code>','1000000', (select id from rule where name='IS per txn limit'),(select concat((now()+0),id) from rule_parameter where parameter_name='IS_per_txn_limit'),(select id from rule_parameter where parameter_name='IS_per_txn_limit'));")
+            queries_lst.append("INSERT INTO rule_mapping (created_by,created_time,lock_id,modified_by,modified_time,blocker_predicate,filter_criteria,parameter_value,rule_id,rule_instance,rule_parameter_id) VALUES ('ezetap',now(),0,'ezetap',now(),'','<merchant_code>','1000000', (select id from rule where name='IS daily txn limit'),(select concat((now()+0),id) from rule_parameter where parameter_name='IS_daily_txn_limit'), (select id from rule_parameter where parameter_name='IS_daily_txn_limit'));")
+            queries_lst.append("INSERT INTO rule_mapping (created_by,created_time,lock_id,modified_by,modified_time, blocker_predicate,filter_criteria,parameter_value,rule_id,rule_instance,rule_parameter_id) VALUES ('ezetap',now(),0,'ezetap',now(),'','<merchant_code>','10000000',(select id from rule where name='IS monthly txn limit'), (select concat((now()+0),id) from rule_parameter where parameter_name='IS_monthly_txn_limit'), (select id from rule_parameter where parameter_name='IS_monthly_txn_limit'));")
+            for terminal_detail in terminal_details:
+                query = "INSERT INTO merchant_account_details (created_by,created_time,lock_id,modified_by,modified_time,account_number,account_tag,bank_name,branch_name,dba_name,gstn_number,ifsc_code,mid,org_code,pan_number,status,tid) VALUES ('ezetap',now(),0,'ezetap',now(),'21482119454','Ezetap','IDFC','Mumbai', 'merchant','NA','IDFB0010201','<Mid>','<merchant_code>','NA',b'1','<Tid>');"
+                query = query.replace('<Mid>', terminal_detail[0])
+                query = query.replace('<Tid>', terminal_detail[1])
+                queries_lst.append(query)
+            for query in queries_lst:
+                logger.debug(query)
+                query = query.replace('<merchant_code>', merchant_code[0])
+                result = DBProcessor.setValueToDB(query)
+                rows_affected = len(result)
+                if rows_affected > 0:
+                    logger.debug(f"Inserted IDFC Instant settlement setting query Successfully")
+                else:
+                    logger.debug(f"FAILED to Insert IDFC Instant settlement setting query")
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        logger.debug(f"Unable to generate the IDFC Instant Settlement query template due to error {str(e)}")
