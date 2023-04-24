@@ -20,9 +20,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_081():
     """
-    :Description: Verification of a BQRV4 Refund transaction via AXIS_ATOS
-    :Sub feature code: UI_Common_BQRV4_Refund_via_AXIS_ATOS_081
-    :TC naming code description:100->Payment Method, 102->BQR, 062-> TC081
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_Refund_via_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 Refund transaction via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 081: TC081
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -31,6 +31,7 @@ def test_common_100_102_081():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -68,7 +69,6 @@ def test_common_100_102_081():
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
         upi_mc_id = result["id"].iloc[0]
-
         logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -164,8 +164,8 @@ def test_common_100_102_081():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id,
                     "txn_id_2": txn_id_refunded,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
                     "payer_name": payer_name,
@@ -193,7 +193,6 @@ def test_common_100_102_081():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn_refunded}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
@@ -270,11 +269,13 @@ def test_common_100_102_081():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -388,6 +389,7 @@ def test_common_100_102_081():
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -508,6 +510,7 @@ def test_common_100_102_081():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)

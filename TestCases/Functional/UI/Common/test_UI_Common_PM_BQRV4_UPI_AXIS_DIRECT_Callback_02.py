@@ -1,23 +1,15 @@
 import random
-import shutil
 import sys
 import time
 from datetime import datetime
-
 import pytest
-from termcolor import colored
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
-    receipt_validator, date_time_converter
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, receipt_validator, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -31,12 +23,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_177():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_UPI_2_success_callback_after_qr_expiry_AutoRefund_Disabled_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_2_Success_Callback_After_QR_Expiry_AutoRefund_Disabled_AXIS_DIRECT
     Sub Feature Description: Performing a pure bqrv4 upi 2 success callback via AXIS_DIRECT after qr expiry when autorefund is disabled
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    177: TC177
+    TC naming code description: 100: Payment Method, 102: BQR, 177: TC177
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -64,16 +53,21 @@ def test_common_100_102_177():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        logger.debug(f"RESULT of updating DB setting active: {result}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -86,8 +80,11 @@ def test_common_100_102_177():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -102,9 +99,7 @@ def test_common_100_102_177():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = random.randint(1, 49)
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -114,7 +109,6 @@ def test_common_100_102_177():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
@@ -149,14 +143,11 @@ def test_common_100_102_177():
             hdfc_tid = result['tid'].values[0]
             logger.debug(f"Fetching tid from the bharatqr_merchant_config table : tid : {hdfc_tid}")
             terminal_info_id = result['terminal_info_id'].values[0]
-            logger.debug(
-                f"Fetching terminal_info_id from the bharatqr_merchant_config table : terminal_info_id : {terminal_info_id}")
+            logger.debug(f"Fetching terminal_info_id from the bharatqr_merchant_config table : terminal_info_id : {terminal_info_id}")
             bqr_merchant_config_id = result['id'].values[0]
-            logger.debug(
-                f"Fetching merchant_config_id from the bharatqr_merchant_config table : merchant_config_id : {bqr_merchant_config_id}")
+            logger.debug(f"Fetching merchant_config_id from the bharatqr_merchant_config table : merchant_config_id : {bqr_merchant_config_id}")
             bqr_merchant_pan = result['merchant_pan'].values[0]
-            logger.debug(
-                f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {bqr_merchant_pan}")
+            logger.debug(f"Fetching merchant_pan from the bharatqr_merchant_config table : merchant_pan : {bqr_merchant_pan}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -201,9 +192,7 @@ def test_common_100_102_177():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-            print(type(data_buffer))
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             # data_buffer = ast.literal_eval(data_buffer)
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
@@ -253,9 +242,7 @@ def test_common_100_102_177():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-            print(type(data_buffer))
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             # data_buffer = ast.literal_eval(data_buffer)
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
@@ -281,17 +268,6 @@ def test_common_100_102_177():
             txn_created_time_3 = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : txn_created_time_3 : {txn_created_time_3}")
 
-            query = "select * from bharatqr_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
-            logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            terminal_info_id = result['terminal_info_id'].values[0]
-            logger.debug(
-                f"Fetching terminal_info_id from the bharatqr_merchant_config table : terminal_info_id : {terminal_info_id}")
-            merchant_config_id = result['id'].values[0]
-            logger.debug(
-                f"Fetching merchant_config_id from the bharatqr_merchant_config table : merchant_config_id : {merchant_config_id}")
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -306,6 +282,7 @@ def test_common_100_102_177():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -903,13 +880,9 @@ def test_common_100_102_177():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_211():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_and_1_BQR_HDFC_success_callback_after_qr_expiry_AutoRefund_Disabled
-    Sub Feature Description: Performing a pure bqrv4 1 upi success callback via AXIS_DIRECT and 1 bqr success callback
-    via HDFC, after qr expiry when autorefund is disabled
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    211: TC211
+    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_And_1_BQR_HDFC_Success_Callback_After_QR_Expiry_AutoRefund_Disabled
+    Sub Feature Description: Performing a pure bqrv4 1 upi success callback via AXIS_DIRECT and 1 bqr success callback via HDFC, after qr expiry when autorefund is disabled
+    TC naming code description: 100: Payment Method, 102: BQR, 211: TC211
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -937,16 +910,21 @@ def test_common_100_102_211():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        logger.debug(f"RESULT of updating DB setting active: {result}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -959,8 +937,11 @@ def test_common_100_102_211():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -975,9 +956,7 @@ def test_common_100_102_211():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = 49.65
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -987,7 +966,6 @@ def test_common_100_102_211():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
@@ -1074,9 +1052,7 @@ def test_common_100_102_211():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-            print(type(data_buffer))
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             # data_buffer = ast.literal_eval(data_buffer)
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
@@ -1144,13 +1120,13 @@ def test_common_100_102_211():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -1161,7 +1137,7 @@ def test_common_100_102_211():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount),
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -1169,7 +1145,7 @@ def test_common_100_102_211():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "order_id_2": order_id,
@@ -1202,7 +1178,6 @@ def test_common_100_102_211():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
@@ -1377,7 +1352,6 @@ def test_common_100_102_211():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1402,7 +1376,6 @@ def test_common_100_102_211():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_2][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_2 = response["status"]
                 amount_api_2 = float(response["amount"])
                 payment_mode_api_2 = response["paymentMode"]
@@ -1430,7 +1403,6 @@ def test_common_100_102_211():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_3][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_3 = response["status"]
                 amount_api_3 = float(response["amount"])
                 payment_mode_api_3 = response["paymentMode"]
@@ -1734,18 +1706,22 @@ def test_common_100_102_211():
             try:
                 txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(txn_created_time_3)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_2),
                     'BASE AMOUNT:': "Rs." + str(amount), 'date': txn_date_2,
                     'time': txn_time_2,
                 }
+
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2, {
                     "username": app_username, "password": app_password}, expected_charge_slip_values_2)
+
                 expected_chargeslip_values_3 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_3),
                     'BASE AMOUNT:': "Rs." + str(amount), 'time': txn_time_3, 'date': txn_date_3,
                     'AUTH CODE': auth_code_3
                 }
+
                 chargeslip_val_result_3 = receipt_validator.perform_charge_slip_validations(txn_id_3, {
                     "username": app_username, "password": app_password}, expected_chargeslip_values_3)
 
@@ -1753,15 +1729,16 @@ def test_common_100_102_211():
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1774,13 +1751,9 @@ def test_common_100_102_211():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_212():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_and_1_BQR_HDFC_success_callback_after_qr_expiry_AutoRefund_Enabled
-    Sub Feature Description: Performing a pure bqrv4 1 upi success callback via AXIS_DIRECT and 1 bqr success callback
-    via HDFC, after qr expiry when autorefund is enabled
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    212: TC212
+    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_And_1_BQR_HDFC_Success_Callback_After_QR_Expiry_AutoRefund_Enabled
+    Sub Feature Description: Performing a pure bqrv4 1 upi success callback via AXIS_DIRECT and 1 bqr success callback via HDFC, after qr expiry when autorefund is enabled
+    TC naming code description: 100: Payment Method, 102: BQR, 212: TC212
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1808,13 +1781,17 @@ def test_common_100_102_212():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active : {result}")
@@ -1839,6 +1816,8 @@ def test_common_100_102_212():
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -1853,9 +1832,7 @@ def test_common_100_102_212():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = 49.65
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -1865,7 +1842,6 @@ def test_common_100_102_212():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
@@ -1952,9 +1928,7 @@ def test_common_100_102_212():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-            print(type(data_buffer))
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             # data_buffer = ast.literal_eval(data_buffer)
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
@@ -2022,13 +1996,13 @@ def test_common_100_102_212():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -2039,7 +2013,7 @@ def test_common_100_102_212():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount),
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -2047,7 +2021,7 @@ def test_common_100_102_212():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_PENDING",
-                    "txn_amt_2": str(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "order_id_2": order_id,
@@ -2059,7 +2033,7 @@ def test_common_100_102_212():
                     "payer_name_2": payer_name_2,
                     "pmt_mode_3": "BHARAT QR",
                     "pmt_status_3": "REFUND_PENDING",
-                    "txn_amt_3": str(amount),
+                    "txn_amt_3": "{:.2f}".format(amount),
                     "settle_status_3": "SETTLED",
                     "txn_id_3": txn_id_3,
                     "order_id_3": order_id,
@@ -2080,7 +2054,6 @@ def test_common_100_102_212():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
@@ -2255,7 +2228,6 @@ def test_common_100_102_212():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -2280,7 +2252,6 @@ def test_common_100_102_212():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_2][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_2 = response["status"]
                 amount_api_2 = float(response["amount"])
                 payment_mode_api_2 = response["paymentMode"]
@@ -2308,7 +2279,6 @@ def test_common_100_102_212():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_3][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_3 = response["status"]
                 amount_api_3 = float(response["amount"])
                 payment_mode_api_3 = response["paymentMode"]
@@ -2605,11 +2575,11 @@ def test_common_100_102_212():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -2622,12 +2592,9 @@ def test_common_100_102_212():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_247():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_UPI_2_failed_callback_after_qr_expiry_AutoRefund_Disabled_AXIS_DIRECT
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_2_Failed_Callback_After_QR_Expiry_AutoRefund_Disabled_AXIS_DIRECT
     Sub Feature Description: Performing a bqrv4 upi 2 failed callback via AXIS_DIRECT after qr expiry when autorefund is disabled
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    247: TC247
+    TC naming code description: 100: Payment Method, 102: BQR, 247: TC247
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2655,16 +2622,21 @@ def test_common_100_102_247():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -2677,8 +2649,11 @@ def test_common_100_102_247():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -2693,9 +2668,7 @@ def test_common_100_102_247():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = random.randint(1, 49)
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -2705,7 +2678,6 @@ def test_common_100_102_247():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
@@ -2792,9 +2764,7 @@ def test_common_100_102_247():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
             response = APIProcessor.send_request(api_details)
@@ -2850,13 +2820,13 @@ def test_common_100_102_247():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -2865,7 +2835,7 @@ def test_common_100_102_247():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -2882,7 +2852,6 @@ def test_common_100_102_247():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
@@ -2895,8 +2864,7 @@ def test_common_100_102_247():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -2947,7 +2915,6 @@ def test_common_100_102_247():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -3082,11 +3049,11 @@ def test_common_100_102_247():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -3099,13 +3066,10 @@ def test_common_100_102_247():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_248():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_and_1_BQR_HDFC_success_callback_before_qr_expiry_AutoRefund_Disabled
+    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_and_1_BQR_HDFC_Success_Callback_Before_QR_Expiry_AutoRefund_Disabled
     Sub Feature Description: Performing a pure bqrv4 1 upi success callback via AXIS_DIRECT and 1 bqr success callback
     via HDFC, before qr expiry when autorefund is disabled
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    248: TC248
+    TC naming code description: 100: Payment Method, 102: BQR, 248: TC248
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -3133,13 +3097,17 @@ def test_common_100_102_248():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active : {result}")
@@ -3148,8 +3116,11 @@ def test_common_100_102_248():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -3164,9 +3135,7 @@ def test_common_100_102_248():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = random.randint(401, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -3176,7 +3145,6 @@ def test_common_100_102_248():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
@@ -3229,8 +3197,7 @@ def test_common_100_102_248():
             ref_id_2 = '211115084892E01' + str(rrn_2)
             logger.debug(f"generated random ref_id is : {ref_id_2}")
 
-            logger.debug(
-                f"replacing the Txn_id with {txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn_2} in the curl_data")
+            logger.debug(f"replacing the Txn_id with {txn_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn_2} in the curl_data")
             api_details = DBProcessor.get_api_details('axis_direct_upi_success_curl',
                                                       curl_data={'merchantTransactionId': txn_id,
                                                                  'transactionAmount': amount,
@@ -3248,9 +3215,7 @@ def test_common_100_102_248():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
             response = APIProcessor.send_request(api_details)
@@ -3316,13 +3281,13 @@ def test_common_100_102_248():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -3332,7 +3297,7 @@ def test_common_100_102_248():
                 expected_app_values = {
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "order_id_2": order_id,
@@ -3363,7 +3328,6 @@ def test_common_100_102_248():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_2)
                 payment_status_2 = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_2}, {payment_status_2}")
@@ -3499,7 +3463,6 @@ def test_common_100_102_248():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_2][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_2 = response["status"]
                 amount_api_2 = float(response["amount"])
                 payment_mode_api_2 = response["paymentMode"]
@@ -3527,7 +3490,6 @@ def test_common_100_102_248():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_3][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_3 = response["status"]
                 amount_api_3 = float(response["amount"])
                 payment_mode_api_3 = response["paymentMode"]
@@ -3755,18 +3717,22 @@ def test_common_100_102_248():
             try:
                 txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(txn_created_time_3)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_2),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
                     'time': txn_time_2,
                 }
+
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2, {
                     "username": app_username, "password": app_password}, expected_charge_slip_values_2)
+
                 expected_chargeslip_values_3 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_3),
                     'BASE AMOUNT:': "Rs." + str(amount)  + ".00", 'time': txn_time_3, 'date': txn_date_3,
                     'AUTH CODE': auth_code_3
                 }
+
                 chargeslip_val_result_3 = receipt_validator.perform_charge_slip_validations(txn_id_3, {
                     "username": app_username, "password": app_password}, expected_chargeslip_values_3)
 
@@ -3774,15 +3740,16 @@ def test_common_100_102_248():
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -3795,13 +3762,10 @@ def test_common_100_102_248():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_249():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_and_1_BQR_HDFC_success_callback_before_qr_expiry_AutoRefund_Enabled
+    Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_And_1_BQR_HDFC_Success_Callback_Before_QR_Expiry_AutoRefund_Enabled
     Sub Feature Description: Performing a pure bqrv4 1 upi success callback via AXIS_DIRECT and 1 bqr success callback
     via HDFC, before qr expiry when autorefund is enabled
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    249: TC249
+    TC naming code description: 100: Payment Method, 102: BQR, 249: TC249
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -3829,13 +3793,17 @@ def test_common_100_102_249():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active : {result}")
@@ -3851,8 +3819,11 @@ def test_common_100_102_249():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -3867,9 +3838,7 @@ def test_common_100_102_249():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = random.randint(401, 1000)
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -3879,7 +3848,6 @@ def test_common_100_102_249():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
@@ -3951,9 +3919,7 @@ def test_common_100_102_249():
                 data_buffer += line
             logger.debug(f"OUTPUT : {data_buffer}")
 
-            logger.debug(
-                f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
-
+            logger.debug(f"preparing the request payload data to trigger the /api/2.0/upimerchant/hdfc/callBackUpiMerchantRes")
             api_details = DBProcessor.get_api_details('confirm_axisdirect',
                                                       request_body={"data": data_buffer})
             response = APIProcessor.send_request(api_details)
@@ -3993,6 +3959,7 @@ def test_common_100_102_249():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and orig_txn_id='" + str(txn_id) + "' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch txn data from the txn table : {query}")
@@ -4019,13 +3986,13 @@ def test_common_100_102_249():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -4035,7 +4002,7 @@ def test_common_100_102_249():
                 expected_app_values = {
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "order_id_2": order_id,
@@ -4066,7 +4033,6 @@ def test_common_100_102_249():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_2)
                 payment_status_2 = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_2}, {payment_status_2}")
@@ -4202,7 +4168,6 @@ def test_common_100_102_249():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_2][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_2 = response["status"]
                 amount_api_2 = float(response["amount"])
                 payment_mode_api_2 = response["paymentMode"]
@@ -4230,7 +4195,6 @@ def test_common_100_102_249():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_3][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_3 = response["status"]
                 amount_api_3 = float(response["amount"])
                 payment_mode_api_3 = response["paymentMode"]
@@ -4458,18 +4422,22 @@ def test_common_100_102_249():
             try:
                 txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(txn_created_time_3)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_2),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
                     'time': txn_time_2,
                 }
+
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2, {
                     "username": app_username, "password": app_password}, expected_charge_slip_values_2)
+
                 expected_chargeslip_values_3 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_3),
                     'BASE AMOUNT:': "Rs." + str(amount)  + ".00", 'time': txn_time_3, 'date': txn_date_3,
                     'AUTH CODE': auth_code_3
                 }
+
                 chargeslip_val_result_3 = receipt_validator.perform_charge_slip_validations(txn_id_3, {
                     "username": app_username, "password": app_password}, expected_chargeslip_values_3)
 
@@ -4477,14 +4445,15 @@ def test_common_100_102_249():
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
-
     finally:
         Configuration.executeFinallyBlock(testcase_id)

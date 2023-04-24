@@ -1,9 +1,7 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -19,12 +17,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_102_224():
     """
-    Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_DIRECT
-    Sub feature code: UI_SA_PM_BQRV4_QR_Generation_Success_via_AXIS_DIRECT
-    TC naming code description:
-    100->Payment Method
-    102->BQRV4
-    224->TC224
+    Sub Feature Code: UI_SA_PM_BQRV4_UPI_QR_Generation_Success_via_AXIS_DIRECT
+    Sub Feature Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_DIRECT
+    TC naming code description: 100: Payment Method, 102: BQR, 224: TC224
     """
 
     try:
@@ -56,8 +51,10 @@ def test_sa_100_102_224():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -65,12 +62,15 @@ def test_sa_100_102_224():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
-        print("RESULT of updating DB setting active", result)
+        logger.debug(f"RESULT of updating DB setting active: {result}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -79,12 +79,16 @@ def test_sa_100_102_224():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -148,9 +152,11 @@ def test_sa_100_102_224():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
 
-    # -----------------------------------------End of App Validation---------------------------------------
-
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -----------------------------------------End of App Validation---------------------------------------
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)

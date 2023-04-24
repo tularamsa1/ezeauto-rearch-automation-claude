@@ -9,8 +9,7 @@ from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
@@ -22,9 +21,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_016():
     """
-    :Description: Verification of a BQRV4 BQR Partial Refund transaction via HDFC pg
-    :Sub feature code: UI_Common_BQRV4_BQR_Partial_Refund_HDFC
-    :TC naming code description:100->Payment Method, 102->BQR, 016-> TC016
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Partial_Refund_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR Partial Refund transaction via HDFC pg
+    TC naming code description: 100: Payment Method, 102: BQR, 016: TC016
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -73,7 +72,6 @@ def test_common_100_102_016():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -271,11 +269,13 @@ def test_common_100_102_016():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -382,6 +382,7 @@ def test_common_100_102_016():
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -491,7 +492,6 @@ def test_common_100_102_016():
                 #bqr_merchant_pan_db_refunded = result["merchant_pan"].iloc[0]
                 bqr_org_code_db_refunded = result['org_code'].values[0]
 
-
                 actual_db_values = {
                     "pmt_status": status_db_original,
                     "pmt_status_2": status_db_refunded,
@@ -533,6 +533,7 @@ def test_common_100_102_016():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -1160,10 +1161,9 @@ def test_common_100_102_017():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_138():
     """
-    :Description: Verification of a BQRV4 BQR Partial Refund transaction where refund amount will be in decimals
-    via HDFC pg
-    :Sub feature code: UI_Common_BQRV4_BQR_Partial_Refund_Decimal_amt_HDFC
-    :TC naming code description:100->Payment Method, 102->BQR, 138-> TC138
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Partial_Refund_Decimal_Amount_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR Partial Refund transaction where refund amount will be in decimals
+    TC naming code description: 100: Payment Method, 102: BQR, 138: TC138
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1212,7 +1212,6 @@ def test_common_100_102_138():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -1258,6 +1257,17 @@ def test_common_100_102_138():
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
+            status_db_original = result["status"].iloc[0]
+            payment_mode_db_original = result["payment_mode"].iloc[0]
+            amount_db_original = float(result["amount"].iloc[0])
+            state_db_original = result["state"].iloc[0]
+            payment_gateway_db_original = result["payment_gateway"].iloc[0]
+            acquirer_code_db_original = result["acquirer_code"].iloc[0]
+            bank_code_db_original = result["bank_code"].iloc[0]
+            settlement_status_db_original = result["settlement_status"].iloc[0]
+            tid_db_original = result['tid'].values[0]
+            mid_db_original = result['mid'].values[0]
+
             refund_amount = amount-100.50
 
             api_details = DBProcessor.get_api_details('paymentRefund',
@@ -1410,11 +1420,13 @@ def test_common_100_102_138():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -1521,6 +1533,7 @@ def test_common_100_102_138():
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1584,21 +1597,6 @@ def test_common_100_102_138():
                 tid_db_refunded = result['tid'].values[0]
                 mid_db_refunded = result['mid'].values[0]
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_original = result["status"].iloc[0]
-                payment_mode_db_original = result["payment_mode"].iloc[0]
-                amount_db_original = float(result["amount"].iloc[0])
-                state_db_original = result["state"].iloc[0]
-                payment_gateway_db_original = result["payment_gateway"].iloc[0]
-                acquirer_code_db_original = result["acquirer_code"].iloc[0]
-                bank_code_db_original = result["bank_code"].iloc[0]
-                settlement_status_db_original = result["settlement_status"].iloc[0]
-                tid_db_original = result['tid'].values[0]
-                mid_db_original = result['mid'].values[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1629,7 +1627,6 @@ def test_common_100_102_138():
                 bqr_txn_primary_id_db_refunded = result["transaction_primary_id"].iloc[0]
                 #bqr_merchant_pan_db_refunded = result["merchant_pan"].iloc[0]
                 bqr_org_code_db_refunded = result['org_code'].values[0]
-
 
                 actual_db_values = {
                     "pmt_status": status_db_original,
@@ -1672,6 +1669,7 @@ def test_common_100_102_138():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -1726,9 +1724,9 @@ def test_common_100_102_138():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_139():
     """
-    :Description: Verification of a BQRV4 BQR two times Successful Partial Refund via HDFC
-    :Sub feature code: UI_Common_BQRV4_BQR_two_times_successful_partial_refund_via_api_HDFC
-    :TC naming code description:100->Payment Method, 102->BQR, 139-> TC139
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Two_Times_Successful_Partial_Refund_Via_API_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR two times Successful Partial Refund via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 139: TC139
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1777,7 +1775,6 @@ def test_common_100_102_139():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -1927,7 +1924,6 @@ def test_common_100_102_139():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
@@ -1952,7 +1948,6 @@ def test_common_100_102_139():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded_2)
-
                 app_payment_status_refunded_2 = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded_2}")
@@ -1978,7 +1973,6 @@ def test_common_100_102_139():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn_original}")
                 app_auth_code_original = transactions_history_page.fetch_auth_code_text()
@@ -2038,11 +2032,13 @@ def test_common_100_102_139():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -2150,7 +2146,6 @@ def test_common_100_102_139():
                 txn_type_api_refunded_2 = response["txnType"]
                 date_api_refunded_2 = response["createdTime"]
                 order_id_refunded_2 = response["orderNumber"]
-
 
                 actual_api_values = {
                     "pmt_status": status_api_original,
@@ -2456,10 +2451,9 @@ def test_common_100_102_139():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_140():
     """
-    :Description: Verification of a BQRV4 BQR Partial Refund transaction where partial refund amount
-    greater than original amount via HDFC pg
-    :Sub feature code: UI_Common_BQRV4_BQR_two_Partial_Refund_amt_greater_than_original_amt_HDFC_140
-    :TC naming code description:100->Payment Method, 102->BQR, 140-> TC140
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Two_Partial_Refund_Amount_Greater_Than_Original_Amount_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR Partial Refund transaction where partial refund amount
+    TC naming code description: 100: Payment Method, 102: BQR, 140: TC140
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2508,7 +2502,6 @@ def test_common_100_102_140():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -2640,7 +2633,6 @@ def test_common_100_102_140():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
@@ -2665,7 +2657,6 @@ def test_common_100_102_140():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn_original}")
                 app_auth_code_original = transactions_history_page.fetch_auth_code_text()
@@ -2717,11 +2708,13 @@ def test_common_100_102_140():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -2830,6 +2823,7 @@ def test_common_100_102_140():
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -2939,7 +2933,6 @@ def test_common_100_102_140():
                 #bqr_merchant_pan_db_refunded = result["merchant_pan"].iloc[0]
                 bqr_org_code_db_refunded = result['org_code'].values[0]
 
-
                 actual_db_values = {
                     "pmt_status": status_db_original,
                     "pmt_status_2": status_db_refunded,
@@ -2981,6 +2974,7 @@ def test_common_100_102_140():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)

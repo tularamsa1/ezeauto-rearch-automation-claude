@@ -23,9 +23,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_011():
     """
-    :Description: Verification of a BQRV4 BQR two Callback Success when auto refund is disabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_two_Callback_Success_AutoRefund_Disbaled_HDFC_11
-    :TC naming code description: 100->Payment Method, 102->BQR, 011-> TC11
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Two_Callback_Success_AutoRefund_Disbaled_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR two Callback Success when auto refund is disabled via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 011: TC011
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -73,9 +73,9 @@ def test_common_100_102_011():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -130,6 +130,7 @@ def test_common_100_102_011():
                                                                     "MERCHANT_PAN": bqr_m_pan})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch auth code, rrn, posting date from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -139,6 +140,17 @@ def test_common_100_102_011():
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}")
+            amount_db = int(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            rr_number_db = result["rr_number"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
@@ -171,6 +183,7 @@ def test_common_100_102_011():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -256,6 +269,7 @@ def test_common_100_102_011():
                                      "pmt_msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -289,7 +303,6 @@ def test_common_100_102_011():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -312,7 +325,6 @@ def test_common_100_102_011():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
@@ -345,6 +357,7 @@ def test_common_100_102_011():
                                      "date_2": date_time_converter.from_api_to_datetime_format(date_api_new),
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -380,22 +393,6 @@ def test_common_100_102_011():
                                       "bqr_rrn_2": str(rrn), "bqr_org_code_2": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                rr_number_db = result["rr_number"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from txn where id='" + txn_id_new + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -476,6 +473,7 @@ def test_common_100_102_011():
                                     "bqr_rrn_2": bqr_rrn_db_new, "bqr_org_code_2": bqr_org_code_db_new
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -531,9 +529,9 @@ def test_common_100_102_011():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_086():
     """
-    :Description: Verification of a BQRV4 BQR two Callback Success when auto refund is Enabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_two_Callback_Success_AutoRefund_Enabled_HDFC_86
-    :TC naming code description: 100->Payment Method, 102->BQR, 086-> TC86
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Two_Callback_Success_AutoRefund_Enabled_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR two Callback Success when auto refund is Enabled via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 086: TC086
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -589,7 +587,6 @@ def test_common_100_102_086():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -655,6 +652,17 @@ def test_common_100_102_086():
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}")
+            amount_db = float(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            rr_number_db = result["rr_number"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             api_details = DBProcessor.get_api_details('callbackHDFC',
                                                       request_body={"PRIMARY_ID": txn_id, "TXN_AMOUNT": str(amount),
@@ -693,17 +701,18 @@ def test_common_100_102_086():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_new = date_time_converter.to_app_format(created_time_new)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",
                                        "auth_code": auth_code, "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
-                                       "txn_amt_2": str(amount)+".00", "rrn_2": str(rrn_new),
+                                       "txn_amt_2": "{:.2f}".format(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
+
                 app_driver.reset()
                 logger.debug("Restarting MPOS APP before performing app_validation")
                 login_page = LoginPage(app_driver)
@@ -763,7 +772,6 @@ def test_common_100_102_086():
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id_new}, {app_rrn_new}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
-
                 actual_app_values = {"pmt_mode": payment_mode, "pmt_status": payment_status.split(':')[1],
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      "settle_status": app_settlement_status,
@@ -777,6 +785,7 @@ def test_common_100_102_086():
                                      "pmt_msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -802,6 +811,7 @@ def test_common_100_102_086():
                                        "auth_code_2": auth_code_new, "date_2": date_new
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for original txn : {api_details}")
@@ -809,7 +819,6 @@ def test_common_100_102_086():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -832,7 +841,6 @@ def test_common_100_102_086():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
@@ -865,6 +873,7 @@ def test_common_100_102_086():
                                      "date_2": date_time_converter.from_api_to_datetime_format(date_api_new),
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -901,22 +910,6 @@ def test_common_100_102_086():
                                       "bqr_rrn_2": str(rrn), "bqr_org_code_2": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = float(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                rr_number_db = result["rr_number"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from txn where id='" + txn_id_new + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -997,6 +990,7 @@ def test_common_100_102_086():
                                     "bqr_rrn_2": bqr_rrn_db_new, "bqr_org_code_2": bqr_org_code_db_new
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -1052,9 +1046,9 @@ def test_common_100_102_086():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_087():
     """
-    :Description: Verification of a BQRV4 BQR two Callback After QR code gets expired when auto refund is Enabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_two_Callback_AfterExpiry_AutoRefund_Enabled_HDFC_87
-    :TC naming code description: 100->Payment Method, 102->BQR, 087-> TC87
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Two_Callback_AfterExpiry_AutoRefund_Enabled_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR two Callback After QR code gets expired when auto refund is Enabled via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 087: TC087
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1119,9 +1113,9 @@ def test_common_100_102_087():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1185,6 +1179,16 @@ def test_common_100_102_087():
             result = DBProcessor.getValueFromDB(query)
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching posting date for {txn_id} : {posting_date} ")
+            amount_db = float(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' " \
                                                         "order by created_time desc limit 1"
@@ -1242,17 +1246,17 @@ def test_common_100_102_087():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 date_and_time_new = date_time_converter.to_app_format(modified_date_new)
                 date_and_time_new_2 = date_time_converter.to_app_format(modified_date_new_2)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED", "txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED", "txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "FAILED", "txn_id": txn_id,
                                        "order_id": order_id, "pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
-                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "txn_amt_2": "{:.2f}".format(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new,
                                        "pmt_mode_3": "BHARAT QR", "pmt_status_3": "REFUND_PENDING",
-                                       "txn_amt_3": str(amount), "rrn_3": str(rrn_new_2),
+                                       "txn_amt_3": "{:.2f}".format(amount), "rrn_3": str(rrn_new_2),
                                        "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_2,
                                        "order_id_3": order_id, "pmt_msg_3": "PAYMENT SUCCESSFUL",
                                        "auth_code_3": auth_code_new_2, "date_3": date_and_time_new_2
@@ -1362,6 +1366,7 @@ def test_common_100_102_087():
                                      "pmt_msg_3": app_payment_msg_new_2, "date_3": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -1404,7 +1409,6 @@ def test_common_100_102_087():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1487,6 +1491,7 @@ def test_common_100_102_087():
                                      "date_3": date_time_converter.from_api_to_datetime_format(date_api_new_2)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1540,21 +1545,6 @@ def test_common_100_102_087():
                                       "bqr_rrn_3": str(rrn_new_2), "bqr_org_code_3": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = float(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from txn where id='" + txn_id_new + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -1684,6 +1674,7 @@ def test_common_100_102_087():
                                     "bqr_rrn_3": bqr_rrn_db_new_2, "bqr_org_code_3": bqr_org_code_db_new_2
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -1741,9 +1732,9 @@ def test_common_100_102_087():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_088():
     """
-    :Description: Verification of a BQRV4 BQR two Callback After QR code gets expired when auto refund is Disabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_two_Callback_AfterExpiry_AutoRefund_Disabled_HDFC_88
-    :TC naming code description: 100->Payment Method, 102->BQR, 088-> TC88
+   Sub Feature Code: UI_Common_PM_BQRV4_BQR_Two_Callback_AfterExpiry_AutoRefund_Disabled_HDFC
+   Sub Feature Description: Verification of a BQRV4 BQR two Callback After QR code gets expired when auto refund is Disabled via HDFC
+   TC naming code description: 100: Payment Method, 102: BQR, 088: TC088
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1808,9 +1799,9 @@ def test_common_100_102_088():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1874,6 +1865,16 @@ def test_common_100_102_088():
             result = DBProcessor.getValueFromDB(query)
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching posting date for {txn_id} : {posting_date} ")
+            amount_db = float(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' " \
                                                                                                           "order by created_time desc limit 1"
@@ -1931,22 +1932,23 @@ def test_common_100_102_088():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 date_and_time_new = date_time_converter.to_app_format(modified_date_new)
                 date_and_time_new_2 = date_time_converter.to_app_format(modified_date_new_2)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED", "txn_amt": str(amount),
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "EXPIRED", "txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "FAILED", "txn_id": txn_id,
                                        "order_id": order_id, "pmt_msg": "PAYMENT FAILED",
                                        "date": date_and_time,
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "AUTHORIZED",
-                                       "txn_amt_2": str(amount), "rrn_2": str(rrn_new),
+                                       "txn_amt_2": "{:.2f}".format(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
                                        "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new,
                                        "pmt_mode_3": "BHARAT QR", "pmt_status_3": "AUTHORIZED",
-                                       "txn_amt_3": str(amount), "rrn_3": str(rrn_new_2),
+                                       "txn_amt_3": "{:.2f}".format(amount), "rrn_3": str(rrn_new_2),
                                        "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_2,
                                        "order_id_3": order_id, "pmt_msg_3": "PAYMENT SUCCESSFUL",
                                        "auth_code_3": auth_code_new_2, "date_3": date_and_time_new_2
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
+
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -1976,7 +1978,6 @@ def test_common_100_102_088():
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_new)
-
                 payment_status_new = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_new}, {payment_status_new}")
                 app_auth_code_new = txn_history_page.fetch_auth_code_text()
@@ -2003,7 +2004,6 @@ def test_common_100_102_088():
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_new_2)
-
                 payment_status_new_2 = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_new_2}, {payment_status_new_2}")
                 app_auth_code_new_2 = txn_history_page.fetch_auth_code_text()
@@ -2051,6 +2051,7 @@ def test_common_100_102_088():
                                      "pmt_msg_3": app_payment_msg_new_2, "date_3": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -2175,6 +2176,7 @@ def test_common_100_102_088():
                                      "date_3": date_time_converter.from_api_to_datetime_format(date_api_new_2)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -2226,21 +2228,6 @@ def test_common_100_102_088():
                                       "bqr_rrn_3": str(rrn_new_2), "bqr_org_code_3": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = float(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from txn where id='" + txn_id_new + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -2370,6 +2357,7 @@ def test_common_100_102_088():
                                     "bqr_rrn_3": bqr_rrn_db_new_2, "bqr_org_code_3": bqr_org_code_db_new_2
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -2427,9 +2415,9 @@ def test_common_100_102_088():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_137():
     """
-    :Description: Verification of a BQRV4 BQR amount mismatch txn when Auto refund is disabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_BQR_amt_missmatch_callback_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 137-> TC137
+     Sub Feature Code: UI_Common_PM_BQRV4_BQR_Amount_Mismatch_Callback
+     Sub Feature Description: Verification of a BQRV4 BQR amount mismatch txn when Auto refund is disabled via HDFC
+     TC naming code description: 100: Payment Method, 102: BQR, 137: TC137
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2477,7 +2465,6 @@ def test_common_100_102_137():
         logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -2529,6 +2516,15 @@ def test_common_100_102_137():
             result = DBProcessor.getValueFromDB(query)
             posting_date = result['created_time'].values[0]
             external_ref = result['external_ref'].values[0]
+            amount_db = int(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             query = ("select * from invalid_pg_request where request_id ='" + txn_id + "';")
             logger.debug(f"Query to auth code from database : {query}")
@@ -2567,7 +2563,7 @@ def test_common_100_102_137():
                     "pmt_status": "STATUS:PENDING",
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time,
@@ -2575,7 +2571,7 @@ def test_common_100_102_137():
                     "pmt_status_2": "STATUS:UPG_AUTHORIZED",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_upg,
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "rrn_2": str(rrn_upg),
                     "order_id_2": external_ref_upg,
                     "payment_msg_2": "PAYMENT SUCCESSFUL",
@@ -2585,8 +2581,7 @@ def test_common_100_102_137():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -2594,7 +2589,6 @@ def test_common_100_102_137():
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
 
                 app_payment_status = txn_history_page.fetch_txn_status_text()
@@ -2723,7 +2717,6 @@ def test_common_100_102_137():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_upg][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
@@ -2809,24 +2802,9 @@ def test_common_100_102_137():
                     "bqr_merchant_config_id_2": bqr_mc_id, "bqr_txn_primary_id_2": txn_id_upg,
                     "bqr_merchant_pan_2": bqr_m_pan,
                     "bqr_rrn_2": str(rrn_upg), "bqr_org_code_2": org_code
-
                 }
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")

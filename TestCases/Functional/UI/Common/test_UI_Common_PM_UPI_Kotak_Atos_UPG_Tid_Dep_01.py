@@ -88,6 +88,9 @@ def test_common_100_101_181():
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pgMerchantId from upi_merchant_config table : {pg_merchant_id}")
 
+        # to delete the publish_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, upi_mc_id)
+
         query = "select device_serial from terminal_info where tid = '" + str(tid) + "';"
         logger.debug(f"Query to fetch device_serial from terminal_info table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -609,6 +612,9 @@ def test_common_100_101_182():
         logger.debug(f"Fetching id from upi_merchant_config table : {upi_mc_id}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pgMerchantId from upi_merchant_config table : {pg_merchant_id}")
+
+        # to delete the publish_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, upi_mc_id)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

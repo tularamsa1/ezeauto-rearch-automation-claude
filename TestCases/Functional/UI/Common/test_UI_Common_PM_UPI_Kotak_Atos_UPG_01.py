@@ -76,6 +76,9 @@ def test_common_100_101_171():
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pgMerchantId from upi_merchant_config table : {pg_merchant_id}")
 
+        # to delete the publish_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, upi_mc_id)
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
@@ -575,6 +578,9 @@ def test_common_100_101_172():
         logger.debug(f"Fetching id from upi_merchant_config table : {upi_mc_id}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pgMerchantId from upi_merchant_config table : {pg_merchant_id}")
+
+        # to delete the publish_id which was generated previously
+        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, upi_mc_id)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
