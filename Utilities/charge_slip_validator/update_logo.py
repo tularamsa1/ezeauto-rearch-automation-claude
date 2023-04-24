@@ -6,15 +6,15 @@ manual_logo_dir = Path("/home/ezetap/Pictures/Screenshots/")
 # updating logos
 #
 # FISERV
-reference_url = "https://dev11.ezetap.com/r/o/iwmi3jLF/"
-reference_logo_path = manual_logo_dir / "Screenshot from 2023-04-03 12-31-01.png"
-bank_or_company = 'fiserv.ezetap'
-charge_slip_validator.add_or_update_logo(
-    bank_or_company,
-    reference_url,
-    reference_logo_path,
-    verbose = True
-)
+# reference_url = "https://dev11.ezetap.com/r/o/iwmi3jLF/"
+# reference_logo_path = manual_logo_dir / "Screenshot from 2023-04-03 12-31-01.png"
+# bank_or_company = 'fiserv.ezetap'
+# charge_slip_validator.add_or_update_logo(
+#     bank_or_company,
+#     reference_url,
+#     reference_logo_path,
+#     verbose = True
+# )
 # #
 # # # EZETAP
 # reference_url = "https://dev11.ezetap.com/r/o/SjAsWEYr/"  # axis and ezetap logos
@@ -40,7 +40,7 @@ charge_slip_validator.add_or_update_logo(
 #
 # HDFC
 # reference_url = "https://dev11.ezetap.com/r/o/H2ma5l3w//"  # axis and ezetap logos
-# reference_logo_path = manual_logo_dir / "Screenshot from 2023-02-17 13-30-37.png"
+# reference_logo_path = manual_logo_dir / "Screenshot from 2023-04-12 13-42-04.png"
 #
 # bank_or_company = "HDFC"
 # charge_slip_validator.add_or_update_logo(
@@ -51,15 +51,15 @@ charge_slip_validator.add_or_update_logo(
 # )
 # #
 # # # YES
-# bank_or_company = "YES"
-# reference_url = "https://dev11.ezetap.com/r/o/TkOVtk9v/"
-# reference_logo_path = manual_logo_dir / "Screenshot from 2023-03-30 15-07-19.png"
-# charge_slip_validator.add_or_update_logo(
-#     bank_or_company,
-#     reference_url,
-#     reference_logo_path,
-#     verbose = True
-# )
+bank_or_company = "YES"
+reference_url = "https://dev11.ezetap.com/r/o/TkOVtk9v/"
+reference_logo_path = manual_logo_dir / "Screenshot from 2023-03-30 15-07-19.png"
+charge_slip_validator.add_or_update_logo(
+    bank_or_company,
+    reference_url,
+    reference_logo_path,
+    verbose = True
+)
 # #
 # # # iCICI
 # reference_url = "https://dev11.ezetap.com/r/o/JB1WaynT/"
