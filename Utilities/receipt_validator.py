@@ -465,15 +465,12 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
         # validation_list.append(logo_validation)
 
         if logo_validation_1 is True:
-            # expected_details['logo_validation': "Passed"]
             logger.info(f"Logo Validation is Passed")
         if logo_validation_1 is False:
             logger.info(f"Logo Validation is Failed")
-            # expected_details['logo_validation': "Failed"]
+            
         expected_details['logo_validation'] = True
         present_details['logo_validation'] = logo_validation_1
-    # # combining results
-    # validation_sucessful = all(validation_list)
 
     expected_details, present_details = Validator.filter_values("chargeslip", expected_details, present_details)
     if expected_details == {} and present_details == {}:
@@ -488,6 +485,7 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
         if present_details:
             for key in expected_details:
                 if key in present_details:
+                    GlobalVariables.tot_chargeslip_val = GlobalVariables.tot_chargeslip_val + 1
                     logger.debug(f"{key} found")
                     if expected_details[key] == present_details[key]:
                         matching_fields.add(key)
@@ -498,8 +496,10 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
                         check.equal(expected_details[key], present_details[key])
                 else:
                     fields_that_are_not_present.add(key)
-                    print(f"The field '{key}' not present")
-                    logger.debug(f"The field '{key}' not present")
+                    print(f"The field '{key}' not present in actual values list")
+                    logger.debug(f"The field '{key}' not present in actual values list")
+                    check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                         f" the actual values list.")
             Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
 
         else:
@@ -550,10 +550,8 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
                 validation_successful = True
 
             if results['unmatching_fields']:
-                # print("Some fields are not matching")
                 logger.warning("Some fields are not matching")
 
-                # print("The following fields are not matching:", ", ".join(results['unmatching_fields']))
                 validation_successful = False
 
             # if take_screenshot is True:  # (take_screenshot is True) and (get_config("APIs", "screenshot_on_failure") == "True"):  # check type of bool also
@@ -720,24 +718,6 @@ def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_det
                     print(valid_receipt_url)
                     validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details,
                                                                                   txn_id)
-                    # validation_list.append(cs_text_validation)
-
-                    # # logo validation
-                    # value_cs_logo_validation_enabled = get_config(section="Validations", key="cs_logo_validation")
-                    # cs_logo_validation_enabled = str(value_cs_logo_validation_enabled).strip().title() == 'True'
-                    # # logo_validation = None
-                    # if cs_logo_validation_enabled:
-                    #     logo_validation = validate_logo_from_charge_slip(txn_id, url=valid_receipt_url)
-                    #     validation_list.append(logo_validation)
-                    #
-                    #     if logo_validation is True:
-                    #         # expected_details['logo_validation': "Passed"]
-                    #         logger.info(f"Logo Validation is Passed")
-                    #     if logo_validation is False:
-                    #         logger.info(f"Logo Validation is Failed")
-                    #         # expected_details['logo_validation': "Failed"]
-                    # # combining results
-                    # validation_sucessful = all(validation_list)
 
                 else:
                     check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
