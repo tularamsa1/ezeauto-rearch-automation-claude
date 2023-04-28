@@ -233,7 +233,6 @@ def test_common_100_107_033():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
-
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -244,7 +243,6 @@ def test_common_100_107_033():
 
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -283,6 +281,7 @@ def test_common_100_107_033():
                 }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -321,13 +320,11 @@ def test_common_100_107_033():
                     "username": app_username,
                     "password": app_password,
                 })
-
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for txnlist api is : {response}")
                 response_in_list = response["txns"]
                 logger.debug(f"list of txns is : {response_in_list}")
-
                 for elements in response_in_list:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
@@ -726,7 +723,6 @@ def test_common_100_107_034():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -760,7 +756,6 @@ def test_common_100_107_034():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
-
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -771,7 +766,6 @@ def test_common_100_107_034():
 
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -812,6 +806,7 @@ def test_common_100_107_034():
                 }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -1273,7 +1268,6 @@ def test_common_100_107_035():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -1307,7 +1301,6 @@ def test_common_100_107_035():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
-
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -1318,7 +1311,6 @@ def test_common_100_107_035():
 
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -1359,6 +1351,7 @@ def test_common_100_107_035():
                 }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)

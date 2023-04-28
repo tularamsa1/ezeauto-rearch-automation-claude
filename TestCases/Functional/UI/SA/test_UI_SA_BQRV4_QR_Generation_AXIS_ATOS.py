@@ -184,9 +184,9 @@ def test_sa_100_102_080():
 @pytest.mark.appVal
 def test_sa_100_102_150():
     """
-    :Description: Verification of a BQR QR Generation Failed through SA via AXIS_ATOS
-    :Sub feature code: UI_SA_PM_BQR_AXIS_ATOS_QR_Generation_Failed
-    :TC naming code description: 100->Payment Method, 102->BQR, 150-> TC150
+    Sub Feature Code: UI_SA_PM_BQR_UPI_AXIS_ATOS_QR_Generation_Failed and UI_Common_PM_BQRV4_BQR_AXIS_ATOS_QR_Generation_Failed
+    Sub Feature Description: Verifying a failed QR Generation via AXIS_ATOS and Verification of  a failed BQR QR Generation via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 150: TC150
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

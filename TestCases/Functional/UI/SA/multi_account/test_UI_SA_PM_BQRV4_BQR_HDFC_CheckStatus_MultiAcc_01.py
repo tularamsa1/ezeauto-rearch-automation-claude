@@ -28,9 +28,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_sa_100_110_003():
     """
-    :Description: Multi Account - Performing a successful BQRV4_BQR txn via HDFC using SA check status
-    :Sub Feature code: UI_SA_PM_BQRV4_BQR_Success_Via_SA_CheckStatus_MultiAcc_HDFC
-    :TC naming code description: 100->Payment Method, 110-> MultiAcc_BQRV4, 003-> TC03
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Success_Via_SA_CheckStatus_MultiAcc_HDFC
+    Sub Feature Description: Multi Account - Performing a successful BQRV4_BQR txn via HDFC using SA check status
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 003: TC03
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -55,10 +55,12 @@ def test_sa_100_110_003():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -86,6 +88,7 @@ def test_sa_100_110_003():
 
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -155,6 +158,7 @@ def test_sa_100_110_003():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -162,11 +166,12 @@ def test_sa_100_110_003():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount) + ".00", "settle_status": "SETTLED",
+                    "txn_amt": "{:.2f}".format(amount), "settle_status": "SETTLED",
                     "txn_id": txn_id, "rrn": str(rrn),
                     "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code, "date": date_and_time
                 }
+
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 home_page = HomePage(app_driver)
@@ -209,6 +214,7 @@ def test_sa_100_110_003():
                     "pmt_msg": app_payment_msg, "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -266,6 +272,7 @@ def test_sa_100_110_003():
                     "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -342,6 +349,7 @@ def test_sa_100_110_003():
                     "acc_label_id": str(label_ids)
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -398,9 +406,9 @@ def test_sa_100_110_003():
 @pytest.mark.chargeSlipVal
 def test_sa_100_110_004():
     """
-    :Description: Multi Account - Verification of a failed BQRV4_BQR txn via HDFC using SA check status
-    :Sub Feature code: UI_SA_PM_BQRV4_BQR_Failed_Via_SA_CheckStatus_MultiAcc_HDFC
-    :TC naming code description: 100->Payment Method, 110-> MultiAcc_BQRV4, 004-> TC04
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Failed_Via_SA_CheckStatus_MultiAcc_HDFC
+    Sub Feature Description: Multi Account - Verification of a failed BQRV4_BQR txn via HDFC using SA check status
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 004: TC04
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -428,12 +436,15 @@ def test_sa_100_110_004():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -455,7 +466,6 @@ def test_sa_100_110_004():
         bqr_m_pan = result["merchant_pan"].iloc[0]
         acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"fetched acc_label_id : {acc_label_id}")
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -516,7 +526,7 @@ def test_sa_100_110_004():
             logger.debug(f"fetched label_ids from txn table is : {label_ids}")
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}")
-            # ------------------------------------------------------------------------------------------------
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -537,7 +547,7 @@ def test_sa_100_110_004():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                    "pmt_mode": "BHARAT QR", "pmt_status": "FAILED", "txn_amt": str(amount) + ".00",
+                    "pmt_mode": "BHARAT QR", "pmt_status": "FAILED", "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "FAILED", "txn_id": txn_id,
                     "order_id": order_id, "msg": "PAYMENT FAILED",
                     "date": date_and_time
@@ -605,7 +615,6 @@ def test_sa_100_110_004():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -720,7 +729,7 @@ def test_sa_100_110_004():
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {"Payment Status": "Failed", "Payment mode": "BHARATQR",
                                           "Payment amount": str(amount)}
-                #
+
                 ui_driver = TestSuiteSetup.initialize_portal_driver()
                 loginPagePortal = PortalLoginPage(ui_driver)
                 logger.info(f"Logging in Portal using username : {portal_username}")
@@ -739,10 +748,10 @@ def test_sa_100_110_004():
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
-                #
+
                 actual_portal_values = {"Payment Status": portal_status, "Payment mode": portal_txn_type,
                                         "Payment amount": str(portal_amt.split('.')[1])}
-                # ---------------------------------------------------------------------------------------------
+
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -766,10 +775,9 @@ def test_sa_100_110_004():
 @pytest.mark.chargeSlipVal
 def test_sa_100_110_012():
     """
-    :Description: Multi Account - Performing a successful BQRV4_BQR txn via HDFC using SA check status via second
-    account (ex:acc2 label)
-    :Sub Feature code: UI_SA_PM_BQRV4_BQR_Success_Via_SA_CheckStatus_with_2nd_label_MultiAcc_HDFC
-    :TC naming code description: 100->Payment Method, 110-> MultiAcc_BQRV4, 012-> TC12
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Success_Via_SA_CheckStatus_with_2nd_label_MultiAcc_HDFC
+    Sub Feature Description: Multi Account - Performing a successful BQRV4_BQR txn via HDFC using SA check status via second account (ex:acc2 label)
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 012: TC012
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -794,10 +802,12 @@ def test_sa_100_110_012():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name2']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -828,9 +838,9 @@ def test_sa_100_110_012():
         bqr_m_pan = result["merchant_pan"].iloc[0]
         acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"fetched acc_label_id : {acc_label_id}")
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -900,6 +910,7 @@ def test_sa_100_110_012():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -907,7 +918,7 @@ def test_sa_100_110_012():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount) + ".00", "settle_status": "SETTLED",
+                    "txn_amt": "{:.2f}".format(amount), "settle_status": "SETTLED",
                     "txn_id": txn_id, "rrn": str(rrn),
                     "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code, "date": date_and_time
@@ -954,6 +965,7 @@ def test_sa_100_110_012():
                     "pmt_msg": app_payment_msg, "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -1011,6 +1023,7 @@ def test_sa_100_110_012():
                     "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1087,6 +1100,7 @@ def test_sa_100_110_012():
                     "acc_label_id": str(label_ids)
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)

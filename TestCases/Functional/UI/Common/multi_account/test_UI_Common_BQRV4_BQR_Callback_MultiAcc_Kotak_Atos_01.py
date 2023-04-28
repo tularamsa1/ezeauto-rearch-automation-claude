@@ -2,7 +2,6 @@ import random
 import sys
 from datetime import datetime
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -23,9 +22,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_110_042():
     """
-    :Description: Multi Account - Verification of a Success Callback bqrv4 bqr txn via Kotak ATOS
-    :Sub Feature code: UI_Common_BQRV4_BQR_Success_Callback_MultiAcc_Kotak_ATOS
-    :TC naming code description: 100->Payment Method, 110->Multi Acc BQRv4 BQR, 042-> TC042
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Success_Via_Pure_BQRV4_BQR_Success_Callback_MultiAcc_KotakAtos
+    Sub Feature Description: Multi Account - Performing a Authorized Txn using pure BQRV4_BQR Success callback for KotakAtos
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 042: TC042
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -60,6 +59,7 @@ def test_common_100_110_042():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -85,6 +85,8 @@ def test_common_100_110_042():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -141,6 +143,7 @@ def test_common_100_110_042():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -153,8 +156,6 @@ def test_common_100_110_042():
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
 
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -163,8 +164,8 @@ def test_common_100_110_042():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -177,7 +178,7 @@ def test_common_100_110_042():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -264,6 +265,7 @@ def test_common_100_110_042():
                     "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
                                                                                    "password": app_password, })
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
@@ -438,11 +440,10 @@ def test_common_100_110_042():
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

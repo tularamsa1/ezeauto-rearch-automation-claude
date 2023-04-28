@@ -28,7 +28,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_109_005():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_full_Refund_via_API_MultiAcc_HDFC
+    Sub Feature Code: UI_Common_PM_Pure_UPI_Full_Refund_Via_API_MultiAcc_HDFC
     Sub Feature Description: Multi Account - Verification of a UPI full refund using api for HDFC
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 005: TC005
     """
@@ -37,6 +37,7 @@ def test_common_100_109_005():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
@@ -58,14 +59,18 @@ def test_common_100_109_005():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -83,7 +88,6 @@ def test_common_100_109_005():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
@@ -91,7 +95,6 @@ def test_common_100_109_005():
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
-
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"Order id : {order_id}")
@@ -102,7 +105,6 @@ def test_common_100_109_005():
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
-
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -228,14 +230,12 @@ def test_common_100_109_005():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {refund_txn_id}, {app_rrn_refunded}")
                 app_customer_name_refunded = transactions_history_page.fetch_customer_name_text()
@@ -631,25 +631,21 @@ def test_common_100_109_005():
                 logger.info(f"Switching to merchant : {org_code}")
                 home_page_portal.click_switch_button(org_code)
                 home_page_portal.click_transaction_search_menu()
-
                 portal_trans_history_page = PortalTransHistoryPage(driver_ui)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(refund_txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_status = portal_values_dict['Status']
                 portal_amt = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
                 logger.debug(f"Fetching Username from portal : {portal_username} ")
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id_original)
                 portal_txn_type_original = portal_values_dict['Type']
                 portal_status_original = portal_values_dict['Status']
                 portal_amt_original = portal_values_dict['Total Amount']
                 portal_username_original = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction status from portal : {portal_status_original} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type_original} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt_original} ")
@@ -694,10 +690,11 @@ def test_common_100_109_005():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -710,7 +707,7 @@ def test_common_100_109_005():
 @pytest.mark.chargeSlipVal
 def test_common_100_109_006():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_partial_Refund_via_API_MultiAcc_HDFC
+    Sub Feature Code: UI_Common_PM_UPI_Partial_Refund_Via_API_MultiAcc_HDFC
     Sub Feature Description: Multi Account - Verification of a UPI partial refund using api for HDFC
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 006: TC006
     """
@@ -719,6 +716,7 @@ def test_common_100_109_006():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
@@ -740,14 +738,18 @@ def test_common_100_109_006():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -765,7 +767,6 @@ def test_common_100_109_006():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
@@ -773,7 +774,6 @@ def test_common_100_109_006():
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
-
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"Order id : {order_id}")
@@ -784,7 +784,6 @@ def test_common_100_109_006():
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
-
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -910,14 +909,12 @@ def test_common_100_109_006():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {refund_txn_id}, {app_rrn_refunded}")
                 app_customer_name_refunded = transactions_history_page.fetch_customer_name_text()
@@ -1312,25 +1309,21 @@ def test_common_100_109_006():
                 logger.info(f"Switching to merchant : {org_code}")
                 home_page_portal.click_switch_button(org_code)
                 home_page_portal.click_transaction_search_menu()
-
                 portal_trans_history_page = PortalTransHistoryPage(driver_ui)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(refund_txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_status = portal_values_dict['Status']
                 portal_amt = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
                 logger.debug(f"Fetching Username from portal : {portal_username} ")
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id_original)
                 portal_txn_type_original = portal_values_dict['Type']
                 portal_status_original = portal_values_dict['Status']
                 portal_amt_original = portal_values_dict['Total Amount']
                 portal_username_original = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction status from portal : {portal_status_original} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type_original} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt_original} ")
@@ -1382,9 +1375,10 @@ def test_common_100_109_006():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

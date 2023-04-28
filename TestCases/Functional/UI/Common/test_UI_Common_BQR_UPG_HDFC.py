@@ -22,9 +22,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_019():
     """
-    :Description: Verification of a BQRV4 BQR UPG txn when Auto refund is enabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_BQR_UPG_AUTOREFUND_ENABLED_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 019-> TC019
+    Sub Feature Code: UI_Common_BQRV4_BQR_UPG_AUTOREFUND_ENABLED_HDFC and Tid Dep - UI_Common_PM_BQRV4_BQR_UPG_AUTOREFUND_ENABLED_HDFC
+    Sub Feature Description:   Verification of a BQRV4 BQR UPG txn when Auto refund is enabled via HDFC and Tid Dep - Verification of  a BQR UPG txn when Auto refund is enabled via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 019: TC019
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -391,9 +391,9 @@ def test_common_100_102_019():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_020():
     """
-    :Description: Verification of a BQRV4 BQR UPG txn when Auto refund is disabled via HDFC
-    :Sub Feature code: UI_Common_BQRV4_BQR_UPG_AUTOREFUND_DISABLED_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 020-> TC020
+    Sub Feature Code: UI_Common_BQRV4_BQR_UPG_AUTOREFUND_DISABLED_HDFC and Tid Dep - UI_Common_PM_BQRV4_BQR_UPGAUTOREFUND_DISABLED_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR UPG txn when Auto refund is disabled via HDFC and Tid Dep - Verification of a BQRv4 UPG txn when Auto refund is disabled via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 020: TC020
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -760,11 +760,9 @@ def test_common_100_102_020():
 @pytest.mark.appVal
 def test_common_100_102_021():
     """
-    :Description: Verification of  a BQR UPG Failed txn when Auto refund is enabled via HDFC
-    :Sub Feature code: UI_Common_PM_BQR_UPG_Failed_AUTOREFUND_ENABLED_HDFC_21
-    :TC naming code description: 100->Payment Method
-                                102->BQR
-                                021-> TC21
+    Sub Feature Code: UI_Common_PM_BQR_UPG_Failed_AUTOREFUND_ENABLED_HDFC and Tid Dep - UI_Common_PM_BQRV4_UPI_UPG_Failed_HDFC
+    Sub Feature Description: Verification of a BQR UPG Failed txn when Auto refund is enabled via HDFC and  Tid Dep - Verification of a BQRv4 UPG failed txn when Auto refund is enabled via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 021: TC021
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1558,9 +1556,9 @@ def test_common_100_102_022():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_023():
     """
-    :Description: Verification of  a BQRV4 BQR UPG Refund txn when Auto refund is disabled through API via HDFC
-    :Sub Feature code: UI_Common_BQRV4_BQR_UPG_Refund_Via_API_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 023-> TC023
+    Sub Feature Code: UI_Common_PM_BQR_UPG_REFUND_via_API_HDFC and Tid Dep - UI_Common_BQRV4_BQR_UPG_Refund_Via_API_HDFC
+    Sub Feature Description: Verification of  a BQR UPG Refund txn when Auto refund is enabled through API via HDFC  and Tid Dep - Verification of a BQR UPG Refund txn when Auto refund is enabled through API via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 023: TC023
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

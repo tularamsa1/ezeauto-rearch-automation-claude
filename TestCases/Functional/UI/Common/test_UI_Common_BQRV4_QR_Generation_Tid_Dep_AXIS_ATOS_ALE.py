@@ -244,8 +244,8 @@ def test_common_100_102_186():
 @pytest.mark.apiVal
 def test_common_100_102_187():
     """
-    Sub Feature Code: UI_Common_BQRV4_UPI_QR_Generation_Failed_TID_Dep_AXIS_ATOS_TLE
-    Sub Feature Description: Verification of a BQRV4 QR generation failed AXIS ATOS TLE Tid Dep
+    Sub Feature Code: Tid Dep - UI_Common_BQRV4_BQR_QR_Generation_Failed_AXIS_ATOS_TLE and Tid Dep - UI_Common_BQRV4_UPI_QR_Generation_Failed_AXIS_ATOS_TLE
+    Sub Feature Description: Tid Dep - Verification of  a failed BQR QR Generation via AXIS_AtosTle and Tid Dep - Verification of failed BQRV4 QR generation via AXIS_AtosTle
     TC naming code description: 100: Payment Method, 112: BQRV4, 187: TC187
     """
     try:

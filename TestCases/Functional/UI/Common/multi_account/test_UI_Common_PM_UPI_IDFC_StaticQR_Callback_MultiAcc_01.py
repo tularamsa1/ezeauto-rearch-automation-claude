@@ -52,10 +52,12 @@ def test_common_100_113_007():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='IDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -65,22 +67,16 @@ def test_common_100_113_007():
         query = f"select * from upi_merchant_config where status = 'ACTIVE' AND " \
                 f"bank_code = 'IDFC' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
-
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result : {result}")
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
-
         db_upi_acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"fetched acc_label_id : {db_upi_acc_label_id}")
 
@@ -88,12 +84,13 @@ def test_common_100_113_007():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -112,15 +109,12 @@ def test_common_100_113_007():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
             amount = random.randint(201, 399)
             logger.debug(f"generated random amount is : {amount}")
-
             orig_cust_ref_id = random.randint(11111110, 99999999)
-
             logger.debug(f"generated random org_cust_ref_id is : {orig_cust_ref_id}")
 
             ResCode = "000"
@@ -183,17 +177,14 @@ def test_common_100_113_007():
             # UPI Callback
             api_details = DBProcessor.get_api_details('staticQR_UPI_IDFC_callback', request_body=req_payload3)
             response = APIProcessor.send_request(api_details)
-
             logger.debug(f"Response received for staticQR_UPI_IDFC_callback api is : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and rr_number = '" + str(
                 orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
                 '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
-
             txn_id = result["id"].iloc[0]
             logger.debug(f"fetched id from txn table is : {txn_id}")
             txn_type = result["txn_type"].iloc[0]
@@ -232,10 +223,9 @@ def test_common_100_113_007():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -305,6 +295,7 @@ def test_common_100_113_007():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -327,6 +318,7 @@ def test_common_100_113_007():
                     "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for txn : {api_details}")
@@ -372,6 +364,7 @@ def test_common_100_113_007():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -404,7 +397,6 @@ def test_common_100_113_007():
 
                 query = "select * from upi_txn where txn_id = '" + str(txn_id) + "';"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
-
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_additional_field1 = result["additional_field1"].iloc[0]
@@ -448,6 +440,7 @@ def test_common_100_113_007():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -464,6 +457,7 @@ def test_common_100_113_007():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -479,10 +473,11 @@ def test_common_100_113_007():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -532,13 +527,16 @@ def test_common_100_113_008():
 
         setting_value = '{"name":"' + f"{account_label_name}" + '","status":"ACTIVE"}'
         setting_value_inactive = '{"name":"' + f"{account_label_name}" + '","status":"INACTIVE"}'
+
         query = f"select * from account_labels where org_code='{org_code}' and setting_value='{setting_value}';"
         logger.debug(f"Query to fetch account_labels data from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         account_labels_id = result['id'].values[0]
         logger.debug(f"Query result, account_labels_id : {account_labels_id}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -546,22 +544,16 @@ def test_common_100_113_008():
         query = f"select * from upi_merchant_config where status = 'ACTIVE' AND " \
                 f"bank_code = 'IDFC' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
-
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result : {result}")
-
         db_upi_config_id = result['id'].values[0]
         logger.info(f"fetched upi config id is : {db_upi_config_id}")
-
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
-
         db_upi_config_mid = result['mid'].values[0]
         logger.info(f"fetched mid is : {db_upi_config_mid}")
-
         db_upi_config_tid = result['tid'].values[0]
         logger.info(f"fetched tid is : {db_upi_config_tid}")
-
         db_upi_acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"fetched acc_label_id : {db_upi_acc_label_id}")
 
@@ -569,12 +561,12 @@ def test_common_100_113_008():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Completed)-----------------------------
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -593,7 +585,6 @@ def test_common_100_113_008():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
             res_generateqr_publish_id = response["publishId"]
 
             # Generate HMAC and MerchCreds
@@ -601,7 +592,6 @@ def test_common_100_113_008():
             logger.debug(f"generated random amount is : {amount}")
 
             orig_cust_ref_id = random.randint(11111110, 99999999)
-
             logger.debug(f"generated random org_cust_ref_id is : {orig_cust_ref_id}")
 
             ResCode = "000"
@@ -651,10 +641,8 @@ def test_common_100_113_008():
              "TerminalID": db_upi_config_tid, })
             response2 = APIProcessor.send_request(api_details)
             response_hmac = response2.text
-
             res = response_hmac.split('HMAC=', 1)
             generated_hmac = res[1]
-
             logger.debug(f"Second response received : {str(response_hmac)}")
             logger.debug(f"Value of HMAC is : {generated_hmac}")
 
@@ -680,10 +668,8 @@ def test_common_100_113_008():
                 orig_cust_ref_id) + "' and id LIKE '" + datetime.utcnow().strftime(
                 '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
-
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
-
             txn_id = result["id"].iloc[0]
             logger.debug(f"fetched id from txn table is : {txn_id}")
             txn_type = result["txn_type"].iloc[0]
@@ -722,10 +708,9 @@ def test_common_100_113_008():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -795,6 +780,7 @@ def test_common_100_113_008():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -817,6 +803,7 @@ def test_common_100_113_008():
                     "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for txn : {api_details}")
@@ -862,6 +849,7 @@ def test_common_100_113_008():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -894,7 +882,6 @@ def test_common_100_113_008():
 
                 query = "select * from upi_txn where txn_id = '" + str(txn_id) + "';"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
-
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_additional_field1 = result["additional_field1"].iloc[0]
@@ -969,10 +956,11 @@ def test_common_100_113_008():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         try:
             query = f"update account_labels set setting_value='{setting_value}' where id='{account_labels_id}';"

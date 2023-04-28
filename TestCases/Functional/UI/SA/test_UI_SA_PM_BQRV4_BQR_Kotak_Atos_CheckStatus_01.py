@@ -915,12 +915,9 @@ def test_sa_100_102_229():
 @pytest.mark.appVal
 def test_sa_100_102_230():
     """
-    Sub Feature Code: UI_SA_PM_BQRV4_BQR_SA_CheckStatus_After_Expiry_KOTAK_ATOS
-    Sub Feature Description: Verification of a BQRV4 bqr txn after expiry for KOTAK_ATOS using SA check status
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    230: TC1230
+    Sub Feature Code: UI_SA_PM_BQRV4_UPI_SA_CheckStatus_After_Expiry_KOTAK_ATOS and UI_SA_PM_BQRV4_BQR_SA_CheckStatus_After_Expiry_KOTAK_ATOS
+    Sub Feature Description: Verification of a BQRV4 bqr txn after expiry for KOTAK_ATOS using SA check status and Verification of a SA BQRV4 check status after expiry via KOTAK_ATOS where BQRV4 config is KOTAK_WL
+    TC naming code description: 100: Payment Method, 102: BQR, 230: TC1230
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
