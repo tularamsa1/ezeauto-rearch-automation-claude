@@ -24,9 +24,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_110_010():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_UPI_full_Refund_via_API_MultiAcc_HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_Full_Refund_Via_API_MultiAcc_HDFC
     Sub Feature Description: Multi Account - Verification of a BQRV4_UPI full refund using api for HDFC
-    TC naming code description: 100: Payment Method, 110: MultiAcc_BQRV4, 010: TC010
+    TC naming code description: 100: Payment Method, 110: MultiAcc_BQR, 010: TC010
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -54,12 +54,15 @@ def test_common_100_110_010():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -83,7 +86,6 @@ def test_common_100_110_010():
         bqr_m_pan = result["merchant_pan"].iloc[0]
         bqr_acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"fetched bqr_acc_label_id : {bqr_acc_label_id}")
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -103,6 +105,8 @@ def test_common_100_110_010():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
 
@@ -187,7 +191,7 @@ def test_common_100_110_010():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED_REFUNDED",
-                    "txn_amt": str(amount) + ".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -199,7 +203,7 @@ def test_common_100_110_010():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUNDED",
-                    "txn_amt_2": str(amount) + ".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_new_2,
                     "rrn_2": str(rrn_new_2),
@@ -221,9 +225,7 @@ def test_common_100_110_010():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -252,7 +254,6 @@ def test_common_100_110_010():
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_new_2)
-
                 payment_status_new_2 = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_new_2}, {payment_status_new_2}")
                 app_date_and_time_new_2 = txn_history_page.fetch_date_time_text()
@@ -621,11 +622,11 @@ def test_common_100_110_010():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -638,9 +639,9 @@ def test_common_100_110_010():
 @pytest.mark.chargeSlipVal
 def test_common_100_110_011():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_UPI_partial_Refund_via_API_MultiAcc_HDFC
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_Partial_Refund_Via_API_MultiAcc_HDFC
     Sub Feature Description: Multi Account - Verification of a BQR 4_UPI partial refund using api for HDFC
-    TC naming code description: 100: Payment Method, 110: MultiAcc_BQRV4, 011: TC011
+    TC naming code description: 100: Payment Method, 110: MultiAcc_BQR, 011: TC011
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -668,12 +669,15 @@ def test_common_100_110_011():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -697,7 +701,6 @@ def test_common_100_110_011():
         bqr_m_pan = result["merchant_pan"].iloc[0]
         bqr_acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"fetched bqr_acc_label_id : {bqr_acc_label_id}")
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -717,6 +720,8 @@ def test_common_100_110_011():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
 
@@ -802,7 +807,7 @@ def test_common_100_110_011():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount) + ".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -836,9 +841,7 @@ def test_common_100_110_011():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -867,7 +870,6 @@ def test_common_100_110_011():
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_new_2)
-
                 payment_status_new_2 = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_new_2}, {payment_status_new_2}")
                 app_date_and_time_new_2 = txn_history_page.fetch_date_time_text()
@@ -1245,14 +1247,15 @@ def test_common_100_110_011():
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

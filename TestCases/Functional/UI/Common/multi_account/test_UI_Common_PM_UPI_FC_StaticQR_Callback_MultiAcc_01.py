@@ -54,16 +54,21 @@ def test_common_100_113_005():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_FC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -75,6 +80,7 @@ def test_common_100_113_005():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             query = f"select * from upi_merchant_config where status = 'ACTIVE' AND " \
                     f"bank_code = 'AXIS_FC' AND acc_label_id=(select id from label " \
                     f"where name='{account_label_name}' AND org_code ='{org_code}')"
@@ -168,7 +174,6 @@ def test_common_100_113_005():
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -424,7 +429,7 @@ def test_common_100_113_005():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -475,17 +480,22 @@ def test_common_100_113_006():
 
         setting_value = '{"name":"' + f"{account_label_name}" + '","status":"ACTIVE"}'
         setting_value_inactive = '{"name":"' + f"{account_label_name}" + '","status":"INACTIVE"}'
+
         query = f"select * from account_labels where org_code='{org_code}' and setting_value='{setting_value}';"
         logger.debug(f"Query to fetch account_labels data from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         account_labels_id = result['id'].values[0]
         logger.debug(f"Query result, account_labels_id : {account_labels_id}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -497,6 +507,7 @@ def test_common_100_113_006():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             query = f"select * from upi_merchant_config where status = 'ACTIVE' AND " \
                     f"bank_code = 'AXIS_FC' AND acc_label_id=(select id from label " \
                     f"where name='{account_label_name}' AND org_code ='{org_code}')"
@@ -543,6 +554,7 @@ def test_common_100_113_006():
             bank_txn_id = str(random.randint(100000000000, 999999999999))
             merchant_id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
             amount = 255
+
             api_details = DBProcessor.get_api_details('axisfc_hash', request_body={
                 "amount": amount,
                 "errMsg": "Transaction Successful",
@@ -599,7 +611,6 @@ def test_common_100_113_006():
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")

@@ -9,8 +9,7 @@ from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
@@ -585,9 +584,9 @@ def test_common_100_102_035():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_036():
     """
-    :Description: Verification of a BQRV4 BQR Refund transaction through API via YES_ATOS
-    :Sub feature code: UI_Common_BQRV4_BQR_Refund_API_via_YES_ATOS
-    :TC naming code description:100->Payment Method, 102->BQR, 036-> TC036
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Refund_API_via_YES_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR Refund transaction through API via YES_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 036: TC036
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -596,6 +595,7 @@ def test_common_100_102_036():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -636,13 +636,13 @@ def test_common_100_102_036():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
         GlobalVariables.time_calc.setup.end()
@@ -685,7 +685,6 @@ def test_common_100_102_036():
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Fetching auth_code, rrn, posting_date, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
-
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": amount,
@@ -733,8 +732,8 @@ def test_common_100_102_036():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id,
                     "txn_id_2": txn_id_refunded,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
                     #"payer_name": payer_name,
@@ -763,7 +762,6 @@ def test_common_100_102_036():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn_refunded}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
@@ -792,7 +790,6 @@ def test_common_100_102_036():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn_original}")
                 app_auth_code_original = transactions_history_page.fetch_auth_code_text()
@@ -850,11 +847,13 @@ def test_common_100_102_036():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -888,7 +887,6 @@ def test_common_100_102_036():
                     "order_id_2": order_id
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
@@ -964,6 +962,7 @@ def test_common_100_102_036():
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2)
                     }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1004,7 +1003,6 @@ def test_common_100_102_036():
                     "mid_2": mid,
                     "tid_2": tid,
                     "order_id_2": order_id
-
                      }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -1087,6 +1085,7 @@ def test_common_100_102_036():
                     "order_id_2": order_id_db_new_2,
                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)

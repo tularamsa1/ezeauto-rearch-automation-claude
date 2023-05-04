@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -17,9 +17,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_102_010():
     """
-    :Description: Verification of a BQRV4 QR Generation Success through SA via HDFC
-    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 010-> TC010
+    Sub Feature Code: UI_SA_PM_BQRV4_QR_Generation_Success_HDFC
+    Sub Feature Description: Verification of a BQRV4 QR Generation Success through SA via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 010: TC010
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -172,6 +172,7 @@ def test_sa_100_102_010():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

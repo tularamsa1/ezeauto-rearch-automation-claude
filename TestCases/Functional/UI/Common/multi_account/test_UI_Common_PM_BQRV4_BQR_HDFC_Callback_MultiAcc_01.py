@@ -1,9 +1,7 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -13,8 +11,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -28,9 +25,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_110_001():
     """
-    :Description: Multi Account - Performing a Authorized Txn using pure BQRV4_BQR Success callback for HDFC
-    :Sub Feature code: UI_Common_PM_BQRV4_BQR_Success_Via_BQR_Success_Callback_MultiAcc_HDFC
-    :TC naming code description: 100->Payment Method, 110-> MultiAcc_BQRV4, 001-> TC01
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Success_Via_BQR_Success_Callback_MultiAcc_HDFC
+    Sub Feature Description: Multi Account - Performing a Authorized Txn using pure BQRV4_BQR Success callback for HDFC
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 001: TC01
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -55,10 +52,12 @@ def test_common_100_110_001():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC', portal_username, portal_password, 'BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -86,6 +85,7 @@ def test_common_100_110_001():
 
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -122,6 +122,7 @@ def test_common_100_110_001():
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
+
             query = "select id from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' " \
                                                                                                            "order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
@@ -138,6 +139,7 @@ def test_common_100_110_001():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -148,6 +150,17 @@ def test_common_100_110_001():
             logger.debug(f"fetched label_ids from txn table is : {label_ids}")
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}")
+            amount_db = int(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            rr_number_db = result["rr_number"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -162,6 +175,7 @@ def test_common_100_110_001():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -169,12 +183,13 @@ def test_common_100_110_001():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount) + ".00", "settle_status": "SETTLED",
+                    "txn_amt": "{:.2f}".format(amount), "settle_status": "SETTLED",
                     "txn_id": txn_id, "rrn": str(rrn),
                     "order_id": order_id, "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code, "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
+
                 payment_page.click_on_proceed_homepage()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
@@ -214,6 +229,7 @@ def test_common_100_110_001():
                     "pmt_msg": app_payment_msg, "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -271,6 +287,7 @@ def test_common_100_110_001():
                     "account_label": str(account_label_name_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -296,22 +313,6 @@ def test_common_100_110_001():
                     "acc_label_id": str(acc_label_id)
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                rr_number_db = result["rr_number"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -347,6 +348,7 @@ def test_common_100_110_001():
                     "acc_label_id": str(label_ids)
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -402,9 +404,9 @@ def test_common_100_110_001():
 @pytest.mark.appVal
 def test_common_100_110_002():
     """
-    :Description: Multi Account - Performing a Failed Txn using pure BQRV4_BQR callback for HDFC
-    :Sub Feature code: UI_Common_PM_BQRV4_BQR_Failed_Via_BQR_Failed_Callback_MultiAcc_HDFC
-    :TC naming code description: 100->Payment Method, 110-> MultiAcc_BQRV4, 002-> TC02
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Failed_Via_BQR_Failed_Callback_MultiAcc_HDFC
+    Sub Feature Description: Multi Account - Performing a Failed Txn using pure BQRV4_BQR callback for HDFC
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 002: TC02
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -432,12 +434,15 @@ def test_common_100_110_002():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -498,6 +503,7 @@ def test_common_100_110_002():
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
+
             query = "select * from bharatqr_txn where org_code='" + org_code + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -511,6 +517,7 @@ def test_common_100_110_002():
                 "AUTH_CODE": auth_code, "RRN": rrn, "MERCHANT_PAN": bqr_m_pan})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             result = DBProcessor.getValueFromDB(query)
             auth_code = result['auth_code'].values[0]
@@ -520,6 +527,17 @@ def test_common_100_110_002():
             logger.debug(f"fetched label_ids from txn table is : {label_ids}")
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}")
+            amount_db = int(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            rr_number_db = result["rr_number"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -541,7 +559,7 @@ def test_common_100_110_002():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                    "pmt_mode": "BHARAT QR", "pmt_status": "FAILED", "txn_amt": str(amount) + ".00",
+                    "pmt_mode": "BHARAT QR", "pmt_status": "FAILED", "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "FAILED", "txn_id": txn_id,
                     "order_id": order_id, "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
@@ -610,7 +628,6 @@ def test_common_100_110_002():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -661,22 +678,6 @@ def test_common_100_110_002():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                rr_number_db = result["rr_number"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -725,7 +726,7 @@ def test_common_100_110_002():
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {"Payment Status": "Failed", "Payment mode": "BHARATQR",
                                           "Payment amount": str(amount)}
-                #
+
                 ui_driver = TestSuiteSetup.initialize_portal_driver()
                 loginPagePortal = PortalLoginPage(ui_driver)
                 logger.info(f"Logging in Portal using username : {portal_username}")
@@ -744,7 +745,7 @@ def test_common_100_110_002():
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
-                #
+
                 actual_portal_values = {"Payment Status": portal_status, "Payment mode": portal_txn_type,
                                         "Payment amount": str(portal_amt.split('.')[1])}
                 # ---------------------------------------------------------------------------------------------

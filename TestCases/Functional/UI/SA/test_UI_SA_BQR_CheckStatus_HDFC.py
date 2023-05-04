@@ -11,8 +11,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
@@ -25,9 +24,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_sa_100_102_007():
     """
-    :Description: Verification of a BQRV4 BQR Checkstatus Success transaction via HDFC
-    :Sub Feature code: UI_Common_BQRV4_BQR_Checkstatus_Success_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 004-> TC004
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Checkstatus_Success_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR Checkstatus Success transaction via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 007: TC007
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -75,9 +74,9 @@ def test_sa_100_102_007():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -145,6 +144,7 @@ def test_sa_100_102_007():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -194,6 +194,7 @@ def test_sa_100_102_007():
                                      "order_id": app_order_id,"auth_code": app_auth_code,
                                      "pmt_msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -245,6 +246,7 @@ def test_sa_100_102_007():
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api)}
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -291,8 +293,7 @@ def test_sa_100_102_007():
                 logger.debug(f"Query result : {result}")
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
-                bqr_amount_db = int(
-                    result["txn_amount"].iloc[0])
+                bqr_amount_db = int(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
                 brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
@@ -318,6 +319,7 @@ def test_sa_100_102_007():
                                     "bqr_rrn": bqr_rrn_db, "bqr_org_code": bqr_org_code_db
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -373,9 +375,9 @@ def test_sa_100_102_007():
 @pytest.mark.chargeSlipVal
 def test_sa_100_102_008():
     """
-    :Description: Verification of a BQRV4 BQR Checkstatus Failed transaction via HDFC
-    :Sub Feature code: UI_Common_BQRV4_BQR_Checkstatus_Failed_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQRV4 BQR, 005-> TC05
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Checkstatus_Failed_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR Checkstatus Failed transaction via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 008: TC008
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -406,6 +408,7 @@ def test_sa_100_102_008():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -425,7 +428,6 @@ def test_sa_100_102_008():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -633,8 +635,7 @@ def test_sa_100_102_008():
                 logger.debug(f"Query result : {result}")
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
-                bqr_amount_db = int(
-                    result["txn_amount"].iloc[0])
+                bqr_amount_db = int(result["txn_amount"].iloc[0])
                 bqr_txn_type_db = result["txn_type"].iloc[0]
                 brq_terminal_info_id_db = result["terminal_info_id"].iloc[0]
                 bqr_bank_code_db = result["bank_code"].iloc[0]
@@ -673,7 +674,7 @@ def test_sa_100_102_008():
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {"Payment Status": "Failed", "Payment mode":"BHARATQR" , "Payment amount":str(amount)}
-                #
+
                 ui_driver = TestSuiteSetup.initialize_portal_driver()
                 loginPagePortal = PortalLoginPage(ui_driver)
                 logger.info(f"Logging in Portal using username : {portal_username}")
@@ -692,7 +693,7 @@ def test_sa_100_102_008():
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
-                #
+
                 actual_portal_values = {"Payment Status": portal_status, "Payment mode": portal_txn_type, "Payment amount":str(portal_amt.split('.')[1])}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
@@ -717,9 +718,9 @@ def test_sa_100_102_008():
 @pytest.mark.chargeSlipVal
 def test_sa_100_102_009():
     """
-    :Description: Verification of a BQRV4 BQR Check Status After QR Expiry transaction via HDFC
-    :Subfeature code: UI_Common_BQRV4_BQR_Checkstatus_AfterExpiry_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 006-> TC06
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Checkstatus_AfterExpiry_HDFC
+    Sub Feature Description: Verification of a BQRV4 BQR Check Status After QR Expiry transaction via HDFC
+    TC naming code description: 100: Payment Method, 102: BQR, 009: TC009
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -750,6 +751,7 @@ def test_sa_100_102_009():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -775,7 +777,6 @@ def test_sa_100_102_009():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -915,7 +916,6 @@ def test_sa_100_102_009():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1023,7 +1023,7 @@ def test_sa_100_102_009():
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_portal_values = {"Payment Status": "Failed", "Payment mode":"BHARATQR" , "Payment amount":str(amount)}
-                #
+
                 ui_driver = TestSuiteSetup.initialize_portal_driver()
                 loginPagePortal = PortalLoginPage(ui_driver)
                 logger.info(f"Logging in Portal using username : {portal_username}")
@@ -1042,7 +1042,7 @@ def test_sa_100_102_009():
                 logger.debug(f"Fetching Transaction status from portal : {portal_status} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
-                #
+
                 actual_portal_values = {"Payment Status": portal_status, "Payment mode": portal_txn_type, "Payment amount":str(portal_amt.split('.')[1])}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)

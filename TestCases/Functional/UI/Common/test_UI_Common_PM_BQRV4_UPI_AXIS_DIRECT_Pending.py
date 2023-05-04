@@ -1,17 +1,14 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
-    date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -26,10 +23,7 @@ def test_common_100_102_223():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_UPI_Pending_Via_AXIS_DIRECT
     Sub Feature Description: Verification of BQRV4 UPI pending txn via AXIS_DIRECT
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    223: TC223
+    TC naming code description: 100: Payment Method, 102: BQR, 223: TC223
     """
 
     try:

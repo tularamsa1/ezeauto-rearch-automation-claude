@@ -20,9 +20,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_206():
     """
-    :Description: Verification of a BQRV4 BQR Refund transaction via AXIS_ATOS
-    :Sub feature code: UI_Common_BQRV4_BQR_Refund_via_AXIS_ATOS
-    :TC naming code description:100->Payment Method, 102->BQR, 206-> TC206
+    Sub Feature Code: UI_Common_BQRV4_BQR_Refund_Via_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR Refund transaction via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 206: TC206
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -31,6 +31,7 @@ def test_common_100_102_206():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -71,7 +72,6 @@ def test_common_100_102_206():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -168,8 +168,8 @@ def test_common_100_102_206():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id,
                     "txn_id_2": txn_id_refunded,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
                     #"payer_name": payer_name,
@@ -198,7 +198,6 @@ def test_common_100_102_206():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn_refunded}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
@@ -227,7 +226,6 @@ def test_common_100_102_206():
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn_original}")
                 app_auth_code_original = transactions_history_page.fetch_auth_code_text()
@@ -285,11 +283,13 @@ def test_common_100_102_206():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -399,6 +399,7 @@ def test_common_100_102_206():
                     "date_2": date_time_converter.from_api_to_datetime_format(date_api_new_2)
                     }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -522,6 +523,7 @@ def test_common_100_102_206():
                     "order_id_2": order_id_db_new_2,
                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -576,9 +578,9 @@ def test_common_100_102_206():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_207():
     """
-    :Description: Verification of a BQRV4 BQR Refund posted transaction through API via AXIS ATOS
-    :Subfeature code: UI_Common_BQRV4_BQR_Refund_Posted_via_API_AXIS_ATOS
-    :TC naming code description:100->Payment Method, 102->BQR, 207-> TC207
+    Sub Feature Code: UI_Common_BQRV4_BQR_Refund_Posted_via_API_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR Refund posted transaction through API via AXIS ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 207: TC207
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1142,9 +1144,9 @@ def test_common_100_102_207():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_208():
     """
-    :Description: Verification of a BQRV4 BQR Refund failed transaction through API via AXIS ATOS
-    :Subfeature code: UI_Common_BQRV4_BQR_Refund_Failed_via_API_AXIS_ATOS
-    :TC naming code description:100->Payment Method, 102->BQR, 207-> TC207
+    Sub Feature Code: UI_Common_BQRV4_BQR_Refund_Failed_Via_API_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR Refund failed transaction through API via AXIS ATOSVerification of a BQRV4 BQR Refund failed transaction through API via AXIS ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 208: TC208
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1175,6 +1177,7 @@ def test_common_100_102_208():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -1194,12 +1197,13 @@ def test_common_100_102_208():
         terminal_info_id = result["terminal_info_id"].iloc[0]
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -1286,7 +1290,7 @@ def test_common_100_102_208():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -1298,7 +1302,7 @@ def test_common_100_102_208():
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
                     "pmt_status_2": "FAILED",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "FAILED",
                     "txn_id_2": txn_id_new_2,
                     #"rrn_2": str(rrn_new_2),
@@ -1320,9 +1324,7 @@ def test_common_100_102_208():
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -1352,7 +1354,6 @@ def test_common_100_102_208():
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_new_2)
-
                 payment_status_new_2 = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_new_2}, {payment_status_new_2}")
                 app_date_and_time_new_2 = txn_history_page.fetch_date_time_text()
@@ -1451,7 +1452,6 @@ def test_common_100_102_208():
                     "order_id_2": order_id
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
-
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
@@ -1691,10 +1691,10 @@ def test_common_100_102_208():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
