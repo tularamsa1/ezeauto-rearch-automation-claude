@@ -1,20 +1,13 @@
 import random
-import shutil
 import sys
 from datetime import datetime
 import pytest
-from termcolor import colored
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner, date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
@@ -432,9 +425,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_063():
     """
-    :Description: Verification of a BQRV4 Refund transaction via YES_ATOS
-    :Sub feature code: UI_Common_BQRV4_Refund_via_YES_ATOS
-    :TC naming code description:100->Payment Method, 102->BQR, 063-> TC063
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_Refund_via_YES_ATOS
+    Sub Feature Description: Verification of a BQRV4 Refund transaction via YES_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 063: TC063
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -480,7 +473,6 @@ def test_common_100_102_063():
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
         upi_mc_id = result["id"].iloc[0]
-
         logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
 
         GlobalVariables.setupCompletedSuccessfully = True
@@ -576,8 +568,8 @@ def test_common_100_102_063():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id,
                     "txn_id_2": txn_id_refunded,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name,
                     "payer_name": payer_name,
@@ -605,7 +597,6 @@ def test_common_100_102_063():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn_refunded}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
@@ -682,11 +673,13 @@ def test_common_100_102_063():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -754,7 +747,6 @@ def test_common_100_102_063():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_refunded][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_refunded = response["status"]
                 amount_api_refunded = int(response["amount"])
                 payment_mode_api_refunded = response["paymentMode"]
@@ -801,6 +793,7 @@ def test_common_100_102_063():
                 }
 
                 logger.debug(f"expected_api_values : {actual_api_values} for the testcase_id {testcase_id}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -921,6 +914,7 @@ def test_common_100_102_063():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)

@@ -22,8 +22,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_113_013():
     """
     Sub Feature Code: UI_Common_PM_UPI_StaticQR_Callback_Success_Via_KOTAK_ATOS_MultiAcc_ActiveLabel
-    Sub Feature Description: Multi Account - Verifying a bqrv4 upi success callback via Kotak Atos static qr
-    when label is active
+    Sub Feature Description: Multi Account - Verifying a bqrv4 upi success callback via Kotak Atos static qr when label is active
     TC naming code description: 100: Payment method, 113: MultiAcc_StaticQR, 013: Testcase ID
     """
     try:
@@ -53,10 +52,12 @@ def test_common_100_113_013():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -189,7 +190,6 @@ def test_common_100_113_013():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -221,7 +221,6 @@ def test_common_100_113_013():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
-
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -232,7 +231,6 @@ def test_common_100_113_013():
 
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -267,6 +265,7 @@ def test_common_100_113_013():
                 }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -544,8 +543,7 @@ def test_common_100_113_013():
 def test_common_100_113_014():
     """
     Sub Feature Code: UI_Common_PM_UPI_StaticQR_Callback_Success_Via_KOTAK_ATOS_MultiAcc_InactiveLabel
-    Sub Feature Description: Multi Account - Verifying a bqrv4 upi success callback via Kotak Atos static qr
-    when label is inactive
+    Sub Feature Description: Multi Account - Verifying a bqrv4 upi success callback via Kotak Atos static qr when label is inactive
     TC naming code description: 100: Payment method, 113: MultiAcc_StaticQR, 014: Testcase ID
     """
     try:
@@ -575,6 +573,7 @@ def test_common_100_113_014():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
@@ -582,11 +581,13 @@ def test_common_100_113_014():
 
         setting_value = '{"name":"' + f"{account_label_name}" + '","status":"ACTIVE"}'
         setting_value_inactive = '{"name":"' + f"{account_label_name}" + '","status":"INACTIVE"}'
+
         query = f"select * from account_labels where org_code='{org_code}' and setting_value='{setting_value}';"
         logger.debug(f"Query to fetch account_labels data from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
         account_labels_id = result['id'].values[0]
         logger.debug(f"Query result, account_labels_id : {account_labels_id}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -719,7 +720,6 @@ def test_common_100_113_014():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -751,7 +751,6 @@ def test_common_100_113_014():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
-
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -762,7 +761,6 @@ def test_common_100_113_014():
 
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -797,6 +795,7 @@ def test_common_100_113_014():
                 }
 
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)

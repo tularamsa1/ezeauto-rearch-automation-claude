@@ -1,10 +1,7 @@
 import random
-import shutil
 import sys
 from datetime import datetime
 import pytest
-from termcolor import colored
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -14,8 +11,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
-    date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -37,6 +33,7 @@ def test_common_100_101_052():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
@@ -58,10 +55,13 @@ def test_common_100_101_052():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -79,9 +79,7 @@ def test_common_100_101_052():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
             loginPage = LoginPage(app_driver)
-
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             loginPage.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
@@ -152,14 +150,12 @@ def test_common_100_101_052():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-            # -----------------------------------------End of Test Execution--------------------------------------
+        # -----------------------------------------End of Test Execution--------------------------------------
 
-            # -----------------------------------------Start of Validation----------------------------------------
-
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -172,7 +168,7 @@ def test_common_100_101_052():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "PENDING",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -180,6 +176,7 @@ def test_common_100_101_052():
                     "date": date_and_time
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
+
                 home_page.wait_for_navigation_to_load()
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
@@ -214,6 +211,7 @@ def test_common_100_101_052():
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -237,6 +235,7 @@ def test_common_100_101_052():
                     "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})
@@ -353,7 +352,7 @@ def test_common_100_101_052():
             try:
                 expectedPortalValues = {"txn_state": "Pending", "pmt_mode": "UPI",
                                         "txn_amt": "Rs." + str(amount) + ".00", "username": app_username}
-                #
+
                 driver_ui = TestSuiteSetup.initialize_portal_driver()
                 loginPagePortal = PortalLoginPage(driver_ui)
                 logger.info(f"Logging in Portal using username : {portal_username}")
@@ -364,7 +363,6 @@ def test_common_100_101_052():
                 homePagePortal.click_switch_button(str(org_code))
                 homePagePortal.perform_merchant_switched_verfication()
                 homePagePortal.click_transaction_search_menu()
-
                 portalTransHistoryPage = PortalTransHistoryPage(driver_ui)
                 portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(txn_id)
                 portal_txn_type = portalValuesDict['Type']
@@ -384,11 +382,10 @@ def test_common_100_101_052():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

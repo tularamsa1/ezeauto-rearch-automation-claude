@@ -1,0 +1,10 @@
+opencv-python
+jinja2>=3.1.0
+opencv-python
+numpy
+matplotlib
+pyyaml
+imutils
+selenium
+geckodriver-autoinstaller
+

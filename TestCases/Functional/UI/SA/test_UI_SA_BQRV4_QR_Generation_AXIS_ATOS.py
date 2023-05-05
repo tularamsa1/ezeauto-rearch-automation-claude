@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, receipt_validator
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
@@ -16,9 +16,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_102_080():
     """
-    :Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_ATOS
-    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_AXIS_ATOS_80
-    :TC naming code description: 100->Payment Method, 102->BQR, 080-> TC80
+    Sub Feature Code: UI_Common_PM_BQRV4_UPI_QR_Generation_Success_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 080: TC080
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -27,6 +27,7 @@ def test_sa_100_102_080():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         username = app_cred['Username']
@@ -183,9 +184,9 @@ def test_sa_100_102_080():
 @pytest.mark.appVal
 def test_sa_100_102_150():
     """
-    :Description: Verification of a BQR QR Generation Failed through SA via AXIS_ATOS
-    :Sub feature code: UI_SA_PM_BQR_AXIS_ATOS_QR_Generation_Failed
-    :TC naming code description: 100->Payment Method, 102->BQR, 150-> TC150
+    Sub Feature Code: UI_SA_PM_BQR_UPI_AXIS_ATOS_QR_Generation_Failed and UI_Common_PM_BQRV4_BQR_AXIS_ATOS_QR_Generation_Failed
+    Sub Feature Description: Verifying a failed QR Generation via AXIS_ATOS and Verification of  a failed BQR QR Generation via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 150: TC150
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -351,9 +352,9 @@ def test_sa_100_102_150():
 @pytest.mark.appVal
 def test_sa_100_102_205():
     """
-    :Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_ATOS
-    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_AXIS_ATOS_80
-    :TC naming code description: 100->Payment Method, 102->BQR, 080-> TC80
+    Sub Feature Code: UI_SA_BQRV4_QR_Generation_Success_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 QR Generation Success through SA via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 205: TC205
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -506,6 +507,7 @@ def test_sa_100_102_205():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

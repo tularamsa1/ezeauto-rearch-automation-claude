@@ -6,8 +6,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
-    ResourceAssigner,  date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner,  date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
@@ -20,9 +19,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_136():
     """
-    :Description: Verification of a BQRV4 BQR amount mismatch txn when Auto refund is disabled via YES_ATOS
-    :Sub Feature code: UI_Common_BQRV4_BQR_amt_missmatch_callback_YES_ATOS
-    :TC naming code description: 100->Payment Method, 102->BQR, 136-> TC136
+    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Amount_Mismatch_Callback_YES_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR amount mismatch txn when Auto refund is disabled via YES_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 136: TC136
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -31,6 +30,7 @@ def test_common_100_102_136():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -70,7 +70,6 @@ def test_common_100_102_136():
         logger.debug(f"Fetching mid, tid from database for current merchant:{mid}, {tid}")
         bqr_mc_id = result["id"].iloc[0]
         bqr_m_pan = result["merchant_pan"].iloc[0]
-
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
@@ -107,10 +106,9 @@ def test_common_100_102_136():
             txn_id = result["id"].iloc[0]
             auth_code = "AE" + txn_id.split('E')[1]
             rrn = "RE" + txn_id.split('E')[1]
-
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {pid}, Secondary id : {sid}")
+            logger.debug(f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {pid}, Secondary id : {sid}")
             logger.debug("Performing 1st Callback")
+
             api_details = DBProcessor.get_api_details('callbackYES',
                                                       request_body={"primary_id": pid,"secondary_id":sid,
                                                                     "txn_amount": str(amount), "mpan": bqr_m_pan,
@@ -123,17 +121,40 @@ def test_common_100_102_136():
             result = DBProcessor.getValueFromDB(query)
             created_time = result['created_time'].values[0]
             external_ref = result['external_ref'].values[0]
+            amount_db = int(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            logger.debug(f"Fetching amount_db, payment_mode_db, payment_status_db, payment_state_db, acquirer_code_db, mid_db, tid_db, payment_gateway_db, settlement_status_db,  from database for "
+                f"current merchant:{amount_db}, {payment_mode_db}, {payment_status_db}, {payment_state_db}, {acquirer_code_db}, {mid_db}, {tid_db}, {payment_gateway_db}, {settlement_status_db}")
 
             query = ("select * from invalid_pg_request where request_id ='" + pid + "';")
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_upg = result['txn_id'].iloc[0]
+
             query = "select * from txn where id = '" + txn_id_upg + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             created_time_upg = result['created_time'].values[0]
             rrn_upg = result['rr_number'].iloc[0]
             external_ref_upg = result['external_ref'].values[0]
+            status_db_new = result["status"].iloc[0]
+            payment_mode_db_new = result["payment_mode"].iloc[0]
+            amount_db_new = float(result["amount"].iloc[0])
+            state_db_new = result["state"].iloc[0]
+            payment_gateway_db_new = result["payment_gateway"].iloc[0]
+            acquirer_code_db_new = result["acquirer_code"].iloc[0]
+            bank_code_db_new = result["bank_code"].iloc[0]
+            settlement_status_db_new = result["settlement_status"].iloc[0]
+            tid_db_new = result['tid'].values[0]
+            mid_db_new = result['mid'].values[0]
+
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -161,7 +182,7 @@ def test_common_100_102_136():
                     "pmt_status": "STATUS:PENDING",
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time,
@@ -169,7 +190,7 @@ def test_common_100_102_136():
                     "pmt_status_2": "STATUS:UPG_AUTHORIZED",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_upg,
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "rrn_2": str(rrn_upg),
                     "order_id_2": external_ref_upg,
                     "payment_msg_2": "PAYMENT SUCCESSFUL",
@@ -179,8 +200,7 @@ def test_common_100_102_136():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -188,9 +208,7 @@ def test_common_100_102_136():
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
-
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -202,8 +220,7 @@ def test_common_100_102_136():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -211,7 +228,6 @@ def test_common_100_102_136():
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_upg)
-
                 app_payment_status_new = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_upg}, {app_payment_status_new}")
                 app_date_and_time_new = txn_history_page.fetch_date_time_text()
@@ -223,15 +239,13 @@ def test_common_100_102_136():
                 app_amount_new = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id_upg}, {app_amount_new}")
                 app_settlement_status_new = txn_history_page.fetch_settlement_status_text()
-                logger.info(
-                    f"Fetching txn settlement_status from txn history for the txn : {txn_id_upg}, {app_settlement_status_new}")
+                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id_upg}, {app_settlement_status_new}")
                 app_payment_msg_new = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id_upg}, {app_payment_msg_new}")
                 app_order_id_new = txn_history_page.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id_upg}, {app_order_id_new}")
                 app_rrn_new = txn_history_page.fetch_RRN_text()
-                logger.info(
-                    f"Fetching txn_id from txn history for the txn : {txn_id_upg}, {app_rrn_new}")  # behavior is diff on both emulator and device (Number/NUMBER)
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id_upg}, {app_rrn_new}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
                 actual_app_values = {
                     "pmt_status": app_payment_status,
@@ -317,7 +331,6 @@ def test_common_100_102_136():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_upg][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
@@ -403,24 +416,9 @@ def test_common_100_102_136():
                     "bqr_merchant_config_id_2": bqr_mc_id, "bqr_txn_primary_id_2": txn_id_upg,
                     "bqr_merchant_pan_2": bqr_m_pan,
                     "bqr_rrn_2": str(rrn_upg), "bqr_org_code_2": org_code
-
                 }
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = int(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -434,21 +432,6 @@ def test_common_100_102_136():
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
                 bqr_org_code_db = result['org_code'].values[0]
-
-                query = "select * from txn where id='" + txn_id_upg + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_new = result["status"].iloc[0]
-                payment_mode_db_new = result["payment_mode"].iloc[0]
-                amount_db_new = float(result["amount"].iloc[0])
-                state_db_new = result["state"].iloc[0]
-                payment_gateway_db_new = result["payment_gateway"].iloc[0]
-                acquirer_code_db_new = result["acquirer_code"].iloc[0]
-                bank_code_db_new = result["bank_code"].iloc[0]
-                settlement_status_db_new = result["settlement_status"].iloc[0]
-                tid_db_new = result['tid'].values[0]
-                mid_db_new = result['mid'].values[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id_upg + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")

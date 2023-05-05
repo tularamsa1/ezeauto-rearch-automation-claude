@@ -6,7 +6,6 @@ from Configuration import testsuite_teardown, TestSuiteSetup
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -19,7 +18,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 def test_common_500_503_018():
     """
-    Sub Feature Code: UI_Common_P2P_CARD_Reconnect_Network_Cancel_Transaction_Device_18
+    Sub Feature Code: UI_Common_P2P_CARD_Reconnect_Network_Cancel_Transaction_Device
     Sub Feature Description: Turnoff network from device after receiving notification, cancel payment from device after network is back and check the status using status API
     TC naming code description: 500: P2P, 503: P2P_CARD, 018: TC018
     """
@@ -55,6 +54,7 @@ def test_common_500_503_018():
         logger.debug(f"Query result of app_key : {app_key}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -159,7 +159,6 @@ def test_common_500_503_018():
                 "appKey": app_key,
                 "origP2pRequestId": start_p2p_request_id
             })
-
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response of obtained for Status api is : {response}")
             status_success = response['success']
@@ -214,7 +213,6 @@ def test_common_500_503_018():
                 raise Exception(f"P2P notification mismatch on device after network reconnection. Actual notification: {actual_notification2}")
 
             app_driver.back()
-
             sleep(2)
 
             payment_page = PaymentPage(app_driver)
@@ -228,7 +226,6 @@ def test_common_500_503_018():
                 "appKey": app_key,
                 "origP2pRequestId": start_p2p_request_id
             })
-
             response = APIProcessor.send_request(api_details)
             logger.debug(f"After cancellation response obtained for Status api is : {response}")
             status_success_2 = response['success']
@@ -252,6 +249,7 @@ def test_common_500_503_018():
             logger.debug(f"Query result of after cancellation from p2p_request table, status_db_2 is : {status_db_2}")
             transaction_id_db_2 = result['transactionId'].values[0]
             logger.debug(f"Query result of after cancellation from p2p_request table, transaction_id_db_2 is : {transaction_id_db_2}")
+            status_txn_id_2 = result['transactionId'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -324,13 +322,6 @@ def test_common_500_503_018():
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from p2p_request where id='" + str(start_p2p_request_id) + "';"
-                logger.debug(f"Query to fetch data from p2p_request table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_2 = result['status'].values[0]
-                status_txn_id_2 = result['transactionId'].values[0]
-
                 actual_db_values = {
                     "p2p_status": status_db,
                     "p2p_txn_id": transaction_id_db_2,
@@ -359,7 +350,7 @@ def test_common_500_503_018():
 @pytest.mark.dbVal
 def test_common_500_503_019():
     """
-    Sub Feature Code: UI_Common_P2P_CARD_Reconnect_Network_Cancel_Transaction_API_19
+    Sub Feature Code: UI_Common_P2P_CARD_Reconnect_Network_Cancel_Transaction_API
     Sub Feature Description: Turnoff network from device after receiving notification, cancel payment using cancel API after network is back and check the status using status API
     TC naming code description: 500: P2P, 503: P2P_CARD, 019: TC019
     """
@@ -395,6 +386,7 @@ def test_common_500_503_019():
         logger.debug(f"Query result of app_key : {app_key}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -614,6 +606,7 @@ def test_common_500_503_019():
             logger.debug(f"Query result of after txn from p2p_request table, status_db_2 is : {status_db_2}")
             transaction_id_db_2 = result['transactionId'].values[0]
             logger.debug(f"Query result of after txn from p2p_request table, transaction_id_db_2 is : {transaction_id_db_2}")
+            status_txn_id_2 = result['transactionId'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -685,13 +678,6 @@ def test_common_500_503_019():
                 }
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from p2p_request where id='" + str(start_p2p_request_id) + "';"
-                logger.debug(f"Query to fetch data from p2p_request table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_2 = result['status'].values[0]
-                status_txn_id_2 = result['transactionId'].values[0]
 
                 actual_db_values = {
                     "p2p_status": status_db,

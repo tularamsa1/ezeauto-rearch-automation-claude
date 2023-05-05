@@ -6,10 +6,8 @@ from time import sleep
 from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, \
-    APIProcessor
+from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -20,7 +18,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 def test_common_500_503_030():
     """
-    Sub Feature Code: UI_common_P2P_Card_Queue_Status_API_30
+    Sub Feature Code: UI_common_P2P_Card_Queue_Status_API
     Sub Feature Description: Sending two notifications (BQR and Card) and check the status of second notification (Card) as in queue using status API
     TC naming code description: 500: P2P, 503: P2P_CARD, 030: TC 030
     """
@@ -62,11 +60,15 @@ def test_common_500_503_030():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -101,6 +103,7 @@ def test_common_500_503_030():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
@@ -156,7 +159,6 @@ def test_common_500_503_030():
             })
             resp_start_bqr = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API for BQR is : {resp_start_bqr}")
-
             request_id_bqr = resp_start_bqr['p2pRequestId']
             start_success_bqr = resp_start_bqr['success']
             sleep(2)
@@ -169,7 +171,6 @@ def test_common_500_503_030():
             })
             resp_status_bqr = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after BQR request received is : {resp_status_bqr}")
-
             status_received_success_bqr = resp_status_bqr['success']
             status_received_mssg_bqr = resp_status_bqr['message']
             status_received_mssgcode_bqr = resp_status_bqr['messageCode']
@@ -192,10 +193,8 @@ def test_common_500_503_030():
             })
             resp_start_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API for CARD is : {resp_start_card}")
-
             request_id_card = resp_start_card['p2pRequestId']
             start_success_card = resp_start_card['success']
-
             sleep(2)
 
             # Check status of CARD request which is in queue
@@ -206,7 +205,6 @@ def test_common_500_503_030():
             })
             resp_status_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API of queued CARD : {resp_status_card}")
-
             status_queue_success = resp_status_card['success']
             status_queue_mssg = resp_status_card['message']
             status_queue_mssgcode = resp_status_card['messageCode']
@@ -223,7 +221,6 @@ def test_common_500_503_030():
             logger.debug(f"Query to fetch details from DB table p2p_request of queued CARD : {query}")
             result = DBProcessor.getValueFromDB(query)
             db_p2p_request_status_card_1 = result['status'].values[0]
-
             payment_page = PaymentPage(app_driver)
             payment_page.is_qrcode_displayed_P2P()
             payment_page.validate_upi_bqr_payment_screen()
@@ -231,7 +228,6 @@ def test_common_500_503_030():
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page for BQR")
-
             sleep(2)
             payment_page.click_on_proceed_homepage()
             sleep(2)
@@ -244,7 +240,6 @@ def test_common_500_503_030():
             })
             resp_cancel_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P cancel API of card pmt request : {resp_cancel_card}")
-
             payment_page.click_on_cancel_p2p_request_ok()
             logger.debug("Clicked Ok on p2p transaction cancel for card payment")
             sleep(2)
@@ -275,6 +270,7 @@ def test_common_500_503_030():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -315,11 +311,13 @@ def test_common_500_503_030():
                                      "status_real_code_1": status_queue_realcode,
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -341,6 +339,7 @@ def test_common_500_503_030():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -353,7 +352,7 @@ def test_common_500_503_030():
 @pytest.mark.apiVal
 def test_common_500_503_031():
     """
-    Sub Feature Code: UI_Common_P2P_Card_Queue_Disabled_31
+    Sub Feature Code: UI_Common_P2P_Card_Queue_Disabled
     Sub Feature Description: Send one UPI and card payment notifications using start API when Queue functionality is disabled and check status of both requests
     TC naming code description: 500: P2P, 503: P2P_CARD, 031: TC 031
     """
@@ -395,11 +394,15 @@ def test_common_500_503_031():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -444,6 +447,7 @@ def test_common_500_503_031():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
@@ -499,7 +503,6 @@ def test_common_500_503_031():
             })
             resp_start_upi = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API for UPI is : {resp_start_upi}")
-
             request_id_upi = resp_start_upi['p2pRequestId']
             start_success_upi = resp_start_upi['success']
 
@@ -520,14 +523,12 @@ def test_common_500_503_031():
             })
             resp_start_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API for CARD is : {resp_start_card}")
-
             start_card_success = resp_start_card['success']
             start_card_mssg = resp_start_card['message']
             start_card_mssgcode = resp_start_card['messageCode']
             start_card_realcode = resp_start_card['realCode']
             start_card_error_code = resp_start_card['errorCode']
             start_card_error_mssg = resp_start_card['errorMessage']
-
             sleep(2)
 
             # Check status of UPI request after receiving to the device
@@ -538,7 +539,6 @@ def test_common_500_503_031():
             })
             resp_status_upi = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after UPI request received is : {resp_status_upi}")
-
             status_received_success_upi = resp_status_upi['success']
             status_received_mssg_upi = resp_status_upi['message']
             status_received_mssgcode_upi = resp_status_upi['messageCode']
@@ -576,6 +576,7 @@ def test_common_500_503_031():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -615,11 +616,13 @@ def test_common_500_503_031():
                                      "start_real_code_1": start_card_realcode,
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -633,7 +636,7 @@ def test_common_500_503_031():
 @pytest.mark.dbVal
 def test_common_500_503_034():
     """
-    Sub Feature Code: UI_Common_P2P_Card_Queue_Cancel_First_Transaction_API_34
+    Sub Feature Code: UI_Common_P2P_Card_Queue_Cancel_First_Transaction_API
     Sub Feature Description: Cancel first notification among two queued notifications (second notification for Card) using cancel API from billing system
     TC naming code description: 500: P2P, 503: P2P_CARD, 034: TC 034
     """
@@ -675,11 +678,15 @@ def test_common_500_503_034():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -704,13 +711,11 @@ def test_common_500_503_034():
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
         logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-
         db_upi_config_id = result['id'].values[0]
         db_upi_config_mid = result['mid'].values[0]
         db_upi_config_tid = result['tid'].values[0]
         db_upi_terminal_info_id = result['terminal_info_id'].values[0]
         db_upi_vpa = result['vpa'].values[0]
-
         logger.info(f"from upi_merchant_config, config id is : {db_upi_config_id}")
         logger.info(f"from upi_merchant_config, mid is : {db_upi_config_mid}")
         logger.info(f"from upi_merchant_config, tid is : {db_upi_config_tid}")
@@ -732,6 +737,7 @@ def test_common_500_503_034():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
@@ -787,7 +793,6 @@ def test_common_500_503_034():
             })
             resp_start_upi = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API for UPI is : {resp_start_upi}")
-
             request_id_upi = resp_start_upi['p2pRequestId']
             start_success_upi = resp_start_upi['success']
             sleep(2)
@@ -800,7 +805,6 @@ def test_common_500_503_034():
             })
             resp_status_upi = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after UPI request received is : {resp_status_upi}")
-
             status_received_success_upi = resp_status_upi['success']
             status_received_mssg_upi = resp_status_upi['message']
             status_received_mssgcode_upi = resp_status_upi['messageCode']
@@ -823,7 +827,6 @@ def test_common_500_503_034():
             })
             resp_start_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API for CARD is : {resp_start_card}")
-
             request_id_card = resp_start_card['p2pRequestId']
             start_success_card = resp_start_card['success']
 
@@ -837,7 +840,6 @@ def test_common_500_503_034():
             })
             resp_status_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API of queued CARD : {resp_status_card}")
-
             status_queue_success = resp_status_card['success']
             status_queue_mssg = resp_status_card['message']
             status_queue_mssgcode = resp_status_card['messageCode']
@@ -864,7 +866,6 @@ def test_common_500_503_034():
             })
             resp_cancel_upi = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P cancel API of UPI pmt request : {resp_cancel_upi}")
-
             cancel_upi_success = resp_cancel_upi['success']
 
             payment_page = PaymentPage(app_driver)
@@ -880,7 +881,6 @@ def test_common_500_503_034():
             })
             resp_cancel_card = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P cancel API of CARD pmt request : {resp_cancel_card}")
-
             cancel_card_success = resp_cancel_card['success']
             logger.debug(f"Result of success of status API after canceling card payment using cancel API : {cancel_card_success}")
 
@@ -901,6 +901,7 @@ def test_common_500_503_034():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -947,11 +948,13 @@ def test_common_500_503_034():
                     "cancel_upi_success": cancel_upi_success
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -969,14 +972,12 @@ def test_common_500_503_034():
                 logger.debug(f"Query to fetch UPI data from p2p_request table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 db_p2p_request_status_upi_2 = result['status'].values[0]
 
                 query = "select * from p2p_request where id='" + str(request_id_card) + "';"
                 logger.debug(f"Query to fetch CARD data from p2p_request table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 db_p2p_request_status_card_2 = result['status'].values[0]
 
                 actual_db_values = {
@@ -993,6 +994,7 @@ def test_common_500_503_034():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

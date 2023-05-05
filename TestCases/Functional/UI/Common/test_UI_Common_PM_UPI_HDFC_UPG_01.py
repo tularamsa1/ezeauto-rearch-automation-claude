@@ -1,11 +1,6 @@
 import random
-import shutil
 import sys
-import time
-
 import pytest
-from termcolor import colored
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -14,8 +9,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
-    date_time_converter
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -61,8 +55,10 @@ def test_common_100_101_020():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -99,7 +95,6 @@ def test_common_100_101_020():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(300, 500)
-
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
@@ -147,6 +142,17 @@ def test_common_100_101_020():
             logger.debug(f"query result : {result}")
             txn_id = result['txn_id'].iloc[0]
             logger.debug(f"fetched txn_id is : {txn_id}")
+            ipr_payment_mode = result["payment_mode"].iloc[0]
+            ipr_bank_code = result["bank_code"].iloc[0]
+            ipr_org_code = result["org_code"].iloc[0]
+            ipr_amount = result["amount"].iloc[0]
+            ipr_rrn = result["rrn"].iloc[0]
+            ipr_auth_code = result["auth_code"].iloc[0]
+            ipr_mid = result["mid"].iloc[0]
+            ipr_tid = result["tid"].iloc[0]
+            ipr_config_id = result["config_id"].iloc[0]
+            ipr_vpa = result["vpa"].iloc[0]
+            ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn data from the txn table is : {query}")
@@ -165,6 +171,18 @@ def test_common_100_101_020():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            logger.debug(f"Fetching status_db,payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db from database for "
+                f"current merchant:{status_db},{payment_mode_db}, {amount_db}, {state_db}, {payment_gateway_db}, {acquirer_code_db}, {bank_code_db}, {settlement_status_db}, {mid_db}, {tid_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -190,7 +208,7 @@ def test_common_100_101_020():
                     "pmt_status": "UPG_AUTHORIZED",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -201,17 +219,14 @@ def test_common_100_101_020():
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info( f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
-
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -313,6 +328,7 @@ def test_common_100_101_020():
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -353,21 +369,6 @@ def test_common_100_101_020():
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -376,22 +377,6 @@ def test_common_100_101_020():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-                logger.debug(f"query : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                ipr_payment_mode = result["payment_mode"].iloc[0]
-                ipr_bank_code = result["bank_code"].iloc[0]
-                ipr_org_code = result["org_code"].iloc[0]
-                ipr_amount = result["amount"].iloc[0]
-                ipr_rrn = result["rrn"].iloc[0]
-                ipr_auth_code = result["auth_code"].iloc[0]
-                ipr_mid = result["mid"].iloc[0]
-                ipr_tid = result["tid"].iloc[0]
-                ipr_config_id = result["config_id"].iloc[0]
-                ipr_vpa = result["vpa"].iloc[0]
-                ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -422,6 +407,7 @@ def test_common_100_101_020():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -441,26 +427,20 @@ def test_common_100_101_020():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
-
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.search_merchant_name(org_code)
                 logger.debug(f"searching for the org_code : {org_code}")
-
                 home_page_portal.click_switch_button(org_code)
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_state = portal_values_dict['Status']
                 portal_amt = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction state from portal : {portal_state} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
@@ -478,12 +458,11 @@ def test_common_100_101_020():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -528,8 +507,10 @@ def test_common_100_101_021():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -614,6 +595,17 @@ def test_common_100_101_021():
             logger.debug(f"query result : {result}")
             txn_id = result['txn_id'].iloc[0]
             logger.debug(f"fetched txn_id is : {txn_id}")
+            ipr_payment_mode = result["payment_mode"].iloc[0]
+            ipr_bank_code = result["bank_code"].iloc[0]
+            ipr_org_code = result["org_code"].iloc[0]
+            ipr_amount = result["amount"].iloc[0]
+            ipr_rrn = result["rrn"].iloc[0]
+            ipr_auth_code = result["auth_code"].iloc[0]
+            ipr_mid = result["mid"].iloc[0]
+            ipr_tid = result["tid"].iloc[0]
+            ipr_config_id = result["config_id"].iloc[0]
+            ipr_vpa = result["vpa"].iloc[0]
+            ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn data from the txn table is : {query}")
@@ -632,6 +624,16 @@ def test_common_100_101_021():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -657,7 +659,7 @@ def test_common_100_101_021():
                     "pmt_status": "UPG_FAILED",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -668,17 +670,14 @@ def test_common_100_101_021():
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
-
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -820,21 +819,6 @@ def test_common_100_101_021():
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -843,22 +827,6 @@ def test_common_100_101_021():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-                logger.debug(f"query : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                ipr_payment_mode = result["payment_mode"].iloc[0]
-                ipr_bank_code = result["bank_code"].iloc[0]
-                ipr_org_code = result["org_code"].iloc[0]
-                ipr_amount = result["amount"].iloc[0]
-                ipr_rrn = result["rrn"].iloc[0]
-                ipr_auth_code = result["auth_code"].iloc[0]
-                ipr_mid = result["mid"].iloc[0]
-                ipr_tid = result["tid"].iloc[0]
-                ipr_config_id = result["config_id"].iloc[0]
-                ipr_vpa = result["vpa"].iloc[0]
-                ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -908,26 +876,20 @@ def test_common_100_101_021():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
-
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.search_merchant_name(org_code)
                 logger.debug(f"searching for the org_code : {org_code}")
-
                 home_page_portal.click_switch_button(org_code)
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_state = portal_values_dict['Status']
                 portal_amt = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction state from portal : {portal_state} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
@@ -945,12 +907,11 @@ def test_common_100_101_021():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -996,10 +957,13 @@ def test_common_100_101_022():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code})
@@ -1163,7 +1127,7 @@ def test_common_100_101_022():
                     "pmt_status": "UPG_AUTH_REFUNDED",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -1184,17 +1148,14 @@ def test_common_100_101_022():
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
-
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -1319,7 +1280,6 @@ def test_common_100_101_022():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = response["paymentMode"]
@@ -1341,12 +1301,10 @@ def test_common_100_101_022():
                 response = APIProcessor.send_request(api_details)
                 responseInList = response["txns"]
                 logger.debug(f"Response received for transaction list api is : {responseInList}")
-
                 for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         refund_status_api = elements["status"]
-                        refund_amount_api = int(
-                            elements["amount"])  # actual=345.00, expected should be in the same format
+                        refund_amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
                         refund_payment_mode_api = elements["paymentMode"]
                         refund_state_api = elements["states"][0]
                         refund_settlement_status_api = elements["settlementStatus"]
@@ -1379,6 +1337,7 @@ def test_common_100_101_022():
                     "date_2": date_time_converter.from_api_to_datetime_format(refund_date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1481,8 +1440,7 @@ def test_common_100_101_022():
                 logger.debug(f"Query result : {result}")
                 refund_status_db = result["status"].iloc[0]
                 refund_payment_mode_db = result["payment_mode"].iloc[0]
-                refund_amount_db = int(
-                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                refund_amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 refund_state_db = result["state"].iloc[0]
                 refund_payment_gateway_db = result["payment_gateway"].iloc[0]
                 refund_acquirer_code_db = result["acquirer_code"].iloc[0]
@@ -1563,26 +1521,20 @@ def test_common_100_101_022():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
-
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.search_merchant_name(org_code)
                 logger.debug(f"searching for the org_code : {org_code}")
-
                 home_page_portal.click_switch_button(org_code)
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_state = portal_values_dict['Status']
                 portal_amt = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction state from portal : {portal_state} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
@@ -1600,12 +1552,11 @@ def test_common_100_101_022():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1650,10 +1601,13 @@ def test_common_100_101_023():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code})
@@ -1744,6 +1698,17 @@ def test_common_100_101_023():
             logger.debug(f"query result : {result}")
             txn_id = result['txn_id'].iloc[0]
             logger.debug(f"fetched txn_id is : {txn_id}")
+            ipr_payment_mode = result["payment_mode"].iloc[0]
+            ipr_bank_code = result["bank_code"].iloc[0]
+            ipr_org_code = result["org_code"].iloc[0]
+            ipr_amount = result["amount"].iloc[0]
+            ipr_rrn = result["rrn"].iloc[0]
+            ipr_auth_code = result["auth_code"].iloc[0]
+            ipr_mid = result["mid"].iloc[0]
+            ipr_tid = result["tid"].iloc[0]
+            ipr_config_id = result["config_id"].iloc[0]
+            ipr_vpa = result["vpa"].iloc[0]
+            ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn data from the txn table is : {query}")
@@ -1762,6 +1727,18 @@ def test_common_100_101_023():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            logger.debug(f"Fetching status_db,payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db from database for "
+                f"current merchant: {status_db},{payment_mode_db}, {amount_db}, {state_db}, {payment_gateway_db}, {acquirer_code_db}, {bank_code_db}, {settlement_status_db}, {mid_db}, {tid_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1787,7 +1764,7 @@ def test_common_100_101_023():
                     "pmt_status": "UPG_REFUND_PENDING",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -1798,17 +1775,14 @@ def test_common_100_101_023():
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
-
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -1910,6 +1884,7 @@ def test_common_100_101_023():
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -1950,21 +1925,6 @@ def test_common_100_101_023():
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1973,22 +1933,6 @@ def test_common_100_101_023():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-                logger.debug(f"query : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                ipr_payment_mode = result["payment_mode"].iloc[0]
-                ipr_bank_code = result["bank_code"].iloc[0]
-                ipr_org_code = result["org_code"].iloc[0]
-                ipr_amount = result["amount"].iloc[0]
-                ipr_rrn = result["rrn"].iloc[0]
-                ipr_auth_code = result["auth_code"].iloc[0]
-                ipr_mid = result["mid"].iloc[0]
-                ipr_tid = result["tid"].iloc[0]
-                ipr_config_id = result["config_id"].iloc[0]
-                ipr_vpa = result["vpa"].iloc[0]
-                ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -2019,6 +1963,7 @@ def test_common_100_101_023():
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -2038,26 +1983,20 @@ def test_common_100_101_023():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
-
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.search_merchant_name(org_code)
                 logger.debug(f"searching for the org_code : {org_code}")
-
                 home_page_portal.click_switch_button(org_code)
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_state = portal_values_dict['Status']
                 portal_amt = portal_values_dict['Total Amount']
                 portal_username = portal_values_dict['Username']
-
                 logger.debug(f"Fetching Transaction state from portal : {portal_state} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt} ")
@@ -2075,12 +2014,11 @@ def test_common_100_101_023():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -2093,12 +2031,8 @@ def test_common_100_101_023():
 def test_common_100_101_025():
     """
     Sub Feature Code: UI_Common_PM_UPI_UPG_REFUNDED_VIA_HDFC_when_UPGRefund_Enabled_&_UPGAutoRefund_Enabled_REFUND_via_Portal
-    Sub Feature Description: Performing a upg txn using upi success callback when upg refund and upg autorefund is enabled and refund the same through portal
-    and refund the same txn using portal
-    TC naming code description:
-    100: Payment Method
-    101: UPI
-    025: TC025
+    Sub Feature Description: Performing a upg txn using upi success callback when upg refund and upg autorefund is enabled and refund the same through portal and refund the same txn using portal
+    TC naming code description: 100: Payment Method, 101: UPI, 025: TC025
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2126,10 +2060,13 @@ def test_common_100_101_025():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         api_details = DBProcessor.get_api_details('upgRefundEnabled', request_body={"username": portal_username,
                                                                                     "password": portal_password,
                                                                                     "settingForOrgCode": org_code})
@@ -2220,6 +2157,16 @@ def test_common_100_101_025():
             logger.debug(f"query result : {result}")
             txn_id = result['txn_id'].iloc[0]
             logger.debug(f"fetched txn_id is : {txn_id}")
+            ipr_payment_mode = result["payment_mode"].iloc[0]
+            ipr_bank_code = result["bank_code"].iloc[0]
+            ipr_org_code = result["org_code"].iloc[0]
+            ipr_amount = result["amount"].iloc[0]
+            ipr_rrn = result["rrn"].iloc[0]
+            ipr_mid = result["mid"].iloc[0]
+            ipr_tid = result["tid"].iloc[0]
+            ipr_config_id = result["config_id"].iloc[0]
+            ipr_vpa = result["vpa"].iloc[0]
+            ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn data from the txn table is : {query}")
@@ -2238,6 +2185,20 @@ def test_common_100_101_025():
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            rrn_db = result['rr_number'].values[0]
+            issuer_code = result['issuer_code'].values[0]
+            logger.debug(f"Fetching status_db,payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db from database for "
+                f"current merchant:{status_db},{payment_mode_db}, {amount_db}, {state_db}, {payment_gateway_db}, {acquirer_code_db}, {bank_code_db}, {settlement_status_db}, {mid_db}, {tid_db}")
 
             logger.info("Opening Portal to perform refund of the transaction")
             ui_driver = TestSuiteSetup.initialize_portal_driver()
@@ -2303,7 +2264,7 @@ def test_common_100_101_025():
                     "pmt_status": "UPG_AUTH_REFUNDED",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -2313,7 +2274,7 @@ def test_common_100_101_025():
                     "pmt_status_2": "UPG_REFUNDED",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "rrn_2": str(rrn_2),
                     "order_id_2": external_ref_2,
                     "pmt_msg_2": "PAYMENT SUCCESSFUL",
@@ -2324,17 +2285,14 @@ def test_common_100_101_025():
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(
-                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
-
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
                 homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -2459,7 +2417,6 @@ def test_common_100_101_025():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api = response["paymentMode"]
@@ -2481,12 +2438,10 @@ def test_common_100_101_025():
                 response = APIProcessor.send_request(api_details)
                 responseInList = response["txns"]
                 logger.debug(f"Response received for transaction list api is : {responseInList}")
-
                 for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         refund_status_api = elements["status"]
-                        refund_amount_api = int(
-                            elements["amount"])  # actual=345.00, expected should be in the same format
+                        refund_amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
                         refund_payment_mode_api = elements["paymentMode"]
                         refund_state_api = elements["states"][0]
                         refund_settlement_status_api = elements["settlementStatus"]
@@ -2519,6 +2474,7 @@ def test_common_100_101_025():
                     "date_2": date_time_converter.from_api_to_datetime_format(refund_date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -2574,23 +2530,6 @@ def test_common_100_101_025():
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                rrn_db = result['rr_number'].values[0]
-                issuer_code = result['issuer_code'].values[0]
-
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -2599,21 +2538,6 @@ def test_common_100_101_025():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
-                query = ("select * from invalid_pg_request where request_id ='" + request_id + "';")
-                logger.debug(f"query : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                ipr_payment_mode = result["payment_mode"].iloc[0]
-                ipr_bank_code = result["bank_code"].iloc[0]
-                ipr_org_code = result["org_code"].iloc[0]
-                ipr_amount = result["amount"].iloc[0]
-                ipr_rrn = result["rrn"].iloc[0]
-                ipr_mid = result["mid"].iloc[0]
-                ipr_tid = result["tid"].iloc[0]
-                ipr_config_id = result["config_id"].iloc[0]
-                ipr_vpa = result["vpa"].iloc[0]
-                ipr_pg_merchant_id = result["pg_merchant_id"].iloc[0]
 
                 query = "select * from txn where id='" + txn_id_2 + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -2709,16 +2633,13 @@ def test_common_100_101_025():
                 portal_txn_type_refunded = portal_values_dict['Type']
                 portal_status_refunded = portal_values_dict['Status']
                 portal_amt_refunded = portal_values_dict['Total Amount']
-
                 logger.debug(f"Fetching Transaction status from portal : {portal_status_refunded} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type_refunded} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt_refunded} ")
-
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_txn_type_original = portal_values_dict['Type']
                 portal_status_original = portal_values_dict['Status']
                 portal_amt_original = portal_values_dict['Total Amount']
-
                 logger.debug(f"Fetching Transaction status from portal : {portal_status_original} ")
                 logger.debug(f"Fetching Transaction type from portal : {portal_txn_type_original} ")
                 logger.debug(f"Fetching Transaction amount from portal : {portal_amt_original} ")
@@ -2742,8 +2663,6 @@ def test_common_100_101_025():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

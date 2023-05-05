@@ -1,13 +1,10 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
-from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor, \
-    date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -18,12 +15,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 def test_common_100_101_101():
     """
-    Description: Verification of a UPI QR Generation Success through SA via HDFC TID Dep
-    Sub feature code: UI_SA_PM_UPI_HDFC_QR_Generation_Success_TID_Dep
-    TC naming code description:
-    100->Payment Method
-    101->UPI
-    101->TC101
+    Sub Feature Code: Tid Dep - UI_Common_PM_UPI_QR_Generation_Success_HDFC
+    Sub Feature Description: Tid Dep - Generating a successful QR for HDFC
+    TC naming code description: 100: Payment Method, 101: UPI, 101: TC101
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -54,8 +48,10 @@ def test_common_100_101_101():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_gateway = 'HDFC' and payment_mode = 'UPI'; "
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table inactive: {result}")
@@ -64,8 +60,11 @@ def test_common_100_101_101():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -85,6 +84,7 @@ def test_common_100_101_101():
             upi_mc_id = result['id'].values[0]
             tid = result['tid'].values[0]
             mid = result['mid'].values[0]
+
             query = "select device_serial from terminal_info where tid = '" + str(tid) + "';"
             logger.debug(f"Query to fetch device serial number from the terminal_info for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -99,6 +99,7 @@ def test_common_100_101_101():
                                                                     "deviceSerial": str(device_serial)})
             response = APIProcessor.send_request(api_details)
             txn_id = response["txnId"]
+
             query = "select * from txn where id = '" + str(txn_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -124,6 +125,7 @@ def test_common_100_101_101():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -268,7 +270,9 @@ def test_common_100_101_101():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

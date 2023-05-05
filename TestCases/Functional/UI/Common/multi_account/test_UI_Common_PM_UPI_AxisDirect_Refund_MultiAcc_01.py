@@ -24,7 +24,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_109_029():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_full_Refund_via_API_AxisDirect
+    Sub Feature Code: UI_Common_PM_UPI_Full_Refund_Via_API_AxisDirect
     Sub Feature Description: Multi Account - Verification of a full UPI refund using api for AxisDirect
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 029: TC029
     """
@@ -55,14 +55,18 @@ def test_common_100_109_029():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -190,8 +194,8 @@ def test_common_100_109_029():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id_original,
                     "txn_id_2": refund_txn_id,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "txn_amt_2": "{:.2f}".format(amount),
                     "customer_name": customer_name,
                     "customer_name_2": refund_customer_name,
                     "payer_name": payer_name,
@@ -209,7 +213,6 @@ def test_common_100_109_029():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 login_page = LoginPage(app_driver)
-
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -220,7 +223,6 @@ def test_common_100_109_029():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)
-
                 app_customer_name_refunded = transactions_history_page.fetch_customer_name_text()
                 logger.debug(f"Fetching customer_name from txn history for the txn : {refund_txn_id}, {app_customer_name_refunded}")
                 app_payer_name_refunded = transactions_history_page.fetch_payer_name_text()
@@ -605,17 +607,21 @@ def test_common_100_109_029():
                     'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
                 }
+
                 logger.debug(f"expected_chargeslip_values : {expected_chargeslip_values} for the testcase_id {testcase_id}")
+
                 receipt_validator.perform_charge_slip_validations(refund_txn_id,
                     {"username": app_username, "password": app_password}, expected_chargeslip_values)
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -628,7 +634,7 @@ def test_common_100_109_029():
 @pytest.mark.chargeSlipVal
 def test_common_100_109_030():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_partial_Refund_via_API_AxisDirect
+    Sub Feature Code: UI_Common_PM_UPI_Partial_Refund_Via_API_AxisDirect
     Sub Feature Description: Multi Account - Performing a UPI partial refund using api for AxisDirect
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 030: TC030
     """
@@ -659,14 +665,18 @@ def test_common_100_109_030():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -795,7 +805,7 @@ def test_common_100_109_030():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id_original,
                     "txn_id_2": refund_txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "txn_amt_2": "{:.2f}".format(refund_amount),
                     "customer_name": customer_name,
                     "customer_name_2": refund_customer_name,
@@ -814,7 +824,6 @@ def test_common_100_109_030():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 login_page = LoginPage(app_driver)
-
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -825,7 +834,6 @@ def test_common_100_109_030():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)
-
                 app_date_and_time_refunded = transactions_history_page.fetch_date_time_text()
                 logger.info(
                     f"Fetching date from txn history for the txn : {refund_txn_id}, {app_date_and_time_refunded}")
@@ -1214,9 +1222,10 @@ def test_common_100_109_030():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

@@ -25,7 +25,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_109_014():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_full_Refund_via_API_MultiAcc_APB
+    Sub Feature Code: UI_Common_PM_UPI_Full_Refund_Via_API_MultiAcc_APB
     Sub Feature Description: Multi Account - Verification of a UPI full refund using api for APB
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 014: TC014
     """
@@ -56,16 +56,22 @@ def test_common_100_109_014():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='APB', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
 
@@ -79,9 +85,7 @@ def test_common_100_109_014():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
             login_page = LoginPage(app_driver)
-
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
@@ -100,7 +104,6 @@ def test_common_100_109_014():
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
-
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             payment_page.click_on_back_btn()
@@ -151,7 +154,6 @@ def test_common_100_109_014():
                 "username": app_username, "password": app_password, "amount": amount,
                 "originalTransactionId": str(txn_id_original)})
             response = APIProcessor.send_request(api_details)
-
             logger.debug(f"Response received for transaction details api is : {response}")
             logger.debug(f"response : {response}")
             txn_id_refunded = response['txnId']
@@ -206,8 +208,15 @@ def test_common_100_109_014():
             txn_created_time_2 = result['created_time'].values[0]
             label_ids_2 = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"fetched label_ids from txn table is : {label_ids_2}")
-            logger.debug(
-                f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn_refunded} ")
+            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn_refunded} ")
+            status_db_refunded = result["status"].iloc[0]
+            payment_mode_db_refunded = result["payment_mode"].iloc[0]
+            amount_db_refunded = result["amount"].iloc[0]
+            state_db_refunded = result["state"].iloc[0]
+            payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
+            acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
+            settlement_status_db_refunded = result["settlement_status"].iloc[0]
+            order_id_db_refunded = result['external_ref'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -256,18 +265,15 @@ def test_common_100_109_014():
 
                 logger.info("resetting the app after sending the request for refund")
                 app_driver.reset()
-
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(
                     f"Fetching rrn from txn history for the refunded txn : {txn_id_refunded}, {app_rrn_refunded}")
@@ -515,19 +521,6 @@ def test_common_100_109_014():
 
                 logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
 
-                query = "select * from txn where id='" + txn_id_refunded + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_refunded = result["status"].iloc[0]
-                payment_mode_db_refunded = result["payment_mode"].iloc[0]
-                amount_db_refunded = result["amount"].iloc[0]
-                state_db_refunded = result["state"].iloc[0]
-                payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
-                acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                order_id_db_refunded = result['external_ref'].values[0]
-
                 query = "select * from upi_txn where txn_id='" + txn_id_refunded + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -642,10 +635,11 @@ def test_common_100_109_014():
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -658,7 +652,7 @@ def test_common_100_109_014():
 @pytest.mark.chargeSlipVal
 def test_common_100_109_015():
     """
-    Sub Feature Code: UI_Common_PM_Pure_UPI_partial_Refund_via_API_MultiAcc_APB
+    Sub Feature Code: UI_Common_PM_UPI_Partial_Refund_Via_API_MultiAcc_APB
     Sub Feature Description: Multi Account - Verification of a UPI partial refund using api for APB
     TC naming code description: 100: Payment Method, 109: MultiAcc_UPI, 015: TC015
     """
@@ -689,16 +683,22 @@ def test_common_100_109_015():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='APB', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -712,7 +712,6 @@ def test_common_100_109_015():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
@@ -825,6 +824,7 @@ def test_common_100_109_015():
                     })
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"response received after sending the request for the callback : {response}")
+
             query = "select * from txn where id = '" + str(refund_txn_id) + "';"
             logger.debug(f"Query to fetch txn data of refund txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -842,6 +842,14 @@ def test_common_100_109_015():
             logger.debug(f"Fetching created_time from the refund api response : {refund_created_time}")
             refund_label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"fetched label_ids from txn table is : {refund_label_ids}")
+            status_db_refunded = result["status"].iloc[0]
+            payment_mode_db_refunded = result["payment_mode"].iloc[0]
+            amount_db_refunded = int(result["amount"].iloc[0])
+            state_db_refunded = result["state"].iloc[0]
+            payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
+            acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
+            settlement_status_db_refunded = result["settlement_status"].iloc[0]
+            order_id_db_original = result['external_ref'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -856,6 +864,7 @@ def test_common_100_109_015():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -871,7 +880,7 @@ def test_common_100_109_015():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id,
                     "txn_id_2": refund_txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "txn_amt_2": "{:.2f}".format(refund_amount),
                     "customer_name": customer_name,
                     "customer_name_2": customer_name_refund,
@@ -898,7 +907,6 @@ def test_common_100_109_015():
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)
-
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {refund_txn_id}, {app_rrn_refunded}")
                 app_date_and_time_refunded = transactions_history_page.fetch_date_time_text()
@@ -982,6 +990,7 @@ def test_common_100_109_015():
                 }
 
                 logger.debug(f"actual_app_values : {actual_app_values} for the testcase_id {testcase_id}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -1036,7 +1045,6 @@ def test_common_100_109_015():
                 logger.debug(f"Response received for transaction list api is : {txn_list_response}")
                 response = [x for x in txn_list_response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_original = response["status"]
                 amount_api_original = int(response["amount"])
                 payment_mode_api_original = response["paymentMode"]
@@ -1147,19 +1155,6 @@ def test_common_100_109_015():
                 }
 
                 logger.debug(f"expected_db_values : {expected_db_values} for the testcase_id {testcase_id}")
-
-                query = "select * from txn where id='" + refund_txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_refunded = result["status"].iloc[0]
-                payment_mode_db_refunded = result["payment_mode"].iloc[0]
-                amount_db_refunded = int(result["amount"].iloc[0])
-                state_db_refunded = result["state"].iloc[0]
-                payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
-                acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
-                settlement_status_db_refunded = result["settlement_status"].iloc[0]
-                order_id_db_original = result['external_ref'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + refund_txn_id + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -1275,13 +1270,15 @@ def test_common_100_109_015():
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

@@ -23,9 +23,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_sa_100_102_203():
     """
-    :Description: Verification of a BQRV4 BQR SA Checkstatus Success via AXIS_ATOS
-    :Sub Feature code: UI_SA_BQRV4_BQR_Checkstatus_Success_AXIS_ATOS
-    :TC naming code description: 100->Payment Method, 102->BQR, 203-> TC203
+    Sub Feature Code: UI_SA_BQRV4_BQR_Checkstatus_Success_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR SA Checkstatus Success via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 203: TC203
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -123,6 +123,7 @@ def test_sa_100_102_203():
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].iloc[0]
             rrn = "RE" + txn_id.split('E')[1]
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -132,6 +133,19 @@ def test_sa_100_102_203():
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Fetching auth_code, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {created_time}, {customer_name}, {payer_name}")
+            amount_db = float(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            payer_name_db = result["payer_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            rr_number_db = result["rr_number"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -151,7 +165,7 @@ def test_sa_100_102_203():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": str(amount)+".00",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        "customer_name": customer_name,
                                        #"payer_name": payer_name,
@@ -163,7 +177,6 @@ def test_sa_100_102_203():
                 home_page.wait_for_home_page_load()
                 logger.debug("Homepage of MPOSX app loaded successfully")
                 home_page.click_on_history()
-
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_order_id(order_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
@@ -199,6 +212,7 @@ def test_sa_100_102_203():
                                      "order_id": app_order_id,"auth_code": app_auth_code,
                                      "msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -246,6 +260,7 @@ def test_sa_100_102_203():
                                      "auth_code": auth_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api)}
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -271,23 +286,6 @@ def test_sa_100_102_203():
                                       "bqr_org_code": org_code,
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = float(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                payer_name_db = result["payer_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                rr_number_db = result["rr_number"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -322,6 +320,7 @@ def test_sa_100_102_203():
                                     "bqr_org_code": bqr_org_code_db,
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
@@ -377,9 +376,9 @@ def test_sa_100_102_203():
 @pytest.mark.chargeSlipVal
 def test_sa_100_102_204():
     """
-    :Description: Verification of a BQRV4 BQR Expired Check status transaction when auto refund disabled via AXIS_ATOS
-    :Sub Feature code: UI_Common_BQRV4_BQR_CheckStatus_Expired_AXIS_ATOS
-    :TC naming code description: 100->Payment Method, 102->BQR, 204-> TC204
+    Sub Feature Code: UI_SA_BQRV4_BQR_CheckStatus_Expired_AXIS_ATOS
+    Sub Feature Description: Verification of a BQRV4 BQR Expired Check status transaction when auto refund disabled via AXIS_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 204: TC204
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -489,11 +488,21 @@ def test_sa_100_102_204():
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
             home_page.click_on_back_btn_enter_amt_page()
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from database for current merchant:{created_time}")
+            amount_db = float(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
 
             query = "select * from txn where org_code='"+org_code+"' and id LIKE '"+datetime.utcnow().strftime('%y%m%d')+"%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
@@ -503,7 +512,6 @@ def test_sa_100_102_204():
             payer_name_new = result['payer_name'].values[0]
             auth_code_new = result['auth_code'].values[0]
             created_time_new = result['created_time'].values[0]
-
             logger.debug(f"Fetching new txn_id, auth_code, created_time, customer name and payer name from database for "
                          f"current merchant:{txn_id_new},{auth_code_new}, {customer_name_new}, {payer_name_new}")
 
@@ -521,6 +529,7 @@ def test_sa_100_102_204():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -606,6 +615,7 @@ def test_sa_100_102_204():
                                      "msg_2": app_payment_msg_new, "date_2": app_date_and_time_new
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -632,6 +642,7 @@ def test_sa_100_102_204():
                                        "date_2": date_new
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for original txn : {api_details}")
@@ -659,7 +670,6 @@ def test_sa_100_102_204():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_new][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api_new = response["status"]
                 amount_api_new = float(response["amount"])
                 payment_mode_api_new = response["paymentMode"]
@@ -692,6 +702,7 @@ def test_sa_100_102_204():
                                      "date_2": date_time_converter.from_api_to_datetime_format(date_api_new)
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -731,20 +742,6 @@ def test_sa_100_102_204():
                                       "bqr_org_code_2": org_code,
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = float(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -830,6 +827,7 @@ def test_sa_100_102_204():
 
                                     }
                 logger.debug(f"actual_db_values : {actual_db_values}")
+
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)

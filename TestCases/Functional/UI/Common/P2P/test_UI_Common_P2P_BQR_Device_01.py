@@ -6,9 +6,7 @@ import random
 from Configuration import testsuite_teardown, Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.PAX_TransHistoryPage import PaxTransHistoryPage
 from Utilities import ResourceAssigner, DBProcessor, APIProcessor, date_time_converter, ConfigReader, Validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -22,7 +20,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_500_502_016():
     """
-    Sub Feature Code: UI_Common_P2P_BQR_Kill_App_With_Autologin_16
+    Sub Feature Code: UI_Common_P2P_BQR_Kill_App_With_Autologin
     Sub Feature Description: Kill the app and check P2P connection after relaunching the app, enabling autologin and do BQR txn
     TC naming code description: 500: P2P, 502: P2P_BQR, 016: TC 016
     """
@@ -55,11 +53,14 @@ def test_common_500_502_016():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -93,13 +94,11 @@ def test_common_500_502_016():
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC';"
         logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-
         db_bqr_config_id = result['id'].values[0]
         db_bqr_config_mid = result['mid'].values[0]
         db_bqr_config_tid = result['tid'].values[0]
         db_bqr_terminal_info_id = result['terminal_info_id'].values[0]
         db_bqr_config_merchant_pan = result['merchant_pan'].values[0]
-
         logger.info(f"from bharatqr_merchant_config, config id is : {db_bqr_config_id}")
         logger.info(f"from bharatqr_merchant_config, mid is : {db_bqr_config_mid}")
         logger.info(f"from bharatqr_merchant_config, tid is : {db_bqr_config_tid}")
@@ -121,6 +120,7 @@ def test_common_500_502_016():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
@@ -158,13 +158,11 @@ def test_common_500_502_016():
                 raise Exception(f"P2P notification message mismatch on device. Actual P2P notification : {actual_notification}")
 
             app_driver.back()
-
             app_driver.terminate_app("com.ezetap.basicapp")
             logger.debug(f"Killed the app")
 
             app_driver.activate_app("com.ezetap.basicapp")
             logger.debug(f"Relaunched the app")
-
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -214,7 +212,6 @@ def test_common_500_502_016():
             })
             resp_start = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P start API is : {resp_start}")
-
             request_id = resp_start['p2pRequestId']
             start_success = resp_start['success']
 
@@ -228,7 +225,6 @@ def test_common_500_502_016():
             })
             resp_status_1 = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after request received is : {resp_status_1}")
-
             status_received_success = resp_status_1['success']
             status_received_mssg = resp_status_1['message']
             status_received_mssgcode = resp_status_1['messageCode']
@@ -263,7 +259,6 @@ def test_common_500_502_016():
             })
             resp_status_2 = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for P2P status API after BQR payment is : {resp_status_2}")
-
             status_after_pmt_success = resp_status_2['success']
             status_after_pmt_mssgcode = resp_status_2['messageCode']
             status_after_pmt_mssg = resp_status_2['message']
@@ -278,6 +273,17 @@ def test_common_500_502_016():
             logger.debug(f"Query to fetch details from DB table txn after BQR payment : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_created_time = result['created_time'].values[0]
+            amount_db = int(result["amount"].iloc[0])
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            txn_type_db = result["txn_type"].iloc[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -287,6 +293,7 @@ def test_common_500_502_016():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
+
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -300,7 +307,7 @@ def test_common_500_502_016():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount) + ".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -311,7 +318,6 @@ def test_common_500_502_016():
                 home_page.click_on_history()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
-
                 payment_status = pax_txn_history_page.fetch_txn_status_text()
                 payment_mode = pax_txn_history_page.fetch_txn_type_text()
                 app_txn_id = pax_txn_history_page.fetch_txn_id_text()
@@ -330,6 +336,7 @@ def test_common_500_502_016():
                     "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
+
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
@@ -338,6 +345,7 @@ def test_common_500_502_016():
                 pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -376,7 +384,6 @@ def test_common_500_502_016():
                 response = APIProcessor.send_request(api_details)
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -416,11 +423,13 @@ def test_common_500_502_016():
                     "status_req_id_1": status_after_pmt_rqst_id,
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -457,28 +466,10 @@ def test_common_500_502_016():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-
-                amount_db = int(result["amount"].iloc[0])
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                txn_type_db = result["txn_type"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = int(result["txn_amount"].iloc[0])
@@ -494,10 +485,8 @@ def test_common_500_502_016():
                 logger.debug(f"Query to fetch data from p2p_request table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 db_p2p_request_status_1 = result['status'].values[0]
                 db_p2p_request_txn_id_1 = result['transactionId'].values[0]
-
 
                 actual_db_values = {
                     "txn_amt": amount_db,
@@ -535,6 +524,7 @@ def test_common_500_502_016():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -549,7 +539,7 @@ def test_common_500_502_016():
 @pytest.mark.appVal
 def test_common_500_502_017():
     """
-    Sub Feature Code: UI_Common_P2P_BQR_Reconnect_Network_Success_Transaction_17
+    Sub Feature Code: UI_Common_P2P_BQR_Reconnect_Network_Success_Transaction
     Sub Feature Description: Turnoff network from device after receiving notification and do successful transaction after network is back
     TC naming code description: 500: P2P, 502: P2P_BQR, 017: TC017
     """
@@ -586,6 +576,7 @@ def test_common_500_502_017():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -803,6 +794,17 @@ def test_common_500_502_017():
             result = DBProcessor.getValueFromDB(query)
             txn_created_time = result['created_time'].values[0]
             logger.debug(f"Query to fetch txn_created_time value is : {txn_created_time}")
+            amount_db = int(result["amount"].iloc[0])
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            txn_type_db = result["txn_type"].iloc[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -840,7 +842,6 @@ def test_common_500_502_017():
                 # txn_history_page = TransHistoryPage(app_driver)
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(str(external_ref_num))
-
                 payment_status = pax_txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {status_txn_id}, {payment_status}")
                 payment_mode = pax_txn_history_page.fetch_txn_type_text()
@@ -876,6 +877,7 @@ def test_common_500_502_017():
                 pax_txn_history_page.click_back_Btn()
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -913,11 +915,9 @@ def test_common_500_502_017():
                     "username": app_username,
                     "password": app_password
                 })
-
                 response = APIProcessor.send_request(api_details)
                 response = [x for x in response["txns"] if x["txnId"] == status_txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 amount_api = float(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -999,28 +999,10 @@ def test_common_500_502_017():
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + status_txn_id + "';"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-
-                amount_db = int(result["amount"].iloc[0])
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                txn_type_db = result["txn_type"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + status_txn_id + "';"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-
                 bqr_status_db = result["status_desc"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_amount_db = int(result["txn_amount"].iloc[0])
