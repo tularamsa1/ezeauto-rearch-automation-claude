@@ -521,15 +521,19 @@ def method_setup(request, playwright: Playwright):
         #         "bool_capt_ss_pass") == "True":
         #     allure.attach("videos/", name="video", attachment_type=AttachmentType.MP4)
         if GlobalVariables.charge_slip_page != '':
+            print("closing chargeslip page")
             GlobalVariables.charge_slip_page.close()
             GlobalVariables.charge_slip_page = ''
         if GlobalVariables.ui_page != '':
+            print("closing ui_page")
             GlobalVariables.ui_page.close()
             GlobalVariables.ui_page = ''
         if GlobalVariables.portal_page != '':
+            print("closing portal_page")
             GlobalVariables.portal_page.close()
             GlobalVariables.portal_page = ''
         if GlobalVariables.context != '':
+            print("closing context")
             GlobalVariables.context.close()
             GlobalVariables.context = ''
         GlobalVariables.time_calc.teardown.pause()
