@@ -8,7 +8,6 @@ from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
@@ -28,8 +27,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_256():
     """
-    Sub Feature Code: UI_Common_BQRV4_BQR_Success_Callback_KOTAK_ATOS_Tid_Dep
-    Sub Feature Description: Verification of a successful bqr txn using BQRV4 BQR Success Callback via Kotak_ATOS Tid Dep
+    Sub Feature Code: Tid Dep - UI_Common_PM_BQRV4_BQR_Success_Callback_KOTAK_ATOS
+    Sub Feature Description: Tid Dep - Verification of a successful bqr txn using BQRV4 BQR Success Callback via Kotak_ATOS
     TC naming code description:100: Payment Method, 102: BQRV4, 256: TC256
     """
     try:
@@ -58,8 +57,10 @@ def test_common_100_102_256():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -107,6 +108,8 @@ def test_common_100_102_256():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)--------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -121,8 +124,8 @@ def test_common_100_102_256():
 
             amount = random.randint(151, 200)
             order_id = datetime.now().strftime('%m%d%H%M%S')
-
             logger.debug(f"initiating upi qr for the amount of {amount}")
+
             api_details = DBProcessor.get_api_details('TidDepBqrGenerate',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": str(amount), "orderNumber": str(order_id),
@@ -140,8 +143,8 @@ def test_common_100_102_256():
             txn_id = result["id"].iloc[0]
             auth_code = "AE" + str(random.randint(110000000, 110099999))
             rrn = "RE" + str(random.randint(110000000, 110099999))
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {provider_ref_id}, Secondary id : {txn_secondary_id}")
+            logger.debug(f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {provider_ref_id}, Secondary id : {txn_secondary_id}")
+
             api_details = DBProcessor.get_api_details('callbackBQRKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
@@ -152,6 +155,7 @@ def test_common_100_102_256():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -167,8 +171,17 @@ def test_common_100_102_256():
             logger.debug(f"Fetching auth_code from the txn table : auth_code : {auth_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
-
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            device_serial_db = result['device_serial'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -178,8 +191,8 @@ def test_common_100_102_256():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -281,6 +294,7 @@ def test_common_100_102_256():
                     "device_serial": str(device_serial)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for original txn : {api_details}")
@@ -360,22 +374,6 @@ def test_common_100_102_256():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                device_serial_db = result['device_serial'].values[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -424,7 +422,7 @@ def test_common_100_102_256():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 expected_portal_values = {
                     "pmt_state": "Settled", "pmt_type": "UPI",
@@ -433,9 +431,7 @@ def test_common_100_102_256():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.wait_for_home_page_load()
@@ -444,7 +440,6 @@ def test_common_100_102_256():
                 home_page_portal.click_switch_button(str(org_code))
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
-
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_type = portal_values_dict['Type']
@@ -461,7 +456,7 @@ def test_common_100_102_256():
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -482,12 +477,11 @@ def test_common_100_102_256():
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -500,8 +494,8 @@ def test_common_100_102_256():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_257():
     """
-    Sub Feature Code: UI_Common_BQRV4_BQR_2_Success_Callback_KOTAK_ATOS_Tid_Dep
-    Sub Feature Description: Verification of a successful bqr txn using 2 BQRV4 BQR Success Callback via Kotak_ATOS Tid Dep
+    Sub Feature Code: Tid Dep - UI_Common_PM_BQRV4_2_BQR_Success_Callback_After_QR_Expiry_KOTAK_ATOS
+    Sub Feature Description: Tid Dep - Verification of 2 successful bqr txn using BQRV4 BQR Success Callback after QR expiry via Kotak_ATOS
     TC naming code description: 100-> Payment Method, 102->BQRV4, 257->TC257
     """
     try:
@@ -530,8 +524,10 @@ def test_common_100_102_257():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -579,6 +575,8 @@ def test_common_100_102_257():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)---------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -593,8 +591,8 @@ def test_common_100_102_257():
 
             amount = random.choice([i for i in range(1, 100) if i not in [45, 46]])
             order_id = datetime.now().strftime('%m%d%H%M%S')
-
             logger.debug(f"initiating upi qr for the amount of {amount}")
+
             api_details = DBProcessor.get_api_details('TidDepBqrGenerate',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": str(amount), "orderNumber": str(order_id),
@@ -612,8 +610,8 @@ def test_common_100_102_257():
             txn_id = result["id"].iloc[0]
             auth_code = "AE" + str(random.randint(110000000, 110099999))
             rrn = "RE" + str(random.randint(110000000, 110099999))
-            logger.debug(
-                f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {provider_ref_id}, Secondary id : {txn_secondary_id}")
+            logger.debug(f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {provider_ref_id}, Secondary id : {txn_secondary_id}")
+
             api_details = DBProcessor.get_api_details('callbackBQRKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
@@ -624,6 +622,7 @@ def test_common_100_102_257():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -639,11 +638,23 @@ def test_common_100_102_257():
             logger.debug(f"Fetching auth_code from the txn table : auth_code : {auth_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            device_serial_db = result['device_serial'].values[0]
 
             auth_code_2 = "AE" + str(random.randint(110000000, 110099999))
             rrn_2 = "RE" + str(random.randint(110000000, 110099999))
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {provider_ref_id}, Secondary id : {txn_secondary_id}")
+
             api_details = DBProcessor.get_api_details('callbackBQRKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
@@ -654,6 +665,7 @@ def test_common_100_102_257():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
                 '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from database : {query}")
@@ -681,8 +693,8 @@ def test_common_100_102_257():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -780,6 +792,7 @@ def test_common_100_102_257():
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id_2}, {app_rrn_2}")
+
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
@@ -985,22 +998,6 @@ def test_common_100_102_257():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                device_serial_db = result['device_serial'].values[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1101,7 +1098,7 @@ def test_common_100_102_257():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 expected_portal_values = {
                     "pmt_state": "Settled", "pmt_type": "UPI",
@@ -1110,9 +1107,7 @@ def test_common_100_102_257():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.wait_for_home_page_load()
@@ -1121,7 +1116,6 @@ def test_common_100_102_257():
                 home_page_portal.click_switch_button(str(org_code))
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
-
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_type = portal_values_dict['Type']
@@ -1138,7 +1132,7 @@ def test_common_100_102_257():
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -1152,30 +1146,33 @@ def test_common_100_102_257():
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
                     'time': txn_time, 'AUTH CODE': str(auth_code)
                 }
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_2),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
                     'time': txn_time_2, 'AUTH CODE': str(auth_code_2)
                 }
+
                 chargeslip_val_result_1 = receipt_validator.perform_charge_slip_validations(txn_id,
                     {"username": app_username, "password": app_password}, expected_charge_slip_values_1)
+
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2,
                      {"username": app_username, "password": app_password}, expected_charge_slip_values_2)
+
                 if chargeslip_val_result_1 and chargeslip_val_result_2:
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1188,8 +1185,8 @@ def test_common_100_102_257():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_261():
     """
-    Sub Feature Code: UI_Common_BQRV4_BQR_Success_Callback_After_QR_Expiry_KOTAK_ATOS_Tid_Dep
-    Sub Feature Description: Verification of a successful bqr txn using BQRV4 BQR Success Callback after QR expiry via Kotak_ATOS Tid Dep
+    Sub Feature Code: Tid Dep – UI_Common_PM_BQRV4_BQR_Success_Callback_After_QR_Expiry_KOTAK_ATOS
+    Sub Feature Description: Tid Dep - Verification of a successful bqr txn using BQRV4 BQR Success Callback after QR expiry via Kotak_ATOS
     TC naming code description: 100-> Payment Method, 102->BQRV4, 261->TC261
     """
     try:
@@ -1218,10 +1215,13 @@ def test_common_100_102_261():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
                                                                                 "password": portal_password,
                                                                                 "settingForOrgCode": org_code})
@@ -1275,6 +1275,8 @@ def test_common_100_102_261():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)---------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -1289,8 +1291,8 @@ def test_common_100_102_261():
 
             amount = random.choice([i for i in range(1, 100) if i not in [45, 46]])
             order_id = datetime.now().strftime('%m%d%H%M%S')
-
             logger.debug(f"initiating upi qr for the amount of {amount}")
+
             api_details = DBProcessor.get_api_details('TidDepBqrGenerate',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": str(amount), "orderNumber": str(order_id),
@@ -1301,6 +1303,7 @@ def test_common_100_102_261():
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
             logger.info("waiting for the time till qr get expired...")
             time.sleep(60)
+
             query = "select * from bharatqr_txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
                 '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
@@ -1326,11 +1329,23 @@ def test_common_100_102_261():
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
             rrn = result['rr_number'].values[0]
             logger.debug(f"Fetching rrn from the txn table : rrn : {rrn}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            device_serial_db = result['device_serial'].values[0]
 
             auth_code_2 = "AE" + str(random.randint(110000000, 110099999))
             rrn_2 = "RE" + str(random.randint(110000000, 110099999))
             logger.debug(
                 f"Fetching Txn_id,Auth code,RRN, primary id and secondary id from data base : Txn_id : {txn_id}, Auth code : {auth_code}, RRN : {rrn}, Primary id : {provider_ref_id}, Secondary id : {txn_secondary_id}")
+
             api_details = DBProcessor.get_api_details('callbackBQRKotakAtos', request_body={
                 "primary_id": provider_ref_id,
                 "secondary_id": txn_secondary_id,
@@ -1341,6 +1356,7 @@ def test_common_100_102_261():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
                 '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from database : {query}")
@@ -1368,8 +1384,8 @@ def test_common_100_102_261():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -1457,6 +1473,7 @@ def test_common_100_102_261():
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id_2}, {app_rrn_2}")
+
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
@@ -1648,22 +1665,6 @@ def test_common_100_102_261():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                device_serial_db = result['device_serial'].values[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1774,9 +1775,7 @@ def test_common_100_102_261():
 
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
+                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
                 login_page_portal.perform_login_to_portal(portal_username, portal_password)
                 home_page_portal = PortalHomePage(portal_driver)
                 home_page_portal.wait_for_home_page_load()
@@ -1785,7 +1784,6 @@ def test_common_100_102_261():
                 home_page_portal.click_switch_button(str(org_code))
                 home_page_portal.perform_merchant_switched_verfication()
                 home_page_portal.click_transaction_search_menu()
-
                 portal_trans_history_page = PortalTransHistoryPage(portal_driver)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
                 portal_type = portal_values_dict['Type']
@@ -1810,6 +1808,7 @@ def test_common_100_102_261():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_2)
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_2),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
@@ -1817,6 +1816,7 @@ def test_common_100_102_261():
                 }
                 receipt_validator.perform_charge_slip_validations(txn_id_2,
                      {"username": app_username, "password": app_password}, expected_charge_slip_values_2)
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
@@ -1826,8 +1826,7 @@ def test_common_100_102_261():
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
 
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -1840,8 +1839,8 @@ def test_common_100_102_261():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_270():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_BQR_2_Success_Callback_KOTAK_ATOS_Tid_Dep
-    Sub Feature Description: Verification of a successful bqr txn using 2 BQRV4 BQR Success Callback via Kotak_ATOS Tid Dep
+    Sub Feature Code: Tid Dep – UI_Common_PM_BQRV4_BQR_2_Success_Callback_KOTAK_ATOS
+    Sub Feature Description: Tid Dep - Verification of a successful bqr txn using 2 BQRV4 BQR Success Callback via Kotak_ATOS
     TC naming code description: 100: Payment Method, 102: BQRV4, 270: TC270
     """
     try:
@@ -1870,10 +1869,13 @@ def test_common_100_102_270():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='KOTAK_WL', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode in ('UPI','BHARATQR') and payment_gateway='KOTAK_ATOS'; "
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
@@ -1882,8 +1884,11 @@ def test_common_100_102_270():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)---------------------------------------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -1895,6 +1900,7 @@ def test_common_100_102_270():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
@@ -1909,6 +1915,7 @@ def test_common_100_102_270():
             logger.info(f"fetched upi_tid is : {upi_tid}")
             upi_mid = result['mid'].values[0]
             logger.info(f"fetched upi_mid is : {upi_mid}")
+
             query = "select device_serial from terminal_info where tid = '" + str(upi_tid) + "';"
             logger.debug(f"Query to fetch device serial number from the terminal_info for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1917,6 +1924,7 @@ def test_common_100_102_270():
             amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"initiating upi qr for the amount of {amount}")
+
             api_details = DBProcessor.get_api_details('TidDepBqrGenerate', request_body={
                 "username": app_username, "password": app_password, "amount": str(amount), "orderNumber": str(order_id),
                 "deviceSerial": str(device_serial)
@@ -1965,6 +1973,7 @@ def test_common_100_102_270():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1980,6 +1989,17 @@ def test_common_100_102_270():
             logger.debug(f"Fetching auth_code from the txn table : auth_code : {auth_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            device_serial_db = result['device_serial'].values[0]
 
             auth_code_2 = "AE" + str(random.randint(110000000, 110099999))
             logger.debug(f"generated random auth_code_2 to perform the 2nd callback is : {auth_code_2}")
@@ -1995,6 +2015,7 @@ def test_common_100_102_270():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
+
             query = "select * from txn where org_code='" + org_code + "' and id LIKE '" + datetime.utcnow().strftime(
                 '%y%m%d') + "%' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from database : {query}")
@@ -2022,8 +2043,8 @@ def test_common_100_102_270():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -2124,6 +2145,7 @@ def test_common_100_102_270():
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id_2}, {app_rrn_2}")
+
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
@@ -2332,21 +2354,21 @@ def test_common_100_102_270():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                device_serial_db = result['device_serial'].values[0]
+                # query = "select * from txn where id='" + txn_id + "'"
+                # logger.debug(f"Query to fetch data from txn table : {query}")
+                # result = DBProcessor.getValueFromDB(query)
+                # logger.debug(f"Query result : {result}")
+                # status_db = result["status"].iloc[0]
+                # payment_mode_db = result["payment_mode"].iloc[0]
+                # amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                # state_db = result["state"].iloc[0]
+                # payment_gateway_db = result["payment_gateway"].iloc[0]
+                # acquirer_code_db = result["acquirer_code"].iloc[0]
+                # bank_code_db = result["bank_code"].iloc[0]
+                # settlement_status_db = result["settlement_status"].iloc[0]
+                # tid_db = result['tid'].values[0]
+                # mid_db = result['mid'].values[0]
+                # device_serial_db = result['device_serial'].values[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
@@ -2450,7 +2472,7 @@ def test_common_100_102_270():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 expected_portal_values = {
                     "pmt_state": "Settled", "pmt_type": "UPI",
@@ -2487,7 +2509,7 @@ def test_common_100_102_270():
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -2496,32 +2518,39 @@ def test_common_100_102_270():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_2)
+
                 expected_charge_slip_values_1 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
                     'time': txn_time, 'AUTH CODE': str(auth_code)
                 }
+
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_2),
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
                     'time': txn_time_2, 'AUTH CODE': str(auth_code_2)
                 }
+
                 chargeslip_val_result_1 = receipt_validator.perform_charge_slip_validations(txn_id,
                     {"username": app_username, "password": app_password}, expected_charge_slip_values_1)
+
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2,
                      {"username": app_username, "password": app_password}, expected_charge_slip_values_2)
+
                 if chargeslip_val_result_1 and chargeslip_val_result_2:
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
                 else:
                     GlobalVariables.str_chargeslip_val_result = 'Fail'
+
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 

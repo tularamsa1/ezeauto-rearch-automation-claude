@@ -6,7 +6,6 @@ from Configuration import testsuite_teardown, TestSuiteSetup
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -19,7 +18,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 def test_common_500_503_048():
     """
-    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_Password_48
+    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_Password
     Sub Feature Description: Send cancel API for Card transaction request with wrong password in API request
     TC naming code description: 500: P2P, 503: P2P_Card, 048: TC048
     """
@@ -277,7 +276,7 @@ def test_common_500_503_048():
 @pytest.mark.dbVal
 def test_common_500_503_049():
     """
-    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_Username_49
+    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_Username
     Sub Feature Description: Send cancel API for Card transaction request with wrong username in API request
     TC naming code description: 500: P2P, 503: P2P_Card, 049: TC049
     """
@@ -535,7 +534,7 @@ def test_common_500_503_049():
 @pytest.mark.dbVal
 def test_common_500_503_050():
     """
-    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_App_Key_50
+    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_App_Key
     Sub Feature Description: Send cancel API for Card transaction request with wrong appkey in API request
     TC naming code description: 500: P2P, 503: P2P_Card, 050: TC050
     """
@@ -790,7 +789,7 @@ def test_common_500_503_050():
 @pytest.mark.dbVal
 def test_common_500_503_051():
     """
-    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_P2PID_51
+    Sub Feature Code: UI_Common_P2P_Card_Cancel_API_Wrong_P2PID
     Sub Feature Description: Send cancel API for Card transaction request with wrong P2P ID in API request
     TC naming code description: 500: P2P, 503: P2P_Card, 051: TC051
     """

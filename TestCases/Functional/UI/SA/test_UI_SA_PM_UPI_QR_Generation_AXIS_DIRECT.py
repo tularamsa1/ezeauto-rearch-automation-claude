@@ -1,17 +1,13 @@
 import random
-import shutil
 import sys
 from datetime import datetime
-
 import pytest
-from termcolor import colored
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor
+from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -21,12 +17,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_101_040():
     """
-    Description: Verification of a UPI QR Generation Success through SA via AXIS_DIRECT
-    Sub feature code: UI_SA_PM_UPI_AXIS_DIRECT_QR_Generation_Success
-    TC naming code description:
-    100->Payment Method
-    101->UPI
-    040->TC40
+    Sub Feature Code: UI_SA_PM_UPI_AXIS_DIRECT_QR_Generation_Success
+    Sub Feature Description: Verification of a UPI QR Generation Success through SA via AXIS_DIRECT
+    TC naming code description: 100: Payment Method, 101: UPI, 040: TC040
     """
 
     try:
@@ -55,10 +48,13 @@ def test_sa_100_101_040():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -76,7 +72,6 @@ def test_sa_100_101_040():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
@@ -101,7 +96,6 @@ def test_sa_100_101_040():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
@@ -126,8 +120,10 @@ def test_sa_100_101_040():
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
 
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 

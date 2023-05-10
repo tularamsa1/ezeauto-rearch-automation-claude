@@ -285,7 +285,6 @@ def test_common_100_108_022():
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
-
             try:
                 date = date_time_converter.db_datetime(created_time)
 

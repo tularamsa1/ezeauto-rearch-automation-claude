@@ -1,18 +1,13 @@
-import shutil
 import sys
 from datetime import datetime
-
 import pytest
-from termcolor import colored
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
-    date_time_converter
+from Utilities import  Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -28,10 +23,7 @@ def test_common_100_102_167():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_UPI_Ref_ID_Val_Via_AXIS_DIRECT
     Sub Feature Description: Verification of a ref id validation using bqrv4 upi txn via AXIS_DIRECT
-    TC naming code description:
-    100: Payment Method
-    102: BQRV4
-    167: TC167
+    TC naming code description: 100: Payment Method, 102: BQR, 167: TC167
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -59,13 +51,17 @@ def test_common_100_102_167():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = "update bharatqr_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating bharatqr_merchant_config table inactive: {result}")
+
         query = "update bharatqr_merchant_config set status = 'ACTIVE' where org_code='" + org_code + "' and bank_code='HDFC'"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating DB setting active : {result}")
@@ -73,8 +69,11 @@ def test_common_100_102_167():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -89,9 +88,7 @@ def test_common_100_102_167():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = 505.05
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -101,13 +98,11 @@ def test_common_100_102_167():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Bqr_paymentMode()
             logger.info("Selected payment mode is UPI")
-
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
             home_page.click_on_back_btn_enter_amt_page()
@@ -135,13 +130,6 @@ def test_common_100_102_167():
             error_message = result['error_message'].values[0]
             logger.debug(f"Fetching error_message from the txn table : error_message : {error_message}")
 
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
-            logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"Fetching id from the upi_merchant_config table : id : {upi_mc_id}")
-
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
@@ -167,7 +155,6 @@ def test_common_100_102_167():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
@@ -195,11 +182,9 @@ def test_common_100_102_167():
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
-
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_order_id(order_id)
-
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -252,6 +237,7 @@ def test_common_100_102_167():
                     "date": date, "err_msg": error_message
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnDetails',
                                                           request_body={"username": app_username,
                                                                         "password": app_password,
@@ -417,10 +403,10 @@ def test_common_100_102_167():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

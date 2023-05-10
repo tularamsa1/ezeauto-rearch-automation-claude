@@ -1,13 +1,10 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
-from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor, \
-    date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -54,10 +51,14 @@ def test_common_100_102_155():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -111,7 +112,6 @@ def test_common_100_102_155():
                                                                     "amount": str(amount), "orderNumber": str(order_id),
                                                                     "deviceSerial": str(device_serial)})
             response = APIProcessor.send_request(api_details)
-
             txn_id = response["txnId"]
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
 
@@ -121,11 +121,36 @@ def test_common_100_102_155():
             org_code_txn = result['org_code'].values[0]
             txn_type = result['txn_type'].values[0]
             created_time = result['created_time'].values[0]
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            device_serial_db = result['device_serial'].values[0]
+            order_id_db = result['external_ref'].values[0]
+            logger.debug(f"Fetching txn_type, org_code_txn, created_time, status_db,payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db, device_serial_db,order_id_db from database for "
+                f"current merchant:{txn_type},{org_code_txn}, {created_time},{status_db},{payment_mode_db}, {amount_db}, {state_db}, {payment_gateway_db}, {acquirer_code_db}, {bank_code_db}, {settlement_status_db}, {mid_db}, {tid_db}, {device_serial_db},{order_id_db}")
+
             query = "select * from bharatqr_txn where id='" + txn_id + "'"
             logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
             qrcode_uri = result['qrcode_uri'].values[0]
+            bqr_state_db = result["state"].iloc[0]
+            bqr_txn_amt_db = result["txn_amount"].iloc[0]
+            bqr_txn_type_db = result["txn_type"].iloc[0]
+            bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
+            bqr_bank_code_db = result["bank_code"].iloc[0]
+            bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
+            bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
+            bqr_org_code_db = result["org_code"].iloc[0]
+            logger.debug(f"Fetching qrcode_uri, bqr_state_db, created_time, bqr_txn_amt_db,bqr_txn_type_db, bqr_terminal_info_id_db, bqr_bank_code_db, bqr_merchant_config_id_db, bqr_transaction_primary_id_db, bqr_org_code_db, settlement_status_db  from database for "
+                f"current merchant:{qrcode_uri},{bqr_state_db}, {bqr_txn_amt_db},{bqr_txn_type_db},{bqr_terminal_info_id_db}, {bqr_bank_code_db}, {bqr_merchant_config_id_db}, {bqr_transaction_primary_id_db}, {bqr_org_code_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -140,6 +165,7 @@ def test_common_100_102_155():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -230,36 +256,6 @@ def test_common_100_102_155():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                device_serial_db = result['device_serial'].values[0]
-                order_id_db = result['external_ref'].values[0]
-
-                query = "select * from bharatqr_txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                bqr_state_db = result["state"].iloc[0]
-                bqr_txn_amt_db = result["txn_amount"].iloc[0]
-                bqr_txn_type_db = result["txn_type"].iloc[0]
-                bqr_terminal_info_id_db = result["terminal_info_id"].iloc[0]
-                bqr_bank_code_db = result["bank_code"].iloc[0]
-                bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
-                bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                bqr_org_code_db = result["org_code"].iloc[0]
-
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -290,8 +286,10 @@ def test_common_100_102_155():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -336,10 +334,14 @@ def test_common_100_102_156():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -407,6 +409,7 @@ def test_common_100_102_156():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -438,7 +441,9 @@ def test_common_100_102_156():
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
 
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

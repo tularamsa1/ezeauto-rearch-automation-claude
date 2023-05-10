@@ -17,9 +17,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_102_051():
     """
-    :Description: Verification of a BQRV4 QR Generation Success through SA via HDFC
-    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 010-> TC010
+    Sub Feature Code: UI_SA_PM_BQRV4_QR_Generation_Success_HDFC
+    Sub Feature Description: Verification of a BQRV4 QR Generation Success through SA via HDFC
+    :TC naming code description: 100->Payment Method, 102->BQR, 051-> TC051
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -28,6 +28,7 @@ def test_sa_100_102_051():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         username = app_cred['Username']
@@ -73,7 +74,7 @@ def test_sa_100_102_051():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-            # ------------------------------------------------------------------------------------------------
+
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {username}")
@@ -89,7 +90,7 @@ def test_sa_100_102_051():
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Bqr_paymentMode()
-            # ------------------------------------------------------------------------------------------------
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -172,6 +173,7 @@ def test_sa_100_102_051():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

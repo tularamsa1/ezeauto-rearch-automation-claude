@@ -24,9 +24,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_sa_100_110_043():
     """
-    :Description: Multi Account - Verification of a Success SA Checkstatus bqrv4 bqr txn via Kotak ATOS
-    :Sub Feature code: UI_SA_BQRV4_BQR_Success_Checkstatus_MultiAcc_Kotak_ATOS
-    :TC naming code description: 100->Payment Method, 110->Multi Acc BQRv4 BQR, 043-> TC043
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Success_Via_SA_CheckStatus_MultiAcc_KotakAtos
+    Sub Feature Description: Multi Account - Verification of a Success SA Checkstatus bqrv4 bqr txn via Kotak ATOS
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 043: TC043
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -61,6 +61,7 @@ def test_sa_100_110_043():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -86,6 +87,8 @@ def test_sa_100_110_043():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -99,8 +102,7 @@ def test_sa_100_110_043():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             amount = random.randint(401, 1000)
@@ -120,7 +122,6 @@ def test_sa_100_110_043():
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
-
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Clicking on proceed to home page button on the Payment successful screen on the MPOS")
@@ -145,8 +146,17 @@ def test_sa_100_110_043():
             logger.debug(f"Fetching auth_code from the txn table : rrn : {rrn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
-
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            label_ids = str(result['label_ids'].values[0]).strip(',')
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -156,8 +166,8 @@ def test_sa_100_110_043():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -170,7 +180,7 @@ def test_sa_100_110_043():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -256,6 +266,7 @@ def test_sa_100_110_043():
                     "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
                                                                                    "password": app_password, })
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
@@ -334,22 +345,6 @@ def test_sa_100_110_043():
                     "acc_label_id": str(acc_label_id)
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                label_ids = str(result['label_ids'].values[0]).strip(',')
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
@@ -430,12 +425,11 @@ def test_sa_100_110_043():
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -447,9 +441,9 @@ def test_sa_100_110_043():
 @pytest.mark.appVal
 def test_sa_100_110_044():
     """
-    Sub Feature Code: UI_SA_BQRV4_BQR_Failed_CheckStatus_MultiAcc_KOTAK_ATOS
-    Sub Feature Description: Performing a failed BQRV4 BQR txn via KOTAK ATOS Multi Account using SA check status
-    TC naming code description: 100->Payment Method, 110->Multi Acc BQRv4 BQR, 044-> TC044
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Failed_Via_SA_CheckStatus_MultiAcc_KotakAtos
+    Sub Feature Description: Multi Account - Verification of a failed BQRV4_BQR txn via KotakAtos using SA check status
+    TC naming code description: 100: Payment Method, 110: MultiAcc_BQR, 044: TC044
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -484,6 +478,7 @@ def test_sa_100_110_044():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -509,6 +504,8 @@ def test_sa_100_110_044():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -539,9 +536,7 @@ def test_sa_100_110_044():
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Bqr_paymentMode()
-
             logger.info("Selected payment mode is BQR")
-
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Transacation has been canceled and restarting mpos app")
@@ -571,11 +566,9 @@ def test_sa_100_110_044():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
-
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -588,7 +581,7 @@ def test_sa_100_110_044():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "customer_name": customer_name,
@@ -666,6 +659,7 @@ def test_sa_100_110_044():
                     "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
                                                                                    "password": app_password, })
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
@@ -828,8 +822,7 @@ def test_sa_100_110_044():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -841,9 +834,9 @@ def test_sa_100_110_044():
 @pytest.mark.chargeSlipVal
 def test_sa_100_110_045():
     """
-    :Description: Multi Account - Verification of a Success SA Checkstatus bqrv4 bqr txn with second label via Kotak ATOS
-    :Sub Feature code: UI_SA_BQRV4_BQR_Success_Checkstatus_with_2nd_label_MultiAcc_Kotak_ATOS
-    :TC naming code description: 100->Payment Method, 110->Multi Acc BQRv4 BQR, 045-> TC045
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Success_Via_CheckStatus_With_2nd_Label_MultiAcc_KotakAtos
+    Sub Feature Description: Multi Account - Verification of a Success SA Checkstatus bqrv4 bqr txn with second label via Kotak ATOS
+    TC naming code description: 100: Payment Method 110: MultiAcc_BQR, 045: TC045
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -878,6 +871,7 @@ def test_sa_100_110_045():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
@@ -909,6 +903,8 @@ def test_sa_100_110_045():
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
@@ -943,7 +939,6 @@ def test_sa_100_110_045():
             logger.info("Selected payment mode is BQR")
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
-
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Clicking on proceed to home page button on the Payment successful screen on the MPOS")
@@ -968,8 +963,17 @@ def test_sa_100_110_045():
             logger.debug(f"Fetching auth_code from the txn table : rrn : {rrn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
-
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
+            status_db = result["status"].iloc[0]
+            payment_mode_db = result["payment_mode"].iloc[0]
+            amount_db = int(result["amount"].iloc[0])
+            state_db = result["state"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_code_db = result["bank_code"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            tid_db = result['tid'].values[0]
+            mid_db = result['mid'].values[0]
+            label_ids = str(result['label_ids'].values[0]).strip(',')
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -979,8 +983,8 @@ def test_sa_100_110_045():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-        # -----------------------------------------Start of Validation----------------------------------------
 
+        # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -993,7 +997,7 @@ def test_sa_100_110_045():
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -1079,6 +1083,7 @@ def test_sa_100_110_045():
                     "account_label": str(account_label_name)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
                                                                                    "password": app_password, })
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
@@ -1157,22 +1162,6 @@ def test_sa_100_110_045():
                     "acc_label_id": str(acc_label_id)
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db = result["status"].iloc[0]
-                payment_mode_db = result["payment_mode"].iloc[0]
-                amount_db = int(result["amount"].iloc[0])
-                state_db = result["state"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_code_db = result["bank_code"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                label_ids = str(result['label_ids'].values[0]).strip(',')
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
@@ -1253,11 +1242,10 @@ def test_sa_100_110_045():
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

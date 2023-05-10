@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -17,9 +17,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_sa_100_102_028():
     """
-    :Description: Verification of a BQRV4 QR Generation Success through SA via HDFC
-    :Sub feature code: UI_SA_BQRV4_QR_Generation_Success_HDFC
-    :TC naming code description: 100->Payment Method, 102->BQR, 010-> TC010
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_YES_ATOS_QR_Generation_Failed
+    Sub Feature Description: Verification of a BQR QR Generation Failed through SA via YES_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 029: TC029
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -184,9 +184,9 @@ def test_sa_100_102_028():
 @pytest.mark.appVal
 def test_sa_100_102_029():
     """
-    :Description: Verification of a BQR QR Generation Failed through SA via YES_ATOS
-    :Sub feature code: UI_SA_PM_BQR_YES_ATOS_QR_Generation_Failed
-    :TC naming code description: 100->Payment Method, 102->BQR, 029-> TC029
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_YES_ATOS_QR_Generation_Failed and UI_Common_PM_BQRV4_UPI_QR_Generation_Failed_YES_ATOS
+    Sub Feature Description: Verification of a BQR QR Generation Failed through SA via YES_ATOS and Verifying a failed QR Generation via YES_ATOS
+    TC naming code description: 100: Payment Method, 102: BQR, 029: TC029
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

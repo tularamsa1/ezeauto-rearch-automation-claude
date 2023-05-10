@@ -14,7 +14,7 @@ from appium.webdriver.appium_service import AppiumService
 from selenium import webdriver
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-from Utilities import DirectoryCreator, Ezewallet_processor, card_processor
+from Utilities import DirectoryCreator, card_processor
 from Utilities import sqlite_processor,merchant_creator,DBProcessor
 from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR

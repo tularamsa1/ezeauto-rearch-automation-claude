@@ -1,8 +1,6 @@
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -31,6 +29,7 @@ def test_common_100_101_062():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
@@ -52,9 +51,13 @@ def test_common_100_101_062():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -73,9 +76,7 @@ def test_common_100_101_062():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-
-            logger.info(
-                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = 505.05
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -85,13 +86,11 @@ def test_common_100_101_062():
             home_page.check_home_page_logo()
             logger.debug(f"Entered amount is : {amount}")
             logger.debug(f"Entered order_id is : {order_id}")
-
             home_page.enter_amount_and_order_number(amount, order_id)
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
-
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
             home_page.click_on_back_btn_enter_amt_page()
@@ -142,11 +141,9 @@ def test_common_100_101_062():
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
-
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
-
         # -----------------------------------------End of Test Execution--------------------------------------
 
         # -----------------------------------------Start of Validation----------------------------------------
@@ -171,14 +168,13 @@ def test_common_100_101_062():
                 }
 
                 logger.debug(f"expected_app_values: {expected_app_values}")
+
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
-
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_order_id(order_id)
-
                 app_payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
@@ -231,6 +227,7 @@ def test_common_100_101_062():
                     "date": date, "err_msg": error_message
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
+
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
                                                                         "password": app_password})
@@ -264,6 +261,7 @@ def test_common_100_101_062():
                                      "err_msg": error_message_api
                                      }
                 logger.debug(f"actual_api_values: {actual_api_values}")
+
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
@@ -318,6 +316,7 @@ def test_common_100_101_062():
                 upi_txn_type_db = result["txn_type"].iloc[0]
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -362,8 +361,6 @@ def test_common_100_101_062():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
-
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)

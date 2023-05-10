@@ -5,7 +5,6 @@ from Configuration import testsuite_teardown, TestSuiteSetup
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -16,7 +15,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 def test_common_500_501_038():
     """
-    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_device_Serial_38
+    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_device_Serial
     Sub Feature Description: Send start API for UPI transaction with wrong device_serial in API request
     TC naming code description: 500: P2P, 501: P2P_UPI, 038: TC038
     """
@@ -52,6 +51,7 @@ def test_common_500_501_038():
         logger.debug(f"Query result of app_key : {app_key}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -217,7 +217,7 @@ def test_common_500_501_038():
 @pytest.mark.apiVal
 def test_common_500_501_039():
     """
-    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_App_Key_39
+    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_App_Key
     Sub Feature Description: Send start API for UPI transaction with wrong appkey in API request
     TC naming code description: 500: P2P, 501: P2P_UPI, 039: TC039
     """
@@ -253,6 +253,7 @@ def test_common_500_501_039():
         logger.debug(f"Query result of app_key : {app_key}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -421,7 +422,7 @@ def test_common_500_501_039():
 @pytest.mark.apiVal
 def test_common_500_501_040():
     """
-    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Without_App_Key_40
+    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Without_App_Key
     Sub Feature Description: Send start API for UPI transaction without appkey in API request
     TC naming code description: 500: P2P, 501: P2P_UPI, 040: TC040
     """
@@ -457,6 +458,7 @@ def test_common_500_501_040():
         logger.debug(f"Query result of app_key : {app_key}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -622,7 +624,7 @@ def test_common_500_501_040():
 @pytest.mark.apiVal
 def test_common_500_501_041():
     """
-    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_Password_41
+    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_Password
     Sub Feature Description: Send start API for UPI transaction with wrong password in API request
     TC naming code description: 500: P2P, 501: P2P_UPI, 041: TC041
     """
@@ -651,6 +653,7 @@ def test_common_500_501_041():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_username, portal_password)
+
         testsuite_teardown.revert_p2p_settings(portal_username, portal_password, app_username, app_password, org_code)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -820,7 +823,7 @@ def test_common_500_501_041():
 @pytest.mark.apiVal
 def test_common_500_501_042():
     """
-    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_Username_42
+    Sub Feature Code: UI_Common_P2P_UPI_Start_API_Wrong_Username
     Sub Feature Description: Send start API for UPI transaction with wrong username in API request
     TC naming code description: 500: P2P, 501: P2P_UPI, 042: TC042
     """

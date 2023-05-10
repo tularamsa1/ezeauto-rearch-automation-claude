@@ -19,7 +19,7 @@ def test_common_100_109_008():
     """
     Sub Feature Code: UI_Common_PM_Initiate_UPI_QR_via_API_with_Inactive_Label_MultiAcc
     Sub Feature Description: Multi Account - Make label as Inactive then try to initiate QR
-    TC naming code description: 100->Payment Method, 110-> MultiAcc_UPI, 008-> TC08
+    TC naming code description: 100: Payment Method, 110: MultiAcc_UPI, 008: TC08
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -46,10 +46,12 @@ def test_common_100_109_008():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
+
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
             org_code, portal_un=portal_username, portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetched account_label_name : {account_label_name}")
+
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND " \
                 f"bank_code = 'HDFC' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}') "
@@ -68,12 +70,14 @@ def test_common_100_109_008():
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         query = f"update label set status='INACTIVE' where id='{acc_label_id}';"
         DBProcessor.setValueToDB(query)
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={
             "username": portal_username, "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -144,10 +148,11 @@ def test_common_100_109_008():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         query = f"update label set status='ACTIVE' where id='{acc_label_id}';"
         DBProcessor.setValueToDB(query)
@@ -164,7 +169,7 @@ def test_common_100_109_009():
     """
     Sub Feature Code: UI_Common_PM_Initiate_UPI_QR_via_API_with_Invalid_Label_MultiAcc
     Sub Feature Description: Multi Account - Initiate QR with invalid label
-    TC naming code description: 100->Payment Method, 110-> MultiAcc_UPI, 009-> TC09
+    TC naming code description: 100: Payment Method, 110: MultiAcc_UPI, 009: TC09
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -215,6 +220,7 @@ def test_common_100_109_009():
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -289,7 +295,6 @@ def test_common_100_109_009():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-
-    # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
