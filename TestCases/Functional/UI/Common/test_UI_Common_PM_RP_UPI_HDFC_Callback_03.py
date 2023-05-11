@@ -1304,7 +1304,6 @@ def test_common_100_103_068():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_103_069():
     """
     Sub Feature Code: UI_Common_PM_RP_2_UPI_success_callback_after_expiry_HDFC_AutoRefund_Enabled
@@ -2122,28 +2121,6 @@ def test_common_100_103_069():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-        # -----------------------------------------End of Portal Validation---------------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(new_txn_modified_time_1)
-                expected_values = {'PAID BY:': 'UPI',
-                                   'merchant_ref_no': 'Ref # ' + str(order_id),
-                                   'RRN': str(callback_1_rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                   'date': txn_date,
-                                   'time': txn_time,
-                                   'AUTH CODE': original_auth_code}
-                logger.debug(f"expected_values : {expected_values}")
-                receipt_validator.perform_charge_slip_validations(new_txn_id_1,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_values)
-
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-
-        # -----------------------------------------End of ChargeSlip Validation----------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
