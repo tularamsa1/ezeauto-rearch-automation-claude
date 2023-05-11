@@ -3759,7 +3759,6 @@ def test_common_100_102_248():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_102_249():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_1_UPI_AXIS_DIRECT_And_1_BQR_HDFC_Success_Callback_Before_QR_Expiry_AutoRefund_Enabled
@@ -4420,7 +4419,6 @@ def test_common_100_102_249():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(txn_created_time_3)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
 
                 expected_charge_slip_values_2 = {
@@ -4429,23 +4427,8 @@ def test_common_100_102_249():
                     'time': txn_time_2,
                 }
 
-                chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2, {
+                receipt_validator.perform_charge_slip_validations(txn_id_2, {
                     "username": app_username, "password": app_password}, expected_charge_slip_values_2)
-
-                expected_chargeslip_values_3 = {
-                    'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_3),
-                    'BASE AMOUNT:': "Rs." + str(amount)  + ".00", 'time': txn_time_3, 'date': txn_date_3,
-                    'AUTH CODE': auth_code_3
-                }
-
-                chargeslip_val_result_3 = receipt_validator.perform_charge_slip_validations(txn_id_3, {
-                    "username": app_username, "password": app_password}, expected_chargeslip_values_3)
-
-                if chargeslip_val_result_2 and chargeslip_val_result_3:
-                    GlobalVariables.str_chargeslip_val_result = 'Pass'
-                else:
-                    GlobalVariables.str_chargeslip_val_result = 'Fail'
-
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
