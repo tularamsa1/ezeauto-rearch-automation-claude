@@ -21,9 +21,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_102_300():
     """
-    Sub Feature code: TID_Dep_UI_Common_PM_BQR_Refund_AXIS_ATOS
+    Sub Feature code: TID_Dep_UI_Common_PM_BQRV4_BQR_Refund_AXIS_ATOS
     Sub Feature Description: TID Dep - Verification of a BQR Refund via AXIS_ATOS
-    TC naming code description: 100: Payment Method, 102: BQR, 300: TC300
+    TC naming code description: 100: Payment Method, 102: BQRV4, 300: TC300
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -49,7 +49,8 @@ def test_common_100_102_300():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'AXIS', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -60,6 +61,13 @@ def test_common_100_102_300():
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='AXIS'"
@@ -563,9 +571,9 @@ def test_common_100_102_300():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_302():
     """
-    Sub Feature code: TID_Dep_UI_Common_PM_BQR_Refund_Posted_AXIS_ATOS
+    Sub Feature code: TID_Dep_UI_Common_PM_BQRV4_BQR_Refund_Posted_AXIS_ATOS
     Sub Feature Description: TID Dep - Verification of  a BQR Refund Posted via AXIS_ATOS
-    TC naming code description: 100: Payment Method, 102: BQR, 302: TC302
+    TC naming code description: 100: Payment Method, 102: BQRV4, 302: TC302
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -591,7 +599,8 @@ def test_common_100_102_302():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'AXIS', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -602,6 +611,13 @@ def test_common_100_102_302():
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='AXIS'"
@@ -1095,9 +1111,9 @@ def test_common_100_102_302():
 @pytest.mark.chargeSlipVal
 def test_common_100_102_303():
     """
-    Sub Feature code: TID_Dep_UI_Common_PM_BQR_Refund_Failed_AXIS_ATOS
+    Sub Feature code: TID_Dep_UI_Common_PM_BQRV4_BQR_Refund_Failed_AXIS_ATOS
     Sub Feature Description: TID Dep - Verification of  a BQR Refund Failed via AXIS_ATOS
-    TC naming code description: 100: Payment Method, 102: BQR, 303: TC303
+    TC naming code description: 100: Payment Method, 102: BQRV4, 303: TC303
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1123,7 +1139,8 @@ def test_common_100_102_303():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'AXIS', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -1134,6 +1151,13 @@ def test_common_100_102_303():
         query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
+
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={
+            "username": portal_username,
+            "password": portal_password
+        })
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='AXIS'"
