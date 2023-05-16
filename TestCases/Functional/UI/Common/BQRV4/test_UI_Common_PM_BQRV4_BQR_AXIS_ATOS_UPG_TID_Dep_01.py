@@ -18,7 +18,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_102_294():
     """
     Sub Feature code: TID_Dep_UI_Common_BQRV4_BQR_Callback_Amount_Mismatch_AXIS_ATOS
@@ -59,7 +58,7 @@ def test_common_100_102_294():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -72,18 +71,14 @@ def test_common_100_102_294():
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='AXIS'"
-        print(query)
         result = DBProcessor.getValueFromDB(query)
 
         merchant_config_id = result["id"].iloc[0]
         mid = result["mid"].iloc[0]
         tid = result["tid"].iloc[0]
         terminal_info_id = result["terminal_info_id"].iloc[0]
-        bqr_mc_id = result["id"].iloc[0]
         merchant_pan = result['merchant_pan'].values[0]
-        visa_merchant_id_primary = result['visa_merchant_id_primary'].values[0]
         vtid = result["virtual_tid"].iloc[0]
-        vmid = result["virtual_mid"].iloc[0]
 
         query = "select device_serial from terminal_info where tid = '" + str(vtid) + "';"
         logger.debug(f"Query to fetch device serial number from the terminal_info for the {org_code} : {query}")
@@ -338,22 +333,28 @@ def test_common_100_102_294():
                 expected_api_values = {
                     "pmt_status": "UPG_AUTHORIZED",
                     "txn_amt": amount, "pmt_mode": "BHARATQR",
-                    "pmt_state": "UPG_AUTHORIZED", "rrn": str(rrn),
+                    "pmt_state": "UPG_AUTHORIZED",
+                    "rrn": str(rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid,
+                    "tid": tid,
                     "org_code": org_code_txn,
                     "auth_code": auth_code,
                     "date": date,
 
                     "pmt_status_1": "PENDING",
-                    "txn_amt_1": amount-1, "pmt_mode_1": "BHARATQR",
+                    "txn_amt_1": amount-1,
+                    "pmt_mode_1": "BHARATQR",
                     "pmt_state_1": "PENDING",
                     "settle_status_1": "PENDING",
                     "acquirer_code_1": "AXIS",
                     "issuer_code_1": "AXIS",
-                    "txn_type_1": txn_type, "mid_1": mid, "tid_1": tid,
+                    "txn_type_1": txn_type,
+                    "mid_1": mid,
+                    "tid_1": tid,
                     "org_code_1": org_code_txn,
                     "device_serial_1": str(device_serial)
                 }

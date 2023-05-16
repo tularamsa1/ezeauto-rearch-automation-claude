@@ -18,14 +18,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-@pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_169():
+def test_common_100_101_194():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_Success_Via_Pure_UPI_Success_Callback_AXISDIRECT
     Sub Feature Description: TID Dep - Performing a upi success callback via AXIS_DIRECT
-    TC naming code description: 100: Payment Method, 101: UPI, 169: TC169
+    TC naming code description: 100: Payment Method, 101: UPI, 194: TC194
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -59,7 +58,7 @@ def test_common_100_101_169():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='AXIS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and acquirer_code='AXIS' and payment_gateway='AXIS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -416,14 +415,13 @@ def test_common_100_101_169():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-@pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_171():
+def test_common_100_101_196():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_Failed_Via_Pure_UPI_failed_Callback_AXISDIRECT
     Sub Feature Description: TID Dep - Verification of a failed upi txn via Axis acq and Axis PG using upi callback where upi config is Axis_Direct
-    TC naming code description: 100: Payment Method, 101: UPI, 171: TC171
+    TC naming code description: 100: Payment Method, 101: UPI, 196: TC196
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -457,7 +455,7 @@ def test_common_100_101_171():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='AXIS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and acquirer_code='AXIS' and payment_gateway='AXIS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -799,11 +797,11 @@ def test_common_100_101_171():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-def test_common_100_101_175():
+def test_common_100_101_200():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_success_callback_after_qr_expiry_AutoRefund_Enabled_AXIS_DIRECT
-    Sub Feature Description: TID Dep - Verification of one success callback for expired QR when auto refund enabled via Axis acq and Axis PG where upi config is Axis_Direct
-    TC naming code description: 100: Payment Method, 101: UPI, 175: TC175
+    Sub Feature Description: TID Dep - Verification of one success callback after expiry when auto refund enabled via Axis acq and Axis PG where upi config is Axis_Direct
+    TC naming code description: 100: Payment Method, 101: UPI, 200: TC200
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -837,7 +835,7 @@ def test_common_100_101_175():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='AXIS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and acquirer_code='AXIS' and payment_gateway='AXIS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -1356,11 +1354,11 @@ def test_common_100_101_175():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_176():
+def test_common_100_101_202():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_success_callback_after_qr_expiry_AutoRefund_Disabled_AXIS_DIRECT
-    Sub Feature Description: TID Dep - Verification of  one callback for success QR when auto refund disabled via Axis acq and Axis PG where upi config is Axis_Direct
-    TC naming code description: 100: Payment Method, 101: UPI, 176: TC176
+    Sub Feature Description: TID Dep - Verification of  one callback for success QR after expiry when auto refund disabled via Axis acq and Axis PG where upi config is Axis_Direct
+    TC naming code description: 100: Payment Method, 101: UPI, 202: TC202
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1394,7 +1392,7 @@ def test_common_100_101_176():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='AXIS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and acquirer_code='AXIS' and payment_gateway='AXIS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -1919,11 +1917,11 @@ def test_common_100_101_176():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_177():
+def test_common_100_101_201():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_failed_callback_after_qr_expiry_AutoRefund_disabled_AXIS_DIRECT
-    Sub Feature Description: TID Dep - Verification of one failed callback for expired QR when auto refund disabled via Axis acq and Axis PG where upi config is Axis_Direct
-    TC naming code description: 100: Payment Method, 101: UPI, 177: TC177
+    Sub Feature Description: TID Dep - Verification of one failed callback after expiry when auto refund disabled via Axis acq and Axis PG where upi config is Axis_Direct
+    TC naming code description: 100: Payment Method, 101: UPI, 201: TC201
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1957,7 +1955,7 @@ def test_common_100_101_177():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='AXIS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and acquirer_code='AXIS' and payment_gateway='AXIS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 

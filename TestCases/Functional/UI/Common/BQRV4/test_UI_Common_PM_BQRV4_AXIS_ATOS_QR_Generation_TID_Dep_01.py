@@ -57,7 +57,7 @@ def test_common_100_102_298():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -305,7 +305,7 @@ def test_common_100_102_298():
 def test_common_100_102_299():
     """
     Sub Feature code: TID_Dep_UI_Common_PM_BQRV4_QR_Generation_Failed_AXIS_ATOS
-    Sub Feature Description: TID Dep - Verification of  a failed BQR QR Generation via AXIS_ATOS
+    Sub Feature Description: TID Dep - Verification of a failed BQR QR Generation via AXIS_ATOS
     TC naming code description: 100: Payment Method, 102: BQRV4, 299: TC299
     """
     try:
@@ -341,7 +341,7 @@ def test_common_100_102_299():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 

@@ -59,7 +59,7 @@ def test_common_100_102_290():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -150,16 +150,28 @@ def test_common_100_102_290():
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            auth_code = result['auth_code'].values[0]
-            logger.info(f"auth_code from txn table: {auth_code}")
-            rrn = result['rr_number'].iloc[0]
-            logger.info(f"rrn from txn table: {rrn}")
-            created_time = result['created_time'].values[0]
-            logger.info(f"created_time from txn table: {created_time}")
-            customer_name = result['customer_name'].values[0]
-            logger.info(f"customer_name from txn table: {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.info(f"payer_name from txn table: {payer_name}")
+            auth_code_db = result['auth_code'].values[0]
+            logger.info(f"auth_code from txn table: {auth_code_db}")
+            rrn_db = result['rr_number'].iloc[0]
+            logger.info(f"rrn from txn table: {rrn_db}")
+            customer_name_db = result['customer_name'].values[0]
+            logger.info(f"customer_name from txn table: {customer_name_db}")
+            payer_name_db = result['payer_name'].values[0]
+            logger.info(f"payer_name from txn table: {payer_name_db}")
+            amount_db = float(result["amount"].iloc[0])
+            payment_mode_db = result["payment_mode"].iloc[0]
+            payment_status_db = result["status"].iloc[0]
+            payment_state_db = result["state"].iloc[0]
+            acquirer_code_db = result["acquirer_code"].iloc[0]
+            bank_name_db = result["bank_name"].iloc[0]
+            payer_name_db = result["payer_name"].iloc[0]
+            mid_db = result["mid"].iloc[0]
+            tid_db = result["tid"].iloc[0]
+            payment_gateway_db = result["payment_gateway"].iloc[0]
+            rr_number_db = result["rr_number"].iloc[0]
+            settlement_status_db = result["settlement_status"].iloc[0]
+            device_serial_db = result["device_serial"].iloc[0]
+            txn_type_db = result["txn_type"].iloc[0]
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -187,7 +199,7 @@ def test_common_100_102_290():
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    "customer_name": customer_name,
+                    "customer_name": customer_name_db,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
@@ -344,7 +356,7 @@ def test_common_100_102_290():
                     "pmt_state": "SETTLED",
                     "acquirer_code" : "AXIS",
                     "bank_name" : "Axis Bank",
-                    "payer_name": payer_name,
+                    "payer_name": payer_name_db,
                     "mid" :mid,
                     "tid" : tid,
                     "pmt_gateway": "ATOS",
@@ -365,25 +377,6 @@ def test_common_100_102_290():
                     "bqr_merchant_pan":"ME" + txn_id.split('E')[1],
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db = float(result["amount"].iloc[0])
-                payment_mode_db = result["payment_mode"].iloc[0]
-                payment_status_db = result["status"].iloc[0]
-                payment_state_db = result["state"].iloc[0]
-                acquirer_code_db = result["acquirer_code"].iloc[0]
-                bank_name_db = result["bank_name"].iloc[0]
-                payer_name_db = result["payer_name"].iloc[0]
-                mid_db = result["mid"].iloc[0]
-                tid_db = result["tid"].iloc[0]
-                payment_gateway_db = result["payment_gateway"].iloc[0]
-                rr_number_db = result["rr_number"].iloc[0]
-                settlement_status_db = result["settlement_status"].iloc[0]
-                device_serial_db = result["device_serial"].iloc[0]
-                txn_type_db = result["txn_type"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
@@ -510,7 +503,7 @@ def test_common_100_102_292():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -613,6 +606,20 @@ def test_common_100_102_292():
             created_time_1 = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
+            amount_db_1 = float(result["amount"].iloc[0])
+            payment_mode_db_1 = result["payment_mode"].iloc[0]
+            payment_status_db_1 = result["status"].iloc[0]
+            payment_state_db_1 = result["state"].iloc[0]
+            acquirer_code_db_1 = result["acquirer_code"].iloc[0]
+            bank_name_db_1 = result["bank_name"].iloc[0]
+            payer_name_db_1 = result["payer_name"].iloc[0]
+            mid_db_1 = result["mid"].iloc[0]
+            tid_db_1 = result["tid"].iloc[0]
+            payment_gateway_db_1 = result["payment_gateway"].iloc[0]
+            rr_number_db_1 = result["rr_number"].iloc[0]
+            settlement_status_db_1 = result["settlement_status"].iloc[0]
+            device_serial_db_1 = result["device_serial"].iloc[0]
+            txn_type_db_1 = result["txn_type"].iloc[0]
 
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code_1}, {rrn_1}, {created_time_1}, {customer_name}, {payer_name}")
@@ -922,25 +929,6 @@ def test_common_100_102_292():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch data of authorized txn from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                amount_db_1 = float(result["amount"].iloc[0])
-                payment_mode_db_1 = result["payment_mode"].iloc[0]
-                payment_status_db_1 = result["status"].iloc[0]
-                payment_state_db_1 = result["state"].iloc[0]
-                acquirer_code_db_1 = result["acquirer_code"].iloc[0]
-                bank_name_db_1 = result["bank_name"].iloc[0]
-                payer_name_db_1 = result["payer_name"].iloc[0]
-                mid_db_1 = result["mid"].iloc[0]
-                tid_db_1 = result["tid"].iloc[0]
-                payment_gateway_db_1 = result["payment_gateway"].iloc[0]
-                rr_number_db_1 = result["rr_number"].iloc[0]
-                settlement_status_db_1 = result["settlement_status"].iloc[0]
-                device_serial_db_1 = result["device_serial"].iloc[0]
-                txn_type_db_1 = result["txn_type"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data of authorized txn from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1110,7 +1098,7 @@ def test_common_100_102_291():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
@@ -1751,7 +1739,7 @@ def test_common_100_102_293():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and payment_gateway='ATOS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='BHARATQR' and acquirer_code='AXIS' and payment_gateway='ATOS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 

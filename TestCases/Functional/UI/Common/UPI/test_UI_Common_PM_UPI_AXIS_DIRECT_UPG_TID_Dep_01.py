@@ -7,8 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
-    receipt_validator, date_time_converter, merchant_creator
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -17,14 +16,13 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-@pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_101_182():
+def test_common_100_101_206():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_amount_mismatch_Via_Pure_UPI_Success_Callback_AXISDIRECT
-    Sub Feature Description: TID Dep - Performing a amount mismatch using upi success callback via AXIS_DIRECT
-    TC naming code description: 100: Payment Method, 101: UPI, 182: TC182
+    Sub Feature Description: TID Dep-Performing a amount mismatch using upi success callback via AXIS_DIRECT
+    TC naming code description: 100: Payment Method, 101: UPI, 206: TC206
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -58,7 +56,7 @@ def test_common_100_101_182():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and payment_gateway='AXIS';"
+        query = "update terminal_dependency_config set terminal_dependent_enabled=1 where org_code ='" + org_code + "' and payment_mode ='UPI' and acquirer_code='AXIS' and payment_gateway='AXIS';"
         result = DBProcessor.setValueToDB(query)
         logger.info(f"RESULT of updating terminal_dependency_config table active: {result}")
 
