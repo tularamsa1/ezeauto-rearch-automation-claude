@@ -17,7 +17,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_206():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_amount_mismatch_Via_Pure_UPI_Success_Callback_AXISDIRECT
@@ -72,7 +71,7 @@ def test_common_100_101_206():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")

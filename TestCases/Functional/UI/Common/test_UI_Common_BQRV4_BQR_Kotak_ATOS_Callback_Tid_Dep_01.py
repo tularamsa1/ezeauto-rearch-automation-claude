@@ -549,6 +549,15 @@ def test_common_100_102_257():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
+        api_details = DBProcessor.get_api_details('QRExpiryTime', request_body={"username": portal_username,
+                                                                                "password": portal_password,
+                                                                                "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["upiQRExpiryTime"] = 1
+        api_details["RequestBody"]["settings"]["bharatQRExpiryTime"] = 1
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
+
         query = "select * from bharatqr_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
         logger.debug(f"Query to fetch data from the bharatqr_merchant_config for the {org_code} : {query}")
@@ -578,7 +587,7 @@ def test_common_100_102_257():
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -601,6 +610,7 @@ def test_common_100_102_257():
             logger.debug(f"Response revived for QR generation is : {response}")
             txn_id = str(response["txnId"])
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
+            time.sleep(60)
 
             query = "select * from bharatqr_txn where id = '" + txn_id + "';"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
@@ -684,6 +694,17 @@ def test_common_100_102_257():
             logger.debug(f"Fetching auth_code from the txn table : auth_code_2 : {auth_code_2}")
             created_time_2 = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time_2 : {created_time_2}")
+            status_db_2 = result["status"].iloc[0]
+            payment_mode_db_2 = result["payment_mode"].iloc[0]
+            amount_db_2 = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+            state_db_2 = result["state"].iloc[0]
+            payment_gateway_db_2 = result["payment_gateway"].iloc[0]
+            acquirer_code_db_2 = result["acquirer_code"].iloc[0]
+            bank_code_db_2 = result["bank_code"].iloc[0]
+            settlement_status_db_2 = result["settlement_status"].iloc[0]
+            tid_db_2 = result['tid'].values[0]
+            mid_db_2 = result['mid'].values[0]
+            device_serial_db_2 = result['device_serial'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -864,9 +885,9 @@ def test_common_100_102_257():
                 api_details = DBProcessor.get_api_details('txnlist',
                                                     request_body={"username": app_username, "password": app_password})
                 logger.debug(f"API DETAILS for original txn : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction list api is : {response}")
-                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                resp = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {resp}")
+                response = [x for x in resp["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api = response["status"]
@@ -887,13 +908,8 @@ def test_common_100_102_257():
                 date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                    request_body={"username": app_username, "password": app_password})
-                logger.debug(f"API DETAILS for original txn : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction list api is : {response}")
-                elements = [x for x in response["txns"] if x["txnId"] == txn_id_2][0]
-                logger.debug(f"Response after filtering data of current txn is : {response}")
+                elements = [x for x in resp["txns"] if x["txnId"] == txn_id_2][0]
+                logger.debug(f"Response after filtering data of current txn is : {elements}")
                 status_api_2 = elements["status"]
                 amount_api_2 = int(elements["amount"])  # actual=345.00, expected should be in the same format
                 payment_mode_api_2 = elements["paymentMode"]
@@ -1012,22 +1028,6 @@ def test_common_100_102_257():
                 bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
                 bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
-
-                query = "select * from txn where id='" + txn_id_2 + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_2 = result["status"].iloc[0]
-                payment_mode_db_2 = result["payment_mode"].iloc[0]
-                amount_db_2 = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db_2 = result["state"].iloc[0]
-                payment_gateway_db_2 = result["payment_gateway"].iloc[0]
-                acquirer_code_db_2 = result["acquirer_code"].iloc[0]
-                bank_code_db_2 = result["bank_code"].iloc[0]
-                settlement_status_db_2 = result["settlement_status"].iloc[0]
-                tid_db_2 = result['tid'].values[0]
-                mid_db_2 = result['mid'].values[0]
-                device_serial_db_2 = result['device_serial'].values[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id_2 + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")

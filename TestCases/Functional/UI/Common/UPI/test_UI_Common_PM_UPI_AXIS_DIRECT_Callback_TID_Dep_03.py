@@ -8,8 +8,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
-    receipt_validator, date_time_converter, merchant_creator
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -19,7 +18,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_192():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_Failed_QR_After_Expiry_Two_Callback_AutoRefund_Enabled_AXISDIRECT
@@ -89,7 +87,7 @@ def test_common_100_101_192():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -439,7 +437,6 @@ def test_common_100_101_192():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_193():
     """
     Sub Feature Code: TID_Dep_UI_Common_PM_UPI_Ref_ID_Val_Via_Pure_UPI_AXIS_DIRECT
@@ -494,7 +491,7 @@ def test_common_100_101_193():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
