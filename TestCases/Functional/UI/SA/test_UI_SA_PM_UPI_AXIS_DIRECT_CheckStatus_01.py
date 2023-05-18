@@ -1278,6 +1278,7 @@ def test_sa_100_101_044():
             home_page.perform_check_status()
             payment_page.click_on_proceed_homepage()
             home_page.click_on_back_btn_enter_amt_page()
+            payment_page.validate_upi_bqr_payment_screen()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"

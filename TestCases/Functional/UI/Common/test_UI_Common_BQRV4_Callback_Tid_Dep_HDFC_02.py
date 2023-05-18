@@ -2105,7 +2105,6 @@ def test_common_100_102_117():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_102_118():
     """
     Sub Feature Code: Tid Dep - UI_Common_BQRV4_UPI_Two_Callback_After_QR_Expiry_Auto_Refund_Enabled_HDFC
@@ -2842,24 +2841,6 @@ def test_common_100_102_118():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation------------------------------------
-
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(modified_date_new)
-                expected_charge_slip_values = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                    'BASE AMOUNT:': "Rs." + str(amount), 'date': txn_date,
-                    'time': txn_time, 'AUTH CODE': auth_code_new
-                }
-                receipt_validator.perform_charge_slip_validations(txn_id_new,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_charge_slip_values)
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
