@@ -947,17 +947,10 @@ def test_common_100_102_263():
                         payer_name_api = elements["payerName"]
                         device_serial_api = elements["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
-                                                                                   "password": app_password, })
-                logger.debug(f"API DETAILS for txn_id {txn_id_2} is : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for txnlist api is : {response}")
-                responseInList = response["txns"]
-                logger.debug(f"list of txns is : {responseInList}")
                 for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         status_api_2 = elements["status"]
-                        amount_api_2 = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api_2 = int(elements["amount"])
                         payment_mode_api_2 = elements["paymentMode"]
                         state_api_2 = elements["states"][0]
                         rrn_api_2 = elements["rrNumber"]
@@ -1409,6 +1402,17 @@ def test_common_100_102_264():
             logger.debug(f"Fetching auth_code from the txn table : auth_code_2 : {auth_code_2}")
             created_time_2 = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time_2 : {created_time_2}")
+            status_db_2 = result["status"].iloc[0]
+            payment_mode_db_2 = result["payment_mode"].iloc[0]
+            amount_db_2 = int(result["amount"].iloc[0])
+            state_db_2 = result["state"].iloc[0]
+            payment_gateway_db_2 = result["payment_gateway"].iloc[0]
+            acquirer_code_db_2 = result["acquirer_code"].iloc[0]
+            bank_code_db_2 = result["bank_code"].iloc[0]
+            settlement_status_db_2 = result["settlement_status"].iloc[0]
+            tid_db_2 = result['tid'].values[0]
+            mid_db_2 = result['mid'].values[0]
+            device_serial_db_2 = result['device_serial'].values[0]
 
             query = "select * from bharatqr_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL'"
@@ -1617,17 +1621,10 @@ def test_common_100_102_264():
                         date_api = elements["createdTime"]
                         device_serial_api = elements["deviceSerial"]
 
-                api_details = DBProcessor.get_api_details('txnlist', request_body={"username": app_username,
-                                                                                   "password": app_password, })
-                logger.debug(f"API DETAILS for txn_id {txn_id_2} is : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for txnlist api is : {response}")
-                responseInList = response["txns"]
-                logger.debug(f"list of txns is : {responseInList}")
                 for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         status_api_2 = elements["status"]
-                        amount_api_2 = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api_2 = int(elements["amount"])
                         payment_mode_api_2 = elements["paymentMode"]
                         state_api_2 = elements["states"][0]
                         rrn_api_2 = elements["rrNumber"]
@@ -1735,22 +1732,6 @@ def test_common_100_102_264():
                 bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
                 bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
-
-                query = "select * from txn where id='" + txn_id_2 + "'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                status_db_2 = result["status"].iloc[0]
-                payment_mode_db_2 = result["payment_mode"].iloc[0]
-                amount_db_2 = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
-                state_db_2 = result["state"].iloc[0]
-                payment_gateway_db_2 = result["payment_gateway"].iloc[0]
-                acquirer_code_db_2 = result["acquirer_code"].iloc[0]
-                bank_code_db_2 = result["bank_code"].iloc[0]
-                settlement_status_db_2 = result["settlement_status"].iloc[0]
-                tid_db_2 = result['tid'].values[0]
-                mid_db_2 = result['mid'].values[0]
-                device_serial_db_2 = result['device_serial'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id_2 + "'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
