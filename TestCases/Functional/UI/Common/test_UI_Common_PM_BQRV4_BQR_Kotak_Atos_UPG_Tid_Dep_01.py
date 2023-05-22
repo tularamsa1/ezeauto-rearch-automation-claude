@@ -828,12 +828,12 @@ def test_common_100_102_273():
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for txnlist api is : {response}")
-                responseInList = response["txns"]
-                logger.debug(f"list of txns is : {responseInList}")
-                for elements in responseInList:
+                response_in_list = response["txns"]
+                logger.debug(f"list of txns is : {response_in_list}")
+                for elements in response_in_list:
                     if elements["txnId"] == ipr_txn_id:
                         status_api = elements["status"]
-                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api = int(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
                         rrn_api = elements["rrNumber"]

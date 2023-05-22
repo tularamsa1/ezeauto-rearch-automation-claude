@@ -14,6 +14,7 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -443,12 +444,14 @@ def test_common_100_101_207():
                 txn_date_3 = date_time_converter.db_datetime(created_time_3)
                 expected_api_values = {
                     "pmt_status": "EXPIRED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
                     "pmt_state": "EXPIRED",
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     "date": date,
                     "order_id": order_id,
@@ -502,7 +505,6 @@ def test_common_100_101_207():
                         order_id_api = elements["orderNumber"]
                         device_serial_api = elements["deviceSerial"]
 
-                for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         txn_status_api_2 = elements["status"]
                         txn_amount_api_2 = int(elements["amount"])
@@ -520,7 +522,6 @@ def test_common_100_101_207():
                         txn_order_id_api_2 = elements["orderNumber"]
                         txn_device_serial_api_2 = elements["deviceSerial"]
 
-                for elements in responseInList:
                     if elements["txnId"] == txn_id_3:
                         txn_status_api_3 = elements["status"]
                         txn_amount_api_3 = int(elements["amount"])
@@ -561,18 +562,24 @@ def test_common_100_101_207():
                     "settle_status_2": txn_settlement_status_api_2,
                     "acquirer_code_2": txn_acquirer_code_api_2,
                     "issuer_code_2": txn_issuer_code_api_2,
-                    "txn_type_2": txn_type_api_2, "mid_2": txn_mid_api_2, "tid_2": txn_tid_api_2,
+                    "txn_type_2": txn_type_api_2,
+                    "mid_2": txn_mid_api_2,
+                    "tid_2": txn_tid_api_2,
                     "org_code_2": txn_orgCode_api_2,
                     "order_id_2": txn_order_id_api_2,
                     "date_2": date_time_converter.from_api_to_datetime_format(txn_date_api_2),
                     "device_serial_2": txn_device_serial_api_2,
                     "pmt_status_3": txn_status_api_3,
-                    "txn_amt_3": txn_amount_api_3, "pmt_mode_3": txn_payment_mode_api_3,
-                    "pmt_state_3": txn_state_api_3, "rrn_3": str(txn_rrn_api_3),
+                    "txn_amt_3": txn_amount_api_3,
+                    "pmt_mode_3": txn_payment_mode_api_3,
+                    "pmt_state_3": txn_state_api_3,
+                    "rrn_3": str(txn_rrn_api_3),
                     "settle_status_3": txn_settlement_status_api_3,
                     "acquirer_code_3": txn_acquirer_code_api_3,
                     "issuer_code_3": txn_issuer_code_api_3,
-                    "txn_type_3": txn_type_api_3, "mid_3": txn_mid_api_3, "tid_3": txn_tid_api_3,
+                    "txn_type_3": txn_type_api_3,
+                    "mid_3": txn_mid_api_3,
+                    "tid_3": txn_tid_api_3,
                     "org_code_3": txn_orgCode_api_3,
                     "order_id_3": txn_order_id_api_3,
                     "date_3": date_time_converter.from_api_to_datetime_format(txn_date_api_3),
@@ -1377,10 +1384,12 @@ def test_common_100_101_204():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
-                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                expected_values = {'PAID BY:': 'UPI',
+                                   'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'RRN': str(callback_1_rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                   'date': txn_date, 'time': txn_time, }
+                                   'date': txn_date,
+                                   'time': txn_time, }
                 logger.debug(f"expected_values : {expected_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
@@ -1820,34 +1829,42 @@ def test_common_100_101_203():
                 txn_date_3 = date_time_converter.db_datetime(created_time_3)
                 expected_api_values = {
                     "pmt_status": "EXPIRED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
                     "pmt_state": "EXPIRED",
                     "settle_status": "FAILED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     "date": date,
                     "order_id": order_id,
                     "device_serial": device_serial,
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": amount, "pmt_mode_2": "UPI",
-                    "pmt_state_2": "SETTLED", "rrn_2": str(rrn_2),
+                    "txn_amt_2": amount,
+                    "pmt_mode_2": "UPI",
+                    "pmt_state_2": "SETTLED",
+                    "rrn_2": str(rrn_2),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "AXIS",
                     "issuer_code_2": "AXIS",
-                    "txn_type_2": txn_type_2, "mid_2": mid, "tid_2": tid,
+                    "txn_type_2": txn_type_2,
+                    "mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code_txn_2,
                     "date_2": txn_date_2,
                     "order_id_2": order_id,
                     "device_serial_2": device_serial,
                     "pmt_status_3": "AUTHORIZED",
-                    "txn_amt_3": amount, "pmt_mode_3": "UPI",
-                    "pmt_state_3": "SETTLED", "rrn_3": str(rrn_3),
+                    "txn_amt_3": amount,
+                    "pmt_mode_3": "UPI",
+                    "pmt_state_3": "SETTLED",
+                    "rrn_3": str(rrn_3),
                     "settle_status_3": "SETTLED",
                     "acquirer_code_3": "AXIS",
                     "issuer_code_3": "AXIS",
-                    "txn_type_3": txn_type_3, "mid_3": mid, "tid_3": tid,
+                    "txn_type_3": txn_type_3,
+                    "mid_3": mid, "tid_3": tid,
                     "org_code_3": org_code_txn_3,
                     "date_3": txn_date_3,
                     "order_id_3": order_id,
@@ -1860,9 +1877,9 @@ def test_common_100_101_203():
                                                                         "password": app_password, })
                 logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                responseInList = response["txns"]
-                logger.debug(f"Response received for transaction details api is : {responseInList}")
-                for elements in responseInList:
+                response_in_list = response["txns"]
+                logger.debug(f"Response received for transaction details api is : {response_in_list}")
+                for elements in response_in_list:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
                         amount_api = int(elements["amount"])
@@ -1879,7 +1896,6 @@ def test_common_100_101_203():
                         order_id_api = elements["orderNumber"]
                         device_serial_api = elements["deviceSerial"]
 
-                for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         txn_status_api_2 = elements["status"]
                         txn_amount_api_2 = int(elements["amount"])
@@ -1897,7 +1913,6 @@ def test_common_100_101_203():
                         txn_order_id_api_2 = elements["orderNumber"]
                         txn_device_serial_api_2 = elements["deviceSerial"]
 
-                for elements in responseInList:
                     if elements["txnId"] == txn_id_3:
                         txn_status_api_3 = elements["status"]
                         txn_amount_api_3 = int(elements["amount"])
@@ -2149,13 +2164,19 @@ def test_common_100_101_203():
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_2)
                 txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(created_time_3)
                 expected_charge_slip_values_1 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
-                    'RRN': str(rrn_2), 'date': txn_date_2, 'time': txn_time_2,
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(rrn_2),
+                    'date': txn_date_2,
+                    'time': txn_time_2,
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                 }
                 expected_charge_slip_values_2 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
-                    'RRN': str(rrn_3), 'date': txn_date_3, 'time': txn_time_3,
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(rrn_3),
+                    'date': txn_date_3,
+                    'time': txn_time_3,
                     'BASE AMOUNT:': "Rs." + str(amount) + ".00",
                 }
                 charge_slip_val_result_1 = receipt_validator.perform_charge_slip_validations(
@@ -2564,22 +2585,28 @@ def test_common_100_101_205():
                 new_txn_date = date_time_converter.db_datetime(created_time_2)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": amount, "pmt_mode": "UPI",
-                    "pmt_state": "SETTLED", "rrn": str(callback_1_rrn),
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "rrn": str(callback_1_rrn),
                     "settle_status": "SETTLED",
                     "acquirer_code": "AXIS",
                     "issuer_code": "AXIS",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
+                    "txn_type": txn_type,
+                    "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     "date": date,
                     "device_serial": device_serial,
                     "pmt_status_2": "AUTHORIZED",
-                    "txn_amt_2": amount, "pmt_mode_2": "UPI",
-                    "pmt_state_2": "SETTLED", "rrn_2": str(callback_2_rrn),
+                    "txn_amt_2": amount,
+                    "pmt_mode_2": "UPI",
+                    "pmt_state_2": "SETTLED",
+                    "rrn_2": str(callback_2_rrn),
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "AXIS",
                     "issuer_code_2": "AXIS",
-                    "txn_type_2": txn_type_2, "mid_2": mid, "tid_2": tid,
+                    "txn_type_2": txn_type_2,
+                    "mid_2": mid, "tid_2": tid,
                     "org_code_2": org_code_txn_2,
                     "date_2": new_txn_date,
                     "order_id_2": order_id,
@@ -2772,10 +2799,12 @@ def test_common_100_101_205():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
-                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                expected_values = {'PAID BY:': 'UPI',
+                                   'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'RRN': str(callback_1_rrn),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                   'date': txn_date, 'time': txn_time, }
+                                   'date': txn_date,
+                                   'time': txn_time, }
                 logger.debug(f"expected_values : {expected_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
@@ -3083,9 +3112,9 @@ def test_common_100_101_191():
                                                                         "password": app_password, })
                 logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                responseInList = response["txns"]
-                logger.debug(f"Response received for transaction details api is : {responseInList}")
-                for elements in responseInList:
+                response_in_list = response["txns"]
+                logger.debug(f"Response received for transaction details api is : {response_in_list}")
+                for elements in response_in_list:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
                         amount_api = int(elements["amount"])

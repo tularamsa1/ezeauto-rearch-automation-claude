@@ -930,7 +930,7 @@ def test_common_100_102_263():
                 for elements in responseInList:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
-                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api = int(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
                         rrn_api = elements["rrNumber"]
@@ -946,8 +946,6 @@ def test_common_100_102_263():
                         customer_name_api = elements["customerName"]
                         payer_name_api = elements["payerName"]
                         device_serial_api = elements["deviceSerial"]
-
-                for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         status_api_2 = elements["status"]
                         amount_api_2 = int(elements["amount"])
@@ -1603,12 +1601,12 @@ def test_common_100_102_264():
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for txnlist api is : {response}")
-                responseInList = response["txns"]
-                logger.debug(f"list of txns is : {responseInList}")
-                for elements in responseInList:
+                response_in_list = response["txns"]
+                logger.debug(f"list of txns is : {response_in_list}")
+                for elements in response_in_list:
                     if elements["txnId"] == txn_id:
                         status_api = elements["status"]
-                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api = int(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
                         settlement_status_api = elements["settlementStatus"]
@@ -1621,7 +1619,6 @@ def test_common_100_102_264():
                         date_api = elements["createdTime"]
                         device_serial_api = elements["deviceSerial"]
 
-                for elements in responseInList:
                     if elements["txnId"] == txn_id_2:
                         status_api_2 = elements["status"]
                         amount_api_2 = int(elements["amount"])
