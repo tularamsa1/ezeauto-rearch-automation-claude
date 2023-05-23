@@ -2829,7 +2829,7 @@ def test_common_100_101_205():
 @pytest.mark.appVal
 def test_common_100_101_191():
     """
-    Sub Feature Code: TID_Dep_UI_Common_PM_UPI_Failed_QR_After_Expiry_Two_Callback_AutoRefund_Disabled_AXISDIRECT _94
+    Sub Feature Code: TID_Dep_UI_Common_PM_UPI_Failed_QR_After_Expiry_Two_Callback_AutoRefund_Disabled_AXISDIRECT
     Sub Feature Description: TID Dep - Verification of  two failed callback after expiry when auto refund disabled via Axis acq and Axis PG where upi config is Axis_Direct
     TC naming code description: 100: Payment Method, 101: UPI, 191: TC191
     """

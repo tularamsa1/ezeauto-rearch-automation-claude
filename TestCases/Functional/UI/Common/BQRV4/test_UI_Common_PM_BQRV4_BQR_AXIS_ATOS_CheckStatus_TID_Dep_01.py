@@ -961,7 +961,7 @@ def test_common_100_102_296():
 def test_common_100_102_297():
     """
     Sub Feature code: TID_Dep_UI_Common_BQRV4_BQR_Checkstatus_Amount_Mismatch_AXIS_ATOS
-    Sub Feature Description: TID Dep - Verification of  a BQR amount missmatch upon checkstatus via AXIS_ATOS
+    Sub Feature Description: TID Dep - Verification of  a BQR amount mismatch upon checkstatus via AXIS_ATOS
     TC naming code description: 100: Payment Method, 102: BQRV4, 297: TC297
     """
     try:
