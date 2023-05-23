@@ -646,15 +646,15 @@ def test_common_100_102_273():
             query = "select * from txn where id = '" + ipr_txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"Fetching customer_name from the txn table : customer_name : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Fetching payer_name from the txn table : payer_name : {payer_name}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Fetching org_code from the txn table : org_code : {org_code_txn}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"Fetching txn_type from the txn table : txn_type : {txn_type}")
-            auth_code = result['auth_code'].values[0]
+            customer_name_db = result['customer_name'].values[0]
+            logger.debug(f"Fetching customer_name from the txn table : customer_name : {customer_name_db}")
+            payer_name_db = result['payer_name'].values[0]
+            logger.debug(f"Fetching payer_name from the txn table : payer_name : {payer_name_db}")
+            org_code_db = result['org_code'].values[0]
+            logger.debug(f"Fetching org_code from the txn table : org_code : {org_code_db}")
+            txn_type_db = result['txn_type'].values[0]
+            logger.debug(f"Fetching txn_type from the txn table : txn_type : {txn_type_db}")
+            auth_code_db = result['auth_code'].values[0]
             logger.debug(f"Fetching auth_code from the txn table : auth_code : {auth_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
@@ -700,10 +700,16 @@ def test_common_100_102_273():
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
-                    "date": date_and_time
+                    "date": date_and_time,
+
+                    "pmt_mode_1": "BHARAT QR",
+                    "pmt_status_1": "PENDING",
+                    "txn_amt_1": str(amount - 1) + ".00",
+                    "settle_status_1": "PENDING",
+                    "order_id_1": order_id,
+                    "pmt_msg_1": "PAYMENT PENDING",
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
-                logger.info("resetting the app")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 logger.info(
@@ -741,6 +747,26 @@ def test_common_100_102_273():
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {ipr_txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
+                txn_history_page.click_back_Btn_transaction_details()
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                payment_status_1 = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status_1}")
+                app_date_and_time_1 = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time_1}")
+                payment_mode_1 = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode_1}")
+                app_txn_id_1 = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id_1}")
+                app_amount_1 = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount_1}")
+                app_settlement_status_1 = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status_1}")
+                app_payment_msg_1 = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg_1}")
+                app_order_id_1 = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id_1}")
+
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
@@ -751,7 +777,14 @@ def test_common_100_102_273():
                     "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
-                    "date": app_date_and_time
+                    "date": app_date_and_time,
+
+                    "pmt_mode_1": payment_mode_1,
+                    "pmt_status_1": payment_status_1.split(':')[1],
+                    "txn_amt_1": app_amount_1.split(' ')[1],
+                    "settle_status_1": app_settlement_status_1,
+                    "order_id_1": app_order_id_1,
+                    "pmt_msg_1": app_payment_msg_1,
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
@@ -773,11 +806,20 @@ def test_common_100_102_273():
                     "settle_status": "SETTLED",
                     "acquirer_code": "KOTAK",
                     "issuer_code": "KOTAK",
-                    "txn_type": txn_type, "mid": mid, "tid": tid,
-                    "org_code": org_code_txn,
+                    "txn_type": "CHARGE", "mid": mid, "tid": tid,
+                    "org_code": org_code,
                     "auth_code": auth_code,
                     "date": date,
-                    "device_serial": str(device_serial)
+
+                    "pmt_status_1": "PENDING",
+                    "txn_amt_1": amount - 1, "pmt_mode_1": "BHARATQR",
+                    "pmt_state_1": "PENDING",
+                    "settle_status_1": "PENDING",
+                    "acquirer_code_1": "KOTAK",
+                    "issuer_code_1": "KOTAK",
+                    "txn_type_1": "CHARGE", "mid_1": mid, "tid_1": tid,
+                    "org_code_1": org_code,
+                    "device_serial_1": str(device_serial)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -786,12 +828,12 @@ def test_common_100_102_273():
                 logger.debug(f"API DETAILS for txn_id {txn_id} is : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for txnlist api is : {response}")
-                responseInList = response["txns"]
-                logger.debug(f"list of txns is : {responseInList}")
-                for elements in responseInList:
+                response_in_list = response["txns"]
+                logger.debug(f"list of txns is : {response_in_list}")
+                for elements in response_in_list:
                     if elements["txnId"] == ipr_txn_id:
                         status_api = elements["status"]
-                        amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        amount_api = int(elements["amount"])
                         payment_mode_api = elements["paymentMode"]
                         state_api = elements["states"][0]
                         rrn_api = elements["rrNumber"]
@@ -804,16 +846,19 @@ def test_common_100_102_273():
                         txn_type_api = elements["txnType"]
                         auth_code_api = elements["authCode"]
                         date_api = elements["createdTime"]
-
-                api_details = DBProcessor.get_api_details('txnlist',
-                                                          request_body={"username": app_username,
-                                                                        "password": app_password})
-                logger.debug(f"API DETAILS for txn : {api_details}")
-                response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction list api is : {response}")
-                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
-                logger.debug(f"Response after filtering data of current txn is : {response}")
-                device_serial_api = response["deviceSerial"]
+                    if elements["txnId"] == txn_id:
+                        device_serial_api_1 = elements["deviceSerial"]
+                        status_api_1 = elements["status"]
+                        amount_api_1 = float(elements["amount"])
+                        payment_mode_api_1 = elements["paymentMode"]
+                        state_api_1 = elements["states"][0]
+                        settlement_status_api_1 = elements["settlementStatus"]
+                        issuer_code_api_1 = elements["issuerCode"]
+                        acquirer_code_api_1 = elements["acquirerCode"]
+                        orgCode_api_1 = elements["orgCode"]
+                        mid_api_1 = elements["mid"]
+                        tid_api_1 = elements["tid"]
+                        txn_type_api_1 = elements["txnType"]
 
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
@@ -826,7 +871,15 @@ def test_common_100_102_273():
                     "org_code": orgCode_api,
                     "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "device_serial": str(device_serial_api)
+                    "pmt_status_1": status_api_1,
+                    "txn_amt_1": amount_api_1, "pmt_mode_1": payment_mode_api_1,
+                    "pmt_state_1": state_api_1,
+                    "settle_status_1": settlement_status_api_1,
+                    "acquirer_code_1": acquirer_code_api_1,
+                    "issuer_code_1": issuer_code_api_1,
+                    "txn_type_1": txn_type_api_1, "mid_1": mid_api_1, "tid_1": tid_api_1,
+                    "org_code_1": orgCode_api_1,
+                    "device_serial_1": str(device_serial_api_1),
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -851,6 +904,7 @@ def test_common_100_102_273():
                     "pmt_gateway": "KOTAK_ATOS",
                     "mid": mid,
                     "tid": tid,
+                    "auth_code": auth_code,
                     "bqr_pmt_status_code": "SUCCESS",
                     "bqr_pmt_state": "UPG_AUTHORIZED",
                     "bqr_txn_amt": amount,
@@ -870,19 +924,33 @@ def test_common_100_102_273():
                     "ipr_txn_amt": amount,
                     "ipr_mid": mid,
                     "ipr_tid": tid,
-                    # "ipr_vpa": customer_vpa,
                     "ipr_config_id": merchant_config_id,
                     "ipr_pg_merchant_id": merchant_pan,
                     "ipr_error_msg": "Actual ="+str(amount) + " Expected ="+str(amount-1) + ".00",
-                    "device_serial": str(device_serial)
+
+                    "pmt_status_1": "PENDING",
+                    "pmt_state_1": "PENDING",
+                    "pmt_mode_1": "BHARATQR",
+                    "txn_amt_1": amount - 1,
+                    "settle_status_1": "PENDING",
+                    "acquirer_code_1": "KOTAK",
+                    "bank_code_1": "KOTAK",
+                    "pmt_gateway_1": "KOTAK_ATOS",
+                    "mid_1": mid,
+                    "tid_1": tid,
+                    "device_serial_1": str(device_serial),
+                    "bqr_pmt_status_code_1": None,
+                    "bqr_pmt_state_1": "PENDING",
+                    "bqr_txn_amt_1": amount-1,
+                    "bqr_txn_type_1": "DYNAMIC_QR",
+                    "bqr_terminal_info_id_1": terminal_info_id,
+                    "bqr_merchant_config_id_1": merchant_config_id,
+                    "bqr_txn_primary_id_1": txn_id,
+                    "bqr_org_code_1": org_code,
+                    "bqr_bank_code_1": "KOTAK",
+
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select device_serial from txn where id='" + txn_id + "'"
-                logger.debug(f"Query to fetch device_serial from txn table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                device_serial_db = result['device_serial'].values[0]
 
                 query = "select * from bharatqr_txn where id='" + ipr_txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
@@ -900,6 +968,35 @@ def test_common_100_102_273():
                 bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
 
+                query = "select * from bharatqr_txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                bqr_status_code_db_1 = result["status_code"].iloc[0]
+                bqr_state_db_1 = result["state"].iloc[0]
+                bqr_txn_amt_db_1 = result["txn_amount"].iloc[0]
+                bqr_txn_type_db_1 = result["txn_type"].iloc[0]
+                bqr_terminal_info_id_db_1 = result["terminal_info_id"].iloc[0]
+                bqr_bank_code_db_1 = result["bank_code"].iloc[0]
+                bqr_merchant_config_id_db_1 = result["merchant_config_id"].iloc[0]
+                bqr_transaction_primary_id_db_1 = result["transaction_primary_id"].iloc[0]
+                bqr_org_code_db_1 = result["org_code"].iloc[0]
+
+                query = "select * from txn where id = '" + txn_id + "';"
+                logger.debug(f"Query to fetch pending txn details from database : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                status_db_1 = result["status"].iloc[0]
+                payment_mode_db_1 = result["payment_mode"].iloc[0]
+                amount_db_1 = int(result["amount"].iloc[0])
+                state_db_1 = result["state"].iloc[0]
+                payment_gateway_db_1 = result["payment_gateway"].iloc[0]
+                acquirer_code_db_1 = result["acquirer_code"].iloc[0]
+                bank_code_db_1 = result["bank_code"].iloc[0]
+                settlement_status_db_1 = result["settlement_status"].iloc[0]
+                tid_db_1 = result['tid'].values[0]
+                mid_db_1 = result['mid'].values[0]
+                device_serial_db_1 = result['device_serial'].values[0]
+
                 actual_db_values = {
                     "pmt_status": status_db,
                     "pmt_state": state_db,
@@ -911,6 +1008,7 @@ def test_common_100_102_273():
                     "pmt_gateway": payment_gateway_db,
                     "mid": mid_db,
                     "tid": tid_db,
+                    "auth_code": auth_code_db,
                     "bqr_pmt_status_code": bqr_status_code_db,
                     "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_txn_amt_db,
@@ -930,11 +1028,30 @@ def test_common_100_102_273():
                     "ipr_txn_amt": ipr_amount,
                     "ipr_mid": ipr_mid,
                     "ipr_tid": ipr_tid,
-                    # "ipr_vpa": ipr_vpa,
                     "ipr_config_id": ipr_config_id,
                     "ipr_pg_merchant_id": ipr_pg_merchant_id,
                     "ipr_error_msg": ipr_error_message,
-                    "device_serial": str(device_serial_db),
+
+                    "pmt_status_1": status_db_1,
+                    "pmt_state_1": state_db_1,
+                    "pmt_mode_1": payment_mode_db_1,
+                    "txn_amt_1": amount_db_1,
+                    "settle_status_1": settlement_status_db_1,
+                    "acquirer_code_1": acquirer_code_db_1,
+                    "bank_code_1": bank_code_db_1,
+                    "pmt_gateway_1": payment_gateway_db_1,
+                    "mid_1": mid_db_1,
+                    "tid_1": tid_db_1,
+                    "device_serial_1": device_serial_db_1,
+                    "bqr_pmt_status_code_1": bqr_status_code_db_1,
+                    "bqr_pmt_state_1": bqr_state_db_1,
+                    "bqr_txn_amt_1": bqr_txn_amt_db_1,
+                    "bqr_txn_type_1": bqr_txn_type_db_1,
+                    "bqr_terminal_info_id_1": bqr_terminal_info_id_db_1,
+                    "bqr_merchant_config_id_1": bqr_merchant_config_id_db_1,
+                    "bqr_txn_primary_id_1": bqr_transaction_primary_id_db_1,
+                    "bqr_org_code_1": bqr_org_code_db_1,
+                    "bqr_bank_code_1": bqr_bank_code_db_1
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
