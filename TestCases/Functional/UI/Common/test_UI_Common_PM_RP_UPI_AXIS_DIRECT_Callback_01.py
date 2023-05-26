@@ -98,15 +98,17 @@ def test_common_100_103_080():
                 raise Exception("Api could not initiate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                logger.info(f"Response from initiate api is: {response}")
+                portal_driver = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                portal_driver.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
                 rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'AXIS_DIRECT' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
@@ -1401,7 +1403,7 @@ def test_common_100_103_083():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -1857,7 +1859,7 @@ def test_common_100_103_084():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"

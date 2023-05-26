@@ -110,7 +110,7 @@ def test_common_100_103_067():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(org_code) + "';"
             logger.debug(f"Query to fetch Txn Timeout Duration from the DB : {query}")
@@ -960,7 +960,7 @@ def test_common_100_103_068():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
@@ -1385,7 +1385,7 @@ def test_common_100_103_069():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -2217,7 +2217,7 @@ def test_common_100_103_070():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -2666,7 +2666,7 @@ def test_common_100_103_071():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"

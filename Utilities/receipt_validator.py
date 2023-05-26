@@ -579,7 +579,7 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
             TestSuiteSetup.initialize_chargeslip_browser()
             GlobalVariables.charge_slip_page.goto(receipt_url)
             present_receipt_info_ = get_current_charge_slip_data_from_receipt_loaded_webdriver(GlobalVariables.charge_slip_page)
-            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details)
+            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details, txn_id, receipt_url)
 
             if results['fields_that_are_not_present']:
 

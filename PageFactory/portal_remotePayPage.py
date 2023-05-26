@@ -23,6 +23,7 @@ class RemotePayTxnPage(BasePage):
     btn_proceedToPay = "//button[contains(text(),'Proceed to pay')]"
     btn_submitButton = "//input[@value='Submit']"
     btn_successMessage = "//h3[contains(text(),'Your payment is successfully completed! You may cl')]"
+    # btn_successMessage = "//h3[contains(text(),'Your payment was successful. You may close the bro')]"
     # txt_failedMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Please')]")
     # txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Your payment attempt failed, Sorry for the inconve')]")
     txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Any am')]")

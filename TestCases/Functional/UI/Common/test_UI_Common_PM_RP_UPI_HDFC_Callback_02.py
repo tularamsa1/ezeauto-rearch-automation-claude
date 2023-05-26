@@ -112,7 +112,7 @@ def test_common_100_103_062():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -743,7 +743,7 @@ def test_common_100_103_063():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -1559,7 +1559,7 @@ def test_common_100_103_064():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "'; "
@@ -1979,7 +1979,7 @@ def test_common_100_103_065():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"
@@ -2599,7 +2599,7 @@ def test_common_100_103_066():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' order by created_time desc limit 1"

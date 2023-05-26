@@ -764,7 +764,7 @@ def test_common_100_103_087():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"

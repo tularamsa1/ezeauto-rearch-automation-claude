@@ -107,7 +107,7 @@ def test_common_100_111_001():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' AND acc_label_id=(select id from label " \
@@ -550,7 +550,7 @@ def test_common_100_111_002():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' AND acc_label_id=(select id from label " \

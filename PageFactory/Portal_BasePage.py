@@ -59,7 +59,6 @@
 #
 #     def perform_clear_text(self, locator, time=45):
 #         WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).clear()
-
 from playwright.sync_api import Page
 
 
@@ -70,8 +69,19 @@ class BasePage:
     def navigate(self, url: str):
         self.page.goto(url)
 
+    def wait_for_given_timeout(self, time_in_mill):
+        self.page.wait_for_timeout(time_in_mill)
+
+    def search_element(self, locator):
+        self.page.wait_for_selector('//div[@class="txnReportsTable_reportsHeader__diLm-"]/following-sibling::div[1]')
+        return self.page.wait_for_selector("div.txnReportsTable_reportsTable__qUa1D table")
+
     def perform_click(self, locator):
         self.page.wait_for_selector(selector=locator, timeout=45000, state="visible").click(timeout=45000)
+
+    def perform_date_Selection(self, locator):
+        self.page.wait_for_selector(selector=locator, timeout=45000, state="visible")
+        self.page.query_selector(selector=locator).click(timeout=45000)
 
     def perform_click_hidden(self, locator):
         self.page.wait_for_selector(selector=locator, timeout=45000, state="hidden").click(timeout=45000)
@@ -122,8 +132,7 @@ class BasePage:
 
     def click_submit_button(self):
         self.page.get_by_role("button", name="Submit").click(timeout=45000)
-    # def perform_touch_action_using_cordinates(self, x1,y1,x2,y2):
-    #         TouchAction(self.driver).press(x=x1, y=y1).move_to(x=x2, y=y2).release().perform()
 
-    # def perform_clear_text(self, locator):
-    #     self.page.wait_for_selector(selector=locator, timeout=45000, state="visible")
+    def date_selector(self, date, selectors):
+        # self.page.get_by_title(date).click(timeout=45000)
+        self.page.type(text=date, selector=selectors)

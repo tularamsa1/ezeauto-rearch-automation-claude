@@ -110,7 +110,7 @@ def test_common_100_103_072():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             logger.info("starting first callback")
             logger.info("fetching pg merchant id and vps from the upi_merchant_config table to perform the 1st upi callback")
@@ -566,7 +566,7 @@ def test_common_100_103_073():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             logger.info("starting first callback")
             logger.info("fetching pg merchant id and vps from the upi_merchant_config table to perform the 1st upi callback")
@@ -1022,7 +1022,7 @@ def test_common_100_103_074():
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
