@@ -12,6 +12,7 @@ import paramiko
 from appium import webdriver as app_webdriver
 from appium.webdriver.appium_service import AppiumService
 from selenium import webdriver
+
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities import DirectoryCreator, card_processor
@@ -526,3 +527,26 @@ def initialize_app_driver(request, no_reset="false"):
     function_end_time = datetime.datetime.now()
     print("Time taken for appium driver initialization is : ", str(function_end_time-function_start_time))
     return GlobalVariables.appDriver
+
+
+def launch_browser_and_context_initialize(browser_type: str = "chromium"):
+    if browser_type == "firefox":
+        browser = GlobalVariables.play_wright.firefox.launch(headless=False)
+    else:
+        browser = GlobalVariables.play_wright.chromium.launch(headless=False)
+    GlobalVariables.context = browser.new_context(viewport={'width': 1920, 'height': 1080})
+
+
+def initialize_portal_browser():
+    GlobalVariables.portal_page = GlobalVariables.context.new_page()
+    return GlobalVariables.portal_page
+
+
+def initialize_chargeslip_browser():
+    GlobalVariables.charge_slip_page = GlobalVariables.context.new_page()
+    return GlobalVariables.charge_slip_page
+
+
+def initialize_ui_browser():
+    GlobalVariables.ui_page = GlobalVariables.context.new_page()
+    return GlobalVariables.ui_page

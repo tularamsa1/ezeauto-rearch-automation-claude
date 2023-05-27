@@ -112,6 +112,12 @@ refund_count = 0
 collection_amt = 0
 collection_count = 0
 
+ui_page = ''
+portal_page = ''
+charge_slip_page = ''
+context = ''
+play_wright = ''
+
 # These are to get the total number of fields validated in each category
 tot_app_val = 0
 tot_api_val = 0

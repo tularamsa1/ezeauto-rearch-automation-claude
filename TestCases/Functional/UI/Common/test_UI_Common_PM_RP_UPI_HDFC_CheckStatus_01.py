@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 import pytest
 from termcolor import colored
+import pyautogui
 
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
@@ -14,7 +15,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -66,6 +67,7 @@ def test_common_100_103_003():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         GlobalVariables.setupCompletedSuccessfully = True
+        TestSuiteSetup.launch_browser_and_context_initialize("firefox")
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
@@ -91,14 +93,19 @@ def test_common_100_103_003():
                                                                     "username": app_username, "password": app_password})
             response = APIProcessor.send_request(api_details)
             # ui_driver = TestSuiteSetup.initialize_portal_driver()
-            portal_driver = TestSuiteSetup.initialize_firefox_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             paymentLinkUrl = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
-            portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(portal_driver)
+            ui_browser.goto(paymentLinkUrl)
+            remotePayUpiTxn = RemotePayTxnPage(ui_browser)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
+            # time.sleep(2)
+            # # Check if a system alert is present
+            # if pyautogui.locateOnScreen('alert.png') is not None:
+            #     # If alert exists, simulate pressing the Escape key to cancel it
+            # pyautogui.press("esc")
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
             remotePayUpiTxn.clickOnRemotePayProceed()
 
@@ -369,30 +376,26 @@ def test_common_100_103_003():
                     "txn_amt": "Rs." + str(amount) + ".00", "username": app_username}
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                portal_driver = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(portal_driver)
+                portal_browser = TestSuiteSetup.initialize_portal_browser()
+                login_page_portal = PortalLoginPage(portal_browser)
+                login_page_portal.perform_login_to_portal(username=portal_username, password=portal_password)
+                home_page_portal = PortalHomePage(portal_browser)
                 home_page_portal.wait_for_home_page_load()
                 home_page_portal.search_merchant_name(str(org_code))
                 logger.debug(f"searching for the org_code : {str(org_code)}")
+                time.sleep(1)
                 home_page_portal.click_switch_button(str(org_code))
-                home_page_portal.perform_merchant_switched_verfication()
-                home_page_portal.click_transaction_search_menu()
-
-                portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
-                portal_type = portal_values_dict['Type']
-                portal_status = portal_values_dict['Status']
-                portal_amount = portal_values_dict['Total Amount']
-                portal_username = portal_values_dict['Username']
+                home_page_portal.click_transaction_search_menu(no_of_txn_to_search="1")
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
+                txn_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
+                txn_type = txn_values_dict['Type']
+                txn_status = txn_values_dict['Status']
+                txn_amount = txn_values_dict['Total Amount']
+                txn_username = txn_values_dict['Username']
 
                 actual_portal_values = {
-                    "pmt_state": str(portal_status), "pmt_type": portal_type,
-                    "txn_amt": portal_amount, "username": portal_username}
+                    "pmt_state": str(txn_status), "pmt_type": txn_type,
+                    "txn_amt": txn_amount, "username": txn_username}
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
@@ -503,7 +506,7 @@ def test_common_100_103_006():
             paymentLinkUrl = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
             ui_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(ui_driver)
+            remotePayUpiTxn = RemotePayTxnPage(ui_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
@@ -916,7 +919,7 @@ def test_common_100_103_047():
                 paymentLinkUrl = response['paymentLink']
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiTxn.clickOnRemotePayUPI()
                 logger.info("Opening UPI intent to start the txn.")
                 remotePayUpiTxn.clickOnRemotePayLaunchUPI()
@@ -1282,7 +1285,7 @@ def test_common_100_103_048():
                 paymentLinkUrl = response['paymentLink']
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiTxn.clickOnRemotePayUPI()
                 logger.info("Opening UPI intent to start the txn.")
                 remotePayUpiTxn.clickOnRemotePayLaunchUPI()
@@ -1687,7 +1690,7 @@ def test_common_100_103_088():
                 paymentLinkUrl = response['paymentLink']
                 logger.info("Opening the link in the browser")
                 ui_driver.get(paymentLinkUrl)
-                remotePayUpiTxn = remotePayTxnPage(ui_driver)
+                remotePayUpiTxn = RemotePayTxnPage(ui_driver)
                 remotePayUpiTxn.clickOnRemotePayUPI()
                 logger.info("Opening UPI intent to start the txn.")
                 remotePayUpiTxn.clickOnRemotePayLaunchUPI()

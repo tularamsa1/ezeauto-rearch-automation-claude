@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -99,7 +99,7 @@ def test_common_100_111_017():
             paymentLinkUrl = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
@@ -489,7 +489,7 @@ def test_common_100_111_018():
             paymentLinkUrl = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
@@ -867,7 +867,7 @@ def test_common_100_111_027():
             paymentLinkUrl = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()

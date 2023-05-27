@@ -802,16 +802,16 @@ def test_common_100_101_013():
             logger.info("Opening Portal to perform refund of the transaction")
             refund_amount = amount - 100
 
-            portal_driver = TestSuiteSetup.initialize_portal_driver()
-            login_page_portal = PortalLoginPage(portal_driver)
+            portal_browser = TestSuiteSetup.initialize_portal_browser()
+            login_page_portal = PortalLoginPage(portal_browser)
 
             logger.info(f"Logging in Portal using username : {portal_username}")
             login_page_portal.perform_login_to_portal(portal_username, portal_password)
-            home_page_portal = PortalHomePage(portal_driver)
+            home_page_portal = PortalHomePage(portal_browser)
             home_page_portal.search_merchant_name(str(org_code))
             logger.info(f"Switching to merchant : {org_code}")
             home_page_portal.click_switch_button(str(org_code))
-            home_page_portal.click_transaction_search_menu()
+            home_page_portal.click_transaction_search_menu("1")
             logger.info("Clicking on transaction detail based on txn id to perform refund of the transaction")
             home_page_portal.click_on_transaction_details_based_on_transaction_id(txn_id_original)
             logger.debug("Clicking on refund button")
@@ -822,7 +822,7 @@ def test_common_100_101_013():
             query = "select * from txn where org_code='" + org_code + "' and orig_txn_id = '" + txn_id_original + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            refund_rrn = result['rr_number'].iloc[0]
+            refund_rrn = result['rr_number'].values[0]
             logger.debug(f"fetched refund_rrn from txn table is : {refund_rrn}")
             refund_customer_name = result['customer_name'].values[0]
             logger.debug(f"fetched refund_customer_name from txn table is : {refund_customer_name}")
@@ -1280,8 +1280,8 @@ def test_common_100_101_013():
 
                 logger.debug(f"expected_portal_values : {expected_portal_values} for the test case {testcase_id}")
 
-                portal_driver.refresh()
-                portal_trans_history_page = PortalTransHistoryPage(portal_driver)
+                portal_browser.refresh()
+                portal_trans_history_page = PortalTransHistoryPage(portal_browser)
                 portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(refund_txn_id)
                 portal_txn_type = portal_values_dict['Type']
                 portal_status = portal_values_dict['Status']

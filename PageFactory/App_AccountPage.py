@@ -1,17 +1,16 @@
-from selenium.webdriver.common.by import By
+from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 
 
 class AccountPage(BasePage):
 
-
-    mnu_setting = (By.ID, 'com.ezetap.basicapp:id/clSettingsItem')
-    mnu_Language = (By.ID, 'com.ezetap.basicapp:id/tvLanguage')
-    rdo_Language = (By.ID, 'com.ezetap.basicapp:id/rbLanguage')
-    btn_LanguageProceed = (By.ID, 'com.ezetap.basicapp:id/btnProceed')
-    lbl_SAVersion = (By.ID, 'com.ezetap.basicapp:id/tvServiceVersionData')
-    btn_logout = (By.ID, 'com.ezetap.basicapp:id/clLogout')
-    btn_confirmLogout = (By.ID, 'com.ezetap.basicapp:id/btnOk')
+    mnu_setting = (AppiumBy.ID, 'com.ezetap.basicapp:id/clSettingsItem')
+    mnu_Language = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvLanguage')
+    rdo_Language = (AppiumBy.ID, 'com.ezetap.basicapp:id/rbLanguage')
+    btn_LanguageProceed = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnProceed')
+    lbl_SAVersion = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvServiceVersionData')
+    btn_logout = (AppiumBy.ID, 'com.ezetap.basicapp:id/clLogout')
+    btn_confirmLogout = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnOk')
 
     def __init__(self, driver):
         super().__init__(driver)

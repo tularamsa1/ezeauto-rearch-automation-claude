@@ -1,0 +1,28 @@
+1676884325891	geckodriver	INFO	Listening on 127.0.0.1:43251
+1676884326386	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "45633" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile5RJn9i"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676884327675	Marionette	INFO	Marionette enabled
+1676884327687	Marionette	INFO	Listening on port 43387
+Read port: 43387
+WebDriver BiDi listening on ws://127.0.0.1:45633
+1676884327901	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile5RJn9i/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:45633/devtools/browser/e868db4b-d062-40b2-ba42-e8de986d6688
+1676884329908	Marionette	INFO	Stopped listening on port 43387
+1676890815986	geckodriver	INFO	Listening on 127.0.0.1:50887
+1676890816485	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "55651" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileL8cXDp"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1676890817458	Marionette	INFO	Marionette enabled
+1676890817462	Marionette	INFO	Listening on port 42277
+Read port: 42277
+WebDriver BiDi listening on ws://127.0.0.1:55651
+1676890817607	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileL8cXDp/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:55651/devtools/browser/8d10d997-64cf-43c6-8572-996a8a68687d
+1676890887749	Marionette	INFO	Stopped listening on port 42277

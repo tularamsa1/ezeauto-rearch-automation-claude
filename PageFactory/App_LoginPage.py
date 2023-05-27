@@ -1,17 +1,17 @@
-from selenium.webdriver.common.by import By
+from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 from Utilities.ConfigReader import read_config
 
 
 class LoginPage(BasePage):
 
-    txt_username = (By.ID, "com.ezetap.basicapp:id/etUid")
-    txt_password =  (By.ID, 'com.ezetap.basicapp:id/etPassword')
-    btn_login = (By.ID, 'com.ezetap.basicapp:id/btnLogin')
-    lbl_login = (By.ID, 'com.ezetap.basicapp:id/tvHintLogin')
-    img_ezetaplogo = (By.ID, 'com.ezetap.basicapp:id/imgLogo')
-    btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/clGotoHistory")
-    dtl_env = (By.XPATH, '//android.widget.TextView[@text ="DEV11"]')
+    txt_username = (AppiumBy.ID, "com.ezetap.basicapp:id/etUid")
+    txt_password =  (AppiumBy.ID, 'com.ezetap.basicapp:id/etPassword')
+    btn_login = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnLogin')
+    lbl_login = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvHintLogin')
+    img_ezetaplogo = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgLogo')
+    btn_goToHistory = (AppiumBy.ID, "com.ezetap.basicapp:id/clGotoHistory")
+    dtl_env = (AppiumBy.XPATH, '//android.widget.TextView[@text ="DEV11"]')
 
     def __init__(self, driver):
         super().__init__(driver)

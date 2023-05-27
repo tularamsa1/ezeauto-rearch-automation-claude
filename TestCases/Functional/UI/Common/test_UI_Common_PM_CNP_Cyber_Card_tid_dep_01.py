@@ -9,7 +9,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -135,7 +135,7 @@ def test_common_100_103_149():
                 payment_intent_id = response.get('paymentIntentId')
                 portal_driver = TestSuiteSetup.initialize_portal_driver()
                 portal_driver.get(payment_link_url)
-                remote_pay_txn = remotePayTxnPage(portal_driver)
+                remote_pay_txn = RemotePayTxnPage(portal_driver)
                 remote_pay_txn.clickOnCreditCardToExpand()
                 remote_pay_txn.enterNameOnTheCard("Sandeep")
                 remote_pay_txn.enterCreditCardNumber("4000 0000 0000 0002")
@@ -614,7 +614,7 @@ def test_common_100_103_150():
                 payment_intent_id = response.get('paymentIntentId')
                 ui_driver = TestSuiteSetup.initialize_portal_driver()
                 ui_driver.get(payment_link_url)
-                remote_pay_txn = remotePayTxnPage(ui_driver)
+                remote_pay_txn = RemotePayTxnPage(ui_driver)
                 remote_pay_txn.clickOnCreditCardToExpand()
                 remote_pay_txn.enterNameOnTheCard("Sandeep")
                 remote_pay_txn.enterCreditCardNumber("4111 1111 1111 1111")

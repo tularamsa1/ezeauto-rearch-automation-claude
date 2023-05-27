@@ -3,8 +3,10 @@ import pandas
 from Utilities import DirectoryCreator
 DirectoryCreator.createExecutionDirectories()
 from Utilities import ConfigReader
+from Utilities.execution_log_processor import EzeAutoLogger
 import subprocess
 
+logger = EzeAutoLogger(__name__)
 testcases_excel_path = ConfigReader.read_config_paths("System", "automation_suite_path") + "/DataProvider/TestCasesDetail.xlsx"
 
 try:
@@ -15,7 +17,7 @@ try:
         :return testcases_excel_data dict
         """
         print()
-        print("Fetching details from sheet  : ",sheet)
+        print("Fetching details from sheet : ",sheet)
         testcases_excel_data = pandas.read_excel(testcases_excel_path, sheet_name=sheet)
         return testcases_excel_data
 
