@@ -722,7 +722,8 @@ def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str
         elif acquirer_code == "YES" and payment_gateway == "ATOS" or \
                 acquirer_code == "AXIS" and payment_gateway == "ATOS_TLE" or \
                 acquirer_code == "KOTAK" and payment_gateway == "KOTAK_WL" or \
-                acquirer_code == "AXIS" and payment_gateway == "FC":
+                acquirer_code == "AXIS" and payment_gateway == "FC" or \
+                acquirer_code == "KOTAK" and payment_gateway == "OLIVE":
             query = query.replace(", upi_app_key, encKey, virtual_mid, virtual_tid", "")
             query = query.replace(", '<upi_app_key>', '<encKey>', '<vmid>', '<vtid>'", "")
         elif acquirer_code == "AIRP" and payment_gateway == "APB":
