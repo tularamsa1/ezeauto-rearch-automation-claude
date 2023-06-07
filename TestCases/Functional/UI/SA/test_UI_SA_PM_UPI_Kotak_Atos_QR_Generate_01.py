@@ -7,9 +7,10 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities.execution_log_processor import EzeAutoLogger
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
-from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner
+from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter
 
 logger = EzeAutoLogger(__name__)
 
@@ -55,11 +56,11 @@ def test_sa_100_101_170():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False,
                                                    middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -91,6 +92,17 @@ def test_sa_100_101_170():
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
+
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "';"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -130,6 +142,46 @@ def test_sa_100_101_170():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "PENDING",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
