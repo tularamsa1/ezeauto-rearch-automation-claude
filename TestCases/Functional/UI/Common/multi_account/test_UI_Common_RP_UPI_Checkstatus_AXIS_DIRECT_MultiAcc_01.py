@@ -74,7 +74,7 @@ def test_common_100_111_017():
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-        TestSuiteSetup.launch_browser_and_context_initialize()
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type = "firefox")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
