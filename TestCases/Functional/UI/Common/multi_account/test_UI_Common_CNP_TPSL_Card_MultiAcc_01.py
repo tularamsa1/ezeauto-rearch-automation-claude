@@ -7,11 +7,9 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -30,7 +28,7 @@ def test_common_100_112_003():
     Sub Feature Description: MultiAccount - Verification of successful netbanking txn for TPSL pg
     TC naming code description:
     100: Payment Method
-    112: RemotePay
+    112: MultiAcc_CNP
     003: TC003
     """
     expectedMessage = "Your payment is successfully completed! You may close the browser now."
@@ -378,13 +376,13 @@ def test_common_100_112_003():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of DB Validation---------------------------------------
-            # -----------------------------------------Start of Portal Validation---------------------------------
-        # -------------------------------------------- End of Portal Validation ---------------------------
+        # -----------------------------------------End of DB Validation---------------------------------------
+        # -------------------------------------------- Start of Portal Validation ---------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 date_and_time_portal = date_time_converter.to_portal_format(posting_date)
+
                 expectedPortalValues = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
@@ -401,14 +399,11 @@ def test_common_100_112_003():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
                 auth_code_portal = transaction_details[0]['Auth Code']
-                rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actualPortalValues = {
                     "date_time": date_time,
@@ -426,6 +421,7 @@ def test_common_100_112_003():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of Chargeslip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -465,7 +461,7 @@ def test_common_100_112_004():
     Sub Feature Description: MultiAccount - Verification failed netbanking txn for TPSL pg
     TC naming code description:
     100: Payment Method
-    112: RemotePay
+    112: MultiAcc_CNP
     004: TC004
     """
     expected_failed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact support@ezetap.com for further clarifications."
@@ -828,14 +824,10 @@ def test_common_100_112_004():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
-                auth_code_portal = transaction_details[0]['Auth Code']
-                rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actualPortalValues = {
                     "date_time": date_time,
@@ -853,9 +845,6 @@ def test_common_100_112_004():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -876,7 +865,7 @@ def test_common_100_112_005():
     Sub Feature Description: Multi Account - Performing a successful credit card txn via CNP link second account (ex:acc2 label) for TPSL pg
     TC naming code description:
     100: Payment Method
-    112: RemotePay
+    112: MultiAcc_CNP
     005: TC005
     """
     expectedMessage = "Your payment is successfully completed! You may close the browser now."
@@ -1225,11 +1214,10 @@ def test_common_100_112_005():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------End of DB Validation---------------------------------------
         # ----------------------------------------- Start of Portal Validation ------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
-                # --------------------------------------------------------------------------------------------
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 date_and_time_portal = date_time_converter.to_portal_format(posting_date)
                 expectedPortalValues = {
@@ -1248,14 +1236,11 @@ def test_common_100_112_005():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
                 auth_code_portal = transaction_details[0]['Auth Code']
-                rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actualPortalValues = {
                     "date_time": date_time,
@@ -1273,6 +1258,7 @@ def test_common_100_112_005():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of Chargeslip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -1291,6 +1277,7 @@ def test_common_100_112_005():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
+
             # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

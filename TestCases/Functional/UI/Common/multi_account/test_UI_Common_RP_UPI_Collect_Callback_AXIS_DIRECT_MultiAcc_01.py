@@ -434,13 +434,10 @@ def test_common_100_111_019():
                 Configuration.perform_db_val_exception(testcase_id, e)
                 logger.info(f"Completed DB validation for the test case : {testcase_id}")
                 # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                logger.info(f"Started Portal validation for the test case : {testcase_id}")
-                logger.info("Portal Validation Started for the test case : test_common_100_103_005")
                 date_and_time_portal = date_time_converter.to_portal_format(posting_date)
                 expected_portal_values = {
                     "date_time" : date_and_time_portal,
@@ -457,14 +454,11 @@ def test_common_100_111_019():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
-                auth_code_portal = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time" : date_time,
@@ -485,7 +479,7 @@ def test_common_100_111_019():
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -927,9 +921,8 @@ def test_common_100_111_020():
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            date_and_time_portal = date_time_converter.to_portal_format(posting_date)
-
             try:
+                date_and_time_portal = date_time_converter.to_portal_format(posting_date)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "FAILED",
@@ -939,7 +932,6 @@ def test_common_100_111_020():
                     "txn_id": txn_id,
                     "rrn": str(rrn),
                     "acct_label": account_label_name
-
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -947,14 +939,11 @@ def test_common_100_111_020():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
-                auth_code_portal = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time": date_time,

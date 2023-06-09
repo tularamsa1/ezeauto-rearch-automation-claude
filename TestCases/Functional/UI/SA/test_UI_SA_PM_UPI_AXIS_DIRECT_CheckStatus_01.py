@@ -9,10 +9,9 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
-from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, ResourceAssigner, date_time_converter
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, ResourceAssigner, \
+    date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -80,7 +79,8 @@ def test_sa_100_101_035():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             amount = random.randint(301, 400)
@@ -432,6 +432,7 @@ def test_sa_100_101_036():
     TC naming code description: 100: Payment Method, 101: UPI, 036: TC036
     """
     try:
+
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
@@ -482,7 +483,8 @@ def test_sa_100_101_036():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             amount = random.randint(121, 150)
@@ -871,7 +873,8 @@ def test_sa_100_101_037():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             amount = 77
@@ -957,7 +960,7 @@ def test_sa_100_101_037():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "EXPIRED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "settle_status": "FAILED",
                     "txn_id": txn_id,
                     "order_id": order_id,
@@ -1255,7 +1258,8 @@ def test_sa_100_101_044():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = random.randint(1, 49)
             order_id = datetime.now().strftime('%m%d%H%M%S')

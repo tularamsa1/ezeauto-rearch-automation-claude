@@ -30,6 +30,7 @@ def test_sa_100_101_024():
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
+
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------

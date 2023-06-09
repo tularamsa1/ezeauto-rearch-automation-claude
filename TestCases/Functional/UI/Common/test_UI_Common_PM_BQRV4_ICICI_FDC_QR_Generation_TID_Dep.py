@@ -14,6 +14,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
+@pytest.mark.portalVal
 def test_common_100_102_155():
     """
     Description: Verification of a BQRV4 QR Generation Success through QR Generate api via ICICI_FDC TID Dep

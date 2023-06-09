@@ -380,13 +380,13 @@ def test_common_100_111_021():
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
                 logger.info(f"Completed DB validation for the test case : {testcase_id}")
-                # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------End of DB Validation---------------------------------------
         # ---------------------------------------  Start of portal validation ---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            date_and_time_portal = date_time_converter.to_portal_format(posting_date)
-
             try:
+                date_and_time_portal = date_time_converter.to_portal_format(posting_date)
+
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
@@ -403,14 +403,11 @@ def test_common_100_111_021():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
-                auth_code = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -432,7 +429,7 @@ def test_common_100_111_021():
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -605,7 +602,6 @@ def test_common_100_111_022():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             try:
-                # --------------------------------------------------------------------------------------------
                 logger.info(f"Started APP validation for the test case : {testcase_id}")
                 date_and_time = date_time_converter.to_app_format(created_time)
 
@@ -684,7 +680,6 @@ def test_common_100_111_022():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
-                # --------------------------------------------------------------------------------------------
                 logger.info(f"Started API validation for the test case : {testcase_id}")
                 logger.info("Api Validation Started for the test case : test_common_100_103_005")
                 expectedAPIValues = {
@@ -824,9 +819,9 @@ def test_common_100_111_022():
         # ---------------------------------------  Start of portal validation ---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            date_and_time_portal = date_time_converter.to_portal_format(created_time)
-
             try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "FAILED",
@@ -843,14 +838,11 @@ def test_common_100_111_022():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
-                auth_code = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -1244,13 +1236,12 @@ def test_common_100_111_028():
                 Configuration.perform_db_val_exception(testcase_id, e)
                 logger.info(f"Completed DB validation for the test case : {testcase_id}")
                 # -----------------------------------------End of DB Validation---------------------------------------
-
-                # -----------------------------------------Start of Portal Validation---------------------------------
         # ------------------------------------------- Start of Portal validation ------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            date_and_time_portal = date_time_converter.to_portal_format(created_time)
             try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
@@ -1267,14 +1258,11 @@ def test_common_100_111_028():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
-                auth_code_portal = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
                 labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -1294,7 +1282,6 @@ def test_common_100_111_028():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")

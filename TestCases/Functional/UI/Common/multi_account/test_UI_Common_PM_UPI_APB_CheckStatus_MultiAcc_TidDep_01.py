@@ -1,9 +1,7 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -814,7 +812,6 @@ def test_common_100_109_018():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -840,7 +837,6 @@ def test_common_100_109_018():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                auth_code_portal = transaction_details[0]['Auth Code']
                 labels = transaction_details[0]['Labels']
 
                 actual_portal_values = {
@@ -1231,7 +1227,6 @@ def test_common_100_109_023():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")

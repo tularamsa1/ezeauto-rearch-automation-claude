@@ -1,9 +1,7 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -432,7 +430,6 @@ def test_common_100_109_019():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                auth_code_portal = transaction_details[0]['Auth Code']
                 labels = transaction_details[0]['Labels']
 
                 actual_portal_values = {

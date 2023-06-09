@@ -9,9 +9,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 

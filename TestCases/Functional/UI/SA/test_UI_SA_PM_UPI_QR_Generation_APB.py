@@ -16,6 +16,7 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
+@pytest.mark.portalVal
 def test_sa_100_101_084():
     """
     Sub Feature Code: UI_SA_PM_UPI_QR_Generation_Success_via_APB
@@ -186,4 +187,3 @@ def test_sa_100_101_084():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-

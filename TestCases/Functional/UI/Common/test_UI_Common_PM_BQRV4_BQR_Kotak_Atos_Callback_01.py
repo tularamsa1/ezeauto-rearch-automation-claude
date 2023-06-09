@@ -1131,7 +1131,7 @@ def test_common_100_102_238():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                date_and_time_portal_1 = date_time_converter.to_portal_format(created_time_2)
+                date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_2)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
@@ -1142,14 +1142,14 @@ def test_common_100_102_238():
                     "auth_code": auth_code,
                     "rrn": rrn,
 
-                    "date_time_1": date_and_time_portal_1,
-                    "pmt_state_1": "AUTHORIZED",
-                    "pmt_type_1": "BHARATQR",
-                    "txn_amt_1": f"{str(amount)}.00",
-                    "username_1": app_username,
-                    "txn_id_1": txn_id_2,
-                    "auth_code_1": auth_code_2,
-                    "rrn_1": rrn_2
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_2,
+                    "auth_code_2": auth_code_2,
+                    "rrn_2": rrn_2
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1182,14 +1182,14 @@ def test_common_100_102_238():
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "username_1": username_1,
-                    "txn_id_1": transaction_id_1,
-                    "auth_code_1": auth_code_portal_1,
-                    "rrn_1": rr_number_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "auth_code_2": auth_code_portal_1,
+                    "rrn_2": rr_number_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -1672,24 +1672,18 @@ def test_common_100_102_244():
                     "pmt_state": "EXPIRED",
                     "pmt_mode": "BHARATQR",
                     "txn_amt": amount,
-                    # "upi_txn_status": "AUTHORIZED",
                     "settle_status": "FAILED",
                     "acquirer_code": "KOTAK",
                     "bank_code": "KOTAK",
                     "pmt_gateway": "KOTAK_ATOS",
-                    # "upi_txn_type": "PAY_BQR",
-                    # "upi_bank_code": "KOTAK_WL",
-                    # "upi_mc_id": upi_mc_id,
                     "mid": mid,
                     "tid": tid,
-                    # "bqr_pmt_status_code": "EXPIRED",
                     "bqr_pmt_state": "EXPIRED",
                     "bqr_txn_amt": amount,
                     "bqr_txn_type": "DYNAMIC_QR",
                     "bqr_terminal_info_id": terminal_info_id,
                     "bqr_merchant_config_id": merchant_config_id,
                     "bqr_txn_primary_id": txn_id,
-                    # "bqr_merchant_pan": merchant_pan,
                     "bqr_rrn": rrn,
                     "bqr_org_code": org_code,
                     "bqr_bank_code": "KOTAK",
@@ -1697,14 +1691,10 @@ def test_common_100_102_244():
                     "pmt_state_2": "SETTLED",
                     "pmt_mode_2": "BHARATQR",
                     "txn_amt_2": amount,
-                    # "upi_txn_status_2": "AUTHORIZED",
                     "settle_status_2": "SETTLED",
                     "acquirer_code_2": "KOTAK",
                     "bank_code_2": "KOTAK",
                     "pmt_gateway_2": "KOTAK_ATOS",
-                    # "upi_txn_type_2": "PAY_BQR",
-                    # "upi_bank_code_2": "KOTAK_WL",
-                    # "upi_mc_id_2": upi_mc_id,
                     "mid_2": mid,
                     "tid_2": tid,
                     "bqr_pmt_status_code_2": "SUCCESS",
@@ -1721,20 +1711,10 @@ def test_common_100_102_244():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                # query = "select * from upi_txn where txn_id='" + txn_id + "'"
-                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # upi_status_db = result["status"].iloc[0]
-                # upi_txn_type_db = result["txn_type"].iloc[0]
-                # upi_bank_code_db = result["bank_code"].iloc[0]
-                # upi_mc_id_db = result["upi_mc_id"].iloc[0]
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
-                bqr_status_code_db = result["status_code"].iloc[0]
                 bqr_state_db = result["state"].iloc[0]
                 bqr_txn_amt_db = result["txn_amount"].iloc[0]
                 bqr_txn_type_db = result["txn_type"].iloc[0]
@@ -1742,7 +1722,6 @@ def test_common_100_102_244():
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_transaction_primary_id_db = result["transaction_primary_id"].iloc[0]
-                bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
                 bqr_rrn_db = result["rrn"].iloc[0]
                 bqr_org_code_db = result["org_code"].iloc[0]
 
@@ -1760,15 +1739,6 @@ def test_common_100_102_244():
                 settlement_status_db_2 = result["settlement_status"].iloc[0]
                 tid_db_2 = result['tid'].values[0]
                 mid_db_2 = result['mid'].values[0]
-
-                # query = "select * from upi_txn where txn_id='" + txn_id_2 + "'"
-                # logger.debug(f"Query to fetch data from upi_txn table : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # logger.debug(f"Query result : {result}")
-                # upi_status_db_2 = result["status"].iloc[0]
-                # upi_txn_type_db_2 = result["txn_type"].iloc[0]
-                # upi_bank_code_db_2 = result["bank_code"].iloc[0]
-                # upi_mc_id_db_2 = result["upi_mc_id"].iloc[0]
 
                 query = "select * from bharatqr_txn where id='" + txn_id_2 + "'"
                 logger.debug(f"Query to fetch data from bharatqr_txn table : {query}")
@@ -1791,24 +1761,18 @@ def test_common_100_102_244():
                     "pmt_state": state_db,
                     "pmt_mode": payment_mode_db,
                     "txn_amt": amount_db,
-                    # "upi_txn_status": upi_status_db,
                     "settle_status": settlement_status_db,
                     "acquirer_code": acquirer_code_db,
                     "bank_code": bank_code_db,
                     "pmt_gateway": payment_gateway_db,
-                    # "upi_txn_type": upi_txn_type_db,
-                    # "upi_bank_code": upi_bank_code_db,
-                    # "upi_mc_id": upi_mc_id_db,
                     "mid": mid_db,
                     "tid": tid_db,
-                    # "bqr_pmt_status_code": bqr_status_code_db,
                     "bqr_pmt_state": bqr_state_db,
                     "bqr_txn_amt": bqr_txn_amt_db,
                     "bqr_txn_type": bqr_txn_type_db,
                     "bqr_terminal_info_id": bqr_terminal_info_id_db,
                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                     "bqr_txn_primary_id": bqr_transaction_primary_id_db,
-                    # "bqr_merchant_pan": bqr_merchant_pan_db,
                     "bqr_rrn": bqr_rrn_db,
                     "bqr_org_code": bqr_org_code_db,
                     "bqr_bank_code": bqr_bank_code_db,
@@ -1816,14 +1780,10 @@ def test_common_100_102_244():
                     "pmt_state_2": state_db_2,
                     "pmt_mode_2": payment_mode_db_2,
                     "txn_amt_2": amount_db_2,
-                    # "upi_txn_status_2": upi_status_db_2,
                     "settle_status_2": settlement_status_db_2,
                     "acquirer_code_2": acquirer_code_db_2,
                     "bank_code_2": bank_code_db_2,
                     "pmt_gateway_2": payment_gateway_db_2,
-                    # "upi_txn_type_2": upi_txn_type_db_2,
-                    # "upi_bank_code_2": upi_bank_code_db_2,
-                    # "upi_mc_id_2": upi_mc_id_db_2,
                     "mid_2": mid_db_2,
                     "tid_2": tid_db_2,
                     "bqr_pmt_status_code_2": bqr_status_code_db_2,
@@ -1853,14 +1813,14 @@ def test_common_100_102_244():
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_2)
                 expected_portal_values = {
-                    "date_time_1": date_and_time_portal_2,
-                    "pmt_state_1": "AUTHORIZED",
-                    "pmt_type_1": "BHARATQR",
-                    "txn_amt_1": f"{str(amount)}.00",
-                    "username_1": app_username,
-                    "txn_id_1": txn_id_2,
-                    "auth_code_1": auth_code_2,
-                    "rrn_1": rrn_2,
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_2,
+                    "auth_code_2": auth_code_2,
+                    "rrn_2": rrn_2,
 
                     "date_time": date_and_time_portal,
                     "pmt_state": "EXPIRED",
@@ -1889,14 +1849,14 @@ def test_common_100_102_244():
                 username_1 = transaction_details[0]['Username']
 
                 actual_portal_values = {
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "username_1": username_1,
-                    "txn_id_1": transaction_id_1,
-                    "auth_code_1": auth_code_portal_1,
-                    "rrn_1": rr_number_1,
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "auth_code_2": auth_code_portal_1,
+                    "rrn_2": rr_number_1,
 
                     "date_time": date_time,
                     "pmt_state": str(status),

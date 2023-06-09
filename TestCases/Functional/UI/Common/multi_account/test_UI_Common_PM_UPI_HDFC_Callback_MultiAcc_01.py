@@ -1,18 +1,14 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -448,7 +444,6 @@ def test_common_100_109_003():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -519,7 +514,6 @@ def test_common_100_109_004():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
@@ -640,7 +634,6 @@ def test_common_100_109_004():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
@@ -720,7 +713,6 @@ def test_common_100_109_004():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
-
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
@@ -781,7 +773,6 @@ def test_common_100_109_004():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -838,7 +829,6 @@ def test_common_100_109_004():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -864,7 +854,6 @@ def test_common_100_109_004():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                auth_code_portal = transaction_details[0]['Auth Code']
                 labels = transaction_details[0]['Labels']
 
                 actual_portal_values = {
