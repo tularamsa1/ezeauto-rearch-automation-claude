@@ -903,6 +903,7 @@ def test_common_100_103_032():
                 logger.info(f"Response from initiate api is: {response}")
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
+
                 externalRef = response.get('externalRefNumber')
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")

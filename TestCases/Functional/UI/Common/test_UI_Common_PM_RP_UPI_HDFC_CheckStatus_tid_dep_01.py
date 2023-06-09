@@ -8,8 +8,10 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter, merchant_creator
+from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+    ResourceAssigner, date_time_converter, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -20,6 +22,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
+@pytest.mark.portalVal
 def test_common_100_103_157():
     """
     Sub Feature Code: UI_Common_PM_RP_RP_UPI_Success_Via_CheckStatus_HDFC_Tid_dep
@@ -74,11 +77,11 @@ def test_common_100_103_157():
 
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type="firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -93,11 +96,12 @@ def test_common_100_103_157():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"order_id is: {order_id}")
 
-            #acquisition and payment_gateway is HDFC
-            device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="HDFC",payment_gateway="HDFC")
+            # acquisition and payment_gateway is HDFC
+            device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="HDFC",
+                                                                           payment_gateway="HDFC")
             logger.debug(f"device_serial is  : {device_serial}")
 
-            api_details = DBProcessor.get_api_details('Remotepay_Initiate_Tid_dependent',request_body={
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate_Tid_dependent', request_body={
                 "amount": amount,
                 "externalRefNumber": order_id,
                 "username": app_username,
@@ -108,18 +112,20 @@ def test_common_100_103_157():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response of remotepay initiate {response}")
 
-            portal_driver = TestSuiteSetup.initialize_firefox_driver()
+            # portal_driver = TestSuiteSetup.initialize_firefox_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             payment_link_url = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
-            portal_driver.get(payment_link_url)
-            remote_pay_upi_txn = RemotePayTxnPage(portal_driver)
+            ui_browser.goto(payment_link_url)
+            remote_pay_upi_txn = RemotePayTxnPage(ui_browser)
             remote_pay_upi_txn.clickOnRemotePayUPI()
             remote_pay_upi_txn.clickOnRemotePayLaunchUPI()
             remote_pay_upi_txn.clickOnRemotePayCancelUPI()
             remote_pay_upi_txn.clickOnRemotePayProceed()
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of txn table is : {result}")
@@ -145,6 +151,8 @@ def test_common_100_103_157():
             logger.debug(f"Query result, created_time from db : {created_time}")
             txn_device_serial = result['device_serial'].values[0]
             logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
+            db_rrn = result['rr_number'].values[0]
+            db_auth_code = result['auth_code'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -203,7 +211,8 @@ def test_common_100_103_157():
                 app_customer_name = txn_history_page.fetch_customer_name_text()
                 logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn app_settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn app_settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payer_name = txn_history_page.fetch_payer_name_text()
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
@@ -262,7 +271,7 @@ def test_common_100_103_157():
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnDetails',request_body={
+                api_details = DBProcessor.get_api_details('txnDetails', request_body={
                     "username": app_username,
                     "password": app_password,
                     "txnId": txn_id
@@ -370,7 +379,8 @@ def test_common_100_103_157():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result of payment_intent table in db validation : {result}")
                 payment_intent_status = result["status"].iloc[0]
-                logger.debug(f"result of payment_intent_status from txn table in db validation : {payment_intent_status}")
+                logger.debug(
+                    f"result of payment_intent_status from txn table in db validation : {payment_intent_status}")
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "';"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
@@ -383,7 +393,8 @@ def test_common_100_103_157():
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 logger.debug(f"upi_bank_code_db is : {upi_bank_code_db}")
 
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
+                query = "select * from upi_merchant_config where org_code ='" + str(
+                    org_code) + "' and bank_code = 'HDFC';"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
                 mid_db = result['mid'].iloc[0]
@@ -443,6 +454,54 @@ def test_common_100_103_157():
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                logger.info(f"Started Portal validation for the test case : {testcase_id}")
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": db_auth_code,
+                    "rrn": db_rrn
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number,
+                    "auth_code": auth_code
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                ReportProcessor.capture_ss_when_portal_val_exe_failed()
+                print("Portal Validation failed due to exception - " + str(e))
+                logger.exception(f"Portal Validation failed due to exception : {e}")
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_portal_val_result = 'Fail'
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
+
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -455,6 +514,7 @@ def test_common_100_103_157():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 def test_common_100_103_158():
     """
     Sub Feature Code : UI_Common_PM_RP_RP_UPI_Failed_Via_CheckStatus_HDFC_Tid_dep
@@ -508,14 +568,12 @@ def test_common_100_103_158():
 
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type="firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
 
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
-
         msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -531,10 +589,11 @@ def test_common_100_103_158():
             logger.info(f"order_id is: {order_id}")
 
             # acquisition and payment_gateway is HDFC
-            device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="HDFC",payment_gateway="HDFC")
+            device_serial = merchant_creator.get_device_serial_of_merchant(org_code=org_code, acquisition="HDFC",
+                                                                           payment_gateway="HDFC")
             logger.debug(f"device_serial is : {device_serial}")
 
-            api_details = DBProcessor.get_api_details('Remotepay_Initiate_Tid_dependent',request_body={
+            api_details = DBProcessor.get_api_details('Remotepay_Initiate_Tid_dependent', request_body={
                 "amount": amount,
                 "externalRefNumber": order_id,
                 "username": app_username,
@@ -545,17 +604,19 @@ def test_common_100_103_158():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response of remotepay initiate {response}")
 
-            ui_driver = TestSuiteSetup.initialize_firefox_driver()
+            # ui_driver = TestSuiteSetup.initialize_firefox_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             payment_link_url = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
-            ui_driver.get(payment_link_url)
-            remote_pay_upi_txn = RemotePayTxnPage(ui_driver)
+            ui_browser.goto(payment_link_url)
+            remote_pay_upi_txn = RemotePayTxnPage(ui_browser)
             remote_pay_upi_txn.clickOnRemotePayUPI()
             remote_pay_upi_txn.clickOnRemotePayLaunchUPI()
             remote_pay_upi_txn.clickOnRemotePayCancelUPI()
             remote_pay_upi_txn.clickOnRemotePayProceed()
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(order_id) + "';"
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of txn from the DB : {result}")
@@ -581,6 +642,8 @@ def test_common_100_103_158():
             logger.debug(f"Query result, txn_type from db : {txn_type}")
             txn_device_serial = result['device_serial'].values[0]
             logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
+            db_auth_code = result['auth_code'].values[0]
+            logger.debug(f"Query result, auth_code from db : {db_auth_code}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -638,7 +701,8 @@ def test_common_100_103_158():
                 app_customer_name = txn_history_page.fetch_customer_name_text()
                 logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_payer_name = txn_history_page.fetch_payer_name_text()
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
@@ -817,7 +881,8 @@ def test_common_100_103_158():
                 upi_bank_code_db = result["bank_code"].iloc[0]
                 logger.debug(f"upi_bank_code_db is : {upi_bank_code_db}")
 
-                query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' and bank_code = 'HDFC';"
+                query = "select * from upi_merchant_config where org_code ='" + str(
+                    org_code) + "' and bank_code = 'HDFC';"
                 logger.debug(f"Query to fetch data from upi_merchant_config : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result of upi_merchant_config table : {result}")
@@ -857,6 +922,53 @@ def test_common_100_103_158():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                logger.info(f"Started Portal validation for the test case : {testcase_id}")
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "FAILED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": db_auth_code,
+                    "rrn": rrn
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number,
+                    "auth_code": auth_code
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                ReportProcessor.capture_ss_when_portal_val_exe_failed()
+                print("Portal Validation failed due to exception - " + str(e))
+                logger.exception(f"Portal Validation failed due to exception : {e}")
+                GlobalVariables.bool_val_exe = False
+                GlobalVariables.str_portal_val_result = 'Fail'
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -864,5 +976,3 @@ def test_common_100_103_158():
     # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-
