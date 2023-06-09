@@ -2,8 +2,9 @@ import random
 import sys
 from datetime import datetime
 import pytest
-from Configuration import Configuration, testsuite_teardown
+from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, APIProcessor, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -13,6 +14,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
+@pytest.mark.portal
 def test_common_100_101_101():
     """
     Sub Feature Code: Tid Dep - UI_Common_PM_UPI_QR_Generation_Success_HDFC
@@ -60,14 +62,13 @@ def test_common_100_101_101():
                                                                               "password": portal_password})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -269,10 +270,52 @@ def test_common_100_101_101():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+            # -----------------------------------------Start of Portal Validation---------------------------------
+            if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+                logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+                try:
+                    # --------------------------------------------------------------------------------------------
+                    date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                    expected_portal_values = {
+                        "date_time": date_and_time_portal,
+                        "pmt_state": "PENDING",
+                        "pmt_type": "UPI",
+                        "txn_amt": f"{str(amount)}.00",
+                        "username": app_username,
+                        "txn_id": txn_id,
+                    }
+                    logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                    transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                    date_time = transaction_details[0]['Date & Time']
+                    transaction_id = transaction_details[0]['Transaction ID']
+                    total_amount = transaction_details[0]['Total Amount'].split()
+                    transaction_type = transaction_details[0]['Type']
+                    status = transaction_details[0]['Status']
+                    username = transaction_details[0]['Username']
+
+                    actual_portal_values = {
+                        "date_time": date_time,
+                        "pmt_state": str(status),
+                        "pmt_type": transaction_type,
+                        "txn_amt": total_amount[1],
+                        "username": username,
+                        "txn_id": transaction_id,
+                    }
+
+                    logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                    Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                    actualPortal=actual_portal_values)
+                except Exception as e:
+                    Configuration.perform_portal_val_exception(testcase_id, e)
+                logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
+
     finally:
         Configuration.executeFinallyBlock(testcase_id)
