@@ -1,10 +1,8 @@
 import random
-import shutil
 import sys
 import time
 from datetime import datetime
 import pytest
-from termcolor import colored
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
@@ -14,7 +12,7 @@ from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -152,7 +150,7 @@ def test_common_100_103_038():
 
             query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query,"cnpware")
+            result = DBProcessor.getValueFromDB(query, "cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
@@ -183,7 +181,7 @@ def test_common_100_103_038():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "AUTHORIZED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "txn_id": txn_id,
                                      "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -366,7 +364,7 @@ def test_common_100_103_038():
                                   "cnpware_txn_amt": amount,
                                   "cnpware_pmt_mode": cnpware_txn_payment_mode,
                                   "cnpware_pmt_state": cnpware_txn_state,
-                                  "cnpware_pmt_flow":cnpware_payment_flow,
+                                  "cnpware_pmt_flow": cnpware_payment_flow,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
@@ -392,7 +390,7 @@ def test_common_100_103_038():
                     "pmt_type": "CNP",
                     "txn_amt": str(amount) + ".00",
                     "username": app_username,
-                    "txn_type" : "CNP"
+                    "txn_type": "CNP"
                 }
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
@@ -414,7 +412,7 @@ def test_common_100_103_038():
                     "pmt_type": transaction_type,
                     "txn_amt": total_amount[1],
                     "username": username,
-                    "txn_type" : transaction_type
+                    "txn_type": transaction_type
                 }
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
@@ -444,7 +442,7 @@ def test_common_100_103_038():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -496,6 +494,7 @@ def test_common_100_103_039():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -522,9 +521,9 @@ def test_common_100_103_039():
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
             payment_intent_id = response.get('paymentIntentId')
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
-            ui_driver.get(paymentLinkUrl)
-            remote_pay_txn = RemotePayTxnPage(ui_driver)
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
+            ui_browser.goto(paymentLinkUrl)
+            remote_pay_txn = RemotePayTxnPage(ui_browser)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
@@ -575,7 +574,6 @@ def test_common_100_103_039():
             cnp_payment_flow = result['payment_flow'].values[0]
             logger.debug(f"Query result, cnp_payment_flow : {cnp_payment_flow}")
 
-
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -598,7 +596,7 @@ def test_common_100_103_039():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "txn_id": txn_id,
                                      # "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -800,7 +798,7 @@ def test_common_100_103_039():
                                   "cnpware_txn_amt": amount,
                                   "cnpware_pmt_mode": cnpware_txn_payment_mode,
                                   "cnpware_pmt_state": cnpware_txn_state,
-                                  "cnpware_pmt_flow":cnpware_payment_flow,
+                                  "cnpware_pmt_flow": cnpware_payment_flow,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
@@ -855,7 +853,7 @@ def test_common_100_103_039():
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
@@ -907,14 +905,15 @@ def test_common_100_103_040():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
-
+        msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -933,9 +932,9 @@ def test_common_100_103_040():
             logger.info(f"Response from api is: {response}")
             paymentLinkUrl = response.get('paymentLink')
             payment_intent_id = response.get('paymentIntentId')
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
-            ui_driver.get(paymentLinkUrl)
-            remote_pay_txn = RemotePayTxnPage(ui_driver)
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
+            ui_browser.goto(paymentLinkUrl)
+            remote_pay_txn = RemotePayTxnPage(ui_browser)
             remote_pay_txn.remote_pay_netbanking()
             remote_pay_txn.remote_pay_click_and_expand_netbanking()
             remote_pay_txn.remote_pay_select_netbanking()
@@ -998,6 +997,7 @@ def test_common_100_103_040():
             logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Query result, db date from db : {posting_date}")
+            created_time = result['created_time'].values[0]
 
             query = "select * from cnp_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1017,7 +1017,7 @@ def test_common_100_103_040():
 
             query = "select * from cnpware_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query,"cnpware")
+            result = DBProcessor.getValueFromDB(query, "cnpware")
             cnpware_txn_txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
@@ -1048,7 +1048,7 @@ def test_common_100_103_040():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expectedAppValues = {"pmt_mode": "PAY LINK",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "txn_id": txn_id,
                                      # "rrn": cnp_txn_rrn,
                                      "order_id": order_id,
@@ -1236,7 +1236,7 @@ def test_common_100_103_040():
                                   "cnpware_txn_amt": amount,
                                   "cnpware_pmt_mode": cnpware_txn_payment_mode,
                                   "cnpware_pmt_state": cnpware_txn_state,
-                                  "cnpware_pmt_flow":cnpware_payment_flow,
+                                  "cnpware_pmt_flow": cnpware_payment_flow,
                                   "cnp_pmt_gateway": cnp_payment_gateway,
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
@@ -1255,44 +1255,46 @@ def test_common_100_103_040():
             # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             try:
-                # --------------------------------------------------------------------------------------------
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
-                expectedPortalValues = {"pmt_state": "Settled",
-                                        "pmt_type": "CNP",
-                                        "txn_amt": "Rs." + str(amount) + ".00",
-                                        "username": app_username}
-                logger.debug(f"expectedPortalValues : {expectedPortalValues}")
-                portal_driver = GlobalVariables.portalDriver
-                loginPagePortal = PortalLoginPage(portal_driver)
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
-                homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name(str(org_code))
-                logger.debug(f"searching for the org_code : {str(org_code)}")
-                homePagePortal.click_switch_button(str(org_code))
-                homePagePortal.perform_merchant_switched_verfication()
-                homePagePortal.click_transaction_search_menu()
-                portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
-                portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(txn_id)
-                portalType = portalValuesDict['Type']
-                portalStatus = portalValuesDict['Status']
-                portalAmount = portalValuesDict['Total Amount']
-                portalUsername = portalValuesDict['Username']
-                actualPortalValues = {"Payment State": str(portalStatus), "Payment Type": portalType,
-                                      "Amount": portalAmount, "Username": portalUsername}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "FAILED",
+                    "pmt_type": "CNP",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
             # -----------------------------------------End of Portal Validation---------------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+        # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
