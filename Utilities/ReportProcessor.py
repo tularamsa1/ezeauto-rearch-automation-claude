@@ -487,6 +487,13 @@ def capture_ss_when_portal_val_exe_failed():
                           attachment_type=AttachmentType.PNG)
         except Exception as e:
             logger.exception(f"Unable to take screenshot : {e}")
+    if GlobalVariables.portal_page != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.portal_page.screenshot(full_page=True), name="portal_page",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
 
 
 def capture_ss_when_chargeslip_val_exe_failed():
@@ -494,6 +501,13 @@ def capture_ss_when_chargeslip_val_exe_failed():
             "bool_capt_ss_fail") == "True":
         try:
             allure.attach(GlobalVariables.charge_slip_driver.get_screenshot_as_png(), name="chargeslip",
+                          attachment_type=AttachmentType.PNG)
+        except Exception as e:
+            logger.exception(f"Unable to take screenshot : {e}")
+    if GlobalVariables.charge_slip_page != '' and Base_Actions.is_ss_capture_required(
+            "bool_capt_ss_fail") == "True":
+        try:
+            allure.attach(GlobalVariables.charge_slip_page.screenshot(full_page=True), name="chargeslip",
                           attachment_type=AttachmentType.PNG)
         except Exception as e:
             logger.exception(f"Unable to take screenshot : {e}")

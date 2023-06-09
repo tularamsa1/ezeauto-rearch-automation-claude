@@ -1,43 +1,120 @@
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-
+from Configuration import TestSuiteSetup
 from PageFactory.Portal_BasePage import BasePage
+from datetime import datetime, timedelta
+
+from PageFactory.Portal_LoginPage import PortalLoginPage
+from Utilities.Generic_processor import extract_table_data
 
 
 class PortalTransHistoryPage(BasePage):
-    tbl_txns_xpath = (By.XPATH, "//table[@id='table_txns']")
-    tbl_txnsHeader_xpath = (By.XPATH, "//table[@id='table_txns']/thead")
-    tbl_txnsBody_xpath = (By.XPATH, "//table[@id='table_txns']/tbody")
-    tbl_txnsRows_xpath = (By.XPATH, "//table[@id='table_txns']/tbody/tr")
-    tbl_txnsCols_xpath = (By.XPATH, "//table[@id='table_txns']/thead//th")
-    ddl_transaction_xpath = (By.XPATH, "//a[text()='Transactions ']")
-    mnu_transactionSearch_xpath = (By.XPATH, "//a[text()='Search']")
+    txt_reports = "//p[contains(text(),'Reports')]"
+    btn_txn = "//body/div[@id='root']//div[1]/div[3]//div[1]/div[2]//div[1]/div[2]/a[1]/div[1]/p[1]"
+    lbl_select_search = "//span[contains(text(),'Search')]"
+    lbl_oder_number = "//span[contains(text(),'Order Number')]"
+    lbl_search = "//body/div[@id='root']//div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/input[1]"
+    btn_search = "//body/div[@id='root']//div[1]/div[3]/div[2]//div[1]/img[1]"
+    tbl_data = "//div[@class='txnReportsTable_loaderContainer__om+oI']/following-sibling::div[1]"
+    lbl_date_picker = "//div[@icon='[object Object]']//span[1]"
+    lbl_current_date = "(//div[@class='rs-calendar-table'])[1]"
+    lbl_submit = "//button[text()='Apply']"
+    lbl_month = "//body/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]//div[1]/button[2]"
+    lbl_next_month = "//body/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[2]//div[1]/button[2]"
 
-    def __init__(self, driver):
-        super().__init__(driver)
+    def __init__(self, page):
+        super().__init__(page)
 
-    def get_transaction_details_for_portal(self, txn_id):
-        transactionRow = ""
-        rowID = "ENT" + txn_id
-        transactionDetails = {}
-        total_transactions_count = len(self.driver.find_elements(By.XPATH, "//table[@id='table_txns']/tbody/tr"))
-        total_attributes_count = len(self.driver.find_elements(By.XPATH, "//table[@id='table_txns']/thead//th"))
-        for row in range(1, total_transactions_count + 1):
-            element = self.driver.find_element(By.XPATH, "//table[@id='table_txns']/tbody/tr" + "[" + str(row) + "]")
-            if element.get_attribute("id") == rowID:
-                transactionRow = row
-                break
-        for col in range(1, total_attributes_count):
-            attribute = self.driver.find_element(By.XPATH, "//table[@id='table_txns']/thead//th" + "[" + str(
-                col) + "]").get_attribute(
-                "aria-label")
-            if attribute.__contains__(": activate to sort column ascending"):
-                attribute = attribute.replace(": activate to sort column ascending", "")
-            attributeValue = self.driver.find_element(By.XPATH, "//table[@id='table_txns']/tbody/tr" + "[" +
-                                                      str(transactionRow) + "]/td[" + str(
-                                                          col) + "]").text
-            transactionDetails[attribute] = attributeValue
-        return transactionDetails
+    def click_on_reports(self):
+        self.perform_click(self.txt_reports)
+
+    def click_on_txn(self):
+        self.perform_click(self.btn_txn)
+
+    def click_on_search_box(self):
+        self.perform_click(self.lbl_select_search)
+
+    def select_order_number(self):
+        self.perform_click(self.lbl_oder_number)
+
+    def click_on_search(self):
+        self.perform_click(self.lbl_search)
+
+    def enter_order_number(self, order_number):
+        self.perform_fill(self.lbl_search, order_number)
+
+    def perform_search(self):
+        self.perform_click(self.btn_search)
+
+    def date_picket_expand(self):
+        self.perform_click(self.lbl_date_picker)
+
+    def apply_selected_submit(self):
+        self.perform_click(self.lbl_submit)
+
+    def get_tables_data(self):
+        return self.search_element(self.tbl_data)
+
+    def wait_for_time_in_milli(self, time_in_milli):
+        self.wait_for_given_timeout(time_in_milli)
+
+    def getting_month_from_datepiker(self):
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+
+        today_formatted = today.strftime("%B %d %Y")  # Replace the format string according to your date picker's expected format
+        print(f"todays: {today_formatted}")
+        yesterday_formatted = yesterday.strftime("%B %d %Y")  # Replace the format string according to your date picker's expected format
+
+        # " " + today_formatted + " (Today)", " " + yesterday_formatted
+
+        current_month = datetime.now().strftime("%B %Y")
+        print(str(current_month))
+        month = self.fetch_text(self.lbl_month)
+        next_month = self.fetch_text(self.lbl_next_month)
+        if month == current_month:
+            self.perform_click("//div[@title='"+" " + yesterday_formatted+"']")
+            self.date_selector(yesterday_formatted, self.lbl_current_date)
+            time.sleep(1)
+            self.perform_click("//div[@title='"+" " + today_formatted + " (Today)"+"']")
+            self.date_selector(today_formatted, self.lbl_current_date)
+            time.sleep(1)
+
+        else:
+            self.perform_click()
+            self.date_selector(today)
+            time.sleep(1)
+            self.perform_click()
+            self.date_selector()
+
+def get_transaction_details_for_portal(app_un:str=None, app_pw:str=None, order_id:str=None) -> list:
+    """
+    This method initiates the browser to get the txn details from merchant portal.
+    Once it is logged in then it gets the txn details from extract_table_data() and returns list.
+
+    :param app_un: str
+    :param app_pw: str
+    :param app_pw: order_id
+    :return: list
+    """
+    portal_browser = TestSuiteSetup.initialize_portal_browser()
+    login_page_portal = PortalLoginPage(portal_browser)
+    login_page_portal.perform_login_to_portal(username=app_un, password=app_pw)
+    portal_txn_page = PortalTransHistoryPage(portal_browser)
+    portal_txn_page.click_on_reports()
+    portal_txn_page.click_on_txn()
+    # portal_txn_page.date_picket_expand()
+    # portal_txn_page.getting_month_from_datepiker()
+    # portal_txn_page.apply_selected_submit()
+    portal_txn_page.click_on_search_box()
+    portal_txn_page.select_order_number()
+    portal_txn_page.click_on_search()
+    portal_txn_page.select_order_number()
+    portal_txn_page.enter_order_number(order_id)
+    portal_txn_page.perform_search()
+    portal_txn_page.wait_for_given_timeout(2000)
+    portal_txn_page
+    table_element = portal_txn_page.get_tables_data()
+    table_html = table_element.inner_html()
+    transaction_details = extract_table_data(table_html)
+    return transaction_details

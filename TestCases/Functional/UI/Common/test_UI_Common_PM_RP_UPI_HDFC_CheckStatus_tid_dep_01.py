@@ -8,7 +8,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter, merchant_creator
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -113,7 +113,7 @@ def test_common_100_103_157():
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             portal_driver.get(payment_link_url)
-            remote_pay_upi_txn = remotePayTxnPage(portal_driver)
+            remote_pay_upi_txn = RemotePayTxnPage(portal_driver)
             remote_pay_upi_txn.clickOnRemotePayUPI()
             remote_pay_upi_txn.clickOnRemotePayLaunchUPI()
             remote_pay_upi_txn.clickOnRemotePayCancelUPI()
@@ -549,7 +549,7 @@ def test_common_100_103_158():
             payment_link_url = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
             ui_driver.get(payment_link_url)
-            remote_pay_upi_txn = remotePayTxnPage(ui_driver)
+            remote_pay_upi_txn = RemotePayTxnPage(ui_driver)
             remote_pay_upi_txn.clickOnRemotePayUPI()
             remote_pay_upi_txn.clickOnRemotePayLaunchUPI()
             remote_pay_upi_txn.clickOnRemotePayCancelUPI()

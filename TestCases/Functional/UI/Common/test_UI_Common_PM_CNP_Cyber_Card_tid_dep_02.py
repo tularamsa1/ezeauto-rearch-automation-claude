@@ -8,7 +8,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -134,7 +134,7 @@ def test_common_100_103_151():
             logger.info("Initiating a Remote pay Link")
             ui_driver.get(payment_link_url)
             logger.info("Remote pay Link initiation completed and opening in a browser")
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.clickOnDebitCardToExpand()
             logger.info("Enter Debit card details")
             remote_pay_txn.enterNameOnTheCard("Sandeep")
@@ -656,7 +656,7 @@ def test_common_100_103_152():
             logger.info("Initiating a Remote pay Link")
             ui_driver.get(payment_link_url)
             logger.info("Remote pay Link initiation completed and opening in a browser")
-            remote_pay_txn = remotePayTxnPage(ui_driver)
+            remote_pay_txn = RemotePayTxnPage(ui_driver)
             remote_pay_txn.clickOnDebitCardToExpand()
             logger.info("Enter Debit card details")
             remote_pay_txn.enterNameOnTheCard("Sandeep")
@@ -1118,7 +1118,7 @@ def test_common_100_103_153():
                         logger.debug(f"Running with org code max attempts.")
                         ui_driver = TestSuiteSetup.initialize_portal_driver()
                         ui_driver.get(payment_link_url)
-                        remotePayTxn = remotePayTxnPage(ui_driver)
+                        remotePayTxn = RemotePayTxnPage(ui_driver)
                         remotePayTxn.clickOnCreditCardToExpand()
                         remotePayTxn.enterNameOnTheCard("Sandeep")
                         remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")
@@ -1138,7 +1138,7 @@ def test_common_100_103_153():
                     else:
                         ui_driver = TestSuiteSetup.initialize_portal_driver()
                         ui_driver.get(payment_link_url)
-                        remotePayTxn = remotePayTxnPage(ui_driver)
+                        remotePayTxn = RemotePayTxnPage(ui_driver)
                         remotePayTxn.clickOnCreditCardToExpand()
                         remotePayTxn.enterNameOnTheCard("Sandeep")
                         remotePayTxn.enterCreditCardNumber("4000 0000 0000 0002")

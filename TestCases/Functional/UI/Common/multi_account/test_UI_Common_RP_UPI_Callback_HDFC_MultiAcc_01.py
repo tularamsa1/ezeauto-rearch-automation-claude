@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     date_time_converter, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -102,12 +102,12 @@ def test_common_100_111_001():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' AND acc_label_id=(select id from label " \
@@ -545,12 +545,12 @@ def test_common_100_111_002():
                 paymentLinkUrl = response['paymentLink']
                 portal_driver.get(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
                 rp_upi_txn.clickOnRemotePayLaunchUPI()
-                logger.info("UPI txn is completed.")
+                logger.info("UPI txn is initiated.")
 
             query = "select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \
                     "'" + str(org_code) + "' AND acc_label_id=(select id from label " \

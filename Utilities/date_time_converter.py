@@ -52,3 +52,13 @@ def bump_datetime(date_from_db):
     dt_utc = datetime.strptime(dt_str1, format1)
     orignal_date = dt_utc.strftime(date_format)
     return orignal_date
+
+def to_portal_format(created_date_db):
+    date_format = "%Y-%m-%dT%H:%M:%S.%f"
+    app_format = "%d/%m/%Y, %I:%M %p"
+    dt_str1 = datetime.strptime(str(created_date_db), '%Y-%m-%dT%H:%M:%S.%f000').strftime("%Y-%m-%dT%H:%M:%S.%f")
+    dt_utc = datetime.strptime(dt_str1, date_format)
+    utc_date = dt_utc.replace(tzinfo=pytz.UTC)
+    now_asia = utc_date.astimezone(pytz.timezone('Asia/Kolkata'))
+    datetime_in_app_format = now_asia.strftime(app_format)
+    return datetime_in_app_format

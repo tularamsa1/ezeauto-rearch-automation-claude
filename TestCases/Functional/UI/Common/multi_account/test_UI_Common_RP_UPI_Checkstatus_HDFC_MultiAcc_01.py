@@ -10,7 +10,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -91,7 +91,7 @@ def test_common_100_111_005():
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
@@ -511,7 +511,7 @@ def test_common_100_111_006():
             paymentLinkUrl = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
             ui_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(ui_driver)
+            remotePayUpiTxn = RemotePayTxnPage(ui_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
@@ -901,7 +901,7 @@ def test_common_100_111_013():
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()

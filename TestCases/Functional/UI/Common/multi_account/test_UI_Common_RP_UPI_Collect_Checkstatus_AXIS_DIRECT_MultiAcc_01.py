@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -91,7 +91,7 @@ def test_common_100_111_021():
             payment_intent_id = response.get('paymentIntentId')
             logger.info("Opening the link in the browser")
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiCollectTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             logger.info("Opening UPI Collect to start the txn.")
@@ -504,7 +504,7 @@ def test_common_100_111_022():
             payment_intent_id = response.get('paymentIntentId')
             logger.info("Opening the link in the browser")
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiCollectTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             logger.info("Opening UPI Collect to start the txn.")
@@ -889,7 +889,7 @@ def test_common_100_111_028():
             payment_intent_id = response.get('paymentIntentId')
             logger.info("Opening the link in the browser")
             portal_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(portal_driver)
+            remotePayUpiCollectTxn = RemotePayTxnPage(portal_driver)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             logger.info("Opening UPI Collect to start the txn.")

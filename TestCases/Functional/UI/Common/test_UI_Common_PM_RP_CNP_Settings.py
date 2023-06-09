@@ -15,7 +15,7 @@ from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
 from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -86,6 +86,7 @@ def test_common_100_103_077():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         # Write the setup code here
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -94,6 +95,7 @@ def test_common_100_103_077():
         Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
 
+        msg=''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -113,7 +115,7 @@ def test_common_100_103_077():
             response = APIProcessor.send_request(api_details)
             paymentLinkUrl = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             logger.info("Initiating a Remote pay Link")
 
             query = "select * from payment_intent where org_code='" + org_code + "' and id ='" + payment_intent_id + "'"
@@ -138,7 +140,7 @@ def test_common_100_103_077():
             time.sleep((wait_time + 2))
 
             if wait_time < bump_time:
-                ui_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Remote pay Link initiation completed and opening in a browser")
 
             query = "select * from remotepay_setting where setting_name='rmpayBumpTime' and org_code='" + org_code + "'"
@@ -223,6 +225,7 @@ def test_common_100_103_090():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         # Write the setup code here
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------
@@ -231,6 +234,7 @@ def test_common_100_103_090():
         Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
 
+        msg=''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -284,9 +288,9 @@ def test_common_100_103_090():
             logger.info(f"Expiry time is {expiry_time}")
             logger.info(f"bump time is {bump_time}")
 
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             logger.info("Initiating a Remote pay Link")
-            ui_driver.get(paymentLinkUrl)
+            ui_browser.goto(paymentLinkUrl)
             logger.info("Remote pay Link initiation completed and opening in a browser")
             query = "select * from payment_intent where org_code='" + org_code + "' and id ='" + payment_intent_id + "'"
             logger.debug(f"Query to fetch expire_by_time from the DB : {query}")

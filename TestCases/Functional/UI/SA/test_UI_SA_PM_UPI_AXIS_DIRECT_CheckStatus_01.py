@@ -1261,6 +1261,8 @@ def test_sa_100_101_044():
             payment_page.is_payment_page_displayed(amount, order_id)
             payment_page.click_on_Upi_paymentMode()
             logger.info("Selected payment mode is UPI")
+            payment_page.validate_upi_bqr_payment_screen()
+
             logger.info("resetting the com.ezetap.basicapp")
             app_driver.reset()
             logger.info("waiting for the time till qr get expired...")
@@ -1278,6 +1280,7 @@ def test_sa_100_101_044():
             home_page.perform_check_status()
             payment_page.click_on_proceed_homepage()
             home_page.click_on_back_btn_enter_amt_page()
+            payment_page.validate_upi_bqr_payment_screen()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"

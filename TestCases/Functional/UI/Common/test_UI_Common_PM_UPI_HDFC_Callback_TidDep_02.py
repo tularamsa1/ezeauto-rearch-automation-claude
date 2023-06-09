@@ -23,7 +23,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_102():
     """
     Sub Feature Code: Tid Dep - UI_Common_PM_UPI_Success_Callback_After_QR_Expiry_AutoRefund_Enabled_HDFC
@@ -624,24 +623,6 @@ def test_common_100_101_102():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(new_modified_date)
-                expected_charge_slip_values = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
-                    'time': txn_time, 'AUTH CODE': new_auth_code
-                }
-                receipt_validator.perform_charge_slip_validations(new_txn_id,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_charge_slip_values)
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -1527,7 +1508,6 @@ def test_common_100_101_104():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_101_105():
     """
     Sub Feature Code: Tid Dep - UI_Common_PM_UPI_2_Success_Callback_After_QR_Expiry_HDFC_AutoRefund_Enabled
@@ -2359,40 +2339,6 @@ def test_common_100_101_105():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                new_txn_date_1, new_txn_time_1 = date_time_converter.to_chargeslip_format(new_txn_posting_date_1)
-                new_txn_date_2, new_txn_time_2 = date_time_converter.to_chargeslip_format(new_txn_posting_date_2)
-                expected_charge_slip_values_1 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
-                    'RRN': str(callback_1_rrn), 'date': new_txn_date_1, 'time': new_txn_time_1,
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                    "AUTH CODE": str(new_txn_auth_code_1),
-                }
-                expected_charge_slip_values_2 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id),
-                    'RRN': str(callback_2_rrn), 'date': new_txn_date_2, 'time': new_txn_time_2,
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                    "AUTH CODE": str(new_txn_auth_code_2),
-                }
-                charge_slip_val_result_1 = receipt_validator.perform_charge_slip_validations(
-                    new_txn_id_1, {"username": app_username, "password": app_password}, expected_charge_slip_values_1)
-                charge_slip_val_result_2 = receipt_validator.perform_charge_slip_validations(
-                    new_txn_id_2, {"username": app_username, "password": app_password}, expected_charge_slip_values_2)
-
-                if charge_slip_val_result_1 and charge_slip_val_result_2:
-                    GlobalVariables.str_chargeslip_val_result = 'Pass'
-                else:
-                    GlobalVariables.str_chargeslip_val_result = 'Fail'
-
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

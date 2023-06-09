@@ -518,7 +518,7 @@ def test_common_100_101_175():
     """
     Sub Feature Code: Tid Dep - UI_Common_PM_UPI_2_Success_Callback_After_QR_Expiry_KOTAK_ATOS
     Sub Feature Description: Tid Dep - Verification of a successful upi txn using 2 UPI Success Callback after QR expiry via Kotak_ATOS
-    TC naming code description: 100: Payment method, 101: UPI, 164: Testcase ID
+    TC naming code description: 100: Payment method, 101: UPI, 175: Testcase ID
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -736,6 +736,42 @@ def test_common_100_101_175():
             logger.debug(f"Fetching txn_type from the txn table from second callback is : {txn_type_3}")
             created_time_3 = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table from second callback is : {created_time_3}")
+            status_db_3 = result["status"].iloc[0]
+            logger.debug(f"Fetching actual db status value from the txn table for second callback : {status_db_3}")
+            payment_mode_db_3 = result["payment_mode"].iloc[0]
+            logger.debug(
+                f"Fetching actual db payment_mode value from the txn table for second callback : {payment_mode_db_3}")
+            amount_db_3 = int(result["amount"].iloc[0])
+            logger.debug(f"Fetching actual db amount value from the txn table for second callback : {amount_db_3}")
+            state_db_3 = result["state"].iloc[0]
+            logger.debug(f"Fetching actual db state value from the txn table for second callback : {state_db_3}")
+            payment_gateway_db_3 = result["payment_gateway"].iloc[0]
+            logger.debug(
+                f"Fetching actual db payment_gateway value from the txn table for second callback : {payment_gateway_db_3}")
+            acquirer_code_db_3 = result["acquirer_code"].iloc[0]
+            logger.debug(
+                f"Fetching actual db acquirer_code value from the txn table for second callback : {acquirer_code_db_3}")
+            settlement_status_db_3 = result["settlement_status"].iloc[0]
+            logger.debug(
+                f"Fetching actual db settlement_status value from the txn table for second callback : {settlement_status_db_3}")
+            bank_code_db_3 = result["bank_code"].iloc[0]
+            logger.debug(
+                f"Fetching actual db bank_code value from the txn table for second callback : {bank_code_db_3}")
+            mid_db_3 = result['mid'].values[0]
+            logger.debug(f"Fetching actual db mid value from the txn table for second callback : {mid_db_3}")
+            tid_db_3 = result['tid'].values[0]
+            logger.debug(f"Fetching actual db tid value from the txn table for second callback : {tid_db_3}")
+            bank_name_db_3 = result["bank_name"].iloc[0]
+            logger.debug(
+                f"Fetching actual db bank_name value from the txn table for second callback : {bank_name_db_3}")
+            payer_name_db_3 = result['payer_name'].values[0]
+            logger.debug(
+                f"Fetching actual db payer_name value from the txn table for second callback : {payer_name_db_3}")
+            rrn_db_3 = result['rr_number'].values[0]
+            logger.debug(f"Fetching actual db rr_number value from the txn table for second callback : {rrn_db_3}")
+            device_serial_db_3 = result['device_serial'].values[0]
+            logger.debug(
+                f"Fetching actual db device_serial value from the txn table for second callback : {device_serial_db_3}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1326,39 +1362,6 @@ def test_common_100_101_175():
                 logger.debug(f"Fetching actual db bank_code value from the upi_txn table for first callback : {upi_bank_code_db_2}")
                 upi_mc_id_db_2 = result["upi_mc_id"].iloc[0]
                 logger.debug(f"Fetching actual db upi_mc_id value from the upi_txn table for first callback : {upi_mc_id_db_2}")
-
-                query = "select * from txn where id='" + txn_id_3 + "';"
-                logger.debug(f"Query to fetch data for actual db values from txn table for second callback : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result for actual db values from txn table for second callback : {result}")
-                status_db_3 = result["status"].iloc[0]
-                logger.debug(f"Fetching actual db status value from the txn table for second callback : {status_db_3}")
-                payment_mode_db_3 = result["payment_mode"].iloc[0]
-                logger.debug(f"Fetching actual db payment_mode value from the txn table for second callback : {payment_mode_db_3}")
-                amount_db_3 = int(result["amount"].iloc[0])
-                logger.debug(f"Fetching actual db amount value from the txn table for second callback : {amount_db_3}")
-                state_db_3 = result["state"].iloc[0]
-                logger.debug(f"Fetching actual db state value from the txn table for second callback : {state_db_3}")
-                payment_gateway_db_3 = result["payment_gateway"].iloc[0]
-                logger.debug(f"Fetching actual db payment_gateway value from the txn table for second callback : {payment_gateway_db_3}")
-                acquirer_code_db_3 = result["acquirer_code"].iloc[0]
-                logger.debug(f"Fetching actual db acquirer_code value from the txn table for second callback : {acquirer_code_db_3}")
-                settlement_status_db_3 = result["settlement_status"].iloc[0]
-                logger.debug(f"Fetching actual db settlement_status value from the txn table for second callback : {settlement_status_db_3}")
-                bank_code_db_3 = result["bank_code"].iloc[0]
-                logger.debug(f"Fetching actual db bank_code value from the txn table for second callback : {bank_code_db_3}")
-                mid_db_3 = result['mid'].values[0]
-                logger.debug(f"Fetching actual db mid value from the txn table for second callback : {mid_db_3}")
-                tid_db_3 = result['tid'].values[0]
-                logger.debug(f"Fetching actual db tid value from the txn table for second callback : {tid_db_3}")
-                bank_name_db_3 = result["bank_name"].iloc[0]
-                logger.debug(f"Fetching actual db bank_name value from the txn table for second callback : {bank_name_db_3}")
-                payer_name_db_3 = result['payer_name'].values[0]
-                logger.debug(f"Fetching actual db payer_name value from the txn table for second callback : {payer_name_db_3}")
-                rrn_db_3 = result['rr_number'].values[0]
-                logger.debug(f"Fetching actual db rr_number value from the txn table for second callback : {rrn_db_3}")
-                device_serial_db_3 = result['device_serial'].values[0]
-                logger.debug(f"Fetching actual db device_serial value from the txn table for second callback : {device_serial_db_3}")
 
                 query = "select * from upi_txn where txn_id='" + txn_id_3 + "';"
                 logger.debug(f"Query to fetch data for actual db values from upi_txn table for second callback : {query}")
