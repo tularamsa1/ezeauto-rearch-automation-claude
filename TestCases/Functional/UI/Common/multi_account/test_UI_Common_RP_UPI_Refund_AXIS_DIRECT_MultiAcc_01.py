@@ -7,9 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     date_time_converter, receipt_validator
@@ -532,10 +530,10 @@ def test_common_100_111_023():
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            refunded_date_time = date_time_converter.to_portal_format(posting_date)
-            original_date_time = date_time_converter.to_portal_format(created_time_original)
-
             try:
+                refunded_date_time = date_time_converter.to_portal_format(posting_date)
+                original_date_time = date_time_converter.to_portal_format(created_time_original)
+
                 expected_portal_values = {
                     "date_time" : original_date_time,
                     "pmt_state": "AUTHORIZED_REFUNDED",
@@ -546,13 +544,13 @@ def test_common_100_111_023():
                     "rrn": rrn_original,
                     "acct_label": account_label_name,
 
-                    "date_time_1": refunded_date_time,
-                    "pmt_state_1": "REFUNDED",
-                    "pmt_type_1": "UPI",
-                    "txn_amt_1": str(amount) + ".00",
-                    "txn_id_1": txn_id_refunded,
-                    "username_1": app_username,
-                    "acct_label_1": account_label_name
+                    "date_time_2": refunded_date_time,
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": str(amount) + ".00",
+                    "txn_id_2": txn_id_refunded,
+                    "username_2": app_username,
+                    "acct_label_2": account_label_name
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -560,26 +558,19 @@ def test_common_100_111_023():
                 date_time = transaction_details[1]['Date & Time']
                 transaction_id = transaction_details[1]['Transaction ID']
                 total_amount = transaction_details[1]['Total Amount'].split()
-                mobile_no = transaction_details[1]['Mobile No.']
-                auth_code = transaction_details[1]['Auth Code']
                 rr_number = transaction_details[1]['RR Number']
                 transaction_type = transaction_details[1]['Type']
                 status = transaction_details[1]['Status']
                 username = transaction_details[1]['Username']
                 labels = transaction_details[1]['Labels']
-                hierarchy = transaction_details[1]['Hierarchy']
 
                 date_time_1 = transaction_details[0]['Date & Time']
                 transaction_id_1 = transaction_details[0]['Transaction ID']
                 total_amount_1 = transaction_details[0]['Total Amount'].split()
-                mobile_no_1 = transaction_details[0]['Mobile No.']
-                auth_code_1 = transaction_details[0]['Auth Code']
-                rr_number_1 = transaction_details[0]['RR Number']
                 transaction_type_1 = transaction_details[0]['Type']
                 status_1 = transaction_details[0]['Status']
                 username_1 = transaction_details[0]['Username']
                 labels_1 = transaction_details[0]['Labels']
-                hierarchy_1 = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time" : date_time,
@@ -591,13 +582,13 @@ def test_common_100_111_023():
                     "rrn": rr_number,
                     "acct_label": labels,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "txn_id_1": transaction_id_1,
-                    "username_1": username_1,
-                    "acct_label_1": labels_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "txn_id_2": transaction_id_1,
+                    "username_2": username_1,
+                    "acct_label_2": labels_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -607,8 +598,6 @@ def test_common_100_111_023():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-        # -----------------------------------------End of Portal Validation---------------------------------------
-
         # -----------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
@@ -641,8 +630,6 @@ def test_common_100_111_023():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
@@ -1161,14 +1148,13 @@ def test_common_100_111_024():
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
 
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            date_and_time_portal = date_time_converter.to_portal_format(created_time_original)
-            date_and_time_portal_1 = date_time_converter.to_portal_format(posting_date)
-
             try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time_original)
+                date_and_time_portal_1 = date_time_converter.to_portal_format(posting_date)
+
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
@@ -1179,13 +1165,13 @@ def test_common_100_111_024():
                     "rrn": rrn_original,
                     "acct_label": account_label_name,
 
-                    "date_time_1": date_and_time_portal_1,
-                    "pmt_state_1": "REFUNDED",
-                    "pmt_type_1": "UPI",
-                    "txn_amt_1": str(refunded_amount) + ".00",
-                    "txn_id_1": txn_id_refunded,
-                    "username_1": app_username,
-                    "acct_label_1": account_label_name
+                    "date_time_2": date_and_time_portal_1,
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": str(refunded_amount) + ".00",
+                    "txn_id_2": txn_id_refunded,
+                    "username_2": app_username,
+                    "acct_label_2": account_label_name
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1193,26 +1179,19 @@ def test_common_100_111_024():
                 date_time = transaction_details[1]['Date & Time']
                 transaction_id = transaction_details[1]['Transaction ID']
                 total_amount = transaction_details[1]['Total Amount'].split()
-                mobile_no = transaction_details[1]['Mobile No.']
-                auth_code = transaction_details[1]['Auth Code']
                 rr_number = transaction_details[1]['RR Number']
                 transaction_type = transaction_details[1]['Type']
                 status = transaction_details[1]['Status']
                 username = transaction_details[1]['Username']
                 labels = transaction_details[1]['Labels']
-                hierarchy = transaction_details[1]['Hierarchy']
 
                 date_time_1 = transaction_details[0]['Date & Time']
                 transaction_id_1 = transaction_details[0]['Transaction ID']
                 total_amount_1 = transaction_details[0]['Total Amount'].split()
-                mobile_no_1 = transaction_details[0]['Mobile No.']
-                auth_code_1 = transaction_details[0]['Auth Code']
-                rr_number_1 = transaction_details[0]['RR Number']
                 transaction_type_1 = transaction_details[0]['Type']
                 status_1 = transaction_details[0]['Status']
                 username_1 = transaction_details[0]['Username']
                 labels_1 = transaction_details[0]['Labels']
-                hierarchy_1 = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -1224,13 +1203,13 @@ def test_common_100_111_024():
                     "rrn": rr_number,
                     "acct_label": labels,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "txn_id_1": transaction_id_1,
-                    "username_1": username_1,
-                    "acct_label_1": labels_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "txn_id_2": transaction_id_1,
+                    "username_2": username_1,
+                    "acct_label_2": labels_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -1241,7 +1220,6 @@ def test_common_100_111_024():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")

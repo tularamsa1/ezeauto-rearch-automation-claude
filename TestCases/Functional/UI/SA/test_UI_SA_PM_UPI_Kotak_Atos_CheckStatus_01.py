@@ -21,6 +21,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 def test_sa_100_101_169():
     """
     Sub Feature Code: UI_SA_PM_UPI_SA_CheckStatus_After_Expiry_KOTAK_ATOS

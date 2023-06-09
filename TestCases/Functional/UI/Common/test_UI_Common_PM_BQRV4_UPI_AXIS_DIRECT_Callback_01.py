@@ -1,20 +1,16 @@
 import random
-import shutil
 import sys
 import time
 from datetime import datetime
 import pytest
-from termcolor import colored
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
-from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, receipt_validator, date_time_converter
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, receipt_validator, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -1643,13 +1639,13 @@ def test_common_100_102_170():
                     "username": app_username,
                     "txn_id": txn_id,
 
-                    "date_time_1": date_and_time_portal_1,
-                    "pmt_state_1": "AUTHORIZED",
-                    "pmt_type_1": "UPI",
-                    "txn_amt_1": f"{str(amount)}.00",
-                    "username_1": app_username,
-                    "txn_id_1": txn_id_2,
-                    "rrn_1": str(rrn_2)
+                    "date_time_2": date_and_time_portal_1,
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_2,
+                    "rrn_2": str(rrn_2)
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1677,13 +1673,13 @@ def test_common_100_102_170():
                     "username": username,
                     "txn_id": transaction_id,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "username_1": username_1,
-                    "txn_id_1": transaction_id_1,
-                    "rrn_1": rr_number_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "rrn_2": rr_number_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -2998,13 +2994,13 @@ def test_common_100_102_172():
                     "username": app_username,
                     "txn_id": txn_id,
 
-                    "date_time_1": date_and_time_portal_1,
-                    "pmt_state_1": "REFUND_PENDING",
-                    "pmt_type_1": "UPI",
-                    "txn_amt_1": f"{str(amount)}.00",
-                    "username_1": app_username,
-                    "txn_id_1": txn_id_2,
-                    "rrn_1": str(rrn_2)
+                    "date_time_2": date_and_time_portal_1,
+                    "pmt_state_2": "REFUND_PENDING",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_2,
+                    "rrn_2": str(rrn_2)
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -3019,7 +3015,6 @@ def test_common_100_102_172():
                 date_time_1 = transaction_details[0]['Date & Time']
                 transaction_id_1 = transaction_details[0]['Transaction ID']
                 total_amount_1 = transaction_details[0]['Total Amount'].split()
-                auth_code_portal_1 = transaction_details[0]['Auth Code']
                 rr_number_1 = transaction_details[0]['RR Number']
                 transaction_type_1 = transaction_details[0]['Type']
                 status_1 = transaction_details[0]['Status']
@@ -3033,13 +3028,13 @@ def test_common_100_102_172():
                     "username": username,
                     "txn_id": transaction_id,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "username_1": username_1,
-                    "txn_id_1": transaction_id_1,
-                    "rrn_1": rr_number_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "rrn_2": rr_number_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -3057,5 +3052,3 @@ def test_common_100_102_172():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-

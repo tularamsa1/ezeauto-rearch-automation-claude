@@ -611,14 +611,14 @@ def test_common_100_109_014():
                     "rrn": rrn_original,
                     "acct_label": account_label_name,
 
-                    "date_time_1": date_and_time_portal_1,
-                    "pmt_state_1": "REFUNDED",
-                    "pmt_type_1": "UPI",
-                    "txn_amt_1": f"{str(amount)}.00",
-                    "username_1": app_username,
-                    "txn_id_1": txn_id_refunded,
-                    "rrn_1": rrn_refunded,
-                    "acct_label_1": account_label_name
+                    "date_time_2": date_and_time_portal_1,
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_refunded,
+                    "rrn_2": rrn_refunded,
+                    "acct_label_2": account_label_name
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -630,7 +630,6 @@ def test_common_100_109_014():
                 transaction_type = transaction_details[1]['Type']
                 status = transaction_details[1]['Status']
                 username = transaction_details[1]['Username']
-                auth_code_portal = transaction_details[1]['Auth Code']
                 labels = transaction_details[1]['Labels']
 
                 date_time_1 = transaction_details[0]['Date & Time']
@@ -640,7 +639,6 @@ def test_common_100_109_014():
                 transaction_type_1 = transaction_details[0]['Type']
                 status_1 = transaction_details[0]['Status']
                 username_1 = transaction_details[0]['Username']
-                auth_code_portal_1 = transaction_details[0]['Auth Code']
                 labels_1 = transaction_details[0]['Labels']
 
                 actual_portal_values = {
@@ -653,14 +651,14 @@ def test_common_100_109_014():
                     "rrn": rr_number,
                     "acct_label": labels,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "username_1": username_1,
-                    "txn_id_1": transaction_id_1,
-                    "rrn_1": rr_number_1,
-                    "acct_label_1": labels_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "rrn_2": rr_number_1,
+                    "acct_label_2": labels_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -1176,7 +1174,6 @@ def test_common_100_109_015():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
         # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -1288,7 +1285,6 @@ def test_common_100_109_015():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -1305,14 +1301,14 @@ def test_common_100_109_015():
                     "rrn": str(rrn),
                     "acct_label": account_label_name,
 
-                    "date_time_1": date_and_time_portal_1,
-                    "pmt_state_1": "REFUNDED",
-                    "pmt_type_1": "UPI",
-                    "txn_amt_1": f"{str(refund_amount)}.00",
-                    "username_1": app_username,
-                    "txn_id_1": refund_txn_id,
-                    "rrn_1": refund_rrn,
-                    "acct_label_1": account_label_name
+                    "date_time_2": date_and_time_portal_1,
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(refund_amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": refund_txn_id,
+                    "rrn_2": refund_rrn,
+                    "acct_label_2": account_label_name
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1324,7 +1320,6 @@ def test_common_100_109_015():
                 transaction_type = transaction_details[1]['Type']
                 status = transaction_details[1]['Status']
                 username = transaction_details[1]['Username']
-                auth_code_portal = transaction_details[1]['Auth Code']
                 labels = transaction_details[1]['Labels']
 
                 date_time_1 = transaction_details[0]['Date & Time']
@@ -1334,7 +1329,6 @@ def test_common_100_109_015():
                 transaction_type_1 = transaction_details[0]['Type']
                 status_1 = transaction_details[0]['Status']
                 username_1 = transaction_details[0]['Username']
-                auth_code_portal_1 = transaction_details[0]['Auth Code']
                 labels_1 = transaction_details[0]['Labels']
 
                 actual_portal_values = {
@@ -1347,14 +1341,14 @@ def test_common_100_109_015():
                     "rrn": rr_number,
                     "acct_label": labels,
 
-                    "date_time_1": date_time_1,
-                    "pmt_state_1": str(status_1),
-                    "pmt_type_1": transaction_type_1,
-                    "txn_amt_1": total_amount_1[1],
-                    "username_1": username_1,
-                    "txn_id_1": transaction_id_1,
-                    "rrn_1": rr_number_1,
-                    "acct_label_1": labels_1
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "rrn_2": rr_number_1,
+                    "acct_label_2": labels_1
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -1365,7 +1359,6 @@ def test_common_100_109_015():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
