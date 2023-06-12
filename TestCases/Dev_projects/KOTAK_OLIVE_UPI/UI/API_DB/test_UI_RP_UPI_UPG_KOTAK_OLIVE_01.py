@@ -6,7 +6,7 @@ import pytest
 
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -69,7 +69,7 @@ def test_d103_103_016():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -105,11 +105,11 @@ def test_d103_103_016():
             if not response['success']:
                 raise Exception("Api could not initiate a cnp txn.")
             else:
-                ui_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                ui_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                remote_pay_upi_txn = remotePayTxnPage(ui_driver)
+                remote_pay_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 remote_pay_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
