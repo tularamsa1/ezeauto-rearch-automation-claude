@@ -6,7 +6,7 @@ import pytest
 
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -65,12 +65,12 @@ def test_d103_103_023():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -90,12 +90,12 @@ def test_d103_103_023():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for Remotepay_Initiate : {response}")
 
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             paymentLinkUrl = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             logger.info("Opening the link in the browser")
-            ui_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+            ui_browser.goto(paymentLinkUrl)
+            remotePayUpiCollectTxn = RemotePayTxnPage(ui_browser)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             logger.info("Opening UPI Collect to start the txn.")
@@ -448,12 +448,12 @@ def test_d103_103_024():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -473,12 +473,12 @@ def test_d103_103_024():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response received for Remotepay_Initiate : {response}")
 
-            ui_driver = TestSuiteSetup.initialize_portal_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             paymentLinkUrl = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             logger.info("Opening the link in the browser")
-            ui_driver.get(paymentLinkUrl)
-            remotePayUpiCollectTxn = remotePayTxnPage(ui_driver)
+            ui_browser.goto(paymentLinkUrl)
+            remotePayUpiCollectTxn = RemotePayTxnPage(ui_browser)
             remotePayUpiCollectTxn.clickOnRemotePayUPI()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollect()
             logger.info("Opening UPI Collect to start the txn.")

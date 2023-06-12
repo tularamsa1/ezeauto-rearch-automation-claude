@@ -6,7 +6,7 @@ import pytest
 
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
-from PageFactory.portal_remotePayPage import remotePayTxnPage
+from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -69,7 +69,7 @@ def test_d103_103_008():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -97,11 +97,11 @@ def test_d103_103_008():
             if not response['success']:
                 raise Exception("Api could not initiate a cnp txn.")
             else:
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_page = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_page.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_page)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -377,7 +377,7 @@ def test_d103_103_009():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -406,11 +406,11 @@ def test_d103_103_009():
                 raise Exception("Api could not initiate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -686,7 +686,7 @@ def test_d103_103_010():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -715,11 +715,11 @@ def test_d103_103_010():
                 raise Exception("Api could not initiate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -995,7 +995,7 @@ def test_d103_103_011():
         logger.debug(f"fetched tid : {tid}")
         mid = result['mid'].values[0]
         logger.debug(f"fetched mid : {mid}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1024,11 +1024,11 @@ def test_d103_103_011():
                 raise Exception("Api could not initiate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = remotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
