@@ -6,6 +6,7 @@ import requests
 import json
 from Configuration import testsuite_teardown, Configuration
 from DataProvider import GlobalVariables
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import ResourceAssigner, DBProcessor, APIProcessor, ConfigReader, Validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -173,6 +174,7 @@ def test_common_100_108_001():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
