@@ -566,7 +566,7 @@ def test_common_100_101_206():
                     "date_time": date_and_time_portal,
                     "pmt_state": "UPG_AUTHORIZED",
                     "pmt_type": "UPI",
-                    "txn_amt": f"{str(amount)}",
+                    "txn_amt": f"{str(amount)}.00",
                     "username": "EZETAP",
                     "txn_id": ipr_txn_id,
                     "rrn": str(rrn),
