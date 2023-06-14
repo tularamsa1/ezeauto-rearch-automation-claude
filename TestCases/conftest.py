@@ -536,6 +536,10 @@ def method_setup(request, playwright: Playwright):
             print("closing context")
             GlobalVariables.context.close()
             GlobalVariables.context = ''
+        if GlobalVariables.browser != '':
+            print("closing browser")
+            GlobalVariables.browser.close()
+            GlobalVariables.browser = ''
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
@@ -737,6 +741,26 @@ def ss_on_failure(request):
             GlobalVariables.charge_slip_driver.quit()
             GlobalVariables.charge_slip_driver = ''
 
+        if GlobalVariables.charge_slip_page != '':
+            print("closing chargeslip page")
+            GlobalVariables.charge_slip_page.close()
+            GlobalVariables.charge_slip_page = ''
+        if GlobalVariables.ui_page != '':
+            print("closing ui_page")
+            GlobalVariables.ui_page.close()
+            GlobalVariables.ui_page = ''
+        if GlobalVariables.portal_page != '':
+            print("closing portal_page")
+            GlobalVariables.portal_page.close()
+            GlobalVariables.portal_page = ''
+        if GlobalVariables.context != '':
+            print("closing context")
+            GlobalVariables.context.close()
+            GlobalVariables.context = ''
+        if GlobalVariables.browser != '':
+            print("closing browser")
+            GlobalVariables.browser.close()
+            GlobalVariables.browser = ''
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
 
@@ -1111,6 +1135,27 @@ def ss_on_success(request):
         if GlobalVariables.charge_slip_driver != '':
             GlobalVariables.charge_slip_driver.quit()
             GlobalVariables.charge_slip_driver = ''
+
+        if GlobalVariables.charge_slip_page != '':
+            print("closing chargeslip page")
+            GlobalVariables.charge_slip_page.close()
+            GlobalVariables.charge_slip_page = ''
+        if GlobalVariables.ui_page != '':
+            print("closing ui_page")
+            GlobalVariables.ui_page.close()
+            GlobalVariables.ui_page = ''
+        if GlobalVariables.portal_page != '':
+            print("closing portal_page")
+            GlobalVariables.portal_page.close()
+            GlobalVariables.portal_page = ''
+        if GlobalVariables.context != '':
+            print("closing context")
+            GlobalVariables.context.close()
+            GlobalVariables.context = ''
+        if GlobalVariables.browser != '':
+            print("closing browser")
+            GlobalVariables.browser.close()
+            GlobalVariables.browser = ''
 
         GlobalVariables.bool_ss_portal_val = "N/A"
         GlobalVariables.bool_ss_app_val = "N/A"
