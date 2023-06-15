@@ -26,3 +26,18 @@ WebDriver BiDi listening on ws://127.0.0.1:55651
 console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileL8cXDp/search.json.mozlz4", (void 0)))
 DevTools listening on ws://127.0.0.1:55651/devtools/browser/8d10d997-64cf-43c6-8572-996a8a68687d
 1676890887749	Marionette	INFO	Stopped listening on port 42277
+1686557684066	geckodriver	INFO	Listening on 127.0.0.1:55785
+1686557684567	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "41935" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileBHY8Ri"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1686557685831	Marionette	INFO	Marionette enabled
+1686557685835	Marionette	INFO	Listening on port 46027
+Read port: 46027
+WebDriver BiDi listening on ws://127.0.0.1:41935
+1686557686045	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:41935/devtools/browser/d9b7aee7-8036-4453-ad81-6f97dd5b4246
+1686557688238	Marionette	INFO	Stopped listening on port 46027
