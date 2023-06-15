@@ -2,9 +2,9 @@ import sys
 
 import pytest
 
-from Configuration import Configuration
+from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
-from Utilities import Validator, ReportProcessor, ConfigReader, receipt_validator
+from Utilities import Validator, ConfigReader, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -42,7 +42,7 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         # Write the setup code here
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------

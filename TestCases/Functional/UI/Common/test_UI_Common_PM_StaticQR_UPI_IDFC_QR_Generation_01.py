@@ -4,7 +4,7 @@ import sys
 import pytest
 import requests
 import json
-from Configuration import Configuration, testsuite_teardown
+from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
 from Utilities import Validator, DBProcessor, ConfigReader, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -647,7 +647,7 @@ def test_common_100_107_027():
         logger.info(f"fetched tid is : {db_upi_config_tid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------------------
