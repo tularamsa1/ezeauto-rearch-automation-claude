@@ -557,6 +557,8 @@ def test_common_100_103_039():
             logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Query result, db date from db : {posting_date}")
+            created_time=result['created_time'].values[0]
+            logger.debug(f"Query result, created_time date from db : {created_time}")
 
             query = "select * from cnp_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -814,38 +816,44 @@ def test_common_100_103_039():
             # -----------------------------------------End of DB Validation---------------------------------------
             # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                logger.info(f"Started Portal validation for the test case : {testcase_id}")
-                expectedPortalValues = {"pmt_state": "Settled",
-                                        "pmt_type": "CNP",
-                                        "txn_amt": "Rs." + str(amount) + ".00",
-                                        "username": app_username}
-                logger.debug(f"expectedPortalValues : {expectedPortalValues}")
-                portal_driver = GlobalVariables.portalDriver
-                loginPagePortal = PortalLoginPage(portal_driver)
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                loginPagePortal.perform_login_to_portal(portal_username, portal_password)
-                homePagePortal = PortalHomePage(portal_driver)
-                homePagePortal.search_merchant_name(str(org_code))
-                logger.debug(f"searching for the org_code : {str(org_code)}")
-                homePagePortal.click_switch_button(str(org_code))
-                homePagePortal.perform_merchant_switched_verfication()
-                homePagePortal.click_transaction_search_menu()
-                portalTransHistoryPage = PortalTransHistoryPage(portal_driver)
-                portalValuesDict = portalTransHistoryPage.get_transaction_details_for_portal(txn_id)
-                portalType = portalValuesDict['Type']
-                portalStatus = portalValuesDict['Status']
-                portalAmount = portalValuesDict['Total Amount']
-                portalUsername = portalValuesDict['Username']
-                actualPortalValues = {"Payment State": str(portalStatus), "Payment Type": portalType,
-                                      "Amount": portalAmount, "Username": portalUsername}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "FAILED",
+                    "pmt_type": "CNP",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id
+                }
+
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
             # -----------------------------------------End of Portal Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")

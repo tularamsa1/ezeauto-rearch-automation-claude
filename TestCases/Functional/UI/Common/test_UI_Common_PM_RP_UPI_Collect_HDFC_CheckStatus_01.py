@@ -1625,12 +1625,6 @@ def test_common_100_103_089():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                    order_id) + "' order by created_time desc limit 1"
-                logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                original_rrn = result['rr_number'].values[0]
-                logger.debug(f"Query result, original_txn_id and original_rrn : {original_txn_id} and {original_rrn}")
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "FAILED",
@@ -1647,14 +1641,11 @@ def test_common_100_103_089():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
                 auth_code = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "date_time": date_time,
