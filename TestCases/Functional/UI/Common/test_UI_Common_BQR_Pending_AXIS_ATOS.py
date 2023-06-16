@@ -170,7 +170,7 @@ def test_common_100_102_209():
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                # app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)

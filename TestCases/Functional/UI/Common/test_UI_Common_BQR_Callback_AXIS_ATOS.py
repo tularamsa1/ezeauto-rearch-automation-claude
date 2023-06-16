@@ -139,6 +139,7 @@ def test_common_100_102_195():
             rrn = result['rr_number'].iloc[0]
             created_time = result['created_time'].values[0]
             customer_name = result['customer_name'].values[0]
+            external_ref = result['external_ref'].values[0]
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Fetching auth_code, rrn, created_time, customer name and payer name from database for "
                          f"current merchant:{auth_code}, {rrn}, {created_time}, {customer_name}, {payer_name}")
@@ -357,7 +358,7 @@ def test_common_100_102_195():
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password,
-                                                                         order_id)
+                                                                         external_ref)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()

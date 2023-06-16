@@ -717,9 +717,7 @@ def test_common_100_102_193():
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -807,7 +805,6 @@ def test_common_100_102_193():
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-                    #"customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT SUCCESSFUL",
@@ -818,12 +815,9 @@ def test_common_100_102_193():
                     "txn_amt_2": "{:.2f}".format(amount),
                     "settle_status_2": "REVPENDING",
                     "txn_id_2": txn_id_new_2,
-                    #"rrn_2": str(rrn_new_2),
-                    #"customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
                     "payment_msg_2": "PAYMENT SUCCESSFUL",
-                    #"auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -850,8 +844,6 @@ def test_common_100_102_193():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
-                # logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
@@ -871,8 +863,6 @@ def test_common_100_102_193():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id_new_2}, {payment_status_new_2}")
                 app_date_and_time_new_2 = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id_new_2}, {app_date_and_time_new_2}")
-                # app_auth_code_new_2 = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id_new_2}, {app_auth_code_new_2}")
                 payment_mode_new_2 = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment mode from txn history for the txn : {txn_id_new_2}, {payment_mode_new_2}")
@@ -880,9 +870,6 @@ def test_common_100_102_193():
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id_new_2}, {app_txn_id_new_2}")
                 app_amount_new_2 = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id_new_2}, {app_amount_new_2}")
-                # app_customer_name_new_2 = txn_history_page.fetch_customer_name_text()
-                # logger.info(
-                #     f"Fetching txn customer name from txn history for the txn : {txn_id_new_2}, {app_customer_name_new_2}")
                 app_settlement_status_new_2 = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id_new_2}, {app_settlement_status_new_2}")
@@ -895,16 +882,12 @@ def test_common_100_102_193():
                 app_order_id_new_2 = txn_history_page.fetch_order_id_text()
                 logger.info(
                     f"Fetching txn order_id from txn history for the txn : {txn_id_new_2}, {app_order_id_new_2}")
-                # app_rrn_new_2 = txn_history_page.fetch_RRN_text()
-                # logger.info(
-                #     f"Fetching txn_id from txn history for the txn : {txn_id_new_2}, {app_rrn_new_2}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
                 actual_app_values = {"pmt_mode": payment_mode,
                                      "pmt_status": payment_status.split(':')[1],
                                      "txn_amt": app_amount.split(' ')[1],
                                      "txn_id": app_txn_id,
                                      "rrn": str(app_rrn),
-                                     #"customer_name": app_customer_name,
                                      "settle_status": app_settlement_status,
                                      "payer_name": app_payer_name,
                                      "order_id": app_order_id,
@@ -915,13 +898,10 @@ def test_common_100_102_193():
                                      "pmt_status_2": payment_status_new_2.split(':')[1],
                                      "txn_amt_2": app_amount_new_2.split(' ')[1],
                                      "txn_id_2": app_txn_id_new_2,
-                                     #"rrn_2": str(app_rrn_new_2),
-                                     #"customer_name_2": app_customer_name_new_2,
                                      "settle_status_2": app_settlement_status_new_2,
                                      "payer_name_2": app_payer_name_new_2,
                                      "order_id_2": app_order_id_new_2,
                                      "payment_msg_2": app_payment_msg_new_2,
-                                     #"auth_code_2": app_auth_code_new_2,
                                      "date_2": app_date_and_time_new_2
                                      }
                 logger.debug(f"actual_app_values: {actual_app_values}")
