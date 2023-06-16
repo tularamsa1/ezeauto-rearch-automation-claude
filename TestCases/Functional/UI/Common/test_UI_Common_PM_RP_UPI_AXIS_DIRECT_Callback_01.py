@@ -1000,10 +1000,9 @@ def test_common_100_103_082():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
 
-        msg=''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -1392,14 +1391,9 @@ def test_common_100_103_082():
                     date_time = transaction_details[1]['Date & Time']
                     transaction_id = transaction_details[1]['Transaction ID']
                     total_amount = transaction_details[1]['Total Amount'].split()
-                    mobile_no = transaction_details[1]['Mobile No.']
-                    auth_code = transaction_details[1]['Auth Code']
-                    rr_number = transaction_details[1]['RR Number']
                     transaction_type = transaction_details[1]['Type']
                     status = transaction_details[1]['Status']
                     username = transaction_details[1]['Username']
-                    labels = transaction_details[1]['Labels']
-                    hierarchy = transaction_details[1]['Hierarchy']
 
                     actual_portal_values = {
                         "date_time": date_time,
@@ -1415,12 +1409,7 @@ def test_common_100_103_082():
                     Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                     actualPortal=actual_portal_values)
                 except Exception as e:
-                    ReportProcessor.capture_ss_when_portal_val_exe_failed()
-                    print("Portal Validation failed due to exception - " + str(e))
-                    logger.exception(f"Portal Validation failed due to exception : {e}")
-                    msg = msg + "Portal Validation did not complete due to exception.\n"
-                    GlobalVariables.bool_val_exe = False
-                    GlobalVariables.str_portal_val_result = 'Fail'
+                    Configuration.perform_portal_val_exception(testcase_id, e)
                 logger.info(f"Completed Portal validation for the test case : {testcase_id}")
             # -----------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------

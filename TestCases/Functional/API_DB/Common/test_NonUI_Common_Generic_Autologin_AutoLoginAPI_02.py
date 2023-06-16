@@ -64,7 +64,7 @@ def test_common_400_401_032():  # Make sure to add the test case name as same as
 
         if result.empty:
             # If the merchant doesn't have entries in org_subscription table, creating one entry with new deviceIdentifier
-            expected_deviceIdentifier =  random.randint(10000,99999)
+            expected_deviceIdentifier =  random.randint(-10000,99999)
             create_sub_id_in_DB = DBProcessor.get_api_details('login_autologin',
                                                             request_body={
                                                                 "username": app_username,

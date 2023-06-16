@@ -176,7 +176,7 @@ def test_common_100_103_113():
             logger.debug(f"Response received from refund api when refund amount is greater than original amount : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id ='" + str(
-                original_txn_id) + "' order by created_time limit 1"
+                original_txn_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of fully refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             fully_refunded_txn_id = result["id"].iloc[0]
@@ -837,7 +837,7 @@ def test_common_100_103_113():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(partially_refunded_posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(partially_refunded_created_time)
                 expected_chargeslip_values = {'PAID BY:': 'UPI',
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
                                               # 'RRN': str(partially_refunded_rrn),
@@ -1024,7 +1024,7 @@ def test_common_100_103_114():
                 f"Response received from refund api when refund amount is greater than original amount : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id ='" + str(
-                original_txn_id) + "' order by created_time limit 1"
+                original_txn_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of fully refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             fully_refunded_txn_id = result["id"].iloc[0]
@@ -1596,14 +1596,14 @@ def test_common_100_103_114():
 
                     "pmt_state_2": "REFUNDED",
                     "pmt_type_2": "UPI",
-                    "txn_amt_2": str(amount) + ".00",
+                    "txn_amt_2": "{:.2f}".format(partial_refunded_amount),
                     "username_2": app_username,
                     "txn_id_2": partially_refunded_txn_id,
                     "date_time_2": date_and_time_portal_new_1,
 
                     "pmt_state_3": "REFUNDED",
                     "pmt_type_3": "UPI",
-                    "txn_amt_3": str(amount) + ".00",
+                    "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "username_3": app_username,
                     "txn_id_3": fully_refunded_txn_id,
                     "date_time_3": date_and_time_portal_new_2,
@@ -1671,7 +1671,7 @@ def test_common_100_103_114():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(partially_refunded_posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_full_refund)
                 expected_chargeslip_values = {'PAID BY:': 'UPI',
                                               'merchant_ref_no': 'Ref # ' + str(order_id),
                                               # 'RRN': str(fully_refunded_rrn),

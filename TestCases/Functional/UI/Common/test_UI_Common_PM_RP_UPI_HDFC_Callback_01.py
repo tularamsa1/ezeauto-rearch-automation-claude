@@ -1066,8 +1066,8 @@ def test_common_100_103_059():
             pg_merchant_id = result['pgMerchantId'].values[0]
             vpa = result['vpa'].values[0]
             upi_mc_id = result['id'].values[0]
-            logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
 
+            logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
             logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
