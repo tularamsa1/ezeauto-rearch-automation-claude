@@ -349,7 +349,6 @@ def test_common_100_102_089():
                     "auth_code": "-" if auth_code is None else auth_code,
                     "rrn": rrn
                 }
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
                 logger.info(f"fetched date time from portal {date_time}")
@@ -367,7 +366,6 @@ def test_common_100_102_089():
                 logger.info(f"fetched status {status}")
                 username = transaction_details[0]['Username']
                 logger.info(f"fetched username from portal {username}")
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": status,
@@ -378,7 +376,6 @@ def test_common_100_102_089():
                     "auth_code": auth_code_portal,
                     "rrn": rr_number
                 }
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)

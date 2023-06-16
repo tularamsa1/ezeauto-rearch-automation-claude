@@ -1424,7 +1424,6 @@ def test_common_100_102_085():
                                       "bqr_org_code": org_code
                                       }
                 logger.debug(f"expected_db_values: {expected_db_values}")
-
                 query = "select * from bharatqr_txn where id='" + txn_id + "'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
@@ -1437,7 +1436,6 @@ def test_common_100_102_085():
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
                 bqr_org_code_db = result['org_code'].values[0]
-
                 actual_db_values = {"txn_amt": amount_db,"pmt_mode": payment_mode_db,
                                     "pmt_status": payment_status_db, "pmt_state": payment_state_db,
                                     "acquirer_code" : acquirer_code_db,
@@ -1475,7 +1473,6 @@ def test_common_100_102_085():
                     "auth_code": "-" if auth_code is None else auth_code,
                     "rrn": "-" if rrn is None else rrn
                 }
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
                 logger.info(f"fetched date time from portal {date_time}")
@@ -1493,7 +1490,6 @@ def test_common_100_102_085():
                 logger.info(f"fetched status {status}")
                 username = transaction_details[0]['Username']
                 logger.info(f"fetched username from portal {username}")
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": status,
@@ -1504,7 +1500,6 @@ def test_common_100_102_085():
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
                 }
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)

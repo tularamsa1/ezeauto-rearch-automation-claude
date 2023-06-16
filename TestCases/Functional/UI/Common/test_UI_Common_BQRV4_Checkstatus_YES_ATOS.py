@@ -1313,8 +1313,6 @@ def test_common_100_102_062():
                 bqr_bank_code_db = result["bank_code"].iloc[0]
                 bqr_merchant_config_id_db = result["merchant_config_id"].iloc[0]
                 bqr_txn_primary_id_db = result["transaction_primary_id"].iloc[0]
-                #bqr_merchant_pan_db = result["merchant_pan"].iloc[0]
-                #bqr_rrn_db = result['rrn'].values[0]
                 bqr_org_code_db = result['org_code'].values[0]
 
                 query = "select * from upi_txn where txn_id='" + txn_id + "'"
@@ -1338,7 +1336,6 @@ def test_common_100_102_062():
                                     "bqr_bank_code": bqr_bank_code_db,
                                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
-                                    # "bqr_merchant_pan": bqr_merchant_pan_db,"bqr_rrn": bqr_rrn_db,
                                     "bqr_org_code": bqr_org_code_db,
                                     "upi_pmt_status": upi_status_db,
                                     "upi_txn_type": upi_txn_type_db, "upi_mc_id": upi_mc_id_db,
@@ -1367,7 +1364,6 @@ def test_common_100_102_062():
                     "auth_code": "-" if auth_code is None else auth_code,
                     "rrn": rrn
                 }
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
                 logger.info(f"fetched date time from portal {date_time}")
@@ -1385,7 +1381,6 @@ def test_common_100_102_062():
                 logger.info(f"fetched status {status}")
                 username = transaction_details[0]['Username']
                 logger.info(f"fetched username from portal {username}")
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": status,
@@ -1396,7 +1391,6 @@ def test_common_100_102_062():
                     "auth_code": auth_code_portal,
                     "rrn": rr_number
                 }
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
