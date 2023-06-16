@@ -1334,7 +1334,7 @@ def test_common_100_108_031():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1443,7 +1443,7 @@ def test_common_100_108_031():
             db_txn_tid = result["tid"].iloc[0]
             db_txn_mid = result["mid"].iloc[0]
             db_txn_payment_mode = result["payment_mode"].iloc[0]
-            txn_created_time = result["created_time"].iloc[0]
+            txn_created_time = result["created_time"].values[0]
             db_txn_auth_code = result["auth_code"].iloc[0]
             db_txn_rrn = result["rr_number"].iloc[0]
             db_txn_ref = result["external_ref"].iloc[0]
@@ -1715,10 +1715,10 @@ def test_common_100_108_031():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
+                date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
 
                 expected_portal_values = {
-                    # "date_time": date_and_time_portal,
+                    "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
                     "txn_amt": str(amount) + ".00",
@@ -1741,7 +1741,7 @@ def test_common_100_108_031():
                 username = transaction_details[0]['Username']
 
                 actual_portal_values = {
-                    # "date_time": date_time,
+                    "date_time": date_time,
                     "pmt_state": str(status),
                     "pmt_type": transaction_type,
                     "txn_amt": total_amount[1],

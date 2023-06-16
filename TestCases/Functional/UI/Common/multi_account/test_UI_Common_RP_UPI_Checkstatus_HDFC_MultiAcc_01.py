@@ -9,7 +9,7 @@ from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_HomePage import PortalHomePage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage
+from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
@@ -65,12 +65,12 @@ def test_common_100_111_005():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type="firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -86,12 +86,12 @@ def test_common_100_111_005():
                 "amount": amount, "externalRefNumber": order_id, "username": app_username, "password": app_password,
                 "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
-            portal_driver = TestSuiteSetup.initialize_firefox_driver()
+            ui_browser = TestSuiteSetup.initialize_ui_browser()
             paymentLinkUrl = response['paymentLink']
             externalRef = response.get('externalRefNumber')
             payment_intent_id = response.get('paymentIntentId')
-            portal_driver.get(paymentLinkUrl)
-            remotePayUpiTxn = RemotePayTxnPage(portal_driver)
+            ui_browser.goto(paymentLinkUrl)
+            remotePayUpiTxn = RemotePayTxnPage(ui_browser)
             remotePayUpiTxn.clickOnRemotePayUPI()
             remotePayUpiTxn.clickOnRemotePayLaunchUPI()
             remotePayUpiTxn.clickOnRemotePayCancelUPI()
@@ -102,6 +102,7 @@ def test_common_100_111_005():
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
+            auth_code = result['auth_code'].values[0]
             txn_id = result['id'].values[0]
             status = result['status'].values[0]
             customer_name = result['customer_name'].values[0]
@@ -228,9 +229,9 @@ def test_common_100_111_005():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of App Validation---------------------------------------
+        # -----------------------------------------End of App Validation---------------------------------------
 
-            # -----------------------------------------Start of API Validation------------------------------------
+        # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
@@ -297,9 +298,9 @@ def test_common_100_111_005():
             except Exception as e:
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
-            # -----------------------------------------End of API Validation---------------------------------------
+        # -----------------------------------------End of API Validation---------------------------------------
 
-            # -----------------------------------------Start of DB Validation--------------------------------------
+        # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
@@ -367,51 +368,58 @@ def test_common_100_111_005():
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
-            # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------End of DB Validation---------------------------------------
 
-            # -----------------------------------------Start of Portal Validation---------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 expected_portal_values = {
-                    "pmt_state": "Settled", "pmt_type": "UPI",
-                    "txn_amt": "Rs." + str(amount) + ".00", "username": app_username}
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": "-" if str(rrn) is None else str(rrn),
+                    "acc_label": str(account_label_name)
+                }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                portal_driver = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(portal_driver)
-
-                logger.debug(
-                    f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(portal_driver)
-                home_page_portal.wait_for_home_page_load()
-                home_page_portal.search_merchant_name(str(org_code))
-                logger.debug(f"searching for the org_code : {str(org_code)}")
-                home_page_portal.click_switch_button(str(org_code))
-                home_page_portal.perform_merchant_switched_verfication()
-                home_page_portal.click_transaction_search_menu()
-
-                portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal(txn_id)
-                portal_type = portal_values_dict['Type']
-                portal_status = portal_values_dict['Status']
-                portal_amount = portal_values_dict['Total Amount']
-                portal_username = portal_values_dict['Username']
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+                labels = transaction_details[0]['Labels']
 
                 actual_portal_values = {
-                    "pmt_state": str(portal_status), "pmt_type": portal_type,
-                    "txn_amt": portal_amount, "username": portal_username}
-                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code,
+                    "rrn": rr_number,
+                    "acc_label": labels
+                }
 
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------End of Portal Validation---------------------------------------
 
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -429,7 +437,6 @@ def test_common_100_111_005():
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-
         # -----------------------------------------End of ChargeSlip Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

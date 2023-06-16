@@ -88,7 +88,7 @@ def test_common_100_103_159():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -281,15 +281,15 @@ def test_common_100_103_159():
 
                 logger.debug(f"expectedAPIValues: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnDetails', request_body={
-                    "username": app_username,
-                    "password": app_password,
-                    "txnId": txn_id
-                })
-
-                logger.debug(f"API DETAILS for original_txn_id : {api_details}")
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for transaction details api is : {response}")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 status_api = response["status"]
                 logger.debug(f"status_api is : {status_api}")
                 amount_api = int(response["amount"])
@@ -466,26 +466,20 @@ def test_common_100_103_159():
                     "txn_amt": str(amount) + ".00",
                     "username": "EZETAP",
                     "txn_id": txn_id,
-                    "rrn": "-" if rrn is None else rrn,
+                    "rrn": str(rrn),
                     "auth_code": "-" if txn_auth_code is None else txn_auth_code
-
                 }
-
                 logger.debug(f"expectedPortalValues : {expected_portal_values}")
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
                 auth_code = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
@@ -496,9 +490,7 @@ def test_common_100_103_159():
                     "rrn": rr_number,
                     "auth_code": auth_code
                 }
-
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -1038,7 +1030,7 @@ def test_common_100_103_160():
                     "txn_amt": total_amount[1],
                     "username": username,
                     "txn_id": transaction_id,
-                    "rrn": rr_number,
+                    "rrn": str(rr_number),
                     "auth_code": auth_code
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")

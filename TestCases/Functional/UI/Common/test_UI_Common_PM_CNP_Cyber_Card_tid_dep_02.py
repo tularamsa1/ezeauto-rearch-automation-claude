@@ -1128,12 +1128,11 @@ def test_common_100_103_153():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
         TestSuiteSetup.launch_browser_and_context_initialize()
-
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -1212,16 +1211,13 @@ def test_common_100_103_153():
             if org_setting_value:
                 while org_setting_value >= 0:
                     if org_setting_value == 0:
-                        # ui_driver = TestSuiteSetup.initialize_portal_driver()
                         ui_browser = TestSuiteSetup.initialize_ui_browser()
                         ui_browser.goto(payment_link_url)
                         break
                     else:
                         logger.debug(f"Running with org code max attempts.")
-                        # ui_driver = TestSuiteSetup.initialize_portal_driver()
                         ui_browser = TestSuiteSetup.initialize_ui_browser()
                         ui_browser.goto(payment_link_url)
-                        # ui_driver.get(payment_link_url)
                         remotePayTxn = RemotePayTxnPage(ui_browser)
                         remotePayTxn.clickOnCreditCardToExpand()
                         remotePayTxn.enterNameOnTheCard("Sandeep")
@@ -1236,14 +1232,10 @@ def test_common_100_103_153():
             elif setting_value:
                 while setting_value >= 0:
                     if setting_value == 0:
-                        # ui_driver = TestSuiteSetup.initialize_portal_driver()
-                        # ui_driver.get(payment_link_url)
                         ui_browser = TestSuiteSetup.initialize_ui_browser()
                         ui_browser.goto(payment_link_url)
                         break
                     else:
-                        # ui_driver = TestSuiteSetup.initialize_portal_driver()
-                        # ui_driver.get(payment_link_url)
                         ui_browser = TestSuiteSetup.initialize_ui_browser()
                         ui_browser.goto(payment_link_url)
                         remotePayTxn = RemotePayTxnPage(ui_browser)
@@ -1567,14 +1559,11 @@ def test_common_100_103_153():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                mobile_no = transaction_details[0]['Mobile No.']
                 auth_code = transaction_details[0]['Auth Code']
                 rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                labels = transaction_details[0]['Labels']
-                hierarchy = transaction_details[0]['Hierarchy']
 
                 actual_portal_values = {
                     "pmt_state": str(status),
@@ -1595,7 +1584,7 @@ def test_common_100_103_153():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
