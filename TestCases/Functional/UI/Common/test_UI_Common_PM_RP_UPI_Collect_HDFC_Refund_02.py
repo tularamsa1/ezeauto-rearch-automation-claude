@@ -138,7 +138,6 @@ def test_common_100_103_046():
             original_txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching original_txn_type from db query : {original_txn_type} ")
             created_time_original = result['created_time'].values[0]
-
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": partial_refunded_amount,
