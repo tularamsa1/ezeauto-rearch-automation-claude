@@ -108,7 +108,7 @@ def test_common_100_102_313():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -623,6 +623,7 @@ def test_common_100_102_313():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -638,7 +639,6 @@ def test_common_100_102_313():
                     "txn_id": txn_id,
                     "auth_code": auth_code,
                     "rrn": rrn,
-
                     "date_time_2": date_and_time_portal_2,
                     "pmt_state_2": "REFUNDED",
                     "pmt_type_2": "BHARATQR",
@@ -676,7 +676,6 @@ def test_common_100_102_313():
                     "txn_id": transaction_id,
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
-
                     "date_time_2": date_time_2,
                     "pmt_state_2": str(status_2),
                     "pmt_type_2": transaction_type_2,
@@ -687,13 +686,13 @@ def test_common_100_102_313():
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -812,7 +811,7 @@ def test_common_100_102_316():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1312,6 +1311,7 @@ def test_common_100_102_316():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -1327,7 +1327,6 @@ def test_common_100_102_316():
                     "txn_id": txn_id,
                     "auth_code": auth_code,
                     "rrn": rrn,
-
                     "date_time_2": date_and_time_portal_2,
                     "pmt_state_2": "REFUND_POSTED",
                     "pmt_type_2": "BHARATQR",
@@ -1365,7 +1364,6 @@ def test_common_100_102_316():
                     "txn_id": transaction_id,
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
-
                     "date_time_2": date_time_2,
                     "pmt_state_2": str(status_2),
                     "pmt_type_2": transaction_type_2,
@@ -1376,7 +1374,6 @@ def test_common_100_102_316():
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -1505,7 +1502,7 @@ def test_common_100_102_317():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1731,7 +1728,7 @@ def test_common_100_102_317():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-        # -----------------------------------------End of App Validation---------------------------------------
+        # -----------------------------------------End of App Validation-------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
@@ -1995,6 +1992,7 @@ def test_common_100_102_317():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -2010,7 +2008,6 @@ def test_common_100_102_317():
                     "txn_id": txn_id,
                     "auth_code": auth_code,
                     "rrn": rrn,
-
                     "date_time_2": date_and_time_portal_2,
                     "pmt_state_2": "FAILED",
                     "pmt_type_2": "BHARATQR",
@@ -2048,7 +2045,6 @@ def test_common_100_102_317():
                     "txn_id": transaction_id,
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
-
                     "date_time_2": date_time_2,
                     "pmt_state_2": str(status_2),
                     "pmt_type_2": transaction_type_2,
@@ -2059,7 +2055,6 @@ def test_common_100_102_317():
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -2084,7 +2079,7 @@ def test_common_100_102_317():
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+        # -----------------------------------------End of ChargeSlip Validation-----------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
