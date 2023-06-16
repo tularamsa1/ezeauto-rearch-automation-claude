@@ -9,9 +9,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -214,7 +212,8 @@ def test_common_100_101_155():
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -515,7 +514,6 @@ def test_common_100_101_155():
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 date_and_time_portal_new = date_time_converter.to_portal_format(txn_created_time_2)
-
                 expectedPortalValues = {
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
@@ -533,16 +531,13 @@ def test_common_100_101_155():
                     "date_time_2": date_and_time_portal_new
                 }
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
                 total_amount_2 = transaction_details[0]['Total Amount'].split()
-                rr_number_2 = transaction_details[0]['RR Number']
                 transaction_type_2 = transaction_details[0]['Type']
                 status_2 = transaction_details[0]['Status']
                 username_2 = transaction_details[0]['Username']
-
                 date_time_original = transaction_details[1]['Date & Time']
                 transaction_id_original = transaction_details[1]['Transaction ID']
                 total_amount_original = transaction_details[1]['Total Amount'].split()
@@ -550,7 +545,6 @@ def test_common_100_101_155():
                 transaction_type_original = transaction_details[1]['Type']
                 status_original = transaction_details[1]['Status']
                 username_original = transaction_details[1]['Username']
-
                 actualPortalValues = {
                     "pmt_state": str(status_original),
                     "pmt_type": transaction_type_original,
@@ -767,7 +761,8 @@ def test_common_100_101_156():
             logger.debug(f"Fetched txn_id_refunded : {txn_id_refunded} ")
             rrn_refunded = result['rr_number'].iloc[0]
             txn_created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn_refunded} ")
+            logger.debug(
+                f"Fetching transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn_refunded} ")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -798,8 +793,8 @@ def test_common_100_101_156():
                     "settle_status_2": "REVPENDING",
                     "txn_id": txn_id,
                     "txn_id_2": txn_id_refunded,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
+                    "txn_amt_2": str(amount) + ".00",
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -813,7 +808,8 @@ def test_common_100_101_156():
                 logger.debug(f"expected_app_values : {expected_app_values} for the testcase_id {testcase_id}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -1068,7 +1064,8 @@ def test_common_100_101_156():
                 logger.debug(f"Query result : {result}")
                 status_db_refunded = result["status"].iloc[0]
                 payment_mode_db_refunded = result["payment_mode"].iloc[0]
-                amount_db_refunded = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                amount_db_refunded = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 state_db_refunded = result["state"].iloc[0]
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_refunded = result["acquirer_code"].iloc[0]
@@ -1138,7 +1135,6 @@ def test_common_100_101_156():
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 date_and_time_portal_new = date_time_converter.to_portal_format(txn_created_time_2)
-
                 expectedPortalValues = {
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
@@ -1157,7 +1153,6 @@ def test_common_100_101_156():
                     "date_time_2": date_and_time_portal_new
                 }
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
@@ -1166,7 +1161,6 @@ def test_common_100_101_156():
                 transaction_type_2 = transaction_details[0]['Type']
                 status_2 = transaction_details[0]['Status']
                 username_2 = transaction_details[0]['Username']
-
                 date_time_original = transaction_details[1]['Date & Time']
                 transaction_id_original = transaction_details[1]['Transaction ID']
                 total_amount_original = transaction_details[1]['Total Amount'].split()
@@ -1174,7 +1168,6 @@ def test_common_100_101_156():
                 transaction_type_original = transaction_details[1]['Type']
                 status_original = transaction_details[1]['Status']
                 username_original = transaction_details[1]['Username']
-
                 actualPortalValues = {
                     "pmt_state": str(status_original),
                     "pmt_type": transaction_type_original,
@@ -1192,7 +1185,6 @@ def test_common_100_101_156():
                     "rrn_2": rr_number_2,
                     "date_time_2": date_time_2
                 }
-
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:
@@ -1426,7 +1418,8 @@ def test_common_100_101_157():
             logger.debug(f"Fetching Transaction id from db query : {txn_id_refunded} ")
             rrn_refunded = result['rr_number'].iloc[0]
             txn_created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn_refunded} ")
+            logger.debug(
+                f"Fetching Transaction id, rrn from db query, txn_id : {txn_id_refunded}, rrn : {rrn_refunded} ")
             status_db_refunded = result["status"].iloc[0]
             payment_mode_db_refunded = result["payment_mode"].iloc[0]
             amount_db_refunded = result["amount"].iloc[0]  # actual=345.0000, expected should be in the same format
@@ -1465,8 +1458,8 @@ def test_common_100_101_157():
                     "settle_status_2": "SETTLED",
                     "txn_id": txn_id,
                     "txn_id_2": txn_id_refunded,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
+                    "txn_amt_2": str(amount) + ".00",
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
@@ -1823,7 +1816,6 @@ def test_common_100_101_157():
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 date_and_time_portal_new = date_time_converter.to_portal_format(txn_created_time_2)
-
                 expectedPortalValues = {
                     "pmt_state": "AUTHORIZED_REFUNDED",
                     "pmt_type": "UPI",
@@ -1842,7 +1834,6 @@ def test_common_100_101_157():
                     "date_time_2": date_and_time_portal_new
                 }
                 logger.debug(f"expectedPortalValues : {expectedPortalValues}")
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
@@ -1851,7 +1842,6 @@ def test_common_100_101_157():
                 transaction_type_2 = transaction_details[0]['Type']
                 status_2 = transaction_details[0]['Status']
                 username_2 = transaction_details[0]['Username']
-
                 date_time_original = transaction_details[1]['Date & Time']
                 transaction_id_original = transaction_details[1]['Transaction ID']
                 total_amount_original = transaction_details[1]['Total Amount'].split()
@@ -1859,7 +1849,6 @@ def test_common_100_101_157():
                 transaction_type_original = transaction_details[1]['Type']
                 status_original = transaction_details[1]['Status']
                 username_original = transaction_details[1]['Username']
-
                 actualPortalValues = {
                     "pmt_state": str(status_original),
                     "pmt_type": transaction_type_original,
@@ -1877,7 +1866,6 @@ def test_common_100_101_157():
                     "rrn_2": rr_number_2,
                     "date_time_2": date_time_2
                 }
-
                 logger.debug(f"actualPortalValues : {actualPortalValues}")
                 Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
             except Exception as e:

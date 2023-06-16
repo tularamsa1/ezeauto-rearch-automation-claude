@@ -1241,8 +1241,8 @@ def test_common_100_103_042():
                     "txn_amt": original_total_amount[1],
                     "username": original_username,
                     "txn_id": original_transaction_id,
-                    "rrn": original_rr_number,
-                    "auth_code": original_auth_code,
+                    "rrn": "-" if original_rr_number is None else original_rr_number,
+                    "auth_code": "-" if original_auth_code is None else original_auth_code,
 
                     "date_time_2": date_time,
                     "pmt_state_2": str(status),
@@ -1250,8 +1250,8 @@ def test_common_100_103_042():
                     "txn_amt_2": total_amount[1],
                     "username_2": username,
                     "txn_id_2": transaction_id,
-                    "rrn_2": rr_number,
-                    "auth_code_2": auth_code,
+                    "rrn_2": "-" if rr_number is None else rr_number,
+                    "auth_code_2": "-" if auth_code is None else auth_code,
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")

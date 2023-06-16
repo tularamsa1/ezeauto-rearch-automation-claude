@@ -1,17 +1,13 @@
 import random
 import sys
 from datetime import datetime
-
 import pytest
-
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_HomePage import PortalHomePage
-from PageFactory.Portal_LoginPage import PortalLoginPage
-from PageFactory.Portal_TransHistoryPage import PortalTransHistoryPage, get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -228,8 +224,6 @@ def test_common_100_101_152():
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
-                # app_auth_code = txn_history_page.fetch_auth_code_text()
-                # logger.info(f"Fetching AUTH CODE from txn history for the txn : {txn_id}, {app_auth_code}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {app_payment_mode}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -282,7 +276,6 @@ def test_common_100_101_152():
                     "issuer_code": "AIRP",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "auth_code": auth_code,
                     "date": date
                 }
 
@@ -309,7 +302,6 @@ def test_common_100_101_152():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                # auth_code_api = response["authCode"]
                 date_api = response["postingDate"]
 
                 actual_api_values = {
@@ -321,7 +313,6 @@ def test_common_100_101_152():
                     "issuer_code": issuer_code_api,
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
-                    # "auth_code": auth_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -438,11 +429,9 @@ def test_common_100_101_152():
                     "txn_amt": str(amount) + ".00",
                     "username": "EZETAP",
                     "txn_id": txn_id,
-                    "rrn": str(rrn)
+                    "rrn": "-" if rrn is None else str(rrn)
                 }
-
                 logger.debug(f"expectedPortalValues : {expected_portal_values}")
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
@@ -451,7 +440,6 @@ def test_common_100_101_152():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
@@ -461,9 +449,7 @@ def test_common_100_101_152():
                     "txn_id": transaction_id,
                     "rrn": rr_number
                 }
-
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -660,6 +646,8 @@ def test_common_100_101_153():
             mid_db = result['mid'].values[0]
             rrn_db = result['rr_number'].values[0]
             created_time = result['created_time'].values[0]
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"auth_code: {auth_code}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -921,11 +909,9 @@ def test_common_100_101_153():
                     "txn_amt": str(amount) + ".00",
                     "username": "EZETAP",
                     "txn_id": ipr_txn_id,
-                    "rrn": str(rrn)
+                    "rrn": "-" if rrn is None else str(rrn)
                 }
-
                 logger.debug(f"expectedPortalValues : {expected_portal_values}")
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
@@ -934,7 +920,6 @@ def test_common_100_101_153():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
@@ -944,9 +929,7 @@ def test_common_100_101_153():
                     "txn_id": transaction_id,
                     "rrn": rr_number
                 }
-
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:

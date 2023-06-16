@@ -3957,7 +3957,6 @@ def test_common_100_101_148():
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
                 date_and_time_portal_new = date_time_converter.to_portal_format(txn_created_time_2)
-
                 expectedPortalValues = {
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
@@ -3985,7 +3984,6 @@ def test_common_100_101_148():
                 transaction_type_2 = transaction_details[0]['Type']
                 status_2 = transaction_details[0]['Status']
                 username_2 = transaction_details[0]['Username']
-
                 date_time_original = transaction_details[1]['Date & Time']
                 transaction_id_original = transaction_details[1]['Transaction ID']
                 total_amount_original = transaction_details[1]['Total Amount'].split()

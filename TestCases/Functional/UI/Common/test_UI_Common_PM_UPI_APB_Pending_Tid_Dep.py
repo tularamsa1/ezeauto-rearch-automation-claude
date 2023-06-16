@@ -356,18 +356,14 @@ def test_common_100_101_154():
                     "username": app_username,
                     "txn_id": txn_id
                 }
-
                 logger.debug(f"expectedPortalValues : {expected_portal_values}")
-
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
@@ -376,9 +372,7 @@ def test_common_100_101_154():
                     "username": username,
                     "txn_id": transaction_id
                 }
-
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
