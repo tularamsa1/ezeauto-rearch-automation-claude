@@ -8,6 +8,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities.execution_log_processor import EzeAutoLogger
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
@@ -20,6 +21,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 def test_sa_100_101_169():
     """
     Sub Feature Code: UI_SA_PM_UPI_SA_CheckStatus_After_Expiry_KOTAK_ATOS
@@ -81,6 +83,8 @@ def test_sa_100_101_169():
         logger.debug(f"Fetching tid from upi_merchant_config table : {tid}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching id from the upi_merchant_config table : {upi_mc_id}")
+
+        TestSuiteSetup.launch_browser_and_context_initialize()
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -405,6 +409,46 @@ def test_sa_100_101_169():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "EXPIRED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

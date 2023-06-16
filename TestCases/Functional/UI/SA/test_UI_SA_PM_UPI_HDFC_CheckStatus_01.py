@@ -404,9 +404,6 @@ def test_sa_100_101_001():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
-
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
@@ -477,9 +474,8 @@ def test_sa_100_101_002():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         TestSuiteSetup.launch_browser_and_context_initialize()
+        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
@@ -809,9 +805,6 @@ def test_sa_100_101_002():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
-
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
@@ -1216,9 +1209,6 @@ def test_sa_100_101_003():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
-
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         # -----------------------------------------End of Portal Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()

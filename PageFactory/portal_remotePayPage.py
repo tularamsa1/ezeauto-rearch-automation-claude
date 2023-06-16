@@ -31,7 +31,9 @@ class RemotePayTxnPage(BasePage):
     txt_expiryMessage = (By.XPATH, "//h3[contains(text(),'Remote payment link has expired, Use a different m')]")
     txt_maxAttempts = (By.XPATH, "//h3[contains(text(),'Maximum number of attempts for this url exceeded. ')]")
 
-    txt_failedMessage = (By.XPATH, "//h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
+    # txt_failedMessage = (By.XPATH, "//h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
+    txt_failedMessage = "//h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]"
+
     btn_remotePayUpi = "//mat-panel-title[contains(text(),'UPI')]"
     btn_remotePayLaunchUpi = "//button[contains(text(),'Launch a UPI app ')]"
     btn_remotePayCancelUpi = "//button[@data-target='#confirmCancel']"
