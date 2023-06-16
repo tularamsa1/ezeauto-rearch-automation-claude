@@ -2,12 +2,11 @@ import sys
 import time
 import pytest
 import random
-
-
 from datetime import datetime
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities.execution_log_processor import EzeAutoLogger
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
@@ -20,6 +19,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 @pytest.mark.chargeSlipVal
 def test_common_100_101_174():
     """
@@ -94,11 +94,11 @@ def test_common_100_101_174():
         device_serial = result['device_serial'].values[0]
         logger.info(f"Fetching device_serial from terminal_info table : {device_serial}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False,cnpwareLog=False,
-                                                   middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -480,7 +480,52 @@ def test_common_100_101_174():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": "-" if ref_id is None else ref_id
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
 
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -488,9 +533,13 @@ def test_common_100_101_174():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
 
                 expected_charge_slip_values = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(ref_id),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
-                    'time': txn_time, 'AUTH CODE': str(auth_code)
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(ref_id),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date,
+                    'time': txn_time,
+                    'AUTH CODE': str(auth_code)
                 }
 
                 receipt_validator.perform_charge_slip_validations(txn_id,
@@ -513,6 +562,7 @@ def test_common_100_101_174():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 @pytest.mark.chargeSlipVal
 def test_common_100_101_175():
     """
@@ -598,11 +648,11 @@ def test_common_100_101_175():
         device_serial = result['device_serial'].values[0]
         logger.info(f"Fetching device_serial from terminal_info table : {device_serial}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False,
-                                                   middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -656,6 +706,8 @@ def test_common_100_101_175():
             logger.debug(f"Fetching txn_type from the txn table for dynamic qr generation : {txn_type}")
             rrn = result['rr_number'].values[0]
             logger.debug(f"Fetching rrn_number from the txn table for dynamic qr generation : {rrn}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"Fetching auth_code from the txn table for dynamic qr generation : {auth_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table for dynamic qr generation : {created_time}")
 
@@ -739,39 +791,31 @@ def test_common_100_101_175():
             status_db_3 = result["status"].iloc[0]
             logger.debug(f"Fetching actual db status value from the txn table for second callback : {status_db_3}")
             payment_mode_db_3 = result["payment_mode"].iloc[0]
-            logger.debug(
-                f"Fetching actual db payment_mode value from the txn table for second callback : {payment_mode_db_3}")
+            logger.debug(f"Fetching actual db payment_mode value from the txn table for second callback : {payment_mode_db_3}")
             amount_db_3 = int(result["amount"].iloc[0])
             logger.debug(f"Fetching actual db amount value from the txn table for second callback : {amount_db_3}")
             state_db_3 = result["state"].iloc[0]
             logger.debug(f"Fetching actual db state value from the txn table for second callback : {state_db_3}")
             payment_gateway_db_3 = result["payment_gateway"].iloc[0]
-            logger.debug(
-                f"Fetching actual db payment_gateway value from the txn table for second callback : {payment_gateway_db_3}")
+            logger.debug(f"Fetching actual db payment_gateway value from the txn table for second callback : {payment_gateway_db_3}")
             acquirer_code_db_3 = result["acquirer_code"].iloc[0]
-            logger.debug(
-                f"Fetching actual db acquirer_code value from the txn table for second callback : {acquirer_code_db_3}")
+            logger.debug(f"Fetching actual db acquirer_code value from the txn table for second callback : {acquirer_code_db_3}")
             settlement_status_db_3 = result["settlement_status"].iloc[0]
-            logger.debug(
-                f"Fetching actual db settlement_status value from the txn table for second callback : {settlement_status_db_3}")
+            logger.debug(f"Fetching actual db settlement_status value from the txn table for second callback : {settlement_status_db_3}")
             bank_code_db_3 = result["bank_code"].iloc[0]
-            logger.debug(
-                f"Fetching actual db bank_code value from the txn table for second callback : {bank_code_db_3}")
+            logger.debug(f"Fetching actual db bank_code value from the txn table for second callback : {bank_code_db_3}")
             mid_db_3 = result['mid'].values[0]
             logger.debug(f"Fetching actual db mid value from the txn table for second callback : {mid_db_3}")
             tid_db_3 = result['tid'].values[0]
             logger.debug(f"Fetching actual db tid value from the txn table for second callback : {tid_db_3}")
             bank_name_db_3 = result["bank_name"].iloc[0]
-            logger.debug(
-                f"Fetching actual db bank_name value from the txn table for second callback : {bank_name_db_3}")
+            logger.debug(f"Fetching actual db bank_name value from the txn table for second callback : {bank_name_db_3}")
             payer_name_db_3 = result['payer_name'].values[0]
-            logger.debug(
-                f"Fetching actual db payer_name value from the txn table for second callback : {payer_name_db_3}")
+            logger.debug(f"Fetching actual db payer_name value from the txn table for second callback : {payer_name_db_3}")
             rrn_db_3 = result['rr_number'].values[0]
             logger.debug(f"Fetching actual db rr_number value from the txn table for second callback : {rrn_db_3}")
             device_serial_db_3 = result['device_serial'].values[0]
-            logger.debug(
-                f"Fetching actual db device_serial value from the txn table for second callback : {device_serial_db_3}")
+            logger.debug(f"Fetching actual db device_serial value from the txn table for second callback : {device_serial_db_3}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1445,7 +1489,104 @@ def test_common_100_101_175():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                date_and_time_portal_new = date_time_converter.to_portal_format(created_time_2)
+                date_and_time_portal_new_3 = date_time_converter.to_portal_format(created_time_3)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "EXPIRED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": "-" if rrn is None else rrn,
+                    "date_time_2": date_and_time_portal_new,
 
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_2,
+                    "auth_code_2": "-" if auth_code_2 is None else auth_code_2,
+                    "rrn_2": "-" if rrn_db_2 is None else rrn_db_2,
+                    "date_time_3": date_and_time_portal_new_3,
+
+                    "pmt_state_3": "AUTHORIZED",
+                    "pmt_type_3": "UPI",
+                    "txn_amt_3": f"{str(amount)}.00",
+                    "username_3": app_username,
+                    "txn_id_3": txn_id_3,
+                    "auth_code_3": "-" if auth_code_3 is None else auth_code_3,
+                    "rrn_3": "-" if rrn_db_3 is None else rrn_db_3,
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time_new_3 = transaction_details[0]['Date & Time']
+                transaction_id_new_3 = transaction_details[0]['Transaction ID']
+                total_amount_new_3 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_new_3 = transaction_details[0]['Auth Code']
+                rr_number_new_3 = transaction_details[0]['RR Number']
+                transaction_type_new_3 = transaction_details[0]['Type']
+                status_new_3 = transaction_details[0]['Status']
+                username_new_3 = transaction_details[0]['Username']
+
+                date_time_new = transaction_details[1]['Date & Time']
+                transaction_id_new = transaction_details[1]['Transaction ID']
+                total_amount_new = transaction_details[1]['Total Amount'].split()
+                auth_code_portal_new = transaction_details[1]['Auth Code']
+                rr_number_new = transaction_details[1]['RR Number']
+                transaction_type_new = transaction_details[1]['Type']
+                status_new = transaction_details[1]['Status']
+                username_new = transaction_details[1]['Username']
+
+                date_time = transaction_details[2]['Date & Time']
+                transaction_id = transaction_details[2]['Transaction ID']
+                total_amount = transaction_details[2]['Total Amount'].split()
+                auth_code_portal = transaction_details[2]['Auth Code']
+                rr_number = transaction_details[2]['RR Number']
+                transaction_type = transaction_details[2]['Type']
+                status = transaction_details[2]['Status']
+                username = transaction_details[2]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number,
+                    "date_time_2": date_time_new,
+                    "pmt_state_2": str(status_new),
+                    "pmt_type_2": transaction_type_new,
+                    "txn_amt_2": total_amount_new[1],
+                    "username_2": username_new,
+                    "txn_id_2": transaction_id_new,
+                    "auth_code_2": auth_code_portal_new,
+                    "rrn_2": rr_number_new,
+                    "date_time_3": date_time_new_3,
+                    "pmt_state_3": str(status_new_3),
+                    "pmt_type_3": transaction_type_new_3,
+                    "txn_amt_3": total_amount_new_3[1],
+                    "username_3": username_new_3,
+                    "txn_id_3": transaction_id_new_3,
+                    "auth_code_3": auth_code_portal_new_3,
+                    "rrn_3": rr_number_new_3
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+        # ------------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -1453,9 +1594,13 @@ def test_common_100_101_175():
                 txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(created_time_3)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_2)
                 expected_charge_slip_values_2 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(ref_id_2),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
-                    'time': txn_time_2, 'AUTH CODE': str(auth_code_2)
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(ref_id_2),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date_2,
+                    'time': txn_time_2,
+                    'AUTH CODE': str(auth_code_2)
                 }
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2,
                                                                                             {
@@ -1463,9 +1608,13 @@ def test_common_100_101_175():
                                                                                                 "password": app_password},
                                                                                             expected_charge_slip_values_2)
                 expected_charge_slip_values_3 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(ref_id_3),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_3,
-                    'time': txn_time_3, 'AUTH CODE': str(auth_code_3)
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(ref_id_3),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date_3,
+                    'time': txn_time_3,
+                    'AUTH CODE': str(auth_code_3)
                 }
 
                 chargeslip_val_result_3 = receipt_validator.perform_charge_slip_validations(txn_id_3,
@@ -1496,6 +1645,7 @@ def test_common_100_101_175():
 @pytest.mark.apiVal
 @pytest.mark.dbVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 @pytest.mark.chargeSlipVal
 def test_common_100_101_176():
     """
@@ -1570,11 +1720,11 @@ def test_common_100_101_176():
         device_serial = result['device_serial'].values[0]
         logger.info(f"Fetching device_serial from terminal_info table : {device_serial}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False,
-                                                   middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1625,6 +1775,8 @@ def test_common_100_101_176():
             logger.debug(f"Fetching txn_type from the txn table for dynamic qr generation : {txn_type}")
             rrn = result['rr_number'].values[0]
             logger.debug(f"Fetching rrn_number from the txn table for dynamic qr generation : {rrn}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"Fetching auth_code from the txn table for dynamic qr generation : {auth_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table for dynamic qr generation : {created_time}")
 
@@ -2403,7 +2555,78 @@ def test_common_100_101_176():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time_2)
+                date_and_time_portal_new = date_time_converter.to_portal_format(created_time_3)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id_2,
+                    "auth_code": "-" if auth_code_2 is None else auth_code_2,
+                    "rrn": "-" if rrn_db_2 is None else rrn_db_2,
 
+                    "date_time_2": date_and_time_portal_new,
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_3,
+                    "auth_code_2": "-" if auth_code_3 is None else auth_code_3,
+                    "rrn_2": "-" if rrn_db_3 is None else rrn_db_3,
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time_new_2 = transaction_details[0]['Date & Time']
+                transaction_id_new_2 = transaction_details[0]['Transaction ID']
+                total_amount_new_2 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_new_2 = transaction_details[0]['Auth Code']
+                rr_number_new_2 = transaction_details[0]['RR Number']
+                transaction_type_new_2 = transaction_details[0]['Type']
+                status_new_2 = transaction_details[0]['Status']
+                username_new_2 = transaction_details[0]['Username']
+
+                date_time = transaction_details[1]['Date & Time']
+                transaction_id = transaction_details[1]['Transaction ID']
+                total_amount = transaction_details[1]['Total Amount'].split()
+                auth_code_portal = transaction_details[1]['Auth Code']
+                rr_number = transaction_details[1]['RR Number']
+                transaction_type = transaction_details[1]['Type']
+                status = transaction_details[1]['Status']
+                username = transaction_details[1]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number,
+                    "date_time_2": date_time_new_2,
+                    "pmt_state_2": str(status_new_2),
+                    "pmt_type_2": transaction_type_new_2,
+                    "txn_amt_2": total_amount_new_2[1],
+                    "username_2": username_new_2,
+                    "txn_id_2": transaction_id_new_2,
+                    "auth_code_2": auth_code_portal_new_2,
+                    "rrn_2": rr_number_new_2,
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+        # ------------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -2411,9 +2634,13 @@ def test_common_100_101_176():
                 txn_date_3, txn_time_3 = date_time_converter.to_chargeslip_format(created_time_3)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_2)
                 expected_charge_slip_values_2 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(ref_id_2),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
-                    'time': txn_time_2, 'AUTH CODE': str(auth_code_2)
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(ref_id_2),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date_2,
+                    'time': txn_time_2,
+                    'AUTH CODE': str(auth_code_2)
                 }
                 chargeslip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_2,
                                                                                             {
@@ -2421,9 +2648,13 @@ def test_common_100_101_176():
                                                                                                 "password": app_password},
                                                                                             expected_charge_slip_values_2)
                 expected_charge_slip_values_3 = {
-                    'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(ref_id_3),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_3,
-                    'time': txn_time_3, 'AUTH CODE': str(auth_code_3)
+                    'PAID BY:': 'UPI',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(ref_id_3),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date_3,
+                    'time': txn_time_3,
+                    'AUTH CODE': str(auth_code_3)
                 }
 
                 chargeslip_val_result_3 = receipt_validator.perform_charge_slip_validations(txn_id_3,

@@ -1,10 +1,10 @@
 import random
 import sys
 import pytest
-
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities.execution_log_processor import EzeAutoLogger
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
@@ -84,10 +84,11 @@ def test_common_100_113_013():
         # to delete the publish_id which was generated previously
         testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -185,6 +186,8 @@ def test_common_100_113_013():
             logger.debug(f"Fetching rr_number from the txn table : {rrn_db}")
             label_ids_db = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"label_ids is : {label_ids_db}")
+            order_id = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {order_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -497,13 +500,45 @@ def test_common_100_113_013():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                # write portal validation code here
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                actualPortal=actual_portal_values)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": str(ref_id),
+                    "acc_label": account_label_name
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+                labels = transaction_details[0]['Labels']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number,
+                    "acc_label": labels
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -515,9 +550,12 @@ def test_common_100_113_013():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_charge_slip_values = {
-                    'PAID BY:': 'UPI', 'RRN': str(ref_id),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
-                    'time': txn_time, 'AUTH CODE': str(auth_code)
+                    'PAID BY:': 'UPI',
+                    'RRN': str(ref_id),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date,
+                    'time': txn_time,
+                    'AUTH CODE': str(auth_code)
                 }
                 receipt_validator.perform_charge_slip_validations(txn_id, {
                     "username": app_username, "password": app_password}, expected_charge_slip_values)
@@ -614,10 +652,11 @@ def test_common_100_113_014():
         # to delete the publish_id which was generated previously
         testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -715,6 +754,8 @@ def test_common_100_113_014():
             logger.debug(f"Fetching rr_number from the txn table : {rrn_db}")
             label_ids_db = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"label_ids is : {label_ids_db}")
+            order_id = result['external_ref'].values[0]
+            logger.debug(f"fetched external_ref from txn table is : {order_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1027,13 +1068,45 @@ def test_common_100_113_014():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                # write portal validation code here
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                actualPortal=actual_portal_values)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": str(ref_id),
+                    "acc_label": account_label_name
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+                labels = transaction_details[0]['Labels']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number,
+                    "acc_label": labels
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -1045,9 +1118,12 @@ def test_common_100_113_014():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_charge_slip_values = {
-                    'PAID BY:': 'UPI', 'RRN': str(ref_id),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
-                    'time': txn_time, 'AUTH CODE': str(auth_code)
+                    'PAID BY:': 'UPI',
+                    'RRN': str(ref_id),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date,
+                    'time': txn_time,
+                    'AUTH CODE': str(auth_code)
                 }
                 receipt_validator.perform_charge_slip_validations(txn_id, {
                     "username": app_username, "password": app_password}, expected_charge_slip_values)

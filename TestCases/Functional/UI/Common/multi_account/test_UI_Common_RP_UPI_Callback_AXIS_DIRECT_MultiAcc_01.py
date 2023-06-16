@@ -544,6 +544,7 @@ def test_common_100_111_016():
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type = "firefox")
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -572,10 +573,12 @@ def test_common_100_111_016():
                 raise Exception("Api could not initiate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                portal_driver = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                externalRef = response.get('externalRefNumber')
+                payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
+                portal_driver.goto(paymentLinkUrl)
                 rp_upi_txn = RemotePayTxnPage(portal_driver)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
@@ -883,24 +886,53 @@ def test_common_100_111_016():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
             # -----------------------------------------End of DB Validation---------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(posting_date)
 
-            # -----------------------------------------Start of Portal Validation---------------------------------
-            if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-                logger.info(f"Started Portal validation for the test case : {testcase_id}")
-                try:
-                    # --------------------------------------------------------------------------------------------
-                    expected_portal_values = {}
-                    #
-                    # Write the test case Portal validation code block here. Set this to pass if not required.
-                    #
-                    actual_portal_values = {}
-                    # ---------------------------------------------------------------------------------------------
-                    Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                expected_portal_values = {
+                        "date_time" : date_and_time_portal,
+                        "pmt_state": "FAILED",
+                        "pmt_type": "UPI",
+                        "txn_amt": str(amount) + ".00",
+                        "txn_id": txn_id,
+                        "username": app_username,
+                        "rrn_number" : str(rrn),
+                        "acct_label": account_label_name
+                    }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+                labels = transaction_details[0]['Labels']
+
+                actual_portal_values = {
+                        "date_time" : date_time,
+                        "pmt_state": str(status),
+                        "pmt_type": transaction_type,
+                        "txn_amt": total_amount[1],
+                        "txn_id": transaction_id,
+                        "username": username,
+                        "rrn_number": rr_number,
+                        "acct_label": labels
+                    }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                     actualPortal=actual_portal_values)
-                except Exception as e:
-                    Configuration.perform_portal_val_exception(testcase_id, e)
-                logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------End of Portal Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

@@ -87,6 +87,7 @@ class PortalTransHistoryPage(BasePage):
             self.perform_click()
             self.date_selector()
 
+
 def get_transaction_details_for_portal(app_un:str=None, app_pw:str=None, order_id:str=None) -> list:
     """
     This method initiates the browser to get the txn details from merchant portal.
@@ -113,7 +114,6 @@ def get_transaction_details_for_portal(app_un:str=None, app_pw:str=None, order_i
     portal_txn_page.enter_order_number(order_id)
     portal_txn_page.perform_search()
     portal_txn_page.wait_for_given_timeout(2000)
-    portal_txn_page
     table_element = portal_txn_page.get_tables_data()
     table_html = table_element.inner_html()
     transaction_details = extract_table_data(table_html)
