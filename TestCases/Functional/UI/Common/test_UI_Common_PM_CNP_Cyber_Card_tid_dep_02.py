@@ -1339,7 +1339,6 @@ def test_common_100_103_153():
             txn_type_cnp_txn = result['txn_type'].values[0]
             logger.debug(f"Query result, txn_type_cnp_txn : {txn_type_cnp_txn}")
             payment_mode_cnp_txn = result['payment_mode'].values[0]
-            logger.debug(f"Query result, payment_mode_cnp_txn : {payment_mode_cnp_txn}")
             payment_gateway_cnp_txn = result['payment_gateway'].values[0]
             logger.debug(f"Query result, payment_gateway_cnp_txn : {payment_gateway_cnp_txn}")
             org_code_cnp_txn = result['org_code'].values[0]
@@ -1755,7 +1754,7 @@ def test_common_100_103_153():
                     "txn_amt_2": total_amount_2[1],
                     "username_2": username_2,
                     "txn_id_2": transaction_id_2,
-                    "date_time_2": date_time
+                    "date_time_2": date_time_2
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
