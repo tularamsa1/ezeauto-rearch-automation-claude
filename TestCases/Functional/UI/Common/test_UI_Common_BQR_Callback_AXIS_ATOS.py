@@ -9,7 +9,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal, get_txn_details_for_diff_order_id
 from Utilities import Validator,ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner,  date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -2463,6 +2463,8 @@ def test_common_100_102_199():
             rrn_upg = result['rr_number'].iloc[0]
             auth_code_upg = result['auth_code'].values[0]
             external_ref_upg = result['external_ref'].values[0]
+            txn_id_new = result["id"].iloc[0]
+            logger.debug(f"Value of txn_id obtained from txn table for second callback : {txn_id_new}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2844,8 +2846,8 @@ def test_common_100_102_199():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_upg)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time_upg)
+                date_and_time_portal_2 = date_time_converter.to_portal_format(created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "PENDING",
@@ -2859,13 +2861,13 @@ def test_common_100_102_199():
                     "pmt_state_2": "UPG_AUTHORIZED",
                     "pmt_type_2": "BHARATQR",
                     "txn_amt_2": f"{str(amount)}.00",
-                    "username_2": app_username,
-                    "txn_id_2": txn_id_upg,
+                    "username_2": "EZETAP",
+                    "txn_id_2": txn_id_new,
                     "auth_code_2":  "-" if auth_code_upg is None else auth_code_upg,
                     "rrn_2": str(rrn_upg)
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref_upg)
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
                 total_amount_2 = transaction_details[0]['Total Amount'].split()
@@ -2874,14 +2876,16 @@ def test_common_100_102_199():
                 transaction_type_2 = transaction_details[0]['Type']
                 status_2 = transaction_details[0]['Status']
                 username_2 = transaction_details[0]['Username']
-                date_time = transaction_details[1]['Date & Time']
-                transaction_id = transaction_details[1]['Transaction ID']
-                total_amount = transaction_details[1]['Total Amount'].split()
-                auth_code_portal = transaction_details[1]['Auth Code']
-                rr_number = transaction_details[1]['RR Number']
-                transaction_type = transaction_details[1]['Type']
-                status = transaction_details[1]['Status']
-                username = transaction_details[1]['Username']
+
+                transaction_details = get_txn_details_for_diff_order_id(order_id=order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
