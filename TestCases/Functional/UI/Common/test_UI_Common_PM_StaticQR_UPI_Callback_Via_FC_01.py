@@ -1484,7 +1484,6 @@ def test_common_100_107_007():
                     "username": app_username,
                     "txn_id": txn_id,
                     "rrn": str(rrn),
-
                     "date_time_2": date_and_time_portal_2,
                     "pmt_state_2": "AUTHORIZED",
                     "pmt_type_2": "UPI",
@@ -1495,7 +1494,7 @@ def test_common_100_107_007():
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id_2)
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
                 total_amount_2 = transaction_details[0]['Total Amount'].split()
@@ -1515,7 +1514,6 @@ def test_common_100_107_007():
                 username = transaction_details[1]['Username']
 
                 actual_portal_values = {
-
                     "date_time": date_time,
                     "pmt_state": str(status),
                     "pmt_type": transaction_type,
@@ -1523,7 +1521,6 @@ def test_common_100_107_007():
                     "username": username,
                     "txn_id": transaction_id,
                     "rrn": rr_number,
-
                     "date_time_2": date_time_2,
                     "pmt_state_2": str(status_2),
                     "pmt_type_2": transaction_type_2,
@@ -1531,7 +1528,6 @@ def test_common_100_107_007():
                     "username_2": username_2,
                     "txn_id_2": transaction_id_2,
                     "rrn_2": rr_number_2,
-
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
