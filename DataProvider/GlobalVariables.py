@@ -118,6 +118,7 @@ charge_slip_page = ''
 context = ''
 play_wright = ''
 browser = ''
+portal_txn_page = ''
 
 # These are to get the total number of fields validated in each category
 tot_app_val = 0
