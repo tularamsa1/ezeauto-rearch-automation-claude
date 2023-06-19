@@ -13,6 +13,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import ReportProcessor, Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, \
     receipt_validator, date_time_converter
@@ -82,6 +83,7 @@ def test_common_100_103_124():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -106,11 +108,11 @@ def test_common_100_103_124():
                 raise Exception("Api could not initate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = RemotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -158,6 +160,7 @@ def test_common_100_103_124():
             logger.debug(f"generated random original_org_code is : {original_org_code}")
             original_txn_type = result['txn_type'].values[0]
             logger.debug(f"generated random original_txn_type is : {original_txn_type}")
+            orig_created_time = result['created_time'].values[0]
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -254,7 +257,7 @@ def test_common_100_103_124():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     # "customer_name": original_customer_name,
@@ -454,15 +457,42 @@ def test_common_100_103_124():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(orig_created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "FAILED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "rrn": str(callback_1_rrn),
+                    "txn_id": original_txn_id,
+                }
+
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "rrn": rr_number,
+                    "txn_id": transaction_id
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -538,6 +568,7 @@ def test_common_100_103_125():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -562,11 +593,11 @@ def test_common_100_103_125():
                 raise Exception("Api could not initate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = RemotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -614,6 +645,8 @@ def test_common_100_103_125():
             logger.debug(f"generated random original_org_code is : {original_org_code}")
             original_txn_type = result['txn_type'].values[0]
             logger.debug(f"generated random original_txn_type is : {original_txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"generated created_time is : {created_time}")
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -625,7 +658,7 @@ def test_common_100_103_125():
             query = "select * from upi_txn where txn_id = '" + original_txn_id + "';"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
-            txn_ref = result['txn_ref'].values[0]
+            # txn_ref = result['txn_ref'].values[0]
             callback_1_rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {callback_1_rrn}")
             original_ref_id = '211115084892E01' + str(original_rrn)
@@ -710,7 +743,7 @@ def test_common_100_103_125():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     # "customer_name": original_customer_name,
@@ -910,15 +943,42 @@ def test_common_100_103_125():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "FAILED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": original_txn_id,
+                    "rrn": str(callback_1_rrn)
+                }
+
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
@@ -994,6 +1054,7 @@ def test_common_100_103_126():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
@@ -1018,11 +1079,11 @@ def test_common_100_103_126():
                 raise Exception("Api could not initate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
-                portal_driver = TestSuiteSetup.initialize_firefox_driver()
+                ui_browser = TestSuiteSetup.initialize_ui_browser()
                 paymentLinkUrl = response['paymentLink']
-                portal_driver.get(paymentLinkUrl)
+                ui_browser.goto(paymentLinkUrl)
                 logger.info("Opening the link in the browser")
-                rp_upi_txn = RemotePayTxnPage(portal_driver)
+                rp_upi_txn = RemotePayTxnPage(ui_browser)
                 logger.info("Clicking on UPI to start the txn.")
                 rp_upi_txn.clickOnRemotePayUPI()
                 logger.info("Launching UPI")
@@ -1105,6 +1166,8 @@ def test_common_100_103_126():
             logger.debug(f"generated random original_org_code is : {original_org_code}")
             original_txn_type = result['txn_type'].values[0]
             logger.debug(f"generated random original_txn_type is : {original_txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"generated created_time is : {created_time}")
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -1196,7 +1259,7 @@ def test_common_100_103_126():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "FAILED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "settle_status": "FAILED",
                     "txn_id": original_txn_id,
                     # "customer_name": original_customer_name,
@@ -1393,15 +1456,40 @@ def test_common_100_103_126():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "FAILED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": original_txn_id,
+                }
+
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:

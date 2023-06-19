@@ -74,7 +74,7 @@ def test_common_100_103_046():
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
-        msg=''
+        msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -109,7 +109,8 @@ def test_common_100_103_046():
             logger.info("UPI Collect txn is completed.")
             time.sleep(5)
 
-            query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
+            query = "select * from upi_merchant_config where org_code ='" + str(
+                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             original_upi_mc_id = result['id'].values[0]
@@ -136,8 +137,7 @@ def test_common_100_103_046():
             logger.debug(f"Fetching original_rrn from db query : {original_rrn} ")
             original_txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching original_txn_type from db query : {original_txn_type} ")
-            created_time_original=result['created_time'].values[0]
-
+            created_time_original = result['created_time'].values[0]
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": partial_refunded_amount,
@@ -159,14 +159,15 @@ def test_common_100_103_046():
             logger.debug(f"Fetching partially_refunded_rrn from db query : {partially_refunded_rrn} ")
             partially_refunded_posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching partially_refunded_posting_date from db query: {partially_refunded_posting_date} ")
-            created_time_partially_refunded=result['created_time'].values[0]
+            created_time_partially_refunded = result['created_time'].values[0]
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
                                                                     "amount": full_refund_amount,
                                                                     "originalTransactionId": str(original_txn_id)})
             response = APIProcessor.send_request(api_details)
-            logger.debug(f"Response received from refund api when refund amount is greater than original amount : {response}")
+            logger.debug(
+                f"Response received from refund api when refund amount is greater than original amount : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' and orig_txn_id ='" + str(
                 original_txn_id) + "' order by created_time desc limit 1"
@@ -182,8 +183,7 @@ def test_common_100_103_046():
             logger.debug(f"Fetching fully_refunded_rrn from db query : {fully_refunded_rrn} ")
             fully_refunded_posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching fully_refunded_posting_date from db query: {fully_refunded_posting_date} ")
-            created_time_fully_refunded=result['created_time'].values[0]
-
+            created_time_fully_refunded = result['created_time'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -213,8 +213,8 @@ def test_common_100_103_046():
                     "refund_settle_status": "SETTLED",
                     "txn_id": original_txn_id,
                     "refund_txn_id": partially_refunded_txn_id,
-                    "txn_amt": str(amount)+".00",
-                    "txn_amt_2": str(partial_refunded_amount)+".00",
+                    "txn_amt": str(amount) + ".00",
+                    "txn_amt_2": str(partial_refunded_amount) + ".00",
                     "customer_name": original_customer_name,
                     "refund_customer_name": original_customer_name,
                     "payer_name": original_payer_name,
@@ -254,9 +254,11 @@ def test_common_100_103_046():
                 transactions_history_page.click_on_transaction_by_txn_id(partially_refunded_txn_id)
 
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
+                logger.debug(
+                    f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date from txn history for the txn : {partially_refunded_txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date from txn history for the txn : {partially_refunded_txn_id}, {app_date_and_time}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
@@ -300,30 +302,41 @@ def test_common_100_103_046():
                 logger.debug(
                     f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {app_payment_amt_original}")
                 app_settlement_status_original = transactions_history_page.fetch_settlement_status_text()
-                logger.debug(f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {app_settlement_status_original}")
+                logger.debug(
+                    f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {app_settlement_status_original}")
                 payment_msg_original = transactions_history_page.fetch_txn_payment_msg_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_original}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_original}")
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(fully_refunded_txn_id)
                 fully_refunded_app_rrn = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
+                logger.debug(
+                    f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
                 fully_refunded_app_auth_code = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
+                logger.info(
+                    f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
                 fully_refunded_app_payment_status = transactions_history_page.fetch_txn_status_text()
-                logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {fully_refunded_app_payment_status}")
+                logger.debug(
+                    f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {fully_refunded_app_payment_status}")
                 fully_refunded_app_payment_mode = transactions_history_page.fetch_txn_type_text()
-                logger.debug(f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "f"Mode = {fully_refunded_app_payment_mode}")
+                logger.debug(
+                    f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "f"Mode = {fully_refunded_app_payment_mode}")
                 fully_refunded_app_txn_id = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_txn_id}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_txn_id}")
                 fully_refunded_app_payment_amt = transactions_history_page.fetch_txn_amount_text().split()[1]
-                logger.debug(f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {fully_refunded_app_payment_amt}")
+                logger.debug(
+                    f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {fully_refunded_app_payment_amt}")
                 fully_refunded_app_settlement_status = transactions_history_page.fetch_settlement_status_text()
-                logger.debug(f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_settlement_status}")
+                logger.debug(
+                    f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_settlement_status}")
                 fully_refunded_payment_msg = transactions_history_page.fetch_txn_payment_msg_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_payment_msg}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_payment_msg}")
                 fully_refunded_customer_name = transactions_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_customer_name}")
+                logger.info(
+                    f"Fetching txn customer name from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_customer_name}")
 
                 actual_app_values = {
                     "pmt_status": app_payment_status_original,
@@ -588,7 +601,6 @@ def test_common_100_103_046():
                     "refund_mid": original_mid,
                     "refund_tid": original_tid,
 
-
                     "fully_refunded_pmt_status": "REFUNDED",
                     "fully_refunded_pmt_state": "REFUNDED",
                     "fully_refunded_pmt_mode": "UPI",
@@ -661,7 +673,8 @@ def test_common_100_103_046():
                 logger.debug(f"Query result : {result}")
                 status_db_full_refund = result["status"].iloc[0]
                 payment_mode_db_full_refund = result["payment_mode"].iloc[0]
-                amount_db_full_refund = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                amount_db_full_refund = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 state_db_full_refund = result["state"].iloc[0]
                 payment_gateway_db_refunded = result["payment_gateway"].iloc[0]
                 acquirer_code_db_full_refund = result["acquirer_code"].iloc[0]
@@ -738,7 +751,7 @@ def test_common_100_103_046():
             try:
                 date_and_time_original = date_time_converter.to_portal_format(created_time_original)
                 date_and_time_partially_refunded = date_time_converter.to_portal_format(created_time_partially_refunded)
-                date_and_time_fully_refunded=date_time_converter.to_portal_format(created_time_fully_refunded)
+                date_and_time_fully_refunded = date_time_converter.to_portal_format(created_time_fully_refunded)
 
                 expected_portal_values = {
                     "date_time": date_and_time_original,
@@ -927,7 +940,7 @@ def test_common_100_103_076():
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
 
-        msg=''
+        msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -979,7 +992,6 @@ def test_common_100_103_076():
             created_time_original = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from db query : {created_time_original} ")
 
-
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
@@ -1012,9 +1024,8 @@ def test_common_100_103_076():
             logger.debug(f"Fetching partially_refunded_rrn from db query : {partially_refunded_rrn} ")
             partially_refunded_posting_date = result['posting_date'].values[0]
             logger.debug(f"Fetching partially_refunded_posting_date from db query: {partially_refunded_posting_date} ")
-            created_time_partial_refund=result['created_time'].values[0]
+            created_time_partial_refund = result['created_time'].values[0]
             logger.debug(f"Fetching created_time_partial_refund from db query: {created_time_partial_refund} ")
-
 
             api_details = DBProcessor.get_api_details('paymentRefund',
                                                       request_body={"username": app_username, "password": app_password,
@@ -1111,66 +1122,92 @@ def test_common_100_103_076():
                 transactions_history_page.click_on_transaction_by_txn_id(partially_refunded_txn_id)
 
                 app_rrn_refunded = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
+                logger.debug(
+                    f"Fetching txn_id from txn history for the txn : {partially_refunded_txn_id}, {app_rrn_refunded}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date from txn history for the txn : {partially_refunded_txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date from txn history for the txn : {partially_refunded_txn_id}, {app_date_and_time}")
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
-                logger.debug(f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
+                logger.debug(
+                    f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
                 app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {partially_refunded_txn_id}, {app_auth_code_refunded}")
+                logger.info(
+                    f"Fetching AUTH CODE from txn history for the txn : {partially_refunded_txn_id}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
-                logger.debug(f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
+                logger.debug(
+                    f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
                 app_txn_id_refunded = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
+                logger.debug(
+                    f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
                 app_payment_amt_refunded = transactions_history_page.fetch_txn_amount_text().split()[1]
-                logger.debug(f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt_refunded}")
+                logger.debug(
+                    f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt_refunded}")
                 app_settlement_status_refunded = transactions_history_page.fetch_settlement_status_text()
-                logger.debug(f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {app_settlement_status_refunded}")
+                logger.debug(
+                    f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {app_settlement_status_refunded}")
                 payment_msg_refunded = transactions_history_page.fetch_txn_payment_msg_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_refunded}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_refunded}")
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(original_txn_id)
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {original_txn_id}, {app_rrn_original}")
                 app_auth_code_original = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {original_txn_id}, {app_auth_code_original}")
+                logger.info(
+                    f"Fetching AUTH CODE from txn history for the txn : {original_txn_id}, {app_auth_code_original}")
                 app_payment_status_original = transactions_history_page.fetch_txn_status_text()
-                logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
+                logger.debug(
+                    f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
                 app_payment_mode_original = transactions_history_page.fetch_txn_type_text()
-                logger.debug(f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "
+                logger.debug(
+                    f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "
                     f"Mode = {app_payment_mode_original}")
                 app_txn_id_original = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {app_txn_id_original}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {app_txn_id_original}")
                 app_payment_amt_original = transactions_history_page.fetch_txn_amount_text().split()[1]
-                logger.debug(f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {app_payment_amt_original}")
+                logger.debug(
+                    f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {app_payment_amt_original}")
                 app_settlement_status_original = transactions_history_page.fetch_settlement_status_text()
-                logger.debug(f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {app_settlement_status_original}")
+                logger.debug(
+                    f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {app_settlement_status_original}")
                 payment_msg_original = transactions_history_page.fetch_txn_payment_msg_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_original}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_original}")
                 app_original_date_and_time = transactions_history_page.fetch_date_time_text()
-                logger.info(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id : {app_original_date_and_time}")
+                logger.info(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id : {app_original_date_and_time}")
 
                 transactions_history_page.click_back_Btn_transaction_details()
                 transactions_history_page.click_on_transaction_by_txn_id(fully_refunded_txn_id)
                 fully_refunded_app_rrn = transactions_history_page.fetch_RRN_text()
-                logger.debug(f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
+                logger.debug(
+                    f"Fetching txn_id from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_rrn}")
                 fully_refunded_app_auth_code = transactions_history_page.fetch_auth_code_text()
-                logger.info(f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
+                logger.info(
+                    f"Fetching AUTH CODE from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_app_auth_code}")
                 fully_refunded_app_payment_status = transactions_history_page.fetch_txn_status_text()
-                logger.debug(f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {fully_refunded_app_payment_status}")
+                logger.debug(
+                    f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {fully_refunded_app_payment_status}")
                 fully_refunded_app_payment_mode = transactions_history_page.fetch_txn_type_text()
-                logger.debug(f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "f"Mode = {fully_refunded_app_payment_mode}")
+                logger.debug(
+                    f"Fetching Transaction payment mode of original txn from transaction history of MPOS app: Txn "f"Mode = {fully_refunded_app_payment_mode}")
                 fully_refunded_app_txn_id = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_txn_id}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_txn_id}")
                 fully_refunded_app_payment_amt = transactions_history_page.fetch_txn_amount_text().split()[1]
-                logger.debug(f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {fully_refunded_app_payment_amt}")
+                logger.debug(
+                    f"Fetching Transaction amount of orginal txn from transaction history of MPOS app: Txn Amt = {fully_refunded_app_payment_amt}")
                 fully_refunded_app_settlement_status = transactions_history_page.fetch_settlement_status_text()
-                logger.debug(f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_settlement_status}")
+                logger.debug(
+                    f"Fetching settlement status of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_app_settlement_status}")
                 fully_refunded_payment_msg = transactions_history_page.fetch_txn_payment_msg_text()
-                logger.debug(f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_payment_msg}")
+                logger.debug(
+                    f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {fully_refunded_payment_msg}")
                 fully_refunded_customer_name = transactions_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching txn customer name from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_customer_name}")
+                logger.info(
+                    f"Fetching txn customer name from txn history for the txn : {fully_refunded_txn_id}, {fully_refunded_customer_name}")
 
                 actual_app_values = {
                     "pmt_status": app_payment_status_original,
@@ -1201,7 +1238,7 @@ def test_common_100_103_076():
                     "pmt_mode_3": fully_refunded_app_payment_mode,
                     "settle_status_3": fully_refunded_app_settlement_status,
                     "txn_id_3": fully_refunded_app_txn_id,
-                    "txn_amt_3":str(fully_refunded_app_payment_amt),
+                    "txn_amt_3": str(fully_refunded_app_payment_amt),
                     "customer_name_3": fully_refunded_customer_name,
                     "payer_name_3": original_payer_name,
                     "pmt_msg_3": fully_refunded_payment_msg,

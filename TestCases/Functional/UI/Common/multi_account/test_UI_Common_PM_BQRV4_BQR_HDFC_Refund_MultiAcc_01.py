@@ -9,6 +9,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -21,6 +22,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
+@pytest.mark.portalVal
 def test_common_100_110_005():
     """
     Sub Feature Code: UI_Common_PM_Pure_BQRV4_BQR_full_Refund_via_API_HDFC_MultiAcc
@@ -84,13 +86,13 @@ def test_common_100_110_005():
         logger.debug(f"fetched acc_label_id : {acc_label_id}")
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -113,7 +115,7 @@ def test_common_100_110_005():
             txn_id = str(response["txnId"])
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
             api_details = DBProcessor.get_api_details('stopPayment', request_body={
-                "username": app_username, "password": app_password, "orgCode":org_code ,"txnId": txn_id})
+                "username": app_username, "password": app_password, "orgCode": org_code, "txnId": txn_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for stop payment api is : {response}")
 
@@ -137,7 +139,7 @@ def test_common_100_110_005():
             logger.debug(f"Response received for transaction details api is : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and " \
-                            "external_ref='" + order_id + "' order by created_time desc limit 1"
+                                                                      "external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Response received to fetch refund txn details is : {result}")
@@ -148,7 +150,7 @@ def test_common_100_110_005():
             label_ids_refunded = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"fetched label_ids from txn table is : {label_ids_refunded}")
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
+                         f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {posting_date_refunded}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -210,7 +212,8 @@ def test_common_100_110_005():
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
                 app_txn_id_refunded = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
+                logger.debug(
+                    f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
                 app_payment_amt_refunded = transactions_history_page.fetch_txn_amount_text().split()[1]
                 logger.debug(
                     f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt_refunded}")
@@ -341,7 +344,7 @@ def test_common_100_110_005():
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
                 date_api_original = response["createdTime"]
-                order_id_original= response["orderNumber"]
+                order_id_original = response["orderNumber"]
                 account_label_name_api = response["accountLabel"]
 
                 # Fetching txn data from the same response for refunded txn
@@ -548,16 +551,75 @@ def test_common_100_110_005():
 
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                date_and_time_portal = date_time_converter.to_portal_format(posting_date)
+                refund_date_and_time_portal = date_time_converter.to_portal_format(posting_date_refunded)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED_REFUNDED",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": auth_code,
+                    "rrn": rrn,
+                    "date_time_2": refund_date_and_time_portal,
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": str(amount) + ".00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_refunded,
+                    "auth_code_2": "-" if auth_code_refunded is None else auth_code_refunded,
+                    "rrn_2": "-" if rrn_refunded is None else rrn_refunded,
+                    "acc_label": str(account_label_name),
+                    "acc_label_2": str(account_label_name)
+                }
+
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[1]['Date & Time']
+                transaction_id = transaction_details[1]['Transaction ID']
+                total_amount = transaction_details[1]['Total Amount'].split()
+                auth_code_portal = transaction_details[1]['Auth Code']
+                rr_number = transaction_details[1]['RR Number']
+                transaction_type = transaction_details[1]['Type']
+                status = transaction_details[1]['Status']
+                username = transaction_details[1]['Username']
+                labels = transaction_details[1]['Labels']
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_2 = transaction_details[0]['Auth Code']
+                rr_number_2 = transaction_details[0]['RR Number']
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+                labels_2 = transaction_details[0]['Labels']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number,
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": status_2,
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": str(total_amount_2[1]),
+                    "username_2": username_2,
+                    "txn_id_2": transaction_id_2,
+                    "auth_code_2": auth_code_portal_2,
+                    "rrn_2": rr_number_2,
+                    "acc_label": labels,
+                    "acc_label_2": labels_2
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -568,8 +630,8 @@ def test_common_100_110_005():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_refunded)
-                expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN':"" ,
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",  'date': txn_date,'time': txn_time}
+                expected_values = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': "",
+                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time}
                 receipt_validator.perform_charge_slip_validations(txn_id_refunded,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_values)
@@ -591,6 +653,7 @@ def test_common_100_110_005():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
+@pytest.mark.portalVal
 def test_common_100_110_006():
     """
     Sub Feature Code: UI_Common_PM_Pure_BQRV4_BQR_partial_Refund_via_API_HDFC_MultiAcc
@@ -653,12 +716,12 @@ def test_common_100_110_006():
         logger.debug(f"fetched acc_label_id : {acc_label_id}")
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -681,7 +744,7 @@ def test_common_100_110_006():
             txn_id = str(response["txnId"])
             logger.debug(f"Fetching Txn_id from the API_OUTPUT, Txn_id : {txn_id}")
             api_details = DBProcessor.get_api_details('stopPayment', request_body={
-                "username": app_username, "password": app_password, "orgCode":org_code ,"txnId": txn_id})
+                "username": app_username, "password": app_password, "orgCode": org_code, "txnId": txn_id})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for stop payment api is : {response}")
 
@@ -705,7 +768,7 @@ def test_common_100_110_006():
             logger.debug(f"Response received for transaction details api is : {response}")
 
             query = "select * from txn where org_code='" + org_code + "' and " \
-                            "external_ref='" + order_id + "' order by created_time desc limit 1"
+                                                                      "external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id of refunded txn from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Response received to fetch refund txn details is : {result}")
@@ -716,7 +779,7 @@ def test_common_100_110_006():
             label_ids_refund = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"fetched label_ids from txn table is : {label_ids_refund}")
             logger.debug(f"Fetching auth_code, rrn, txn_id, and posting date from database for "
-                 f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {created_time_refund}")
+                         f"current merchant:{auth_code_refunded}, {rrn_refunded}, {txn_id_refunded}, {created_time_refund}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -778,7 +841,8 @@ def test_common_100_110_006():
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
                 app_txn_id_refunded = transactions_history_page.fetch_txn_id_text()
-                logger.debug(f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
+                logger.debug(
+                    f"Fetching Transaction id from transaction history of MPOS app: Txn Id = {app_txn_id_refunded}")
                 app_payment_amt_refunded = transactions_history_page.fetch_txn_amount_text().split()[1]
                 logger.debug(
                     f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt_refunded}")
@@ -909,7 +973,7 @@ def test_common_100_110_006():
                 txn_type_api_original = response["txnType"]
                 auth_code_api_original = response["authCode"]
                 date_api_original = response["createdTime"]
-                order_id_original= response["orderNumber"]
+                order_id_original = response["orderNumber"]
                 account_label_name_api = response["accountLabel"]
 
                 # Fetching txn data from the same response for refunded txn
@@ -1113,19 +1177,78 @@ def test_common_100_110_006():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                refund_date_and_time_portal = date_time_converter.to_portal_format(created_time_refund)
+
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": auth_code,
+                    "rrn": rrn,
+                    "date_time_2": refund_date_and_time_portal,
+                    "pmt_state_2": "REFUNDED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": str(refund_amount) + ".00",
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_refunded,
+                    "auth_code_2": "-" if auth_code_refunded is None else auth_code_refunded,
+                    "rrn_2": "-" if rrn_refunded is None else rrn_refunded,
+                    "acc_label": account_label_name,
+                    "acc_label_2": account_label_name
+                }
+
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[1]['Date & Time']
+                transaction_id = transaction_details[1]['Transaction ID']
+                total_amount = transaction_details[1]['Total Amount'].split()
+                auth_code_portal = transaction_details[1]['Auth Code']
+                rr_number = transaction_details[1]['RR Number']
+                transaction_type = transaction_details[1]['Type']
+                status = transaction_details[1]['Status']
+                username = transaction_details[1]['Username']
+                labels = transaction_details[1]['Labels']
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_2 = transaction_details[0]['Auth Code']
+                rr_number_2 = transaction_details[0]['RR Number']
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+                labels_2 = transaction_details[0]['Labels']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number,
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": status_2,
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": str(total_amount_2[1]),
+                    "username_2": username_2,
+                    "txn_id_2": transaction_id_2,
+                    "auth_code_2": auth_code_portal_2,
+                    "rrn_2": rr_number_2,
+                    "acc_label": labels,
+                    "acc_label_2": labels_2
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -1138,10 +1261,12 @@ def test_common_100_110_006():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_refund)
 
-                expected_chargeslip_values_original = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                expected_chargeslip_values_original = {'PAID BY:': 'BHARATQR',
+                                                       'merchant_ref_no': 'Ref # ' + str(order_id),
                                                        'RRN': str(rrn), 'time': txn_time, 'date': txn_date,
                                                        'BASE AMOUNT:': "Rs." + str(amount) + ".00"}
-                expected_chargeslip_values_refunded = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                expected_chargeslip_values_refunded = {'PAID BY:': 'BHARATQR',
+                                                       'merchant_ref_no': 'Ref # ' + str(order_id),
                                                        'RRN': "", 'time': txn_time_2, 'date': txn_date_2,
                                                        'BASE AMOUNT:': "Rs." + str(refund_amount) + ".00"}
                 chargeslip_val_result_1 = receipt_validator.perform_charge_slip_validations(

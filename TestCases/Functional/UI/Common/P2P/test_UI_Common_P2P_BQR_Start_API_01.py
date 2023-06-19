@@ -10,6 +10,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.PAX_TransHistoryPage import PaxTransHistoryPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, \
     APIProcessor, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -2290,8 +2291,9 @@ def test_common_500_502_036():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
             try:
+                date_and_time = date_time_converter.to_app_format(txn_created_time)
+
                 expected_app_values = {
                     "pmt_mode": "BHARAT QR",
                     "pmt_status": "EXPIRED",
@@ -2403,7 +2405,6 @@ def test_common_500_502_036():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

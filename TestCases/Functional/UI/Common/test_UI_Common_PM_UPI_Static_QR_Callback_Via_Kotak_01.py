@@ -6,10 +6,12 @@ import pytest
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities.execution_log_processor import EzeAutoLogger
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
-from Utilities import DBProcessor, APIProcessor, Validator, ConfigReader, ResourceAssigner,receipt_validator, date_time_converter
+from Utilities import DBProcessor, APIProcessor, Validator, ConfigReader, ResourceAssigner, receipt_validator, \
+    date_time_converter
 
 logger = EzeAutoLogger(__name__)
 
@@ -71,7 +73,8 @@ def test_common_100_107_033():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund enabled is : {response}")
 
-        query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
         logger.debug(f"Query to fetch data from upi_merchant_config table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result of upi_merchant_config table : {result}")
@@ -90,10 +93,11 @@ def test_common_100_107_033():
         # to delete all entries from qrcode_audit table which was generated previously
         testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False,
                                                    middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -154,7 +158,8 @@ def test_common_100_107_033():
             status = response['status']
             logger.debug(f"Value of status obtained from static qr pure upi callback is : {status}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(ref_id) + "'order by created_time desc limit 1;"
+            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
+                ref_id) + "'order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of txn table : {result}")
@@ -194,6 +199,7 @@ def test_common_100_107_033():
             logger.debug(f"Fetching payer_name from the txn table : {payer_name}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"Fetching rr_number from the txn table : {rrn_db}")
+            external_ref = result['external_ref'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -232,7 +238,8 @@ def test_common_100_107_033():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -256,7 +263,8 @@ def test_common_100_107_033():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_rrn = txn_history_page.fetch_RRN_text()
@@ -338,7 +346,8 @@ def test_common_100_107_033():
                         rrn_api = elements["rrNumber"]
                         logger.debug(f"Value of rrNumber obtained from txnlist api is : {rrn_api}")
                         settlement_status_api = elements["settlementStatus"]
-                        logger.debug(f"Value of settlementStatus obtained from txnlist api is : {settlement_status_api}")
+                        logger.debug(
+                            f"Value of settlementStatus obtained from txnlist api is : {settlement_status_api}")
                         issuer_code_api = elements["issuerCode"]
                         logger.debug(f"Value of issuerCode obtained from txnlist api is : {issuer_code_api}")
                         acquirer_code_api = elements["acquirerCode"]
@@ -510,6 +519,54 @@ def test_common_100_107_033():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
 
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "rrn": str(ref_id),
+                    "auth_code": "-" if auth_code is None else auth_code
+                }
+
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number,
+                    "auth_code": auth_code
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -595,7 +652,8 @@ def test_common_100_107_034():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund enabled is : {response}")
 
-        query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
         logger.debug(f"Query to fetch data from upi_merchant_config table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result of upi_merchant_config table : {result}")
@@ -614,10 +672,11 @@ def test_common_100_107_034():
         # to delete all entries from qrcode_audit table which was generated previously
         testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False,
                                                    middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -678,7 +737,8 @@ def test_common_100_107_034():
             status = response['status']
             logger.debug(f"Value of status obtained from static qr pure upi callback is : {status}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(ref_id) + "'order by created_time desc limit 1;"
+            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
+                ref_id) + "'order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of txn table : {result}")
@@ -718,6 +778,8 @@ def test_common_100_107_034():
             logger.debug(f"Fetching bank_name from the txn table : {bank_name_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"Fetching rr_number from the txn table : {rrn_db}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"Fetching external_ref from the txn table : {external_ref}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -755,7 +817,8 @@ def test_common_100_107_034():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -779,7 +842,8 @@ def test_common_100_107_034():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -865,7 +929,8 @@ def test_common_100_107_034():
                         rrn_api = elements["rrNumber"]
                         logger.debug(f"Value of rrNumber obtained from txnlist api is : {rrn_api}")
                         settlement_status_api = elements["settlementStatus"]
-                        logger.debug(f"Value of settlementStatus obtained from txnlist api is : {settlement_status_api}")
+                        logger.debug(
+                            f"Value of settlementStatus obtained from txnlist api is : {settlement_status_api}")
                         issuer_code_api = elements["issuerCode"]
                         logger.debug(f"Value of issuerCode obtained from txnlist api is : {issuer_code_api}")
                         acquirer_code_api = elements["acquirerCode"]
@@ -1037,6 +1102,54 @@ def test_common_100_107_034():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
 
+        # -----------------------------------------Start of Portal Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "rrn": str(ref_id),
+                    "auth_code": "-" if auth_code is None else auth_code
+                }
+
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number,
+                    "auth_code": auth_code
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
@@ -1110,7 +1223,8 @@ def test_common_100_107_035():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
-        query = "select * from upi_merchant_config where org_code ='" + str(org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'KOTAK_WL';"
         logger.debug(f"Query to fetch data from upi_merchant_config table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result of upi_merchant_config table : {result}")
@@ -1129,10 +1243,11 @@ def test_common_100_107_035():
         # to delete all entries from qrcode_audit table which was generated previously
         testsuite_teardown.delete_qrcode_audit_table_entry(portal_username, portal_password, org_code)
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False,
                                                    middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -1193,7 +1308,8 @@ def test_common_100_107_035():
             status = response['status']
             logger.debug(f"Value of status obtained from static qr pure upi callback is : {status}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(ref_id) + "'order by created_time desc limit 1;"
+            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
+                ref_id) + "'order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of txn table : {result}")
@@ -1235,6 +1351,8 @@ def test_common_100_107_035():
             logger.debug(f"Fetching payer_name from the txn table: {payer_name_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"Fetching rr_number from the txn table : {rrn_db}")
+            external_ref = result['external_ref'].values[0]
+            logger.debug(f"Fetching external_ref from the txn table: {external_ref}")
 
             # 2nd callback for UPI with same ref_id
             api_details = DBProcessor.get_api_details('callbackKotak', request_body={
@@ -1257,7 +1375,8 @@ def test_common_100_107_035():
             status_2 = response['status']
             logger.debug(f"Value of status obtained from static qr pure upi second callback is : {status_2}")
 
-            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(ref_id) + "'order by created_time desc limit 1; "
+            query = "select * from txn where org_code = '" + str(org_code) + "' and rr_number = '" + str(
+                ref_id) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table after second callback  : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result fetched from txn table after second callback : {result}")
@@ -1300,7 +1419,8 @@ def test_common_100_107_035():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging into the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -1324,7 +1444,8 @@ def test_common_100_107_035():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_order_id = txn_history_page.fetch_order_id_text()
@@ -1411,7 +1532,8 @@ def test_common_100_107_035():
                         rrn_api = elements["rrNumber"]
                         logger.debug(f"Value of rrNumber obtained from txnlist api is : {rrn_api}")
                         settlement_status_api = elements["settlementStatus"]
-                        logger.debug(f"Value of settlementStatus obtained from txnlist api is : {settlement_status_api}")
+                        logger.debug(
+                            f"Value of settlementStatus obtained from txnlist api is : {settlement_status_api}")
                         issuer_code_api = elements["issuerCode"]
                         logger.debug(f"Value of issuerCode obtained from txnlist api is : {issuer_code_api}")
                         acquirer_code_api = elements["acquirerCode"]
@@ -1515,9 +1637,11 @@ def test_common_100_107_035():
                 upi_org_code_db = result["org_code"].iloc[0]
                 logger.debug(f"Fetching org_code from upi_txn table : {txn_id_2} : {upi_org_code_db}")
                 upi_txn_additional_field1_db = result["additional_field1"].iloc[0]
-                logger.debug(f"Fetching additional_field1 from upi_txn table : {txn_id_2} : {upi_txn_additional_field1_db}")
+                logger.debug(
+                    f"Fetching additional_field1 from upi_txn table : {txn_id_2} : {upi_txn_additional_field1_db}")
                 upi_txn_additional_field3_db = result["additional_field3"].iloc[0]
-                logger.debug(f"Fetching additional_field3 from upi_txn table : {txn_id_2} : {upi_txn_additional_field3_db}")
+                logger.debug(
+                    f"Fetching additional_field3 from upi_txn table : {txn_id_2} : {upi_txn_additional_field3_db}")
                 upi_txn_resp_code_db = result["resp_code"].iloc[0]
                 logger.debug(f"Fetching resp_code from upi_txn table : {txn_id_2} : {upi_txn_resp_code_db}")
                 upi_txn_txn_type_db = result["txn_type"].iloc[0]
@@ -1585,7 +1709,53 @@ def test_common_100_107_035():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
+        # -----------------------------------------Start of Portal Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
+            try:
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "rrn": str(ref_id),
+                    "auth_code": "-" if auth_code is None else auth_code
+                }
 
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number,
+                    "auth_code": auth_code
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")

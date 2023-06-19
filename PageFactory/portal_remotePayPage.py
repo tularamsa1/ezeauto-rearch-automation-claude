@@ -10,11 +10,13 @@ class RemotePayTxnPage(BasePage):
     ddl_cardExpiryYear = "//*[@id='cdk-accordion-child-0']/div/div/div[4]/div/select"
     lbl_cardCvv = "//input[@placeholder='Enter CVV']"
 
-    btn_debitClickAndExpand = "//mat-panel-title[contains(text(),'Debit Card')]"
+    btn_debitClickAndExpand = (By.XPATH, "//mat-panel-title[contains(text(),'Debit Card')]")
     # ddl_debitCardExpiryMonth = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[
     # 1]/div[2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[3]/div[1]/select[1]")
-    ddl_debitCardExpiryMonth = "//*[@id='cdk-accordion-child-1']//div/div[3]/div/select"
-    ddl_debitCardExpiryYear = "//*[@id='cdk-accordion-child-1']//div/div[4]/div/select"
+    ddl_debitCardExpiryMonth = (By.XPATH,
+                                "//body/my-app/app-duplicate-app/div/div[1]/div/div[1]/mat-accordion/div/div[2]/mat-expansion-panel/div/div/div/div[3]/div/select")
+    ddl_debitCardExpiryYear = (By.XPATH,
+                               "//body/my-app/app-duplicate-app/div/div[1]/div/div[1]/mat-accordion/div/div[2]/mat-expansion-panel/div/div/div/div[4]/div/select")
     # ddl_debitCardExpiryYear = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[1]/div[
     # 2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[4]/div[1]/select[1]")
 
@@ -24,12 +26,14 @@ class RemotePayTxnPage(BasePage):
     # btn_successMessage = "//h3[contains(text(),'Your payment was successful. You may close the bro')]"
     # txt_failedMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Please')]")
     # txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Your payment attempt failed, Sorry for the inconve')]")
-    txt_timeoutMessage = "//h3[contains(text(),'Sorry! Your payment could not be processed. Any am')]"
+    txt_timeoutMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Any am')]")
     # txt_expiryMessage = (By.XPATH,"//h3[contains(text(),'Sorry!You have exceeded the time available to comp')]")
-    txt_expiryMessage = "//h3[contains(text(),'Remote payment link has expired, Use a different m')]"
-    txt_maxAttempts = "//h3[contains(text(),'Maximum number of attempts for this url exceeded. ')]"
+    txt_expiryMessage = (By.XPATH, "//h3[contains(text(),'Remote payment link has expired, Use a different m')]")
+    txt_maxAttempts = (By.XPATH, "//h3[contains(text(),'Maximum number of attempts for this url exceeded. ')]")
 
+    # txt_failedMessage = (By.XPATH, "//h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]")
     txt_failedMessage = "//h3[contains(text(), 'Your payment attempt failed, Sorry for the inconve')]"
+
     btn_remotePayUpi = "//mat-panel-title[contains(text(),'UPI')]"
     btn_remotePayLaunchUpi = "//button[contains(text(),'Launch a UPI app ')]"
     btn_remotePayCancelUpi = "//button[@data-target='#confirmCancel']"

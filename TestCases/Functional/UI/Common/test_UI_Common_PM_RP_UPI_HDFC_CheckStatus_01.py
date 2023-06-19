@@ -18,6 +18,7 @@ from PageFactory.portal_remotePayPage import RemotePayTxnPage
 from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, receipt_validator, \
     ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
+
 logger = EzeAutoLogger(__name__)
 
 
@@ -155,7 +156,7 @@ def test_common_100_103_003():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
@@ -554,7 +555,7 @@ def test_common_100_103_006():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {"pmt_mode": "UPI",
                                      "pmt_status": "FAILED",
-                                     "txn_amt": str(amount)+".00",
+                                     "txn_amt": str(amount) + ".00",
                                      "settle_status": "FAILED",
                                      "txn_id": txn_id,
                                      "rrn": str(rrn),
@@ -904,6 +905,15 @@ def test_common_100_103_047():
             upi_mc_id = result['id'].values[0]
             logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upi_mc_id: {upi_mc_id}")
 
+            query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "' and payment_mode='UPI';"
+            logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            payment_intent_id = result['id'].values[0]
+            logger.info(f"generated random rrn number is : {payment_intent_id}")
+            intent_status = result['status'].values[0]
+            logger.info(f"Payment intent status for UPI is: {intent_status}")
+
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
@@ -912,8 +922,6 @@ def test_common_100_103_047():
             logger.debug(f"Query result, original_txn_id : {original_txn_id}")
             new_txn_id = result['id'].values[0]
             logger.debug(f"Query result new_txn_id : {new_txn_id}")
-            original_rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, original_txn_id and original_rrn : {original_txn_id} and {original_rrn}")
             original_customer_name = result['customer_name'].values[0]
             logger.debug(f"generated random customer_name is : {original_customer_name}")
             original_payer_name = result['payer_name'].values[0]
@@ -938,16 +946,11 @@ def test_common_100_103_047():
             logger.debug(f"Settlement status from txn is : {original_acquirer_code}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"Posting date from txn is : {original_posting_date}")
-            created_time=result['created_time'].values[0]
+            created_time = result['created_time'].values[0]
+            original_rrn = result['rr_number'].values[0]
+            logger.debug(f"Query result, original_txn_id and original_rrn : {original_txn_id} and {original_rrn}")
 
-            query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                order_id) + "' and payment_mode='UPI';"
-            logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            payment_intent_id = result['id'].values[0]
-            logger.info(f"generated random rrn number is : {payment_intent_id}")
-            intent_status = result['status'].values[0]
-            logger.info(f"Payment intent status for UPI is: {intent_status}")
+
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -974,7 +977,7 @@ def test_common_100_103_047():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "PENDING",
-                                       "txn_amt": str(amount)+".00",
+                                       "txn_amt": str(amount) + ".00",
                                        "settle_status": "PENDING",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -1157,18 +1160,18 @@ def test_common_100_103_047():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                query = "select * from txn where id='" + original_txn_id + "';"
-                logger.debug(
-                    f"Query to fetch rr_number of original txn after sending refund api from database : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                rr_number_original_2 = result['rr_number'].iloc[0]
+                # query = "select * from txn where id='" + original_txn_id + "';"
+                # logger.debug(
+                #     f"Query to fetch rr_number of original txn after sending refund api from database : {query}")
+                # result = DBProcessor.getValueFromDB(query)
+                # rr_number_original_2 = result['rr_number'].iloc[0]
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "PENDING",
                     "pmt_type": "UPI",
                     "txn_amt": str(amount) + ".00",
                     "username": app_username,
-                    "rrn": rr_number_original_2,
+                    "rrn": original_rrn,
                     "txn_id": original_txn_id
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
@@ -1269,7 +1272,7 @@ def test_common_100_103_048():
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
-        msg=''
+        msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -1376,7 +1379,7 @@ def test_common_100_103_048():
             logger.debug(f"Settlement status from txn is : {original_acquirer_code}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"Posting date from txn is : {original_posting_date}")
-            created_time=result['created_time'].values[0]
+            created_time = result['created_time'].values[0]
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -1412,7 +1415,7 @@ def test_common_100_103_048():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount)+".00",
+                                       "txn_amt": str(amount) + ".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
@@ -1695,7 +1698,7 @@ def test_common_100_103_088():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_gateway='UPI')
+                                                               portal_pw=portal_password, payment_gateway='UPI')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -1715,7 +1718,7 @@ def test_common_100_103_088():
 
         # Variable which tracks if the execution is going on through all the lines of code of test case.
         # Set to failure where ever there are chances of failure.
-        msg=''
+        msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -1820,11 +1823,10 @@ def test_common_100_103_088():
             logger.debug(f"Settlement status from txn is : {original_acquirer_code}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"Posting date from txn is : {original_posting_date}")
-            created_time=result['created_time'].values[0]
+            created_time = result['created_time'].values[0]
             logger.debug(f"Posting created_time from txn is : {created_time}")
-            auth_code=result['auth_code'].values[0]
+            auth_code = result['auth_code'].values[0]
             logger.debug(f"Posting auth_code from txn is : {auth_code}")
-
 
             query = "select * from payment_intent where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "' and payment_mode='UPI';"
@@ -1860,7 +1862,7 @@ def test_common_100_103_088():
                 date_and_time = date_time_converter.to_app_format(original_posting_date)
                 expected_app_values = {"pmt_mode": "UPI",
                                        "pmt_status": "FAILED",
-                                       "txn_amt": str(amount)+".00",
+                                       "txn_amt": str(amount) + ".00",
                                        "settle_status": "FAILED",
                                        "txn_id": original_txn_id,
                                        "customer_name": original_customer_name,
