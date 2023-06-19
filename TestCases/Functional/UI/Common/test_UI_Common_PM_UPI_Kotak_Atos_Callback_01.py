@@ -484,7 +484,7 @@ def test_common_100_101_163():
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
-                    "pmt_state": "UPG_REFUND_PENDING",
+                    "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
                     "txn_amt": "{:.2f}".format(amount),
                     "username": app_username,
