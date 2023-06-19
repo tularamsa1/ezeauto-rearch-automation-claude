@@ -544,6 +544,3 @@ def getAggregateValueFromMongo(db_name: str, collection: str, query: str):
         return mydoc
     except Exception as e:
         logger.error(f"Unable to connect to Mongo DB for aggregate method from Environment:{env_ip} due to error {str(e)}")
-
-
-print(getValueFromDB("select * from txn where id='230619062720017E010039204';"))
