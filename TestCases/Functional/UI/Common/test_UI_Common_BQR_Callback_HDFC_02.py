@@ -2549,11 +2549,12 @@ def test_common_100_102_137():
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
 
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -2616,6 +2617,7 @@ def test_common_100_102_137():
             result = DBProcessor.getValueFromDB(query)
             posting_date_upg = result['created_time'].values[0]
             rrn_upg = result['rr_number'].iloc[0]
+            auth_code_upg = result['auth_code'].iloc[0]
             external_ref_upg = result['external_ref'].values[0]
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -2999,13 +3001,43 @@ def test_common_100_102_137():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
+                date_and_time_portal_2 = date_time_converter.to_portal_format(posting_date_upg)
+                expected_portal_values = {
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "UPG_AUTHORIZED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": "{:.2f}".format(amount),
+                    "username_2": "EZETAP",
+                    "txn_id_2": txn_id_upg,
+                    "auth_code_2": auth_code_upg,
+                    "rrn_2": str(rrn_upg)
+                }
+
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref_upg)
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_2 = transaction_details[0]['Auth Code']
+                rr_number_2 = transaction_details[0]['RR Number']
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": str(status_2),
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": total_amount_2[1],
+                    "username_2": username_2,
+                    "txn_id_2": transaction_id_2,
+                    "auth_code_2": auth_code_portal_2,
+                    "rrn_2": rr_number_2
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
