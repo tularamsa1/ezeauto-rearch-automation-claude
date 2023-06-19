@@ -163,19 +163,26 @@ def getValueFromDB(query: str, db_name: str = 'ezetap_demo'):
     """
 
     envi = ConfigReader.read_config("environment", "str_exe_env")
+    ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
     try:
         ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
     except Exception as e:
         logger.warning(e)
         ssh_private_key_password = None
 
-    tunnel = sshtunnel.SSHTunnelForwarder(
-        ssh_address_or_host=envi.lower(),
-        remote_bind_address=('localhost', 3306),
-        ssh_private_key_password=ssh_private_key_password
-    )
-
-    tunnel.start()
+    try:
+        sshtunnel.SSH_TIMEOUT = 5.0
+        tunnel = sshtunnel.SSHTunnelForwarder(
+            ssh_address_or_host=envi.lower(),
+            remote_bind_address=('localhost', 3306),
+            ssh_private_key_password=ssh_private_key_password
+        )
+        tunnel.start()
+    except Exception as e:
+        print(f"Stopping the execution as server is disconnected due to : {e}")
+        logger.error(f"Stopping the execution as server is disconnected due to : {e}")
+        if ssh_username.lower() != 'ezetap':
+            os.system("kill python3.8")
     df_query_result = ""
     try:
         dict_db_credentials = get_db_credentials_from_excel()
@@ -205,19 +212,26 @@ def setValueToDB(query, db_name="ezetap_demo") -> str:
         :return: string
         """
     envi = ConfigReader.read_config("environment", "str_exe_env")
+    ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
     try:
         ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
     except Exception as e:
         logger.warning(e)
         ssh_private_key_password = None
 
-    tunnel = sshtunnel.SSHTunnelForwarder(
-        ssh_address_or_host=envi.lower(),
-        remote_bind_address=('localhost', 3306),
-        ssh_private_key_password=ssh_private_key_password
-    )
-
-    tunnel.start()
+    try:
+        sshtunnel.SSH_TIMEOUT = 5.0
+        tunnel = sshtunnel.SSHTunnelForwarder(
+            ssh_address_or_host=envi.lower(),
+            remote_bind_address=('localhost', 3306),
+            ssh_private_key_password=ssh_private_key_password
+        )
+        tunnel.start()
+    except Exception as e:
+        print(f"Stopping the execution as server is disconnected due to : {e}")
+        logger.error(f"Stopping the execution as server is disconnected due to : {e}")
+        if ssh_username.lower() != 'ezetap':
+            os.system("kill python3.8")
     try:
         dict_db_credentials = get_db_credentials_from_excel()
         logger.info(
@@ -366,19 +380,26 @@ def delete_value_from_db(query, db_name="ezetap_demo") -> str:
         :return: string
         """
     envi = ConfigReader.read_config("environment", "str_exe_env")
+    ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
     try:
         ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
     except Exception as e:
         logger.warning(e)
         ssh_private_key_password = None
 
-    tunnel = sshtunnel.SSHTunnelForwarder(
-        ssh_address_or_host=envi.lower(),
-        remote_bind_address=('localhost', 3306),
-        ssh_private_key_password=ssh_private_key_password
-    )
-
-    tunnel.start()
+    try:
+        sshtunnel.SSH_TIMEOUT = 5.0
+        tunnel = sshtunnel.SSHTunnelForwarder(
+            ssh_address_or_host=envi.lower(),
+            remote_bind_address=('localhost', 3306),
+            ssh_private_key_password=ssh_private_key_password
+        )
+        tunnel.start()
+    except Exception as e:
+        print(f"Stopping the execution as server is disconnected due to : {e}")
+        logger.error(f"Stopping the execution as server is disconnected due to : {e}")
+        if ssh_username.lower() != 'ezetap':
+            os.system("kill python3.8")
     try:
         dict_db_credentials = get_db_credentials_from_excel()
         logger.info(
@@ -523,3 +544,6 @@ def getAggregateValueFromMongo(db_name: str, collection: str, query: str):
         return mydoc
     except Exception as e:
         logger.error(f"Unable to connect to Mongo DB for aggregate method from Environment:{env_ip} due to error {str(e)}")
+
+
+print(getValueFromDB("select * from txn where id='230619062720017E010039204';"))

@@ -6,7 +6,7 @@ from datetime import datetime
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal, get_txn_details_for_diff_order_id
 from Utilities.execution_log_processor import EzeAutoLogger
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
@@ -1990,6 +1990,7 @@ def test_common_100_102_287():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -2026,7 +2027,7 @@ def test_common_100_102_287():
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id_new)
+                transaction_details = get_txn_details_for_diff_order_id(order_id=order_id_new)
                 date_time_new = transaction_details[0]['Date & Time']
                 transaction_id_new = transaction_details[0]['Transaction ID']
                 total_amount_new = transaction_details[0]['Total Amount'].split()
@@ -2060,7 +2061,7 @@ def test_common_100_102_287():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
