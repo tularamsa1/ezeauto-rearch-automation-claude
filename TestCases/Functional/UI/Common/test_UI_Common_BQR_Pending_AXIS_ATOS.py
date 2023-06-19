@@ -8,6 +8,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -77,7 +78,7 @@ def test_common_100_102_209():
         bqr_m_pan = result["merchant_pan"].iloc[0]
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -169,7 +170,7 @@ def test_common_100_102_209():
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                # app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -317,17 +318,49 @@ def test_common_100_102_209():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "PENDING",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    # "rrn": str(rrn),
+
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password,
+                                                                         order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    # "rrn": rr_number,
+
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation------------------------------------
 
         GlobalVariables.time_calc.validation.end()

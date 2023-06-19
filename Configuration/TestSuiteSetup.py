@@ -531,9 +531,9 @@ def initialize_app_driver(request, no_reset="false"):
 
 def launch_browser_and_context_initialize(browser_type: str = "chromium"):
     if browser_type == "firefox":
-        GlobalVariables.browser = GlobalVariables.play_wright.firefox.launch(headless=True)
+        GlobalVariables.browser = GlobalVariables.play_wright.firefox.launch(headless=False)
     else:
-        GlobalVariables.browser = GlobalVariables.play_wright.chromium.launch(headless=True)
+        GlobalVariables.browser = GlobalVariables.play_wright.chromium.launch(headless=False)
     GlobalVariables.context = GlobalVariables.browser.new_context(viewport={'width': 1920, 'height': 1080})
 
 

@@ -26,28 +26,18 @@ WebDriver BiDi listening on ws://127.0.0.1:55651
 console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileL8cXDp/search.json.mozlz4", (void 0)))
 DevTools listening on ws://127.0.0.1:55651/devtools/browser/8d10d997-64cf-43c6-8572-996a8a68687d
 1676890887749	Marionette	INFO	Stopped listening on port 42277
-1686549066501	geckodriver	INFO	Listening on 127.0.0.1:58257
-1686549066998	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "44787" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile7WBMly"
+1686557684066	geckodriver	INFO	Listening on 127.0.0.1:55785
+1686557684567	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "41935" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileBHY8Ri"
 console.warn: services.settings: Ignoring preference override of remote settings server
 console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
 ATTENTION: default value of option mesa_glthread overridden by environment.
-ATTENTION: default value of option mesa_glthread overridden by environment.
-1686549068190	Marionette	INFO	Marionette enabled
-1686549068194	Marionette	INFO	Listening on port 44653
-Read port: 44653
-WebDriver BiDi listening on ws://127.0.0.1:44787
-1686549068379	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1686557685831	Marionette	INFO	Marionette enabled
+1686557685835	Marionette	INFO	Listening on port 46027
+Read port: 46027
+WebDriver BiDi listening on ws://127.0.0.1:41935
+1686557686045	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
 console.error: ({})
-[ERROR glean_core] Error setting metrics feature config: Json(Error("EOF while parsing a value", line: 1, column: 0))
-DevTools listening on ws://127.0.0.1:44787/devtools/browser/a0db81cf-067e-4388-b7fd-c427c48d33b0
-1686549075215	Marionette	INFO	Stopped listening on port 44653
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
-[Child 29999, Main Thread] WARNING: JSWindowActorChild::SendRawMessage (Conduits, ConduitClosed) not sent: !CanSend() || !mManager || !mManager->CanSend(): file /build/firefox-J2eTmk/firefox-113.0.2+build1/dom/ipc/jsactor/JSWindowActorChild.cpp:57
+DevTools listening on ws://127.0.0.1:41935/devtools/browser/d9b7aee7-8036-4453-ad81-6f97dd5b4246
+1686557688238	Marionette	INFO	Stopped listening on port 46027

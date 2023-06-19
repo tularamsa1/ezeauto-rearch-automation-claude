@@ -300,9 +300,9 @@ def test_common_100_103_154():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of App Validation---------------------------------------
+        # -----------------------------------------End of App Validation---------------------------------------
 
-            # -----------------------------------------Start of API Validation------------------------------------
+        # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
@@ -381,9 +381,9 @@ def test_common_100_103_154():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of API Validation---------------------------------------
+        # -----------------------------------------End of API Validation---------------------------------------
 
-            # -----------------------------------------Start of DB Validation--------------------------------------
+        # -----------------------------------------Start of DB Validation--------------------------------------
         if (ConfigReader.read_config("Validations", "db_validation")) == "True":
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
@@ -461,14 +461,14 @@ def test_common_100_103_154():
                 }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")
-                # ---------------------------------------------------------------------------------------------
+            # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstDB(expectedDB=expectedDBValues, actualDB=actualDBValues)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-            # -----------------------------------------End of DB Validation---------------------------------------
-            # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        # -----------------------------------------End of DB Validation---------------------------------------
 
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
@@ -491,8 +491,8 @@ def test_common_100_103_154():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
-# -----------------------------------------End of ChargeSlip Validation---------------------------------------
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -535,13 +535,11 @@ def test_common_100_103_154():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
-
-
+        # -----------------------------------------End of Portal Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
-            # -------------------------------------------End of Validation---------------------------------------------
+    # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
 
