@@ -9,7 +9,7 @@ from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
-from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal, get_txn_details_for_diff_order_id
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner,  date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
@@ -2889,7 +2889,7 @@ def test_common_100_102_064():
                 username = transaction_details[0]['Username']
                 logger.info(f"fetched username from portal {username}")
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref_upg)
+                transaction_details = get_txn_details_for_diff_order_id(order_id=external_ref_upg)
                 date_time_2 = transaction_details[0]['Date & Time']
                 logger.info(f"fetched date_time_2 from portal {date_time_2}")
                 transaction_id_2 = transaction_details[0]['Transaction ID']
@@ -2925,7 +2925,6 @@ def test_common_100_102_064():
                     "auth_code_2": auth_code_portal_2,
                     "rrn_2": rr_number_2
                 }
-                # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
