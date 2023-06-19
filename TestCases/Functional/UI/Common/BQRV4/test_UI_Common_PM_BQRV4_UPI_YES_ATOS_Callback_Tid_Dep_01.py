@@ -2028,14 +2028,14 @@ def test_common_100_102_287():
                 username = transaction_details[0]['Username']
 
                 transaction_details = get_txn_details_for_diff_order_id(order_id=order_id_new)
-                date_time_new = transaction_details[0]['Date & Time']
-                transaction_id_new = transaction_details[0]['Transaction ID']
-                total_amount_new = transaction_details[0]['Total Amount'].split()
-                auth_code_portal_new = transaction_details[0]['Auth Code']
-                rr_number_new = transaction_details[0]['RR Number']
-                transaction_type_new = transaction_details[0]['Type']
-                status_new = transaction_details[0]['Status']
-                username_new = transaction_details[0]['Username']
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_2 = transaction_details[0]['Auth Code']
+                rr_number_2 = transaction_details[0]['RR Number']
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -2046,14 +2046,14 @@ def test_common_100_102_287():
                     "txn_id": transaction_id,
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
-                    "date_time_2": date_time_new,
-                    "pmt_state_2": str(status_new),
-                    "pmt_type_2": transaction_type_new,
-                    "txn_amt_2": total_amount_new[1],
-                    "username_2": username_new,
-                    "txn_id_2": transaction_id_new,
-                    "auth_code_2": auth_code_portal_new,
-                    "rrn_2": rr_number_new
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": str(status_2),
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": total_amount_2[1],
+                    "username_2": username_2,
+                    "txn_id_2": transaction_id_2,
+                    "auth_code_2": auth_code_portal_2,
+                    "rrn_2": rr_number_2
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
