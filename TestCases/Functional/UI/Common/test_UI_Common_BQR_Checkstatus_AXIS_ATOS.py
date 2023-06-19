@@ -376,7 +376,7 @@ def test_common_100_102_200():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                auth_code_portal = transaction_details[1]['Auth Code']
+                auth_code_portal = transaction_details[0]['Auth Code']
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
