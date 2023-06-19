@@ -6,7 +6,7 @@ from datetime import datetime
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
+from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal, get_txn_details_for_diff_order_id
 from Utilities.execution_log_processor import EzeAutoLogger
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
@@ -1990,6 +1990,7 @@ def test_common_100_102_287():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
+
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -2026,15 +2027,15 @@ def test_common_100_102_287():
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id_new)
-                date_time_new = transaction_details[0]['Date & Time']
-                transaction_id_new = transaction_details[0]['Transaction ID']
-                total_amount_new = transaction_details[0]['Total Amount'].split()
-                auth_code_portal_new = transaction_details[0]['Auth Code']
-                rr_number_new = transaction_details[0]['RR Number']
-                transaction_type_new = transaction_details[0]['Type']
-                status_new = transaction_details[0]['Status']
-                username_new = transaction_details[0]['Username']
+                transaction_details = get_txn_details_for_diff_order_id(order_id=order_id_new)
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                auth_code_portal_2 = transaction_details[0]['Auth Code']
+                rr_number_2 = transaction_details[0]['RR Number']
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -2045,14 +2046,14 @@ def test_common_100_102_287():
                     "txn_id": transaction_id,
                     "auth_code": auth_code_portal,
                     "rrn": rr_number,
-                    "date_time_2": date_time_new,
-                    "pmt_state_2": str(status_new),
-                    "pmt_type_2": transaction_type_new,
-                    "txn_amt_2": total_amount_new[1],
-                    "username_2": username_new,
-                    "txn_id_2": transaction_id_new,
-                    "auth_code_2": auth_code_portal_new,
-                    "rrn_2": rr_number_new
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": str(status_2),
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": total_amount_2[1],
+                    "username_2": username_2,
+                    "txn_id_2": transaction_id_2,
+                    "auth_code_2": auth_code_portal_2,
+                    "rrn_2": rr_number_2
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
@@ -2060,7 +2061,7 @@ def test_common_100_102_287():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------End of Portal Validation---------------------------------------
 
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
