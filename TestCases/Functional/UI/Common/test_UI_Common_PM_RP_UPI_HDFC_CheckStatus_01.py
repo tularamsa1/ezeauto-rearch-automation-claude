@@ -5,7 +5,6 @@ import time
 from datetime import datetime
 import pytest
 from termcolor import colored
-import pyautogui
 
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables

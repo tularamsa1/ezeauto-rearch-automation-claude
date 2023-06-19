@@ -1483,7 +1483,7 @@ def test_common_100_108_032():
             db_txn_payment_mode = result["payment_mode"].iloc[0]
             db_txn_status = result["status"].iloc[0]
             db_txn_state = result["state"].iloc[0]
-            created_time_orig = result["created_time"].iloc[0]
+            created_time_orig = result["created_time"].values[0]
             db_auth_code = result["auth_code"].iloc[0]
             db_rrn_number = result["rr_number"].iloc[0]
             txn_ref_num = result["external_ref"].iloc[0]
@@ -1765,9 +1765,7 @@ def test_common_100_108_032():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
-
                 date_and_time_portal = date_time_converter.to_portal_format(created_time_orig)
-
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED",
