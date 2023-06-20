@@ -34,6 +34,10 @@ def configure_merchants():
                 if str(ConfigReader.read_config("standalone_features", "setup_for_NonUI")).lower() == "true":
                     configure_card_pg_config_through_db()
                     configure_idfc_is_settings_through_db()
+                    configure_bqr_settings_through_api()
+                    configure_upi_settings_through_api()
+                    configure_bqr_settings_through_db()
+                    configure_upi_settings_through_db()
                 else:
                     if str(ConfigReader.read_config("Setup","create_and_configure_merchants_with_multi_account")).lower() == "true":
                         configure_bqr_settings_through_db_multi_account()
@@ -252,7 +256,7 @@ def configure_upi_settings_through_db():
         else:
             logger.debug(f"No merchants available for configuring upi through db.")
     except Exception as e:
-        logger.error(f"Unable to configure the bqr setting due to error {str(e)}")
+        logger.error(f"Unable to configure the upi setting due to error {str(e)}")
 
 
 def configure_cnp_settings_through_db():
@@ -601,12 +605,19 @@ def generate_upi_setting_api_body(merchant_code: str, acquirer_code: str, paymen
         merchant_configuration_api['categoryCode'] = settings['category_code']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['mid'] = settings['mid']
         merchant_configuration_api['acquisitions'][0]['terminals'][0]['tid'] = settings['tid']
+        if payment_gateway not in ('FC', 'ICICI'):
+            merchant_configuration_api['pgMerchantId'] = settings['tid']
+            merchant_configuration_api['vpa'] = settings['tid'] + "@upi"
         # Added condition check for FC Payment Gateway to Initialize unique pgmerchantid and VPA
-        if payment_gateway == 'FC':
+        elif payment_gateway == 'FC':
             pgmerchantid_value = datetime.now().strftime('%m%d%y%H%M')
             merchant_configuration_api['pgMerchantId'] = pgmerchantid_value
             merchant_configuration_api['vpa'] = pgmerchantid_value + "@upi"
-        else:
+        # Added condition check for ICICI Payment Gateway to Initialize unique virtualMid and virtualTid
+        # mid and tid is referred here as virtualMid and virtualTid
+        elif payment_gateway == 'ICICI':
+            merchant_configuration_api['mid'] = settings['mid']
+            merchant_configuration_api['tid'] = settings['tid']
             merchant_configuration_api['pgMerchantId'] = settings['tid']
             merchant_configuration_api['vpa'] = settings['tid'] + "@upi"
         add_key_to_upi_setting_api_body(merchant_configuration_api)
@@ -719,6 +730,11 @@ def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str
         elif acquirer_code == "AXIS" and payment_gateway == "ATOS":
             query = query.replace(", upi_app_key, encKey", "")
             query = query.replace(", '<upi_app_key>', '<encKey>'", "")
+        elif acquirer_code == "ICICI" and payment_gateway == "ICICI":
+            query = query.replace(", mid", "")
+            query = query.replace(", tid", "")
+            query = query.replace(", '<mid>'", "")
+            query = query.replace(", '<tid>'", "")
         return query
     except Exception as e:
         logger.error(f"Unable to generate the query upi query template for {acquirer_code} with {payment_gateway}.")
@@ -771,7 +787,8 @@ def update_upi_values_to_query(query: str, acquirer_code: str, payment_gateway: 
         elif acquirer_code == "AIRP" and payment_gateway == "APB":
             query = query.replace("<upi_app_key>", upi_app_key)
             query = query.replace("<encKey>", encKey)
-        elif acquirer_code == "AXIS" and payment_gateway == "ATOS":
+        elif acquirer_code == "AXIS" and payment_gateway == "ATOS" or \
+            acquirer_code == "ICICI" and payment_gateway == "ICICI":
             query = query.replace("<vmid>", virtual_mid)
             query = query.replace("<vtid>", virtual_tid)
         return query
@@ -921,11 +938,10 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
         setting_details['bqr_settings_required'] = acquisition_details[11]
         setting_details['upi_settings_required'] = acquisition_details[12]
         setting_details['enc_key_for_upi'] = acquisition_details[13]
-        # Added condition check for FC payment_gateway to fetch the terminal_details of ATOS_TLE for AXIS_FC bank code
-        if payment_gateway !='FC':
+        if payment_gateway not in ('FC', 'ICICI'):
             cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
-                           f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
-                           f"PaymentGateway = '{payment_gateway}';")
+                f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
+                f"PaymentGateway = '{payment_gateway}';")
             terminal_details = cursor.fetchone()
             setting_details['tid'] = terminal_details[0]
             setting_details['device_serial'] = terminal_details[1]
@@ -934,7 +950,8 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
             setting_details['merchant_code'] = terminal_details[4]
             setting_details['merchant_name'] = terminal_details[5]
             setting_details['payment_gateway'] = acquisition_details[1]
-        else:
+        # Added condition check for FC payment_gateway to fetch the terminal_details of ATOS_TLE for AXIS_FC bank code
+        elif payment_gateway =='FC':
             cursor.execute(f"SELECT TID, CategoryCode, MID, MerchantName, MerchantCode FROM terminal_details "
                            f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = '{acquirer_code}' AND "
                            f"PaymentGateway = 'ATOS_TLE';")
@@ -945,6 +962,19 @@ def get_setting_details(merchant_code: str, acquirer_code: str, payment_gateway:
             setting_details['merchant_name'] = terminal_details[3]
             setting_details['merchant_code'] = terminal_details[4]
             setting_details['payment_gateway'] = 'ATOS_TLE'
+        # Added condition check for ICICI payment_gateway to fetch the terminal_details of HDFC for ICICI_DIRECT bank code
+        elif payment_gateway == 'ICICI':
+            cursor.execute(f"SELECT TID, DeviceSerial, CategoryCode, MID, MerchantCode, MerchantName FROM terminal_details "
+                f"WHERE MerchantCode = '{merchant_code}' AND AcquirerCode = 'HDFC' AND "
+                f"PaymentGateway = 'HDFC';")
+            terminal_details = cursor.fetchone()
+            setting_details['tid'] = terminal_details[0]
+            setting_details['device_serial'] = terminal_details[1]
+            setting_details['category_code'] = terminal_details[2]
+            setting_details['mid'] = terminal_details[3]
+            setting_details['merchant_code'] = terminal_details[4]
+            setting_details['merchant_name'] = terminal_details[5]
+            setting_details['payment_gateway'] = payment_gateway
     except Exception as e:
         logger.error(f"Unable to get the setting details due to error {str(e)}")
     cursor.close()
@@ -1200,6 +1230,9 @@ def get_terminal_info_id(org_code: str, acquirer_code: str, payment_gateway: str
         if payment_gateway == 'FC':
             query = f"select id from terminal_info where org_code='{org_code}' and acquirer_code='{acquirer_code}' and " \
                     f"payment_gateway='ATOS_TLE';"
+        elif payment_gateway == 'ICICI':
+            query = f"select id from terminal_info where org_code='{org_code}' and acquirer_code='HDFC' and " \
+                    f"payment_gateway='HDFC';"
         else:
             query = f"select id from terminal_info where org_code='{org_code}' and acquirer_code='{acquirer_code}' and " \
                 f"payment_gateway='{payment_gateway}' and mid='{mid}' and tid='{tid}';"
