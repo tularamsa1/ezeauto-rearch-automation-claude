@@ -192,19 +192,21 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
             GlobalVariables.time_calc.teardown.resume()
             print(colored("Teardown Timer resumed (after rerun) inside rerunTestImmediately method".center(
                 shutil.get_terminal_size().columns, "="), 'cyan'))
-        if rerunCount == -1 and ConfigReader.read_config("Validations",
-                                                         "bool_rerun_at_the_end").lower() == "false" and Base_Actions.is_log_capture_required(
-                "bool_capt_log_last_run") == "True":
-            GlobalVariables.time_calc.teardown.pause()
-            print(colored("Teardown Timer paused (before logon failure) in rerun immediately method".center(
-                shutil.get_terminal_size().columns, "="), 'cyan'))
-
-            print("isRerunRequiredImmediately(testCaseID)", isRerunRequiredImmediately(testCaseID))
-            conftest.log_on_failure(request)
-            GlobalVariables.time_calc.teardown.resume()
-            print(
-                colored("Teardown Timer resumed (after logon failure)".center(shutil.get_terminal_size().columns, "="),
-                        'cyan'))
+        # if (rerunCount == -1 and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and
+        #         Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True"):
+        #     GlobalVariables.time_calc.teardown.pause()
+        #     print(colored("Teardown Timer paused (before logon failure) in rerun immediately method".center(
+        #         shutil.get_terminal_size().columns, "="), 'cyan'))
+        #
+        #     print("isRerunRequiredImmediately(testCaseID)", isRerunRequiredImmediately(testCaseID))
+        #     # if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+        #     #     pass
+        #     # else:
+        #     #     conftest.log_on_failure(request)
+        #     GlobalVariables.time_calc.teardown.resume()
+        #     print(
+        #         colored("Teardown Timer resumed (after logon failure)".center(shutil.get_terminal_size().columns, "="),
+        #                 'cyan'))
     else:
         print("Cannot perform rerun since the rerun count is 0 or the rerun sheet is not accessible.")
 
@@ -250,21 +252,23 @@ def prepareAtTheEndRerunExcel():
 
 
 def getRerunCount(testCaseID):
-    if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
-        try:
-            df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun Count")
-            df_TClist.set_index('Test Case ID', inplace=True)
-            try:
-                return df_TClist['Rerun Count'][testCaseID]
-            except:
-                pass
-        except:
-            return -2
     if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
         try:
             df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun At The End")
             try:
                 return df_TClist['Rerun Count'][0]
+            except:
+                pass
+        except:
+            return -2
+
+    if (ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and
+            ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false"):
+        try:
+            df_TClist = pd.read_excel(xl_RerunCountPath, sheet_name="Rerun Count")
+            df_TClist.set_index('Test Case ID', inplace=True)
+            try:
+                return df_TClist['Rerun Count'][testCaseID]
             except:
                 pass
         except:
@@ -282,22 +286,6 @@ def set_rerun_at_the_end_count_up_to_report_excel_file(count_up_rerun):
 
 
 def setRerunCount(testCaseID, rerunCount):
-    if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
-        try:
-            workbook = openpyxl.load_workbook(xl_RerunCountPath)
-            sheet = workbook["Rerun Count"]
-
-            rowNumber = ExcelProcessor.getRowNumberFromValue(workbook, sheet, 'Test Case ID',
-                                                             testCaseID)
-            columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Count')
-            sheet.cell(row=rowNumber, column=columnNumber).value = rerunCount
-
-            workbook.save(xl_RerunCountPath)
-            workbook.close()
-            return True
-        except:
-            return False
-
     if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
         try:
             workbook = openpyxl.load_workbook(xl_RerunCountPath)
@@ -309,6 +297,23 @@ def setRerunCount(testCaseID, rerunCount):
             workbook.save(xl_RerunCountPath)
             workbook.close()
             print(pd.read_excel(xl_RerunCountPath))
+            return True
+        except:
+            return False
+
+    if (ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and
+            ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false"):
+        try:
+            workbook = openpyxl.load_workbook(xl_RerunCountPath)
+            sheet = workbook["Rerun Count"]
+
+            rowNumber = ExcelProcessor.getRowNumberFromValue(workbook, sheet, 'Test Case ID',
+                                                             testCaseID)
+            columnNumber = ExcelProcessor.getColumnNumberFromName(workbook, sheet, 'Rerun Count')
+            sheet.cell(row=rowNumber, column=columnNumber).value = rerunCount
+
+            workbook.save(xl_RerunCountPath)
+            workbook.close()
             return True
         except:
             return False
