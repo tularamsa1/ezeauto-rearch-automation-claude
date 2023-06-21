@@ -59,12 +59,15 @@ try:
                 else:
                     pass
             print()
-            print("Total number of testcases in Functional/UI/SA in EzeAuto: ",tot_UI_SA)
-            print("Total number of testcases in Functional/UI/Common in EzeAuto: ", tot_UI_Common)
-            print("Total number of testcases in Functional/API_DB/SA in EzeAuto: ", tot_API_SA)
-            print("Total number of testcases in Functional/API_DB/Common in EzeAuto: ", tot_API_Common)
-            print("Total number of testcases in Dev_projects/ICICI_DIRECT_UPI in EzeAuto: ", tot_Dev_ICICI_Direct)
-            print("Total number of testcases in Dev_projects/IDFC_Instant_Settlement in EzeAuto: ", tot_Dev_IDFC_IS)
+            total_tc = tot_UI_SA + tot_UI_Common + tot_API_SA + tot_API_Common + tot_Dev_ICICI_Direct + tot_Dev_IDFC_IS
+            print("Total number of testcases in EzeAuto : ", total_tc)
+            print()
+            print("Number of testcases in Functional/UI/SA in EzeAuto: ",tot_UI_SA)
+            print("Number of testcases in Functional/UI/Common in EzeAuto: ", tot_UI_Common)
+            print("Number of testcases in Functional/API_DB/SA in EzeAuto: ", tot_API_SA)
+            print("Number of testcases in Functional/API_DB/Common in EzeAuto: ", tot_API_Common)
+            print("Number of testcases in Dev_projects/ICICI_DIRECT_UPI in EzeAuto: ", tot_Dev_ICICI_Direct)
+            print("Number of testcases in Dev_projects/IDFC_Instant_Settlement in EzeAuto: ", tot_Dev_IDFC_IS)
             return values
         except Exception as ex:
             print("EXCEPTION IN COLLECTING TESTCASES FROM FRAMEWORK")
