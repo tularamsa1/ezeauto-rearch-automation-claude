@@ -17,7 +17,7 @@ try:
         :return testcases_excel_data dict
         """
         print()
-        print("Fetching details from sheet : ",sheet)
+        # print("Fetching details from sheet "+sheet+" ...")
         testcases_excel_data = pandas.read_excel(testcases_excel_path, sheet_name=sheet)
         return testcases_excel_data
 
@@ -60,7 +60,7 @@ try:
                     pass
             print()
             total_tc = tot_UI_SA + tot_UI_Common + tot_API_SA + tot_API_Common + tot_Dev_ICICI_Direct + tot_Dev_IDFC_IS
-            print("Total number of testcases in EzeAuto : ", total_tc)
+            print("Total number of testcases in 'TestCases' folder in EzeAuto : ", total_tc)
             print()
             print("Number of testcases in Functional/UI/SA in EzeAuto: ",tot_UI_SA)
             print("Number of testcases in Functional/UI/Common in EzeAuto: ", tot_UI_Common)
@@ -78,14 +78,18 @@ try:
     testcases_in_script = get_test_case_names_from_script(ConfigReader.read_config_paths("System", "automation_suite_path") + "/TestCases")
     # get_number_of_testcases_from_sheets(newWorkbook)
 
+    print()
+    print()
+    print("Below are the information of testcases from TestCasesDetail.xlsx file")
+    print("----------------------------------------------------------------------")
     for sheet in sheets:
         flag_complete = True
-        print()
+        # print()
         testcases_excel_data = prepare_list_of_testcases(sheet)
         df_testcaseID = testcases_excel_data.get("Test Case ID") # Create DF with testcases from specific single sheet in TestCasesDetails file
         df_testcaseFile = testcases_excel_data.get("File Name") # Create DF with filename from specific single sheet in TestCasesDetails file
         if len(df_testcaseID) > 0:
-            print("Number of testcases in sheet : ", len(df_testcaseID))
+            print("Number of testcases in sheet "+sheet+": ",len(df_testcaseID))
             for i in range(0, len(df_testcaseID)):
                 testcaseID = str((df_testcaseID)[i])
                 testcaseFile = str((df_testcaseFile)[i])
@@ -100,9 +104,9 @@ try:
 
         else: # If no testcases are present in sheet
             flag_complete = False
-            print("No data are given in sheet   :  "+sheet)
+            print("No data are given in sheet "+sheet)
         if flag_complete:
-            print("All the testcases are available in EzeAuto")
+            print("All the testcases are available in 'TestCases' folder in EzeAuto")
     if len(testcases_in_script)>0: # To get all the testcases that are not added in TestCaseDetail.xlsx file
         print()
         print("Testcases that are not added in TestCasesDetail.xlsx : ")
