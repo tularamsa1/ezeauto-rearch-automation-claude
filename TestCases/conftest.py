@@ -24,7 +24,7 @@ import pytest
 from termcolor import colored
 from DataProvider import GlobalVariables
 from Utilities import ExcelProcessor
-from Utilities.ReportProcessor import revert_global_variables_to_default, setStylesForExcel, \
+from Utilities.ReportProcessor import revert_global_variables_to_default, \
     updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
 from Utilities.time_calculator import EzeAutoTimeCalculator
 
@@ -231,238 +231,6 @@ def set_dne_status():
         GlobalVariables.str_chargeslip_val_result = 'DNE'
 
 
-def captureLogs(request):
-    item = request.node
-    if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
-        if item.rep_call.passed:
-            testCaseID = str(item.nodeid).split('/')
-            finalTestCaseID = testCaseID[len(testCaseID) - 1]
-            logFileName = str(finalTestCaseID).split('::')[1]
-
-            path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
-            Path(path).mkdir(parents=True, exist_ok=True)
-            print("Fetching Logs first time 1st")
-
-            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-
-            if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                apiLogs = LogProcessor.fetch_API_logs()
-                rerun_file = Path(path + "/api.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-            if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                portalLogs = LogProcessor.fetch_portal_logs()
-                rerun_file = Path(path + "/portal.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-            if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_middleware") == "True":
-                mwareLogs = LogProcessor.fetch_middleware_logs()
-                rerun_file = Path(path + "/middleware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-            if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                rerun_file = Path(path + "/cnpware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-            if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                config_logs = LogProcessor.fetch_config_logs()
-                rerun_file = Path(path + "/config.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-            if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                rerun_file = Path(path + "/closedloop.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                q2_logs = LogProcessor.fetch_q2_logs()
-                rerun_file = Path(path + "/q2.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-            if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                commxLogs = LogProcessor.fetch_commx_logs()
-                rerun_file = Path(path + "/commx.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-            if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                rerun_file = Path(path + "/ezestore.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-    if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
-        if item.rep_call.failed:
-            testCaseID = str(item.nodeid).split('/')
-            finalTestCaseID = testCaseID[len(testCaseID) - 1]
-            logFileName = str(finalTestCaseID).split('::')[1]
-
-            path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
-            Path(path).mkdir(parents=True, exist_ok=True)
-            print("Fetching Logs first time 2nd")
-
-            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-
-            if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                apiLogs = LogProcessor.fetch_API_logs()
-                rerun_file = Path(path + "/api.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-            if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                portalLogs = LogProcessor.fetch_portal_logs()
-                rerun_file = Path(path + "/portal.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-            if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_middleware") == "True":
-                mwareLogs = LogProcessor.fetch_middleware_logs()
-                rerun_file = Path(path + "/middleware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-            if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                rerun_file = Path(path + "/cnpware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-            if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                rerun_file = Path(path + "/cnpware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-            if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                config_logs = LogProcessor.fetch_config_logs()
-                rerun_file = Path(path + "/config.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-            if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                rerun_file = Path(path + "/closedloop.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                q2_logs = LogProcessor.fetch_q2_logs()
-                rerun_file = Path(path + "/q2.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-            if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                commxLogs = LogProcessor.fetch_commx_logs()
-                rerun_file = Path(path + "/commx.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-            if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                rerun_file = Path(path + "/ezestore.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-    if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
-        if item.rep_call.passed:
-            path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
-            print("Inside capturing logs all in one file")
-            print("Fetching Logs 4th time")
-
-            Path(path).mkdir(parents=True, exist_ok=True)
-            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-            if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                apiLogs = LogProcessor.fetch_API_logs()
-                rerun_file = Path(path + "/api.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-            if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                portalLogs = LogProcessor.fetch_portal_logs()
-                rerun_file = Path(path + "/portal.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-            if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_middleware") == "True":
-                mwareLogs = LogProcessor.fetch_middleware_logs()
-                rerun_file = Path(path + "/middleware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-            if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                rerun_file = Path(path + "/cnpware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-            if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                config_logs = LogProcessor.fetch_config_logs()
-                rerun_file = Path(path + "/config.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-            if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                rerun_file = Path(path + "/closedloop.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                q2_logs = LogProcessor.fetch_q2_logs()
-                rerun_file = Path(path + "/q2.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-            if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                commxLogs = LogProcessor.fetch_commx_logs()
-                rerun_file = Path(path + "/commx.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-            if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                rerun_file = Path(path + "/ezestore.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-    if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
-        if item.rep_call.failed:
-            path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
-            print("Inside capturing logs all in one file")
-            print("Fetching Logs 4th time")
-
-            Path(path).mkdir(parents=True, exist_ok=True)
-            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-            if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                apiLogs = LogProcessor.fetch_API_logs()
-                rerun_file = Path(path + "/api.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-            if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                portalLogs = LogProcessor.fetch_portal_logs()
-                rerun_file = Path(path + "/portal.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-            if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_middleware") == "True":
-                mwareLogs = LogProcessor.fetch_middleware_logs()
-                rerun_file = Path(path + "/middleware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-            if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                rerun_file = Path(path + "/cnpware.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-            if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                config_logs = LogProcessor.fetch_config_logs()
-                rerun_file = Path(path + "/config.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-            if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                rerun_file = Path(path + "/closedloop.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                q2_logs = LogProcessor.fetch_q2_logs()
-                rerun_file = Path(path + "/q2.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-            if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                commxLogs = LogProcessor.fetch_commx_logs()
-                rerun_file = Path(path + "/commx.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-            if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                rerun_file = Path(path + "/ezestore.log")
-                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-
 @pytest.fixture(scope="function")  # Executing once before every testcases
 def method_setup(request, playwright: Playwright):
     if GlobalVariables.time_calc is not None:
@@ -478,7 +246,6 @@ def method_setup(request, playwright: Playwright):
     GlobalVariables.time_calc.setup.pause()
     print(colored("Setup Timer paused in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-    # breakpoint()
     GlobalVariables.time_calc.log_collection.start()
     print(colored("Log Collection Timer started in method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
     print("Function setup level")
@@ -543,50 +310,69 @@ def method_setup(request, playwright: Playwright):
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        if isBothRerunNotEnabled():
-            captureLogs(request)
-
-        if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
-            log_on_failure(request)
-
-        if Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]) == 0 and Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True"  and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
-            # breakpoint()
-            print("Rerun.getRerunCountForAtTheEnd(): ", Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]))
-            print("log_on_failure(request)")
-            log_on_failure(request)
-
-        if ConfigReader.read_config("Validations",
-                                    "bool_rerun_at_the_end").lower() == "true" and Base_Actions.is_log_capture_required(
-                "bool_capt_log_each_run") == "True":
-            log_on_failure(request)
+        # if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
+        #     print("11111111111111111111111111111111111111111111")
+        #     log_on_failure(request)
+        #
+        # if Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]) == 0:
+        #     print("222222222222222222222222222222222222")
+        #     print("Rerun.getRerunCount ==0")
+        #     if (Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True" and
+        #             ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true"):
+        #         print("333333333333333333333333333333333333333333333333")
+        #         print("last_run= true and rerun_at_the_end = true")
+        #         print("Rerun.getRerunCountForAtTheEnd(): ", Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]))
+        #         log_on_failure(request)
+        # else:
+        #     print("Rerun.getRerunCount !=0")
+        #     print("44444444444444444444444")
+        #     if (Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True" and
+        #             Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True" and
+        #             ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true"):
+        #         print("55555555555555555555555555555555555555555")
+        #         print("last_run = true and each_run= true and rerun_at_end = true")
+        #         log_on_failure(request)
+        #
+        # if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and
+        #         Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True"):
+        #     print("6666666666666666666666666666666666666666666666666")
+        #     print("rerun_at_end = true and each_run = true")
+        #     if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "False":
+        #         print("777777777777777777777777777777777777777")
+        #         print("last_run = False")
+        #         log_on_failure(request)
 
         GlobalVariables.time_calc.teardown.resume()
         print(colored("Teardown Timer resume in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
         updatingHighLevelReportAfterEachTCS()
+        item = request.node
+        if item.rep_call.failed:
+            log_on_failure(request)
 
-        # rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
-        if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) \
-                and ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false":
-
-            # Added on Apr 11
+        if (ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and
+                Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) and
+                ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false"):
+            print("88888888888888888888888")
             rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
-            if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
-                GlobalVariables.time_calc.teardown.pause()
-                print(colored("Teardown Timer paused in 'fin' of method_setup fixture before logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-                log_on_failure(request)
-                GlobalVariables.time_calc.teardown.resume()
-                print(colored("Teardown Timer resumed in 'fin' of method_setup fixture after logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
+            # if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+            #     print("999999999999999999999999999")
+            #     GlobalVariables.time_calc.teardown.pause()
+            #     print(colored("Teardown Timer paused in 'fin' of method_setup fixture before logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+            #     log_on_failure(request)
+            #     GlobalVariables.time_calc.teardown.resume()
+            #     print(colored("Teardown Timer resumed in 'fin' of method_setup fixture after logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
             if rerunCount >= 0:
+                print("000000000000000000000000000000")
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 rerunCount -= 1
                 Rerun.rerunTestImmediately(GlobalVariables.EXCEL_testCaseName, GlobalVariables.EXCEL_testCaseFileName,
                                            rerunCount, request)
 
             else:
+                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 print("Rerun skipped.")
 
@@ -775,316 +561,499 @@ def log_on_failure(request):
 
     item = request.node
     if item.rep_call.failed:
+        print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
         if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_last_run") == "True":
-
-                testCaseID = str(item.nodeid).split('/')
-                finalTestCaseID = testCaseID[len(testCaseID) - 1]
-                logFileName = str(finalTestCaseID).split('::')[1]
-
-                path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
-                Path(path).mkdir(parents=True, exist_ok=True)
-                print("Fetching Logs first time 3rd")
-
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                TCIdWithTimeStampForInsideFile = str(datetime.now().time())
-
-                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                    apiLogs = LogProcessor.fetch_API_logs()
-                    rerun_file = Path(path + "/api.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                    portalLogs = LogProcessor.fetch_portal_logs()
-                    rerun_file = Path(path + "/portal.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-                    mwareLogs = LogProcessor.fetch_middleware_logs()
-                    rerun_file = Path(path + "/middleware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                    rerun_file = Path(path + "/cnpware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                    config_logs = LogProcessor.fetch_config_logs()
-                    rerun_file = Path(path + "/config.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                    rerun_file = Path(path + "/closedloop.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                    q2_logs = LogProcessor.fetch_q2_logs()
-                    rerun_file = Path(path + "/q2.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                    commxLogs = LogProcessor.fetch_commx_logs()
-                    rerun_file = Path(path + "/commx.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                    ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                    rerun_file = Path(path + "/ezestore.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
-                                                                                      "bool_rerun_at_the_end").lower() == "true":
-                i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
-                j = 0
-                print("Fetching Logs 2nd time")
-
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-
-                # Added on 26 Apr
-                testCaseID = str(item.nodeid).split('/')
-                finalTestCaseID = testCaseID[len(testCaseID) - 1]
-                logFileName = str(finalTestCaseID).split('::')[1]
-
-                while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
-                    if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
-                        # Added on 26 Apr
-                        path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+            print("cccccccccccccccccccccccccccc")
+            if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" or
+                    ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true"):
+                print("ddddddddddddddddddddddddddddddddddddddd")
+                if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True":
+                    print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                    if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+                        print("fffffffffffffffffffffffffffffff")
+                        path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
+                        print("Inside capturing logs all in one file")
 
                         Path(path).mkdir(parents=True, exist_ok=True)
-
-                        if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                        if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_api") == "True":
                             apiLogs = LogProcessor.fetch_API_logs()
-                            rerun_file = Path(path + "/api_Rerun.log")
+                            print("TCIdWithTimeStamp", TCIdWithTimeStamp)
+                            rerun_file = Path(path + "/api.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_portal") == "True":
                             portalLogs = LogProcessor.fetch_portal_logs()
-                            rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/portal.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
                         if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
                                 "bool_capt_log_middleware") == "True":
                             mwareLogs = LogProcessor.fetch_middleware_logs()
-                            rerun_file = Path(
-                                path + "/middleware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/middleware.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_cnpware") == "True":
                             cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                            rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/cnpware.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_config") == "True":
                             config_logs = LogProcessor.fetch_config_logs()
-                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/config.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
-                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
+                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_closedloop") == "True":
                             closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                            rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/closedloop.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
-                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_q2") == "True":
                             q2_logs = LogProcessor.fetch_q2_logs()
-                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/q2.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
-                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                            commxLogs = LogProcessor.fetch_commx_logs()
-                            rerun_file = Path(path + "/commx_Rerun_" + str(j) +  ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_commx") == "True":
+                            commx_logs = LogProcessor.fetch_commx_logs()
+                            rerun_file = Path(path + "/commx.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
 
-                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                            ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_ezestore") == "True":
+                            ezestore_logs = LogProcessor.fetch_ezestore_logs()
+                            rerun_file = Path(path + "/ezestore.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+                    else:
+                        print("gggggggggggggggggggggggggggggggg")
+                        if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
+                            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+                            print("Inside capturing log of last run TCs in one file")
 
+                            # if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
+                            if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
+                                print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+                                rerun_count = Rerun.getRerunCount(str(request.node.nodeid))
+                                print("AB AB AB AB AB AB AB AB AB AB AB AB AB AB")
+                            else:
+                                print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                                print(Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName))
+                                rerun_count = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
-                    i -= 1
-                    j += 1
+                            if rerun_count == 0:
+                                print("NNNNNNNNNNNNNNNNNNNNNNN")
+                                print("Fetching logs of last run")
 
-            if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
-                                                                                      "bool_rerun_immediately").lower() == "true":
+                                path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
+                                Path(path).mkdir(parents=True, exist_ok=True)
 
-                i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
-                j = 0
-                print("Fetching Logs 3rd time")
+                                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                                # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_api") == "True":
+                                    apiLogs = LogProcessor.fetch_API_logs()
+                                    rerun_file = Path(path + "/api.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                # Added on 26 Apr
-                testCaseID = str(item.nodeid).split('/')
-                finalTestCaseID = testCaseID[len(testCaseID) - 1]
-                logFileName = str(finalTestCaseID).split('::')[1]
+                                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_portal") == "True":
+                                    portalLogs = LogProcessor.fetch_portal_logs()
+                                    rerun_file = Path(path + "/portal.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-                while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
-                    if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
+                                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_middleware") == "True":
+                                    mwareLogs = LogProcessor.fetch_middleware_logs()
+                                    rerun_file = Path(path + "/middleware.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_cnpware") == "True":
+                                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                                    rerun_file = Path(path + "/cnpware.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_config") == "True":
+                                    config_logs = LogProcessor.fetch_config_logs()
+                                    rerun_file = Path(path + "/config.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_closedloop") == "True":
+                                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                                    rerun_file = Path(path + "/closedloop.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_q2") == "True":
+                                    q2_logs = LogProcessor.fetch_q2_logs()
+                                    rerun_file = Path(path + "/q2.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_commx") == "True":
+                                    commxLogs = LogProcessor.fetch_commx_logs()
+                                    rerun_file = Path(path + "/commx.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_ezestore") == "True":
+                                    ezestoreLogs = LogProcessor.fetch_ezestore_logs()
+                                    rerun_file = Path(path + "/ezestore.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+                            else:
+                                print("This is not last run")
+                        else:
+                            print("iiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+                            print("Both last_run and all_run are disabled")
+                else:
+                    print("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
+                    if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
+                        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+                        print("bool_capt_log_different_files")
+                        if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+                            print("lllllllllllllllllllllllllll")
+                            print("bool_capt_log_each_run")
+                            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
+                            j = 0
+                            print("============ i = ",i)
+                            print("============ j = ",0)
+                            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+
+                            print("TCIdWithTimeStamp : ",TCIdWithTimeStamp)
+
+                            testCaseID = str(item.nodeid).split('/')
+                            finalTestCaseID = testCaseID[len(testCaseID) - 1]
+                            logFileName = str(finalTestCaseID).split('::')[1]
+
+                            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
+                                if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
+
+                                    path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+                                    Path(path).mkdir(parents=True, exist_ok=True)
+
+                                    if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_api") == "True":
+                                        apiLogs = LogProcessor.fetch_API_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/api.log")
+                                        else:
+                                            rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+
+                                    if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_portal") == "True":
+                                        portalLogs = LogProcessor.fetch_portal_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/portal.log")
+                                        else:
+                                            rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+
+                                    if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_middleware") == "True":
+                                        mwareLogs = LogProcessor.fetch_middleware_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/middleware.log")
+                                        else:
+                                            rerun_file = Path(path + "/middleware_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                                    if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_cnpware") == "True":
+                                        cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/cnpware.log")
+                                        else:
+                                            rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                                    if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_config") == "True":
+                                        config_logs = LogProcessor.fetch_config_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/config.log")
+                                        else:
+                                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                                    if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_closedloop") == "True":
+                                        closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/closedloop.log")
+                                        else:
+                                            rerun_file = Path(path + "/closedloop_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                                    if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_q2") == "True":
+                                        q2_logs = LogProcessor.fetch_q2_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/q2.log")
+                                        else:
+                                            rerun_file = Path(path + "/q2_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                                    if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_commx") == "True":
+                                        commxLogs = LogProcessor.fetch_commx_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/commx.log")
+                                        else:
+                                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                                    if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_ezestore") == "True":
+                                        ezestoreLogs = LogProcessor.fetch_ezestore_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/ezestore.log")
+                                        else:
+                                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                                i -= 1
+                                j += 1
+                        else:
+                            print("mmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+                            print("bool_capt_log_each_run == false")
+                            if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
+                                print("nnnnnnnnnnnnnnnnnnnnnnnn")
+                                print("bool_capt_log_last_run == true")
+                                if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
+                                    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+                                    rerun_count = Rerun.getRerunCount(str(request.node.nodeid))
+                                    print("AB AB AB AB AB AB AB AB AB AB AB AB AB AB")
+                                else:
+                                    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                                    print(Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName))
+                                    rerun_count = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
+                                if rerun_count == 0:
+                                    print("NNNNNNNNNNNNNNNNNNNNNNN")
+                                    print("Fetching logs of last run")
+                                    testCaseID = str(item.nodeid).split('/')
+                                    finalTestCaseID = testCaseID[len(testCaseID) - 1]
+                                    logFileName = str(finalTestCaseID).split('::')[1]
+
+                                    path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+                                    Path(path).mkdir(parents=True, exist_ok=True)
+
+                                    TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                                    # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
+
+                                    if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_api") == "True":
+                                        apiLogs = LogProcessor.fetch_API_logs()
+                                        rerun_file = Path(path + "/api.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+
+                                    if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_portal") == "True":
+                                        portalLogs = LogProcessor.fetch_portal_logs()
+                                        rerun_file = Path(path + "/portal.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+
+                                    if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_middleware") == "True":
+                                        mwareLogs = LogProcessor.fetch_middleware_logs()
+                                        rerun_file = Path(path + "/middleware.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                                    if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_cnpware") == "True":
+                                        cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                                        rerun_file = Path(path + "/cnpware.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                                    if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_config") == "True":
+                                        config_logs = LogProcessor.fetch_config_logs()
+                                        rerun_file = Path(path + "/config.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                                    if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_closedloop") == "True":
+                                        closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                                        rerun_file = Path(path + "/closedloop.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                                    if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_q2") == "True":
+                                        q2_logs = LogProcessor.fetch_q2_logs()
+                                        rerun_file = Path(path + "/q2.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                                    if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_commx") == "True":
+                                        commxLogs = LogProcessor.fetch_commx_logs()
+                                        rerun_file = Path(path + "/commx.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                                    if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_ezestore") == "True":
+                                        ezestoreLogs = LogProcessor.fetch_ezestore_logs()
+                                        rerun_file = Path(path + "/ezestore.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+                                else:
+                                    print("This is not last run")
+                            else:
+                                print("ooooooooooooooooooooooooooooo")
+                                print("bool_capt_log_last_run == false")
+                                print("Both last_run and each_run are disabled")
+                    else:
+                        print("pppppppppppppppppppppppppp")
+                        print("Both Same file and different file are disabled")
+            else:
+                print("qqqqqqqqqqqqqqqqqqqqqqqqq")
+                print("Rerun is disabled")
+                if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True":
+                    print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+                    path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
+                    print("Inside capturing logs all in one file")
+                    print("Fetching Logs 89th time")
+
+                    Path(path).mkdir(parents=True, exist_ok=True)
+                    TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                    if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        apiLogs = LogProcessor.fetch_API_logs()
+                        print("TCIdWithTimeStamp", TCIdWithTimeStamp)
+                        rerun_file = Path(path + "/api.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+
+                    if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_portal") == "True":
+                        portalLogs = LogProcessor.fetch_portal_logs()
+                        rerun_file = Path(path + "/portal.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+
+                    if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_middleware") == "True":
+                        mwareLogs = LogProcessor.fetch_middleware_logs()
+                        rerun_file = Path(path + "/middleware.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                    if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_cnpware") == "True":
+                        cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                        rerun_file = Path(path + "/cnpware.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                    if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_config") == "True":
+                        config_logs = LogProcessor.fetch_config_logs()
+                        rerun_file = Path(path + "/config.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                    if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_closedloop") == "True":
+                        closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                        rerun_file = Path(path + "/closedloop.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                    if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                        q2_logs = LogProcessor.fetch_q2_logs()
+                        rerun_file = Path(path + "/q2.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                    if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_commx") == "True":
+                        commx_logs = LogProcessor.fetch_commx_logs()
+                        rerun_file = Path(path + "/commx.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
+
+                    if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_ezestore") == "True":
+                        ezestore_logs = LogProcessor.fetch_ezestore_logs()
+                        rerun_file = Path(path + "/ezestore.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+                else:
+                    print("ssssssssssssssssssssssssssssss")
+                    if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
+                        print("tttttttttttttttttttttttttttttttttttttttttt")
+                        testCaseID = str(item.nodeid).split('/')
+                        finalTestCaseID = testCaseID[len(testCaseID) - 1]
+                        logFileName = str(finalTestCaseID).split('::')[1]
 
                         path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                         Path(path).mkdir(parents=True, exist_ok=True)
 
-                        if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                        # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
+
+                        if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_api") == "True":
                             apiLogs = LogProcessor.fetch_API_logs()
-                            rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/api.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_portal") == "True":
                             portalLogs = LogProcessor.fetch_portal_logs()
-                            rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/portal.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
                         if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
                                 "bool_capt_log_middleware") == "True":
                             mwareLogs = LogProcessor.fetch_middleware_logs()
-                            rerun_file = Path(
-                                path + "/middleware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/middleware.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_cnpware") == "True":
                             cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                            rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/cnpware.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_config") == "True":
                             config_logs = LogProcessor.fetch_config_logs()
-                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/config.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
-                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
+                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_closedloop") == "True":
                             closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                            rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/closedloop.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
-                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_q2") == "True":
                             q2_logs = LogProcessor.fetch_q2_logs()
-                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/q2.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
-                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_commx") == "True":
                             commxLogs = LogProcessor.fetch_commx_logs()
-                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/commx.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
 
-                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_ezestore") == "True":
                             ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/ezestore.log")
+                            open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-                    i -= 1
-                    j += 1
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_last_run") == "True":
-                path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
-                print("Inside capturing logs all in one file")
-                print("Fetching Logs 4th time")
-
-                Path(path).mkdir(parents=True, exist_ok=True)
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                    apiLogs = LogProcessor.fetch_API_logs()
-                    rerun_file = Path(path + "/api.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                    portalLogs = LogProcessor.fetch_portal_logs()
-                    rerun_file = Path(path + "/portal.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-                    mwareLogs = LogProcessor.fetch_middleware_logs()
-                    rerun_file = Path(path + "/middleware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                    rerun_file = Path(path + "/cnpware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                    config_logs = LogProcessor.fetch_config_logs()
-                    rerun_file = Path(path + "/config.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                    rerun_file = Path(path + "/closedloop.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                    q2_logs = LogProcessor.fetch_q2_logs()
-                    rerun_file = Path(path + "/q2.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                    commx_logs = LogProcessor.fetch_commx_logs()
-                    rerun_file = Path(path + "/commx.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
-
-                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                    ezestore_logs = LogProcessor.fetch_ezestore_logs()
-                    rerun_file = Path(path + "/ezestore.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_each_run") == "True":
-                path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"
-                print("Inside capturing logs all in one file")
-                print("Fetching Logs 5th time")
-
-                Path(path).mkdir(parents=True, exist_ok=True)
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                    apiLogs = LogProcessor.fetch_API_logs()
-                    print("TCIdWithTimeStamp", TCIdWithTimeStamp)
-                    rerun_file = Path(path + "/api.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                    portalLogs = LogProcessor.fetch_portal_logs()
-                    rerun_file = Path(path + "/portal.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-                    mwareLogs = LogProcessor.fetch_middleware_logs()
-                    rerun_file = Path(path + "/middleware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                    rerun_file = Path(path + "/cnpware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                    config_logs = LogProcessor.fetch_config_logs()
-                    rerun_file = Path(path + "/config.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                    rerun_file = Path(path + "/closedloop.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                    q2_logs = LogProcessor.fetch_q2_logs()
-                    rerun_file = Path(path + "/q2.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                    commx_logs = LogProcessor.fetch_commx_logs()
-                    rerun_file = Path(path + "/commx.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
-
-                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                    ezestore_logs = LogProcessor.fetch_ezestore_logs()
-                    rerun_file = Path(path + "/ezestore.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+                    else:
+                        print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+                        print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in 'log on failure' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -1176,312 +1145,441 @@ def log_on_success(request):
 
     if item.rep_call.passed:
         if Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True":
-            if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_last_run") == "True":
+            if ConfigReader.read_config("Validations",
+                                        "bool_rerun_at_the_end").lower() == "true" or ConfigReader.read_config("Validations","bool_rerun_immediately").lower() == "true":
+                if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True":
+                    if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+                        path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
+                        print("Inside capturing logs all in one file")
 
-                testCaseID = str(item.nodeid).split('/')
-                finalTestCaseID = testCaseID[len(testCaseID) - 1]
-                logFileName = str(finalTestCaseID).split('::')[1]
-
-                path = DirectoryCreator.getDirectoryPath("ServerLog")+"/"+ logFileName
-                Path(path).mkdir(parents=True, exist_ok=True)
-                print("Fetching Logs first time 4th")
-
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                TCIdWithTimeStampForInsideFile = str(datetime.now().time())
-
-                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                    apiLogs = LogProcessor.fetch_API_logs()
-                    rerun_file = Path(path + "/api.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                    portalLogs = LogProcessor.fetch_portal_logs()
-                    rerun_file = Path(path + "/portal.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-                    mwareLogs = LogProcessor.fetch_middleware_logs()
-                    rerun_file = Path(path + "/middleware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                    rerun_file = Path(path + "/cnpware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                    config_logs = LogProcessor.fetch_config_logs()
-                    rerun_file = Path(path + "/config.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                    rerun_file = Path(path + "/closedloop.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                    q2_logs = LogProcessor.fetch_q2_logs()
-                    rerun_file = Path(path + "/q2.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                    commxLogs = LogProcessor.fetch_commx_logs()
-                    rerun_file = Path(path + "/commx.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                    ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                    rerun_file = Path(path + "/ezestore.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
-                                                                                      "bool_rerun_at_the_end").lower() == "true":
-                i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
-                j = 0
-                print("Fetching Logs 2nd time")
-
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-
-                # Added on 26 Apr
-                testCaseID = str(item.nodeid).split('/')
-                finalTestCaseID = testCaseID[len(testCaseID) - 1]
-                logFileName = str(finalTestCaseID).split('::')[1]
-
-                while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
-                    if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
-                        # Added on 26 Apr
-                        path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                         Path(path).mkdir(parents=True, exist_ok=True)
-
+                        TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
                         if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
                             apiLogs = LogProcessor.fetch_API_logs()
-                            rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
+                            print("TCIdWithTimeStamp", TCIdWithTimeStamp)
+                            rerun_file = Path(path + "/api.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_portal") == "True":
                             portalLogs = LogProcessor.fetch_portal_logs()
-                            rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/portal.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
                         if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
                                 "bool_capt_log_middleware") == "True":
                             mwareLogs = LogProcessor.fetch_middleware_logs()
-                            rerun_file = Path(
-                                path + "/middleware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/middleware.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_cnpware") == "True":
                             cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                            rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/cnpware.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_config") == "True":
                             config_logs = LogProcessor.fetch_config_logs()
-                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/config.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
-                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
+                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_closedloop") == "True":
                             closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                            rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/closedloop.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
-                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_q2") == "True":
                             q2_logs = LogProcessor.fetch_q2_logs()
-                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/q2.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
-                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                            commxLogs = LogProcessor.fetch_commx_logs()
-                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_commx") == "True":
+                            commx_logs = LogProcessor.fetch_commx_logs()
+                            rerun_file = Path(path + "/commx.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
 
-                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                            ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
-                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_ezestore") == "True":
+                            ezestore_logs = LogProcessor.fetch_ezestore_logs()
+                            rerun_file = Path(path + "/ezestore.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+                    else:
+                        if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
+                            print("capt_log_last_run == true")
+                            path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
 
-                    i -= 1
-                    j += 1
+                            Path(path).mkdir(parents=True, exist_ok=True)
+                            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                            if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_api") == "True":
+                                apiLogs = LogProcessor.fetch_API_logs()
+                                rerun_file = Path(path + "/api.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-            if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_each_run") == "True" and ConfigReader.read_config("Validations",
-                                                                                      "bool_rerun_immediately").lower() == "true":
+                            if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_portal") == "True":
+                                portalLogs = LogProcessor.fetch_portal_logs()
+                                rerun_file = Path(path + "/portal.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
-                i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
-                j = 0
-                print("Fetching Logs 3rd time")
+                            if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_middleware") == "True":
+                                mwareLogs = LogProcessor.fetch_middleware_logs()
+                                rerun_file = Path(path + "/middleware.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                            if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_cnpware") == "True":
+                                cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                                rerun_file = Path(path + "/cnpware.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-                # Added on 26 Apr
-                testCaseID = str(item.nodeid).split('/')
-                finalTestCaseID = testCaseID[len(testCaseID) - 1]
-                logFileName = str(finalTestCaseID).split('::')[1]
+                            if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_config") == "True":
+                                config_logs = LogProcessor.fetch_config_logs()
+                                rerun_file = Path(path + "/config.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
-                while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
-                    if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
+                            if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_closedloop") == "True":
+                                closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                                rerun_file = Path(path + "/closedloop.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                            if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_q2") == "True":
+                                q2_logs = LogProcessor.fetch_q2_logs()
+                                rerun_file = Path(path + "/q2.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                            if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_commx") == "True":
+                                commx_logs = LogProcessor.fetch_commx_logs()
+                                rerun_file = Path(path + "/commx.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
+
+                            if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_ezestore") == "True":
+                                ezestore_logs = LogProcessor.fetch_ezestore_logs()
+                                rerun_file = Path(path + "/ezestore.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+                        else:
+                            print("Both last_run and all_run are disabled")
+                else:
+                    if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
+                        if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
+                            i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
+                            j = 0
+
+                            TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+
+                            # Added on 26 Apr
+                            testCaseID = str(item.nodeid).split('/')
+                            finalTestCaseID = testCaseID[len(testCaseID) - 1]
+                            logFileName = str(finalTestCaseID).split('::')[1]
+
+                            while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
+                                if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
+                                    # Added on 26 Apr
+                                    path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+
+                                    Path(path).mkdir(parents=True, exist_ok=True)
+
+                                    if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_api") == "True":
+                                        apiLogs = LogProcessor.fetch_API_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/api.log")
+                                        else:
+                                            rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+
+                                    if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_portal") == "True":
+                                        portalLogs = LogProcessor.fetch_portal_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/portal.log")
+                                        else:
+                                            rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+
+                                    if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_middleware") == "True":
+                                        mwareLogs = LogProcessor.fetch_middleware_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/middleware.log")
+                                        else:
+                                            rerun_file = Path(path + "/middleware_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                                    if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_cnpware") == "True":
+                                        cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/cnpware.log")
+                                        else:
+                                            rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                                    if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_config") == "True":
+                                        config_logs = LogProcessor.fetch_config_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/config.log")
+                                        else:
+                                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                                    if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_closedloop") == "True":
+                                        closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/closedloop.log")
+                                        else:
+                                            rerun_file = Path(path + "/closedloop_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                                    if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_q2") == "True":
+                                        q2_logs = LogProcessor.fetch_q2_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/q2.log")
+                                        else:
+                                            rerun_file = Path(path + "/q2_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                                    if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_commx") == "True":
+                                        commxLogs = LogProcessor.fetch_commx_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/commx.log")
+                                        else:
+                                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                                    if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_ezestore") == "True":
+                                        ezestoreLogs = LogProcessor.fetch_ezestore_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/ezestore.log")
+                                        else:
+                                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                                i -= 1
+                                j += 1
+                        else:
+                            if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
+                                print("bool_capt_log_last_run == true")
+                                testCaseID = str(item.nodeid).split('/')
+                                finalTestCaseID = testCaseID[len(testCaseID) - 1]
+                                logFileName = str(finalTestCaseID).split('::')[1]
+
+                                path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
+                                Path(path).mkdir(parents=True, exist_ok=True)
+
+                                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                                # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
+
+                                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_api") == "True":
+                                    apiLogs = LogProcessor.fetch_API_logs()
+                                    rerun_file = Path(path + "/api.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+
+                                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_portal") == "True":
+                                    portalLogs = LogProcessor.fetch_portal_logs()
+                                    rerun_file = Path(path + "/portal.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+
+                                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_middleware") == "True":
+                                    mwareLogs = LogProcessor.fetch_middleware_logs()
+                                    rerun_file = Path(path + "/middleware.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_cnpware") == "True":
+                                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                                    rerun_file = Path(path + "/cnpware.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_config") == "True":
+                                    config_logs = LogProcessor.fetch_config_logs()
+                                    rerun_file = Path(path + "/config.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_closedloop") == "True":
+                                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                                    rerun_file = Path(path + "/closedloop.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_q2") == "True":
+                                    q2_logs = LogProcessor.fetch_q2_logs()
+                                    rerun_file = Path(path + "/q2.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_commx") == "True":
+                                    commxLogs = LogProcessor.fetch_commx_logs()
+                                    rerun_file = Path(path + "/commx.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
+
+                                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_ezestore") == "True":
+                                    ezestoreLogs = LogProcessor.fetch_ezestore_logs()
+                                    rerun_file = Path(path + "/ezestore.log")
+                                    open(rerun_file, 'w').close()
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+                            else:
+                                print("Both last_run and each_run are disabled")
+                    else:
+                        print("Both Same file and different file are disabled")
+
+            else:
+                print("Rerun is disabled SUCCESS")
+                if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True":
+                    path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
+                    print("Inside capturing logs all in one file")
+
+                    Path(path).mkdir(parents=True, exist_ok=True)
+                    TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                    if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        apiLogs = LogProcessor.fetch_API_logs()
+                        print("TCIdWithTimeStamp", TCIdWithTimeStamp)
+                        rerun_file = Path(path + "/api.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
+
+                    if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_portal") == "True":
+                        portalLogs = LogProcessor.fetch_portal_logs()
+                        rerun_file = Path(path + "/portal.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
+
+                    if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_middleware") == "True":
+                        mwareLogs = LogProcessor.fetch_middleware_logs()
+                        rerun_file = Path(path + "/middleware.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
+
+                    if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_cnpware") == "True":
+                        cnpWareLogs = LogProcessor.fetch_cnpware_logs()
+                        rerun_file = Path(path + "/cnpware.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
+
+                    if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_config") == "True":
+                        config_logs = LogProcessor.fetch_config_logs()
+                        rerun_file = Path(path + "/config.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
+
+                    if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_closedloop") == "True":
+                        closedloop_logs = LogProcessor.fetch_closed_loop_logs()
+                        rerun_file = Path(path + "/closedloop.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
+
+                    if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                        q2_logs = LogProcessor.fetch_q2_logs()
+                        rerun_file = Path(path + "/q2.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
+
+                    if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_commx") == "True":
+                        commx_logs = LogProcessor.fetch_commx_logs()
+                        rerun_file = Path(path + "/commx.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commx_logs)
+
+                    if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_ezestore") == "True":
+                        ezestore_logs = LogProcessor.fetch_ezestore_logs()
+                        rerun_file = Path(path + "/ezestore.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+                else:
+                    if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
+                        testCaseID = str(item.nodeid).split('/')
+                        finalTestCaseID = testCaseID[len(testCaseID) - 1]
+                        logFileName = str(finalTestCaseID).split('::')[1]
 
                         path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
                         Path(path).mkdir(parents=True, exist_ok=True)
+                        print("Fetching Logs first time")
 
-                        if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                        TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
+                        TCIdWithTimeStampForInsideFile = str(datetime.now().time())
+
+                        if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_api") == "True":
                             apiLogs = LogProcessor.fetch_API_logs()
-                            rerun_file = Path(path + "/api_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/api.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
 
-                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                        if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_portal") == "True":
                             portalLogs = LogProcessor.fetch_portal_logs()
-                            rerun_file = Path(path + "/portal_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/portal.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
 
                         if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required(
                                 "bool_capt_log_middleware") == "True":
                             mwareLogs = LogProcessor.fetch_middleware_logs()
-                            rerun_file = Path(
-                                path + "/middleware_" + str(datetime.now().time()) + "_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/middleware.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
 
-                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                        if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_cnpware") == "True":
                             cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                            rerun_file = Path(path + "/cnpware_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/cnpware.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
 
-                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                        if GlobalVariables.config_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_config") == "True":
                             config_logs = LogProcessor.fetch_config_logs()
-                            rerun_file = Path(path + "/config_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/config.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
 
-                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
+                        if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_closedloop") == "True":
                             closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                            rerun_file = Path(path + "/closedloop_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/closedloop.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
 
-                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                        if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_q2") == "True":
                             q2_logs = LogProcessor.fetch_q2_logs()
-                            rerun_file = Path(path + "/q2_rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/q2.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
 
-                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                        if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_commx") == "True":
                             commxLogs = LogProcessor.fetch_commx_logs()
-                            rerun_file = Path(path + "/commx_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/commx.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
 
-                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                        if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_ezestore") == "True":
                             ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                            rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
+                            rerun_file = Path(path + "/ezestore.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-                    i -= 1
-                    j += 1
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_last_run") == "True":
-                path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
-                print("Inside capturing logs all in one file")
-                print("Fetching Logs 4th time")
-
-                Path(path).mkdir(parents=True, exist_ok=True)
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                    apiLogs = LogProcessor.fetch_API_logs()
-                    rerun_file = Path(path + "/api.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                    portalLogs = LogProcessor.fetch_portal_logs()
-                    rerun_file = Path(path + "/portal.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-                    mwareLogs = LogProcessor.fetch_middleware_logs()
-                    rerun_file = Path(path + "/middleware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                    rerun_file = Path(path + "/cnpware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                    config_logs = LogProcessor.fetch_config_logs()
-                    rerun_file = Path(path + "/config.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                    rerun_file = Path(path + "/closedloop.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                    q2_logs = LogProcessor.fetch_q2_logs()
-                    rerun_file = Path(path + "/q2.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                    commxLogs = LogProcessor.fetch_commx_logs()
-                    rerun_file = Path(path + "/commx.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                    ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                    rerun_file = Path(path + "/ezestore.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
-
-            if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True" and Base_Actions.is_log_capture_required(
-                    "bool_capt_log_each_run") == "True":
-                path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
-                print("Inside capturing logs all in one file")
-                print("Fetching Logs 5th time")
-
-                Path(path).mkdir(parents=True, exist_ok=True)
-                TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                if GlobalVariables.api_logs and Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-                    apiLogs = LogProcessor.fetch_API_logs()
-                    print("TCIdWithTimeStamp", TCIdWithTimeStamp)
-                    rerun_file = Path(path + "/api.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, apiLogs)
-
-                if GlobalVariables.portal_logs and Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-                    portalLogs = LogProcessor.fetch_portal_logs()
-                    rerun_file = Path(path + "/portal.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, portalLogs)
-
-                if GlobalVariables.middleware_logs and Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-                    mwareLogs = LogProcessor.fetch_middleware_logs()
-                    rerun_file = Path(path + "/middleware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, mwareLogs)
-
-                if GlobalVariables.cnpware_logs and Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-                    cnpWareLogs = LogProcessor.fetch_cnpware_logs()
-                    rerun_file = Path(path + "/cnpware.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, cnpWareLogs)
-
-                if GlobalVariables.config_logs and Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-                    config_logs = LogProcessor.fetch_config_logs()
-                    rerun_file = Path(path + "/config.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, config_logs)
-
-                if GlobalVariables.closedloop_logs and Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-                    closedloop_logs = LogProcessor.fetch_closed_loop_logs()
-                    rerun_file = Path(path + "/closedloop.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, closedloop_logs)
-
-                if GlobalVariables.q2_logs and Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-                    q2_logs = LogProcessor.fetch_q2_logs()
-                    rerun_file = Path(path + "/q2.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, q2_logs)
-
-                if GlobalVariables.commx_logs and Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-                    commxLogs = LogProcessor.fetch_commx_logs()
-                    rerun_file = Path(path + "/commx.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, commxLogs)
-
-                if GlobalVariables.ezestore_logs and Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-                    ezestoreLogs = LogProcessor.fetch_ezestore_logs()
-                    rerun_file = Path(path + "/ezestore.log")
-                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+                    else:
+                        print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 
     GlobalVariables.time_calc.log_collection.pause()
     print(colored("Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
@@ -1500,8 +1598,8 @@ def pytest_sessionstart(session):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    updateExcel_With_Deselect_And_Broken()
     print("Session teardown level")
+    updateExcel_With_Deselect_And_Broken()
 
     # Added on Apr 11
     updateExcel_With_Category_And_Subcategory()
