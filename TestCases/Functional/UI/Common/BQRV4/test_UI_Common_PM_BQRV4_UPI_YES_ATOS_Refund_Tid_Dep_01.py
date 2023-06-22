@@ -610,7 +610,8 @@ def test_common_100_102_320():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation------------------------------------------
-        # -----------------------------------------Start of Portal Validation---------------------------------
+
+        # -----------------------------------------Start of Portal Validation------------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:

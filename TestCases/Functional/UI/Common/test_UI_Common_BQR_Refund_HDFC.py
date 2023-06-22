@@ -1521,6 +1521,7 @@ def test_common_100_102_083():
                     "txn_amt_2": float(amount), "pmt_mode_2": "BHARATQR",
                     "pmt_state_2": "FAILED",
                     "settle_status_2": "FAILED",
+                    "acquirer_code_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "org_code_2": org_code,
                     "date_2": date_new_2,

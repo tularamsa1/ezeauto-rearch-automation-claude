@@ -3291,6 +3291,10 @@ def test_common_100_102_289():
             logger.debug(f"Value of settlement_status obtained from txn table : {settlement_status_db}")
             device_serial_db = result['device_serial'].values[0]
             logger.debug(f"Value of device_serial obtained from txn table : {device_serial_db}")
+            rr_number = result['rr_number'].values[0]
+            logger.debug(f"Value of rr number from txn table : {device_serial_db}")
+            auth_code_1 = result['auth_code'].values[0]
+            logger.debug(f"Value of auth_code from txn table : {device_serial_db}")
 
             query = "select * from invalid_pg_request where request_id ='" + pid + "';"
             logger.debug(f"Query to fetch data from invalid_pg_request table : {query}")
@@ -3351,6 +3355,8 @@ def test_common_100_102_289():
             logger.debug(f"Value of tid obtained from txn table : {tid_db_new}")
             mid_db_new = result['mid'].values[0]
             logger.debug(f"Value of mid obtained from txn table : {mid_db_new}")
+            external_ref_2 = result['external_ref'].values[0]
+            logger.debug(f"Value of external ref txn table : {external_ref_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -3760,13 +3766,13 @@ def test_common_100_102_289():
                     "txn_amt": f"{str(amount)}.00",
                     "username": app_username,
                     "txn_id": txn_id,
-                    "auth_code": "-" if auth_code is None else auth_code,
-                    "rrn": "-" if rrn is None else rrn,
+                    "auth_code": "-" if auth_code_1 is None else auth_code_1,
+                    "rrn": "-" if rr_number is None else rr_number,
                     "date_time_2": date_and_time_portal_new,
                     "pmt_state_2": "UPG_AUTHORIZED",
                     "pmt_type_2": "UPI",
                     "txn_amt_2": f"{str(amount)}.00",
-                    "username_2": app_username,
+                    "username_2": "EZETAP",
                     "txn_id_2": txn_id_upg,
                     "auth_code_2": "-" if auth_code_upg is None else auth_code_upg,
                     "rrn_2": "-" if rrn_upg is None else rrn_upg,
@@ -3783,7 +3789,7 @@ def test_common_100_102_289():
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id_upg)
+                transaction_details = get_txn_details_for_diff_order_id(order_id=external_ref_2)
                 date_time_new = transaction_details[0]['Date & Time']
                 transaction_id_new = transaction_details[0]['Transaction ID']
                 total_amount_new = transaction_details[0]['Total Amount'].split()
