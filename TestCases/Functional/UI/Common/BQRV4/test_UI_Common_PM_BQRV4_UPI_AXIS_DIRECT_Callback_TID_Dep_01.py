@@ -2278,7 +2278,7 @@ def test_common_100_102_328():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -3029,21 +3029,26 @@ def test_common_100_102_328():
                         "txn_amt": "{:.2f}".format(amount),
                         "username": app_username,
                         "txn_id": txn_id,
+                        "auth_code": "-" if auth_code is None else auth_code,
+                        "rrn": "-" if rr_number_db is None else rr_number_db,
+
                         "date_time_2": date_and_time_portal_2,
                         "pmt_state_2": "AUTHORIZED",
                         "pmt_type_2": "UPI",
                         "txn_amt_2": "{:.2f}".format(amount),
                         "username_2": app_username,
                         "txn_id_2": txn_id_2,
-                        "rrn_2": str(rrn_2),
+                        "auth_code": "-" if auth_code_2 is None else auth_code_2,
+                        "rrn": "-" if rrn_2 is None else rrn_2,
+
                         "date_time_3": date_and_time_portal_3,
                         "pmt_state_3": "AUTHORIZED",
                         "pmt_type_3": "BHARATQR",
                         "txn_amt_3": "{:.2f}".format(amount),
                         "username_3": app_username,
                         "txn_id_3": txn_id_3,
-                        "auth_code_3": auth_code_3,
-                        "rrn_3": str(rrn_3)
+                        "auth_code": "-" if auth_code_3 is None else auth_code_3,
+                        "rrn": "-" if rrn_3 is None else rrn_3,
                     }
                     logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -3056,7 +3061,6 @@ def test_common_100_102_328():
                     transaction_type_3 = transaction_details[0]['Type']
                     status_3 = transaction_details[0]['Status']
                     username_3 = transaction_details[0]['Username']
-
 
                     date_time_2 = transaction_details[1]['Date & Time']
                     transaction_id_2 = transaction_details[1]['Transaction ID']
@@ -3075,17 +3079,15 @@ def test_common_100_102_328():
                     transaction_type = transaction_details[2]['Type']
                     status = transaction_details[2]['Status']
                     username = transaction_details[2]['Username']
-
-
-
                     actual_portal_values = {
-
                         "date_time": date_time,
                         "pmt_state": str(status),
                         "pmt_type": transaction_type,
                         "txn_amt": total_amount[1],
                         "username": username,
                         "txn_id": transaction_id,
+                        "auth_code": auth_code_portal,
+                        "rrn": rr_number,
 
                         "date_time_2": date_time_2,
                         "pmt_state_2": str(status_2),
@@ -3094,6 +3096,7 @@ def test_common_100_102_328():
                         "username_2": username_2,
                         "txn_id_2": transaction_id_2,
                          "rrn_2": rr_number_2,
+                        "auth_code_2": auth_code_portal_2,
 
                         "date_time_3": date_time_3,
                         "pmt_state_3": str(status_3),
@@ -3103,7 +3106,6 @@ def test_common_100_102_328():
                         "txn_id_3": transaction_id_3,
                         "auth_code_3": auth_code_portal_3,
                         "rrn_3": rr_number_3,
-
                     }
 
                     logger.debug(f"actual_portal_values : {actual_portal_values}")
