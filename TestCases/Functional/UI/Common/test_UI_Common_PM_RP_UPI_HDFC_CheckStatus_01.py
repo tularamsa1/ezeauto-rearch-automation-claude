@@ -814,8 +814,8 @@ def test_common_100_103_006():
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
-@pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.portalVal
 def test_common_100_103_047():
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_Pending_HDFC
@@ -1160,11 +1160,6 @@ def test_common_100_103_047():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                # query = "select * from txn where id='" + original_txn_id + "';"
-                # logger.debug(
-                #     f"Query to fetch rr_number of original txn after sending refund api from database : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # rr_number_original_2 = result['rr_number'].iloc[0]
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "PENDING",
