@@ -1160,18 +1160,18 @@ def test_common_100_103_047():
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                # query = "select * from txn where id='" + original_txn_id + "';"
-                # logger.debug(
-                #     f"Query to fetch rr_number of original txn after sending refund api from database : {query}")
-                # result = DBProcessor.getValueFromDB(query)
-                # rr_number_original_2 = result['rr_number'].iloc[0]
+                query = "select * from txn where id='" + original_txn_id + "';"
+                logger.debug(
+                    f"Query to fetch rr_number of original txn after sending refund api from database : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                rr_number_original_2 = result['rr_number'].iloc[0]
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "PENDING",
                     "pmt_type": "UPI",
                     "txn_amt": str(amount) + ".00",
                     "username": app_username,
-                    "rrn": original_rrn,
+                    "rrn": rr_number_original_2,
                     "txn_id": original_txn_id
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
