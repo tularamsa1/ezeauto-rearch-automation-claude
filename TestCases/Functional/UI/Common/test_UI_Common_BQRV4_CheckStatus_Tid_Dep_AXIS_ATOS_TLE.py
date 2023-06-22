@@ -815,7 +815,6 @@ def test_common_100_102_182():
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
-                rr_number = transaction_details[0]['RR Number']
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
@@ -826,8 +825,7 @@ def test_common_100_102_182():
                     "pmt_type": transaction_type,
                     "txn_amt": total_amount[1],
                     "username": username,
-                    "txn_id": transaction_id,
-                    "rrn": rr_number
+                    "txn_id": transaction_id
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")

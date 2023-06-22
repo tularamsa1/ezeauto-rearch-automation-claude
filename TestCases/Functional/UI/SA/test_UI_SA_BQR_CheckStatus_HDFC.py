@@ -404,7 +404,7 @@ def test_sa_100_102_007():
 @pytest.mark.chargeSlipVal
 def test_sa_100_102_008():
     """
-    Sub Feature Code: UI_Common_PM_BQRV4_BQR_Checkstatus_Failed_HDFC
+    Sub Feature Code: UI_SA_PM_BQRV4_BQR_Checkstatus_Failed_HDFC
     Sub Feature Description: Verification of a BQRV4 BQR Checkstatus Failed transaction via HDFC
     TC naming code description: 100: Payment Method, 102: BQR, 008: TC008
     """
