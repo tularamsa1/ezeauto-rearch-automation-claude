@@ -424,6 +424,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
+@pytest.mark.portalVal
 def test_common_100_102_063():
     """
     Sub Feature Code: UI_Common_PM_BQRV4_UPI_Refund_via_YES_ATOS
