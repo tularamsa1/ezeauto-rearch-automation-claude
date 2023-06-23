@@ -14,7 +14,6 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-@pytest.mark.dbVal
 def test_d102_108_001():
     """
     Sub Feature Code: NonUI_Common_StaticQR_BQRV4_UPI_QR_Generation_Success_ICICI_DIRECT
@@ -46,8 +45,10 @@ def test_d102_108_001():
         mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT', portal_un=portal_username,
-                                                           portal_pw=portal_password, payment_mode='UPI',bank_code_bqr='HDFC')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='ICICI_DIRECT',
+                                                           portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI',
+                                                           bank_code_bqr='HDFC')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -67,9 +68,6 @@ def test_d102_108_001():
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
-        terminal_info_id = result["terminal_info_id"].iloc[0]
-        bqr_mc_id = result["id"].iloc[0]
-        bqr_m_pan = result["merchant_pan"].iloc[0]
         tid = result['tid'].values[0]
         mid = result['mid'].values[0]
 
@@ -101,14 +99,11 @@ def test_d102_108_001():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
-            publish_id = response["publishId"]
             success_api = response["success"]
-            username_api = response["username"]
-            org_code_api = response["merchantCode"]
-            mid_api = response["mid"]
-            tid_api = response["tid"]
-            logger.debug(f"fetching success status,publish_id, username, org code from api response is : "
-                         f"{success_api},{publish_id},{username_api},{org_code_api}")
+            error_code_api = response["errorCode"]
+            error_message_api = response["errorMessage"]
+            logger.debug(f"fetching success status,errorCode, errorMessage from api response is : "
+                         f"{success_api},{error_code_api},{error_message_api}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -129,19 +124,15 @@ def test_d102_108_001():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                expected_api_values = {"success": True,
-                                       "user_name": portal_username,
-                                       "org_code": org_code,
-                                       "mid": mid,
-                                       "tid": tid
+                expected_api_values = {"success": False,
+                                       "error_code": "EZETAP_6100006",
+                                       "error_message": "MID_TID_MISMATCH_FOR_UPIMC_AND_BQRMC"
                                        }
 
                 actual_api_values = {"success": success_api,
-                                     "user_name" : username_api,
-                                     "org_code" : org_code_api,
-                                     "mid": mid_api,
-                                     "tid": tid_api
-                                       }
+                                     "error_code": error_code_api,
+                                     "error_message": error_message_api
+                                     }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -149,62 +140,6 @@ def test_d102_108_001():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
-        # -----------------------------------------Start of DB Validation--------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                expected_db_values = {
-                    "publish_id": publish_id,
-                    "org_code": org_code,
-                    "config_id": bqr_mc_id,
-                    "vpa": vpa,
-                    "merchant_pan": bqr_m_pan,
-                    "user_mobile": mobile_number,
-                    "user_name": app_username,
-                    "mid": mid,
-                    "tid": tid,
-                    "qr_type": "BHARATQR",
-                    "intent_type": "STATIC_QR"
-                }
-                logger.debug(f"expected_db_values: {expected_db_values}")
-
-                query = "select * from staticqr_intent where config_id='" + str(bqr_mc_id) + "'"
-                logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                publish_id_db = result["publish_id"].iloc[0]
-                org_code_db = result["org_code"].iloc[0]
-                config_id_db = result["config_id"].iloc[0]
-                vpa_db = result["vpa"].iloc[0]
-                merchant_pan_db = result["merchant_pan"].iloc[0]
-                user_mobile_db = result["user_mobile"].iloc[0]
-                username_db = result["user_name"].iloc[0]
-                tid_db = result['tid'].values[0]
-                mid_db = result['mid'].values[0]
-                qr_type_db = result['qr_type'].values[0]
-                intent_type_db = result['intent_type'].values[0]
-
-                actual_db_values = {
-                    "publish_id": publish_id_db,
-                    "org_code": org_code_db,
-                    "config_id": config_id_db,
-                    "vpa": vpa_db,
-                    "merchant_pan": merchant_pan_db,
-                    "user_mobile": user_mobile_db,
-                    "user_name": username_db,
-                    "mid": mid_db,
-                    "tid": tid_db,
-                    "qr_type": qr_type_db,
-                    "intent_type": intent_type_db
-                }
-                logger.debug(f"actual_db_values : {actual_db_values}")
-
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

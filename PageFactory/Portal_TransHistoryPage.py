@@ -1,6 +1,7 @@
 import time
 
 from Configuration import TestSuiteSetup
+from DataProvider import GlobalVariables
 from PageFactory.Portal_BasePage import BasePage
 from datetime import datetime, timedelta
 
@@ -41,6 +42,7 @@ class PortalTransHistoryPage(BasePage):
         self.perform_click(self.lbl_search)
 
     def enter_order_number(self, order_number):
+        self.perform_clear(self.lbl_search)
         self.perform_fill(self.lbl_search, order_number)
 
     def perform_search(self):
@@ -62,9 +64,11 @@ class PortalTransHistoryPage(BasePage):
         today = datetime.now().date()
         yesterday = today - timedelta(days=1)
 
-        today_formatted = today.strftime("%B %d %Y")  # Replace the format string according to your date picker's expected format
+        today_formatted = today.strftime(
+            "%B %d %Y")  # Replace the format string according to your date picker's expected format
         print(f"todays: {today_formatted}")
-        yesterday_formatted = yesterday.strftime("%B %d %Y")  # Replace the format string according to your date picker's expected format
+        yesterday_formatted = yesterday.strftime(
+            "%B %d %Y")  # Replace the format string according to your date picker's expected format
 
         # " " + today_formatted + " (Today)", " " + yesterday_formatted
 
@@ -73,10 +77,10 @@ class PortalTransHistoryPage(BasePage):
         month = self.fetch_text(self.lbl_month)
         next_month = self.fetch_text(self.lbl_next_month)
         if month == current_month:
-            self.perform_click("//div[@title='"+" " + yesterday_formatted+"']")
+            self.perform_click("//div[@title='" + " " + yesterday_formatted + "']")
             self.date_selector(yesterday_formatted, self.lbl_current_date)
             time.sleep(1)
-            self.perform_click("//div[@title='"+" " + today_formatted + " (Today)"+"']")
+            self.perform_click("//div[@title='" + " " + today_formatted + " (Today)" + "']")
             self.date_selector(today_formatted, self.lbl_current_date)
             time.sleep(1)
 
@@ -87,34 +91,54 @@ class PortalTransHistoryPage(BasePage):
             self.perform_click()
             self.date_selector()
 
-def get_transaction_details_for_portal(app_un:str=None, app_pw:str=None, order_id:str=None) -> list:
+    def perform_clear(self, lbl_search):
+        self.page.wait_for_selector(selector=lbl_search, timeout=45000, state="visible").fill("")
+
+
+def get_transaction_details_for_portal(app_un: str = None, app_pw: str = None, order_id: str = None) -> list:
     """
     This method initiates the browser to get the txn details from merchant portal.
     Once it is logged in then it gets the txn details from extract_table_data() and returns list.
 
     :param app_un: str
     :param app_pw: str
-    :param app_pw: order_id
+    :param order_id: order_id
     :return: list
     """
-    portal_browser = TestSuiteSetup.initialize_portal_browser()
-    login_page_portal = PortalLoginPage(portal_browser)
+    GlobalVariables.portal_page = TestSuiteSetup.initialize_portal_browser()
+    login_page_portal = PortalLoginPage(GlobalVariables.portal_page)
     login_page_portal.perform_login_to_portal(username=app_un, password=app_pw)
-    portal_txn_page = PortalTransHistoryPage(portal_browser)
-    portal_txn_page.click_on_reports()
-    portal_txn_page.click_on_txn()
+    GlobalVariables.portal_txn_page = PortalTransHistoryPage(GlobalVariables.portal_page)
+    GlobalVariables.portal_txn_page.click_on_reports()
+    GlobalVariables.portal_txn_page.click_on_txn()
     # portal_txn_page.date_picket_expand()
     # portal_txn_page.getting_month_from_datepiker()
     # portal_txn_page.apply_selected_submit()
-    portal_txn_page.click_on_search_box()
-    portal_txn_page.select_order_number()
-    portal_txn_page.click_on_search()
-    portal_txn_page.select_order_number()
-    portal_txn_page.enter_order_number(order_id)
-    portal_txn_page.perform_search()
-    portal_txn_page.wait_for_given_timeout(2000)
-    portal_txn_page
-    table_element = portal_txn_page.get_tables_data()
+    GlobalVariables.portal_txn_page.click_on_search_box()
+    GlobalVariables.portal_txn_page.select_order_number()
+    GlobalVariables.portal_txn_page.click_on_search()
+    GlobalVariables.portal_txn_page.select_order_number()
+    GlobalVariables.portal_txn_page.enter_order_number(order_id)
+    GlobalVariables.portal_txn_page.perform_search()
+    GlobalVariables.portal_txn_page.wait_for_given_timeout(2000)
+    table_element = GlobalVariables.portal_txn_page.get_tables_data()
+    table_html = table_element.inner_html()
+    transaction_details = extract_table_data(table_html)
+    return transaction_details
+
+
+def get_txn_details_for_diff_order_id(order_id: str = None) -> list:
+    """
+    This method will use the existing browser to get the txn details from merchant portal for different order Id.
+    Once it is logged in then it gets the txn details from extract_table_data() and returns list.
+
+    :param order_id: order_id
+    :return: list
+    """
+    GlobalVariables.portal_txn_page.enter_order_number(order_id)
+    GlobalVariables.portal_txn_page.perform_search()
+    GlobalVariables.portal_txn_page.wait_for_given_timeout(2000)
+    table_element = GlobalVariables.portal_txn_page.get_tables_data()
     table_html = table_element.inner_html()
     transaction_details = extract_table_data(table_html)
     return transaction_details

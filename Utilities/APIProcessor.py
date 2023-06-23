@@ -1,4 +1,5 @@
 import json
+import os
 from urllib.parse import urlencode
 import requests
 from PageFactory import Base_Actions
@@ -30,107 +31,115 @@ def send_request(api_details):
     method = api_details['Method']
     headers = api_details['Header']
     url = ConfigReader.read_config("APIs", "baseUrl") + endPoint
+    timeout = 180
+    try:
+        if api_details['ApiName'] == 'cybersource_success_callback':
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
 
-    if api_details['ApiName'] == 'cybersource_success_callback':
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        return resp
-
-    if api_details['ApiName'] == 'callBackUpiMerchantRes':
-        payload = urlencode(payload)
-        resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
-        update_api_details_to_report_variables(resp)
-        json_resp = json.loads(resp.text)
-        logger.debug(
-            f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
-        return json_resp
-
-    if api_details['ApiName'] == 'confirm_axisdirect' or api_details['ApiName'] == 'Submit_review':
-        if api_details['ApiName'] == 'Submit_review':
-            payload = payload
-            resp = requests.request(method=method, url=str(url), data=payload)
-        else:
-            payload = payload['data']
+        if api_details['ApiName'] == 'callBackUpiMerchantRes':
+            payload = urlencode(payload)
             resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        if api_details['ApiName'] == 'confirm_axisdirect' or api_details['ApiName'] == 'Submit_review':
+            if api_details['ApiName'] == 'Submit_review':
+                payload = payload
+                resp = requests.request(method=method, url=str(url), data=payload)
+            else:
+                payload = payload['data']
+                resp = requests.request(method=method, url=str(url), headers=headers, data=payload)
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        if api_details['ApiName'] == 'apb_hash_generate':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            query = "select psp_base_url from upi_psp_config where bank_code='APB';"
+            logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            psp_base_url = result['psp_base_url'].values[0]
+            logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+            url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        if api_details['ApiName'] == 'callbackBQRKotakAtos' or api_details['ApiName'] == 'callbackUpiKotakAtos':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            url = str(protocol+"://" + router_ip + ":8002") + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        if api_details['ApiName'] == 'axisfc_hash':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            query = "select psp_base_url from upi_psp_config where bank_code='HDFC';"
+            logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            psp_base_url = result['psp_base_url'].values[0]
+            logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+            url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        # For IDFC Callback
+        if api_details['ApiName'] == 'hmac_merch_cred':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            query = "select psp_base_url from upi_psp_config where bank_code='IDFC';"
+            logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            psp_base_url = result['psp_base_url'].values[0]
+            logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+            url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            return resp
+
+        if api_details['ApiName'] == 'callbackgeneratorUpiICICI':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            query = "select psp_base_url from upi_psp_config where bank_code='ICICI_DIRECT';"
+            logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            psp_base_url = result['psp_base_url'].values[0]
+            logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+            url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload), timeout=timeout)
         update_api_details_to_report_variables(resp)
         json_resp = json.loads(resp.text)
         logger.debug(
-            f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+            f"payload : {json.dumps(payload)} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
         return json_resp
-
-    if api_details['ApiName'] == 'apb_hash_generate':
-        router_ip = Base_Actions.get_environment("str_exe_env_ip")
-        query = "select psp_base_url from upi_psp_config where bank_code='APB';"
-        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        psp_base_url = result['psp_base_url'].values[0]
-        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
-        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        update_api_details_to_report_variables(resp)
-        json_resp = json.loads(resp.text)
-        logger.debug(
-            f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
-        return json_resp
-
-    if api_details['ApiName'] == 'callbackBQRKotakAtos' or api_details['ApiName'] == 'callbackUpiKotakAtos':
-        router_ip = Base_Actions.get_environment("str_exe_env_ip")
-        url = str(protocol+"://" + router_ip + ":8002") + endPoint
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        update_api_details_to_report_variables(resp)
-        json_resp = json.loads(resp.text)
-        logger.debug(
-            f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
-        return json_resp
-
-    if api_details['ApiName'] == 'axisfc_hash':
-        router_ip = Base_Actions.get_environment("str_exe_env_ip")
-        query = "select psp_base_url from upi_psp_config where bank_code='HDFC';"
-        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        psp_base_url = result['psp_base_url'].values[0]
-        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
-        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        update_api_details_to_report_variables(resp)
-        json_resp = json.loads(resp.text)
-        logger.debug(
-            f"payload : {payload} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
-        return json_resp
-
-    # For IDFC Callback
-    if api_details['ApiName'] == 'hmac_merch_cred':
-        router_ip = Base_Actions.get_environment("str_exe_env_ip")
-        query = "select psp_base_url from upi_psp_config where bank_code='IDFC';"
-        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        psp_base_url = result['psp_base_url'].values[0]
-        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
-        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        update_api_details_to_report_variables(resp)
-        return resp
-
-    if api_details['ApiName'] == 'callbackgeneratorUpiICICI':
-        router_ip = Base_Actions.get_environment("str_exe_env_ip")
-        query = "select psp_base_url from upi_psp_config where bank_code='ICICI_DIRECT';"
-        logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        psp_base_url = result['psp_base_url'].values[0]
-        logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
-        url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
-        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-        update_api_details_to_report_variables(resp)
-        json_resp = json.loads(resp.text)
-        logger.debug(
-            f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
-        return json_resp
-
-    resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
-    update_api_details_to_report_variables(resp)
-    json_resp = json.loads(resp.text)
-    logger.debug(
-        f"payload : {payload} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
-    return json_resp
+    except requests.exceptions.Timeout:
+        print("API server is not responding. Stopping the process...")
+        logger.error(f"API server is not responding. Stopping the process...")
+        os.system("pkill python3.8")
 
 
 def update_api_details_to_report_variables(response: requests.models.Response):

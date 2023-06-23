@@ -431,7 +431,7 @@ def generate_acquisitions_for_merchant_creation(merchant_id: str) -> list:
             return lst_acquisitions_detail
         try:
             # updated below select query for AXIS_FC
-            cursor.execute("select * from acquisitions where PaymentGateway != 'FC';")
+            cursor.execute("select * from acquisitions where PaymentGateway NOT IN ('FC','ICICI');")
             acquisitions = cursor.fetchall()
             for i in range(0, len(acquisitions)):
                 acquisition_details['acquirerCode'] = acquisitions[i][0]

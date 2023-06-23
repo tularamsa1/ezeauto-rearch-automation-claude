@@ -49,6 +49,7 @@ def update_org_employee_table(password_hash,org_code,username,portal_username,po
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for DB refresh is : {response}")
 
+
 def extract_table_data(table_html:str = None) -> list:
     """
     This method extracts the transaction details from the merchant portal.

@@ -6,7 +6,7 @@ import sys
 import pytest
 import requests
 
-from Configuration import Configuration, testsuite_teardown
+from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
 from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -824,7 +824,7 @@ def test_common_100_107_024():
         logger.info(f"fetched mid is : {mid}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
