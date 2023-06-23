@@ -427,7 +427,7 @@ def test_common_100_111_015():
                     "pmt_type": "UPI",
                     "txn_amt": str(amount) + ".00",
                     "username": app_username,
-                    "rrn": rrn,
+                    "rrn": str(rrn),
                     "txn_id": txn_id,
                     "date_time": date_and_time_portal,
                     "acc_label": account_label_name
