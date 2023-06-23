@@ -78,10 +78,10 @@ def test_common_100_103_146():
         logger.debug(f"API details  : {api_details}")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -103,7 +103,6 @@ def test_common_100_103_146():
                 raise Exception("Api could not initate a cnp txn.")
             else:
                 # ui_driver to portal_driver, python convention.
-                # portal_driver = TestSuiteSetup.initialize_portal_driver()
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
                 payment_link_url = response['paymentLink']
                 payment_intent_id = response.get('paymentIntentId')
@@ -468,7 +467,6 @@ def test_common_100_103_146():
                     "txn_amt": f"{str(amount)}.00",
                     "username": app_username,
                     "txn_id": original_txn_id,
-                    # "rrn": str(rrn)
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -479,7 +477,6 @@ def test_common_100_103_146():
                 transaction_type = transaction_details[0]['Type']
                 status = transaction_details[0]['Status']
                 username = transaction_details[0]['Username']
-                portal_rrn = transaction_details[0]['RR Number']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -488,7 +485,6 @@ def test_common_100_103_146():
                     "txn_amt": total_amount[1],
                     "username": username,
                     "txn_id": transaction_id,
-                    # "rrn": str(portal_rrn)
                 }
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
@@ -570,7 +566,7 @@ def test_common_100_103_147():
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -592,11 +588,8 @@ def test_common_100_103_147():
                 raise Exception("Api could not initate a cnp txn.")
             else:
                 # ui_driver to portal_driver, python convention.
-                # portal_driver = TestSuiteSetup.initialize_portal_driver()
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
-
                 payment_link_url = response['paymentLink']
-
                 payment_intent_id = response.get('paymentIntentId')
                 logger.info("Opening the link in the browser")
                 ui_browser.goto(payment_link_url)
@@ -1081,7 +1074,6 @@ def test_common_100_103_148():
                 raise Exception("Api could not initate a cnp txn.")
             else:
                 # ui_driver to portal_driver, python convention.
-                # portal_driver = TestSuiteSetup.initialize_portal_driver()
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
                 payment_link_url = response['paymentLink']
                 payment_intent_id = response.get('paymentIntentId')

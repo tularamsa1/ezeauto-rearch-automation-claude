@@ -164,7 +164,8 @@ def test_common_100_101_113():
             settlement_status_db = result["settlement_status"].iloc[0]
             tid_db = result['tid'].values[0]
             mid_db = result['mid'].values[0]
-            logger.debug(f"Fetching status_db,payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db from database for "
+            logger.debug(
+                f"Fetching status_db,payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db from database for "
                 f"current merchant:{status_db},{payment_mode_db}, {amount_db}, {state_db}, {payment_gateway_db}, {acquirer_code_db}, {bank_code_db}, {settlement_status_db}, {mid_db}, {tid_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -202,7 +203,8 @@ def test_common_100_101_113():
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -450,7 +452,8 @@ def test_common_100_101_113():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
@@ -662,7 +665,8 @@ def test_common_100_101_114():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -893,7 +897,8 @@ def test_common_100_101_114():
                     "rrn": str(rr_number)
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -1119,7 +1124,8 @@ def test_common_100_101_115():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -1152,11 +1158,13 @@ def test_common_100_101_115():
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(refund_txn_id)
                 app_payment_status_refund = txn_history_page.fetch_txn_status_text()
-                logger.info(f"Fetching status from txn history for the txn : {refund_txn_id}, {app_payment_status_refund}")
+                logger.info(
+                    f"Fetching status from txn history for the txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_date_and_time_refund = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {refund_txn_id}, {app_date_and_time_refund}")
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
-                logger.info(f"Fetching payment mode from txn history for the txn : {refund_txn_id}, {app_payment_mode_refund}")
+                logger.info(
+                    f"Fetching payment mode from txn history for the txn : {refund_txn_id}, {app_payment_mode_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {refund_txn_id}, {app_txn_id_refund}")
                 app_amount_refund = txn_history_page.fetch_txn_amount_text()
@@ -1165,9 +1173,11 @@ def test_common_100_101_115():
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {refund_txn_id}, {app_settlement_status_refund}")
                 app_payment_msg_refund = txn_history_page.fetch_txn_payment_msg_text()
-                logger.info(f"Fetching txn status msg from txn history for the txn : {refund_txn_id}, {app_payment_msg_refund}")
+                logger.info(
+                    f"Fetching txn status msg from txn history for the txn : {refund_txn_id}, {app_payment_msg_refund}")
                 app_order_id_refund = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {refund_txn_id}, {app_order_id_refund}")
+                logger.info(
+                    f"Fetching txn order_id from txn history for the txn : {refund_txn_id}, {app_order_id_refund}")
 
                 actual_app_values = {
                     "pmt_status": app_payment_status.split(':')[1],
@@ -1228,7 +1238,7 @@ def test_common_100_101_115():
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,})
+                                                                        "password": app_password, })
                 logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 responseInList = response["txns"]
@@ -1259,7 +1269,8 @@ def test_common_100_101_115():
                 for elements in responseInList:
                     if elements["txnId"] == refund_txn_id:
                         refund_status_api = elements["status"]
-                        refund_amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        refund_amount_api = int(
+                            elements["amount"])  # actual=345.00, expected should be in the same format
                         refund_payment_mode_api = elements["paymentMode"]
                         refund_state_api = elements["states"][0]
                         refund_settlement_status_api = elements["settlementStatus"]
@@ -1460,7 +1471,13 @@ def test_common_100_101_115():
                     "txn_amt": f"{str(amount)}.00",
                     "username": "EZETAP",
                     "rrn": str(rrn),
-
+                    "txn_id": txn_id,
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "UPG_REFUND_POSTED",
+                    "pmt_type_2": "UPI",
+                    "txn_amt_2": f"{str(amount)}.00",
+                    "username_2": app_username,
+                    "txn_id_2": refund_txn_id
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1473,18 +1490,32 @@ def test_common_100_101_115():
                 username = transaction_details[1]['Username']
                 rrn = transaction_details[1]['RR Number']
 
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+
                 actual_portal_values = {
                     "date_time": date_time,
                     "pmt_state": str(status),
                     "pmt_type": transaction_type,
                     "txn_amt": total_amount[1],
                     "username": username,
-                    "rrn": rrn,
+                    "rrn": str(rrn),
                     "txn_id": transaction_id,
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": str(status_2),
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": total_amount_2[1],
+                    "username_2": username_2,
+                    "txn_id_2": transaction_id_2,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -1694,7 +1725,7 @@ def test_common_100_101_116():
                     "pmt_status": "UPG_REFUND_PENDING",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",
@@ -1703,7 +1734,8 @@ def test_common_100_101_116():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -1929,7 +1961,8 @@ def test_common_100_101_116():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -2006,7 +2039,8 @@ def test_common_100_101_117():
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
-            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page.perform_login(app_username, app_password)
             amount = random.randint(301, 400)
             order_id = datetime.now().strftime('%m%d%H%M%S')  # generate order id based on the current system time
@@ -2128,7 +2162,8 @@ def test_common_100_101_117():
             tid_db = result['tid'].values[0]
             mid_db = result['mid'].values[0]
             rrn_db = result['rr_number'].values[0]
-            logger.debug(f"Fetching status_db, payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db, rrn_db from database for "
+            logger.debug(
+                f"Fetching status_db, payment_mode_db, amount_db, state_db, payment_gateway_db, acquirer_code_db, bank_code_db, settlement_status_db, mid_db, tid_db, rrn_db from database for "
                 f"current merchant:{status_db},{payment_mode_db}, {amount_db}, {state_db}, {payment_gateway_db}, {acquirer_code_db}, {bank_code_db}, {settlement_status_db}, {mid_db}, {tid_db},{rrn_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -2164,7 +2199,8 @@ def test_common_100_101_117():
 
                 app_driver.reset()
 
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
@@ -2303,8 +2339,8 @@ def test_common_100_101_117():
                     "ipr_config_id": upi_mc_id,
                     "ipr_pg_merchant_id": pg_merchant_id,
                     "rrn": str(rrn),
-                    "ipr_error_message": "The given amount - "+str(txn_id)+" doesnt match with the "
-                                         "transaction amount."
+                    "ipr_error_message": "The given amount - " + str(txn_id) + " doesnt match with the "
+                                                                               "transaction amount."
                 }
 
                 logger.debug(f"expectedDBValues: {expected_db_values}")
@@ -2391,7 +2427,8 @@ def test_common_100_101_117():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
@@ -2606,7 +2643,6 @@ def test_common_100_101_119():
             refund_rrn = result['rr_number'].values[0]
             logger.debug(f"query result, refund_rrn : {refund_rrn}")
 
-
             query = "select * from upi_merchant_config where org_code ='" + str(
                 org_code) + "' AND status = 'ACTIVE' AND bank_code = 'APB'"
             logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
@@ -2617,7 +2653,6 @@ def test_common_100_101_119():
             logger.debug(f"mid from upi_merchant_config table : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from upi_merchant_config table : {tid}")
-
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2644,7 +2679,7 @@ def test_common_100_101_119():
                     "pmt_status": "UPG_AUTH_REFUNDED",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
-                    "txn_amt": str(amount)+".00",
+                    "txn_amt": str(amount) + ".00",
                     "rrn": str(rrn),
                     "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
@@ -2653,7 +2688,7 @@ def test_common_100_101_119():
                     "pmt_status_2": "UPG_REFUNDED",
                     "settle_status_2": "SETTLED",
                     "txn_id_2": refund_txn_id,
-                    "txn_amt_2": str(amount)+".00",
+                    "txn_amt_2": str(amount) + ".00",
                     "order_id_2": refund_external_ref,
                     "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "date_2": refund_date_and_time,
@@ -2661,7 +2696,8 @@ def test_common_100_101_119():
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -2694,11 +2730,13 @@ def test_common_100_101_119():
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(refund_txn_id)
                 app_payment_status_refund = txn_history_page.fetch_txn_status_text()
-                logger.info(f"Fetching status from txn history for the txn : {refund_txn_id}, {app_payment_status_refund}")
+                logger.info(
+                    f"Fetching status from txn history for the txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_date_and_time_refund = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {refund_txn_id}, {app_date_and_time_refund}")
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
-                logger.info(f"Fetching payment mode from txn history for the txn : {refund_txn_id}, {app_payment_mode_refund}")
+                logger.info(
+                    f"Fetching payment mode from txn history for the txn : {refund_txn_id}, {app_payment_mode_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {refund_txn_id}, {app_txn_id_refund}")
                 app_amount_refund = txn_history_page.fetch_txn_amount_text()
@@ -2707,9 +2745,11 @@ def test_common_100_101_119():
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {refund_txn_id}, {app_settlement_status_refund}")
                 app_payment_msg_refund = txn_history_page.fetch_txn_payment_msg_text()
-                logger.info(f"Fetching txn status msg from txn history for the txn : {refund_txn_id}, {app_payment_msg_refund}")
+                logger.info(
+                    f"Fetching txn status msg from txn history for the txn : {refund_txn_id}, {app_payment_msg_refund}")
                 app_order_id_refund = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {refund_txn_id}, {app_order_id_refund}")
+                logger.info(
+                    f"Fetching txn order_id from txn history for the txn : {refund_txn_id}, {app_order_id_refund}")
 
                 actual_app_values = {
                     "pmt_status": app_payment_status.split(':')[1],
@@ -2770,7 +2810,7 @@ def test_common_100_101_119():
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
-                                                                        "password": app_password,})
+                                                                        "password": app_password, })
                 logger.debug(f"API DETAILS for original_txn_id : {api_details}")
                 response = APIProcessor.send_request(api_details)
                 responseInList = response["txns"]
@@ -2801,7 +2841,8 @@ def test_common_100_101_119():
                 for elements in responseInList:
                     if elements["txnId"] == refund_txn_id:
                         refund_status_api = elements["status"]
-                        refund_amount_api = int(elements["amount"])  # actual=345.00, expected should be in the same format
+                        refund_amount_api = int(
+                            elements["amount"])  # actual=345.00, expected should be in the same format
                         refund_payment_mode_api = elements["paymentMode"]
                         refund_state_api = elements["states"][0]
                         refund_settlement_status_api = elements["settlementStatus"]
@@ -2937,7 +2978,8 @@ def test_common_100_101_119():
                 logger.debug(f"Query result : {result}")
                 refund_status_db = result["status"].iloc[0]
                 refund_payment_mode_db = result["payment_mode"].iloc[0]
-                refund_amount_db = int(result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
+                refund_amount_db = int(
+                    result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 refund_state_db = result["state"].iloc[0]
                 refund_payment_gateway_db = result["payment_gateway"].iloc[0]
                 refund_acquirer_code_db = result["acquirer_code"].iloc[0]
@@ -3041,7 +3083,8 @@ def test_common_100_101_119():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
