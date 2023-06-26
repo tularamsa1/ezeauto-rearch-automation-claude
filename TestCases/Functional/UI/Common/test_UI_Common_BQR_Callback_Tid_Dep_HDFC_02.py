@@ -101,13 +101,13 @@ def test_common_100_102_097():
         result = DBProcessor.getValueFromDB(query)
         device_serial = result['device_serial'].values[0]
         logger.info(f"fetched device_serial is : {device_serial}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -495,11 +495,67 @@ def test_common_100_102_097():
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_new)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "EXPIRED",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": str(amount),
+                    "username": app_username,
+                    "rrn": str(rrn),
+                    "auth_code": auth_code,
+                    "txn_id": txn_id,
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": str(amount),
+                    "username_2": app_username,
+                    "rrn_2": str(rrn_new),
+                    "auth_code_2": auth_code_new,
+                    "txn_id_2": txn_id_new
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+                rrn_2 = transaction_details[0]['RR Number']
+                auth_code_2 = transaction_details[0]['Auth Code']
+
+                date_time = transaction_details[1]['Date & Time']
+                transaction_id = transaction_details[1]['Transaction ID']
+                total_amount = transaction_details[1]['Total Amount'].split()
+                transaction_type = transaction_details[1]['Type']
+                status = transaction_details[1]['Status']
+                username = transaction_details[1]['Username']
+                rrn = transaction_details[1]['RR Number']
+                auth_code = transaction_details[1]['Auth Code']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "rrn": rrn,
+                    "auth_code": auth_code,
+                    "txn_id": transaction_id,
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": str(status_2),
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": total_amount_2[1],
+                    "username_2": str(username_2),
+                    "rrn_2": rrn_2,
+                    "auth_code_2": auth_code_2,
+                    "txn_id_2": transaction_id_2
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
+
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
@@ -623,13 +679,13 @@ def test_common_100_102_098():
         result = DBProcessor.getValueFromDB(query)
         device_serial = result['device_serial'].values[0]
         logger.info(f"fetched device_serial is : {device_serial}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1016,11 +1072,66 @@ def test_common_100_102_098():
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_new)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "EXPIRED",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": str(amount),
+                    "username": app_username,
+                    "rrn": str(rrn),
+                    "auth_code": auth_code,
+                    "txn_id": txn_id,
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "REFUND_PENDING",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": str(amount),
+                    "username_2": app_username,
+                    "rrn_2": str(rrn_new),
+                    "auth_code_2": auth_code_new,
+                    "txn_id_2": txn_id_new
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+                rrn_2 = transaction_details[0]['RR Number']
+                auth_code_2 = transaction_details[0]['Auth Code']
+
+                date_time = transaction_details[1]['Date & Time']
+                transaction_id = transaction_details[1]['Transaction ID']
+                total_amount = transaction_details[1]['Total Amount'].split()
+                transaction_type = transaction_details[1]['Type']
+                status = transaction_details[1]['Status']
+                username = transaction_details[1]['Username']
+                rrn = transaction_details[1]['RR Number']
+                auth_code = transaction_details[1]['Auth Code']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "rrn": rrn,
+                    "auth_code": auth_code,
+                    "txn_id": transaction_id,
+                    "date_time_2": date_time_2,
+                    "pmt_state_2": str(status_2),
+                    "pmt_type_2": transaction_type_2,
+                    "txn_amt_2": total_amount_2[1],
+                    "username_2": str(username_2),
+                    "rrn_2": rrn_2,
+                    "auth_code_2": auth_code_2,
+                    "txn_id_2": transaction_id_2
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
@@ -1121,13 +1232,13 @@ def test_common_100_102_099():
         result = DBProcessor.getValueFromDB(query)
         device_serial = result['device_serial'].values[0]
         logger.info(f"fetched device_serial is : {device_serial}")
-
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1680,11 +1791,96 @@ def test_common_100_102_099():
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_portal_values = {}
-                #
-                # Write the test case Portal validation code block here. Set this to pass if not required.
-                #
-                actual_portal_values = {}
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_new)
+                date_and_time_portal_3 = date_time_converter.to_portal_format(created_time_new_2)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "EXPIRED",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": str(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": auth_code,
+                    "rrn": str(rrn),
+
+                    "date_time_2": date_and_time_portal_2,
+                    "pmt_state_2": "AUTHORIZED",
+                    "pmt_type_2": "BHARATQR",
+                    "txn_amt_2": str(amount),
+                    "username_2": app_username,
+                    "txn_id_2": txn_id_new,
+                    "auth_code_2": auth_code_new,
+                    "rrn_2": str(rrn_new),
+
+                    "date_time_3": date_and_time_portal_3,
+                    "pmt_state_3": "AUTHORIZED",
+                    "pmt_type_3": "BHARATQR",
+                    "txn_amt_3": str(amount),
+                    "username_3": app_username,
+                    "txn_id_3": txn_id_new_2,
+                    "auth_code_3": auth_code_new_2,
+                    "rrn_3": str(rrn_new_2)
+
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time_2 = transaction_details[0]['Date & Time']
+                transaction_id_2 = transaction_details[0]['Transaction ID']
+                total_amount_2 = transaction_details[0]['Total Amount'].split()
+                transaction_type_2 = transaction_details[0]['Type']
+                status_2 = transaction_details[0]['Status']
+                username_2 = transaction_details[0]['Username']
+                rrn_2 = transaction_details[0]['RR Number']
+                auth_code_2 = transaction_details[0]['Auth Code']
+
+                date_time_1 = transaction_details[1]['Date & Time']
+                transaction_id_1 = transaction_details[1]['Transaction ID']
+                total_amount_1 = transaction_details[1]['Total Amount'].split()
+                transaction_type_1 = transaction_details[1]['Type']
+                status_1 = transaction_details[1]['Status']
+                username_1 = transaction_details[1]['Username']
+                rrn_1 = transaction_details[1]['RR Number']
+                auth_code_1 = transaction_details[1]['Auth Code']
+
+                date_time = transaction_details[2]['Date & Time']
+                transaction_id = transaction_details[2]['Transaction ID']
+                total_amount = transaction_details[2]['Total Amount'].split()
+                transaction_type = transaction_details[2]['Type']
+                status = transaction_details[2]['Status']
+                username = transaction_details[2]['Username']
+                auth_code = transaction_details[2]['Auth Code']
+                rrn = transaction_details[2]['RR Number']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code,
+                    "rrn": str(rrn),
+                    "date_time_2": date_time_1,
+                    "pmt_state_2": str(status_1),
+                    "pmt_type_2": transaction_type_1,
+                    "txn_amt_2": total_amount_1[1],
+                    "username_2": username_1,
+                    "txn_id_2": transaction_id_1,
+                    "auth_code_2": auth_code_1,
+                    "rrn_2": str(rrn_1),
+                    "date_time_3": date_time_2,
+                    "pmt_state_3": str(status_2),
+                    "pmt_type_3": transaction_type_2,
+                    "txn_amt_3": total_amount_2[1],
+                    "username_3": str(username_2),
+                    "txn_id_3": transaction_id_2,
+                    "auth_code_3": auth_code_2,
+                    "rrn_3": str(rrn_2)
+
+                }
+                logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
             except Exception as e:
