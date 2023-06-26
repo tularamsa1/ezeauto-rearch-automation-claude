@@ -1644,6 +1644,7 @@ def test_common_100_103_012():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
+                date_and_time_2 = date_time_converter.to_app_format(refund_created_time)
                 expectedAppValues = {
                                      "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
                                      "pmt_mode": "PAY LINK",
@@ -1665,7 +1666,7 @@ def test_common_100_103_012():
                                      "msg_2": "PAYMENT VOIDED/REFUNDED",
                                      "customer_name_2": txn_customer_name,
                                      "settle_status_2": txn_settle_status,
-                                     "date_2": date_and_time
+                                     "date_2": date_and_time_2
                                      }
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
                 loginPage = LoginPage(app_driver)
@@ -1989,6 +1990,7 @@ def test_common_100_103_012():
                 # --------------------------------------------------------------------------------------------
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                date_and_time_portal_refund = date_time_converter.to_portal_format(refund_created_time)
 
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
@@ -1997,7 +1999,7 @@ def test_common_100_103_012():
                     "txn_amt": str(amount) + ".00",
                     "username": app_username,
 
-                    "date_time_2": date_and_time_portal,
+                    "date_time_2": date_and_time_portal_refund,
                     "pmt_state_2": "REFUNDED",
                     "pmt_type_2": "CNP",
                     "txn_amt_2": str(amount) + ".00",

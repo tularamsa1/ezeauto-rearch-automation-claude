@@ -1927,12 +1927,11 @@ def test_common_100_101_046():
                     "username": app_username,
                     "txn_id": txn_id,
                     "rrn": rrn,
-                    "date_time_2": date_and_time_portal,
+                    "date_time_2": refund_date_and_time,
                     "pmt_state_2": "FAILED",
                     "pmt_type_2": "UPI",
                     "txn_amt_2": f"{str(amount)}.00",
-                    "auth_code_2" : refund_date_and_time,
-                    "rrn_2" : refund_rrn,
+                    "rrn_2": str(refund_rrn),
                     "username_2": app_username,
                     "txn_id_2": refund_txn_id
                 }
@@ -1946,7 +1945,6 @@ def test_common_100_101_046():
                 refunded_transaction_type = transaction_details[0]['Type']
                 refunded_status = transaction_details[0]['Status']
                 refunded_username = transaction_details[0]['Username']
-                refunded_auth_code = transaction_details[0]['Auth Code']
 
                 date_time = transaction_details[1]['Date & Time']
                 transaction_id = transaction_details[1]['Transaction ID']
@@ -1968,14 +1966,12 @@ def test_common_100_101_046():
                     "pmt_state_2": str(refunded_status),
                     "pmt_type_2": refunded_transaction_type,
                     "txn_amt_2": refunded_total_amount[1],
-                    "auth_code_2" : refunded_auth_code,
-                    "rrn_2": refunded_rr_number,
+                    "rrn_2": str(refunded_rr_number),
                     "username_2": refunded_username,
                     "txn_id_2": refunded_transaction_id
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id {testcase_id}")
-
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
