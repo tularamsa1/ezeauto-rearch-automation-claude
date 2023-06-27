@@ -3,7 +3,8 @@ import random
 import sqlite3
 import pandas
 import requests
-from datetime import datetime
+# from datetime import datetime
+import datetime
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -874,15 +875,16 @@ def generate_random_number(number_of_digits: int) -> int:
     :return int
     """
     try:
-        length_string = ""
-        for i in range(0, number_of_digits):
-            length_string = length_string + '9'
-        lower_limit = int(length_string[:-1])
-        upper_limit = int(length_string)
-        return random.randint(lower_limit, upper_limit)
+        # Get current date and time
+        now = datetime.datetime.now()
+        # Generate a random number between 10 and 99
+        random_number = random.randint(10, 99)
+        # Combine the current date and time with the random number
+        random_16_digit_number = str(int(now.strftime("%Y%m%d%H%M%S"))) + str(random_number)
+        logger.info(f"generated 16 digit PAN Number : {random_16_digit_number}")
+        return random_16_digit_number
     except Exception as e:
         logger.error(f"Unable to generate the random number due to error {str(e)}")
-
 
 def add_key_to_upi_setting_api_body(merchant_configuration_api_body: dict) -> dict:
     """
@@ -1029,14 +1031,11 @@ def get_unique_pan_for_bqr_settings(digits: int) -> str or None:
     """
     try:
         pan_number = generate_random_number(digits)
-        while check_if_pan_exists(str(pan_number)):
-            pan_number = generate_random_number(digits)
         logger.debug(f"Unique number {str(pan_number)} was generated for bqr settings.")
         return str(pan_number)
     except Exception as e:
         logger.error(f"Unable to get unique pan number due to error {str(e)}")
         return None
-
 
 def get_merchant_code_using_mid(mid: str) -> str or None:
     """
