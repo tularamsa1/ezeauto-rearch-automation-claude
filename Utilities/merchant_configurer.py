@@ -3,7 +3,6 @@ import random
 import sqlite3
 import pandas
 import requests
-# from datetime import datetime
 import datetime
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
