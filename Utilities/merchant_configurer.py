@@ -1,9 +1,10 @@
 import json
 import random
 import sqlite3
+import string
 import pandas
 import requests
-import datetime
+from datetime import datetime
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, merchant_creator, ConfigReader, sqlite_processor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -875,13 +876,15 @@ def generate_random_number(number_of_digits: int) -> int:
     """
     try:
         # Get current date and time
-        now = datetime.datetime.now()
-        # Generate a random number between 10 and 99
-        random_number = random.randint(10, 99)
-        # Combine the current date and time with the random number
-        random_16_digit_number = str(int(now.strftime("%Y%m%d%H%M%S"))) + str(random_number)
-        logger.info(f"generated 16 digit PAN Number : {random_16_digit_number}")
-        return random_16_digit_number
+        now = datetime.now()
+        random_number_len = int(number_of_digits - len(str(int(now.strftime("%Y%m%d%H%M%S")))))
+        logger.info(f"Length of random number to be generated is : {random_number_len}")
+        # Generate a random number of required length
+        random_digits = ''.join(random.choice(string.digits) for i in range(random_number_len))
+        # Combine the current date and time with the random digits
+        random_pan_num = str(int(now.strftime("%Y%m%d%H%M%S"))) + str(random_digits)
+        logger.info(f"Randomly generated PAN number is {random_pan_num}")
+        return int(random_pan_num)
     except Exception as e:
         logger.error(f"Unable to generate the random number due to error {str(e)}")
 
@@ -1030,6 +1033,8 @@ def get_unique_pan_for_bqr_settings(digits: int) -> str or None:
     """
     try:
         pan_number = generate_random_number(digits)
+        while check_if_pan_exists(str(pan_number)):
+            pan_number = generate_random_number(digits)
         logger.debug(f"Unique number {str(pan_number)} was generated for bqr settings.")
         return str(pan_number)
     except Exception as e:
