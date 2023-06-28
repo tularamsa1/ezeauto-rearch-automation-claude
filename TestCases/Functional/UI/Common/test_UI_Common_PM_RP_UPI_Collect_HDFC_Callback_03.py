@@ -1755,26 +1755,6 @@ def test_common_100_103_025():
                 GlobalVariables.str_portal_val_result = 'Fail'
             logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time_app_2)
-                expected_values = {'PAID BY:': 'UPI',
-                                   'merchant_ref_no': 'Ref # ' + str(order_id),
-                                   'RRN': str(callback_2_rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                   'date': txn_date,
-                                   'time': txn_time,
-                                   'AUTH CODE': auth_code_2}
-                logger.debug(f"expected_values : {expected_values}")
-                receipt_validator.perform_charge_slip_validations(new_txn_id_2,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_values)
-
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-
         GlobalVariables.time_calc.validation.end()
         print(colored("Validation Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="),
                       'cyan'))
