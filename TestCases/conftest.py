@@ -275,11 +275,9 @@ def method_setup(request, playwright: Playwright):
 
         print("Function teardown level")
         android_utilities.set_report_variables()
-        print("^^^^^^^^^^^^^^^^^^")
         print(GlobalVariables.portal_page)
         print(GlobalVariables.ui_page)
         print(GlobalVariables.charge_slip_page)
-        print("+++++++++++++++++++")
         ss_on_failure(request)
         ss_on_success(request)
         # time.sleep(10)
@@ -353,7 +351,6 @@ def method_setup(request, playwright: Playwright):
         if (ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true" and
                 Rerun.isRerunRequiredImmediately(GlobalVariables.EXCEL_testCaseName) and
                 ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false"):
-            print("88888888888888888888888")
             rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
             # if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
@@ -365,14 +362,12 @@ def method_setup(request, playwright: Playwright):
             #     print(colored("Teardown Timer resumed in 'fin' of method_setup fixture after logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
             if rerunCount >= 0:
-                print("000000000000000000000000000000")
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 rerunCount -= 1
                 Rerun.rerunTestImmediately(GlobalVariables.EXCEL_testCaseName, GlobalVariables.EXCEL_testCaseFileName,
                                            rerunCount, request)
 
             else:
-                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 print("Rerun skipped.")
 
@@ -561,16 +556,11 @@ def log_on_failure(request):
 
     item = request.node
     if item.rep_call.failed:
-        print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
         if Base_Actions.is_log_capture_required("bool_capt_log_fail") == "True":
-            print("cccccccccccccccccccccccccccc")
             if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" or
                     ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true"):
-                print("ddddddddddddddddddddddddddddddddddddddd")
                 if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True":
-                    print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
                     if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
-                        print("fffffffffffffffffffffffffffffff")
                         path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
                         print("Inside capturing logs all in one file")
 
@@ -631,23 +621,17 @@ def log_on_failure(request):
                             rerun_file = Path(path + "/ezestore.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
                     else:
-                        print("gggggggggggggggggggggggggggggggg")
                         if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
-                            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
                             print("Inside capturing log of last run TCs in one file")
 
                             # if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
                             if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
-                                print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
                                 rerun_count = Rerun.getRerunCount(str(request.node.nodeid))
-                                print("AB AB AB AB AB AB AB AB AB AB AB AB AB AB")
                             else:
-                                print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                                 print(Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName))
                                 rerun_count = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
                             if rerun_count == 0:
-                                print("NNNNNNNNNNNNNNNNNNNNNNN")
                                 print("Fetching logs of last run")
 
                                 path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
@@ -712,15 +696,10 @@ def log_on_failure(request):
                             else:
                                 print("This is not last run")
                         else:
-                            print("iiiiiiiiiiiiiiiiiiiiiiiiiiiii")
                             print("Both last_run and all_run are disabled")
                 else:
-                    print("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
                     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
-                        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-                        print("bool_capt_log_different_files")
                         if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
-                            print("lllllllllllllllllllllllllll")
                             print("bool_capt_log_each_run")
                             i = int(ConfigReader.read_config("Validations", "int_rerun_count"))
                             j = 0
@@ -824,21 +803,16 @@ def log_on_failure(request):
                                 i -= 1
                                 j += 1
                         else:
-                            print("mmmmmmmmmmmmmmmmmmmmmmmmmmmm")
                             print("bool_capt_log_each_run == false")
                             if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
-                                print("nnnnnnnnnnnnnnnnnnnnnnnn")
                                 print("bool_capt_log_last_run == true")
                                 if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
-                                    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
                                     rerun_count = Rerun.getRerunCount(str(request.node.nodeid))
                                     print("AB AB AB AB AB AB AB AB AB AB AB AB AB AB")
                                 else:
-                                    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                                     print(Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName))
                                     rerun_count = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
                                 if rerun_count == 0:
-                                    print("NNNNNNNNNNNNNNNNNNNNNNN")
                                     print("Fetching logs of last run")
                                     testCaseID = str(item.nodeid).split('/')
                                     finalTestCaseID = testCaseID[len(testCaseID) - 1]
@@ -906,17 +880,13 @@ def log_on_failure(request):
                                 else:
                                     print("This is not last run")
                             else:
-                                print("ooooooooooooooooooooooooooooo")
                                 print("bool_capt_log_last_run == false")
                                 print("Both last_run and each_run are disabled")
                     else:
-                        print("pppppppppppppppppppppppppp")
                         print("Both Same file and different file are disabled")
             else:
-                print("qqqqqqqqqqqqqqqqqqqqqqqqq")
                 print("Rerun is disabled")
                 if Base_Actions.is_log_capture_required("bool_capt_log_one_file") == "True":
-                    print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/"
                     print("Inside capturing logs all in one file")
                     print("Fetching Logs 89th time")
@@ -976,9 +946,7 @@ def log_on_failure(request):
                         rerun_file = Path(path + "/ezestore.log")
                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
                 else:
-                    print("ssssssssssssssssssssssssssssss")
                     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
-                        print("tttttttttttttttttttttttttttttttttttttttttt")
                         testCaseID = str(item.nodeid).split('/')
                         finalTestCaseID = testCaseID[len(testCaseID) - 1]
                         logFileName = str(finalTestCaseID).split('::')[1]
@@ -1052,7 +1020,6 @@ def log_on_failure(request):
                             open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
                     else:
-                        print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
                         print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 
     GlobalVariables.time_calc.log_collection.pause()
