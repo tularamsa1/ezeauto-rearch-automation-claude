@@ -2997,7 +2997,7 @@ def test_common_100_103_139():
                     transaction_type_2 = transaction_details[0]['Type']
                     status_2 = transaction_details[0]['Status']
                     username_2 = transaction_details[0]['Username']
-                    rrn_2 = transaction_details[1]['RR Number']
+                    rrn_2 = transaction_details[0]['RR Number']
 
                     date_time = transaction_details[1]['Date & Time']
                     transaction_id = transaction_details[1]['Transaction ID']

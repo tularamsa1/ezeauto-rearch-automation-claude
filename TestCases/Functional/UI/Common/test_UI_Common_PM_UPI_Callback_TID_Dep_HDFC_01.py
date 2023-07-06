@@ -1878,37 +1878,37 @@ def test_common_100_101_094():
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
-                refunded_date_time = transaction_details[0]['Date & Time']
-                refunded_transaction_id = transaction_details[0]['Transaction ID']
-                refunded_total_amount = transaction_details[0]['Total Amount'].split()
-                refunded_transaction_type = transaction_details[0]['Type']
-                refunded_status = transaction_details[0]['Status']
-                refunded_username = transaction_details[0]['Username']
-                refunded_rrn = transaction_details[0]['RR Number']
+                callback_date_time = transaction_details[0]['Date & Time']
+                callback_transaction_id = transaction_details[0]['Transaction ID']
+                callback_total_amount = transaction_details[0]['Total Amount'].split()
+                callback_transaction_type = transaction_details[0]['Type']
+                callback_status = transaction_details[0]['Status']
+                callback_username = transaction_details[0]['Username']
+                callback_rrn = transaction_details[0]['RR Number']
 
-                date_time = transaction_details[1]['Date & Time']
-                transaction_id = transaction_details[1]['Transaction ID']
-                total_amount = transaction_details[1]['Total Amount'].split()
-                transaction_type = transaction_details[1]['Type']
-                status = transaction_details[1]['Status']
-                username = transaction_details[1]['Username']
-                rrn = transaction_details[1]['RR Number']
+                portal_date_time = transaction_details[1]['Date & Time']
+                portal_transaction_id = transaction_details[1]['Transaction ID']
+                portal_total_amount = transaction_details[1]['Total Amount'].split()
+                portal_transaction_type = transaction_details[1]['Type']
+                portal_status = transaction_details[1]['Status']
+                portal_username = transaction_details[1]['Username']
+                portal_rrn = transaction_details[1]['RR Number']
 
                 actual_portal_values = {
-                    "date_time": date_time,
-                    "pmt_state": str(status),
-                    "pmt_type": transaction_type,
-                    "txn_amt": total_amount[1],
-                    "username": username,
-                    "rrn": rrn,
-                    "txn_id": transaction_id,
-                    "date_time_2": refunded_date_time,
-                    "pmt_state_2": str(refunded_status),
-                    "pmt_type_2": refunded_transaction_type,
-                    "txn_amt_2": refunded_total_amount[1],
-                    "username_2": str(refunded_username),
-                    "rrn_2": refunded_rrn,
-                    "txn_id_2": refunded_transaction_id
+                    "date_time": portal_date_time,
+                    "pmt_state": str(portal_status),
+                    "pmt_type": portal_transaction_type,
+                    "txn_amt": portal_total_amount[1],
+                    "username": portal_username,
+                    "rrn": portal_rrn,
+                    "txn_id": portal_transaction_id,
+                    "date_time_2": callback_date_time,
+                    "pmt_state_2": str(callback_status),
+                    "pmt_type_2": callback_transaction_type,
+                    "txn_amt_2": callback_total_amount[1],
+                    "username_2": str(callback_username),
+                    "rrn_2": callback_rrn,
+                    "txn_id_2": callback_transaction_id
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values} for the testcase_id : {testcase_id}")
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
