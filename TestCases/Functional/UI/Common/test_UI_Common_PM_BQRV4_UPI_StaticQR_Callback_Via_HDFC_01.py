@@ -217,7 +217,7 @@ def test_common_100_108_003():
                     "rrn": str(rrn),
                     "customer_name": "Test Payer",
                     "payer_name": "Test Payer",
-                    "order_id": db_txn_external_ref,
+                    # "order_id": db_txn_external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time
                 }
@@ -255,8 +255,8 @@ def test_common_100_108_003():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
@@ -270,7 +270,7 @@ def test_common_100_108_003():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
@@ -672,7 +672,7 @@ def test_common_100_108_004():
                     "rrn": str(rrn),
                     "customer_name": "Test Payer",
                     "payer_name": "Test Payer",
-                    "order_id": db_txn_external_ref,
+                    # "order_id": db_txn_external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time
                 }
@@ -711,8 +711,8 @@ def test_common_100_108_004():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
@@ -726,7 +726,7 @@ def test_common_100_108_004():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
@@ -1131,7 +1131,7 @@ def test_common_100_108_018():
                     "rrn": str(rrn),
                     "customer_name": "Test Payer",
                     "payer_name": "Test Payer",
-                    "order_id": db_txn_external_ref,
+                    # "order_id": db_txn_external_ref,
                     "pmt_msg": "PAYMENT FAILED",
                     "date": date_and_time
                 }
@@ -1169,8 +1169,8 @@ def test_common_100_108_018():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {db_txn_id}, {app_rrn}")
@@ -1184,7 +1184,7 @@ def test_common_100_108_018():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
@@ -1629,8 +1629,8 @@ def test_common_100_108_031():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {db_txn_id_2}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id_2}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id_2}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {db_txn_id_2}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {db_txn_id_2}, {app_rrn}")

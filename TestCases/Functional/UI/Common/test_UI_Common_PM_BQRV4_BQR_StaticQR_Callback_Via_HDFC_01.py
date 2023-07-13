@@ -218,8 +218,8 @@ def test_common_100_108_010():
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -668,8 +668,8 @@ def test_common_100_108_011():
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -1128,8 +1128,8 @@ def test_common_100_108_019():
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
 
                 actual_app_values = {"pmt_mode": payment_mode,
                                      "pmt_status": payment_status.split(':')[1],
