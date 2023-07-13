@@ -1093,7 +1093,7 @@ def test_common_100_102_091():
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
-                    "pmt_state": "EXPIRED",
+                    "pmt_state": "FAILED",
                     "pmt_type": "BHARATQR",
                     "txn_amt": f"{str(amount)}.00",
                     "username": app_username,
