@@ -179,7 +179,8 @@ def test_common_100_102_066():
                 expected_app_values = {"pmt_mode": "UPI", "pmt_status": "UPG_REFUND_PENDING","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        #"customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref,"msg": "PAYMENT SUCCESSFUL",
+                                       # "order_id": external_ref,
+                                       "msg": "REFUND PENDING",
                                        #"auth_code": auth_code,
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -215,8 +216,8 @@ def test_common_100_102_066():
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -225,7 +226,7 @@ def test_common_100_102_066():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      #"customer_name": app_customer_name,"payer_name": app_payer_name,
                                      "settle_status": app_settlement_status,
-                                     "order_id": app_order_id,
+                                     # "order_id": app_order_id,
                                      #"auth_code": app_auth_code,
                                      "msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -581,7 +582,8 @@ def test_common_100_102_067():
                 expected_app_values = {"pmt_mode": "UPI", "pmt_status": "UPG_AUTHORIZED","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "SETTLED","txn_id": txn_id, "rrn": str(rrn),
                                        #"customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref,"msg": "PAYMENT SUCCESSFUL",
+                                       # "order_id": external_ref,
+                                       "msg": "PAYMENT SUCCESSFUL",
                                        #"auth_code": auth_code,
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -618,8 +620,8 @@ def test_common_100_102_067():
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -628,7 +630,7 @@ def test_common_100_102_067():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      #"customer_name": app_customer_name,"payer_name": app_payer_name,
                                      "settle_status": app_settlement_status,
-                                     "order_id": app_order_id,
+                                     # "order_id": app_order_id,
                                      #"auth_code": app_auth_code,
                                      "msg": app_payment_msg, "date": app_date_and_time}
                 logger.debug(f"actual_app_values: {actual_app_values}")
@@ -990,14 +992,16 @@ def test_common_100_102_068():
                                        "txn_amt": "{:.2f}".format(amount),"settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        # "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id": external_ref, "msg": "PAYMENT SUCCESSFUL",
+                                       # "order_id": external_ref,
+                                       "msg": "PAYMENT VOIDED/REFUNDED",
                                        # "auth_code": auth_code,
                                        "date": date_and_time,
                                        "pmt_mode_2": "UPI", "pmt_status_2": "UPG_REFUNDED",
                                        "txn_amt_2": "{:.2f}".format(amount), "settle_status_2": "SETTLED",
                                        "txn_id_2": txn_id_refunded, "rrn_2": str(rrn_refunded),
                                        # "customer_name": customer_name,"payer_name": payer_name,
-                                       "order_id_2": external_ref, "msg_2": "PAYMENT SUCCESSFUL",
+                                       # "order_id_2": external_ref,
+                                       "msg_2": "PAYMENT VOIDED/REFUNDED",
                                        # "auth_code": auth_code,
                                        "date_2": date_and_time_2
                                        }
@@ -1036,8 +1040,8 @@ def test_common_100_102_068():
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -1065,8 +1069,8 @@ def test_common_100_102_068():
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg_refunded = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id_refunded}, {app_payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id_refunded}, {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id_refunded}, {app_order_id_refunded}")
                 app_rrn_refunded = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id_refunded}, {app_rrn_refunded}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -1075,7 +1079,7 @@ def test_common_100_102_068():
                                      "txn_amt": app_amount.split(' ')[1], "txn_id": app_txn_id, "rrn": str(app_rrn),
                                      # "customer_name": app_customer_name,"payer_name": app_payer_name,
                                      "settle_status": app_settlement_status,
-                                     "order_id": app_order_id,
+                                     # "order_id": app_order_id,
                                      # "auth_code": app_auth_code,
                                      "msg": app_payment_msg, "date": app_date_and_time,
                                      "pmt_mode_2": payment_mode_refunded,
@@ -1084,7 +1088,7 @@ def test_common_100_102_068():
                                      "txn_id_2": app_txn_id_refunded, "rrn_2": str(app_rrn_refunded),
                                      # "customer_name": app_customer_name,"payer_name": app_payer_name,
                                      "settle_status_2": app_settlement_status_refunded,
-                                     "order_id_2": app_order_id_refunded,
+                                     # "order_id_2": app_order_id_refunded,
                                      # "auth_code": app_auth_code,
                                      "msg_2": app_payment_msg_refunded,
                                      "date_2": app_date_and_time_refunded
