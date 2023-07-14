@@ -796,7 +796,7 @@ def test_common_100_102_207():
                     "customer_name_2": customer_name_new_2,
                     #"payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     #"auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }

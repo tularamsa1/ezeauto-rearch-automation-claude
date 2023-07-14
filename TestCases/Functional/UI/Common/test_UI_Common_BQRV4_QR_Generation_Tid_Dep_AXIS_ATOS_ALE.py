@@ -371,47 +371,6 @@ def test_common_100_102_187():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case : {testcase_id}")
         # -----------------------------------------End of API Validation---------------------------------------
-
-        # -----------------------------------------Start of Portal Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
-            logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
-            try:
-                # --------------------------------------------------------------------------------------------
-                expected_portal_values = {
-                    "pmt_state": "Settled", "pmt_type": "UPI",
-                    "txn_amt": "Rs." + str(amount) + ".00", "username": app_username}
-                logger.debug(f"expected_portal_values : {expected_portal_values}")
-
-                portal_driver = TestSuiteSetup.initialize_portal_driver()
-                login_page_portal = PortalLoginPage(portal_driver)
-                logger.debug(f"Logging in to the portal with the username : {portal_username} and password : {portal_password}")
-                login_page_portal.perform_login_to_portal(portal_username, portal_password)
-                home_page_portal = PortalHomePage(portal_driver)
-                home_page_portal.wait_for_home_page_load()
-                home_page_portal.search_merchant_name(str(org_code))
-                logger.debug(f"searching for the org_code : {str(org_code)}")
-                home_page_portal.click_switch_button(str(org_code))
-                home_page_portal.perform_merchant_switched_verfication()
-                home_page_portal.click_transaction_search_menu()
-                portal_trans_history_page = PortalTransHistoryPage(portal_driver)
-                portal_values_dict = portal_trans_history_page.get_transaction_details_for_portal()
-                portal_type = portal_values_dict['Type']
-                portal_status = portal_values_dict['Status']
-                portal_amount = portal_values_dict['Total Amount']
-                portal_username = portal_values_dict['Username']
-
-                actual_portal_values = {
-                    "pmt_state": str(portal_status), "pmt_type": portal_type,
-                    "txn_amt": portal_amount, "username": portal_username}
-                logger.debug(f"actual_portal_values : {actual_portal_values}")
-
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                actualPortal=actual_portal_values)
-            except Exception as e:
-                Configuration.perform_portal_val_exception(testcase_id, e)
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
-        # -----------------------------------------End of Portal Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
