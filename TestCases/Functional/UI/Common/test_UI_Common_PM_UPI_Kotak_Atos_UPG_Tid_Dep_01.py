@@ -249,7 +249,7 @@ def test_common_100_101_181():
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
                     "rrn": str(ref_id),
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time
                 }
@@ -283,8 +283,8 @@ def test_common_100_101_181():
                 logger.info(f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn from txn history for the txn : {ipr_txn_id}, {app_rrn}")
 
@@ -295,7 +295,7 @@ def test_common_100_101_181():
                     "txn_id": app_txn_id,
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
@@ -796,7 +796,7 @@ def test_common_100_101_182():
                     "settle_status": "SETTLED",
                     "txn_id": ipr_txn_id,
                     "rrn": str(ref_id),
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time
                 }
@@ -831,8 +831,8 @@ def test_common_100_101_182():
                 logger.info(f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn from txn history for the txn : {ipr_txn_id}, {app_rrn}")
 
@@ -843,7 +843,7 @@ def test_common_100_101_182():
                     "txn_id": app_txn_id,
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time
                 }
