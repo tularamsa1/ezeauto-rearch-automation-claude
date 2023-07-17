@@ -350,7 +350,7 @@ def test_common_100_102_312():
                     "rrn_2": str(rrn_new),
                     "customer_name_2": customer_name_new,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "auth_code_2": auth_code_new,
                     "date_2": date_and_time_new,
                     "pmt_mode_3": "BHARAT QR",
@@ -361,7 +361,7 @@ def test_common_100_102_312():
                     "rrn_3": str(rrn_new_3),
                     "customer_name_3": customer_name_new_3,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND PENDING",
                     "auth_code_3": auth_code_new_3,
                     "date_3": date_and_time_new_3
                 }
