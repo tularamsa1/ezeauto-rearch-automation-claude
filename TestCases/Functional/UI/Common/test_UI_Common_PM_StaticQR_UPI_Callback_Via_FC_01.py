@@ -1870,7 +1870,7 @@ def test_common_100_107_026():
                     "issuer_code": "AXIS",
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
-                    # "order_id": order_id,
+                    "order_id": order_id,
                     "date": date,
                     "txn_id": str(txn_id)
                 }

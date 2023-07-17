@@ -1480,7 +1480,7 @@ def test_common_100_103_110():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn": str(rrn_original),
                     # "refund_rrn": str(rrn_refunded),
                     # "auth_code": auth_code,
