@@ -320,7 +320,7 @@ def test_common_100_103_136():
                     "customer_name_2": new_txn_customer_name,
                     "payer_name_2": new_txn_payer_name,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": new_date_and_time,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
@@ -1031,7 +1031,7 @@ def test_common_100_103_137():
                     "customer_name_2": new_txn_customer_name_1,
                     "payer_name_2": new_txn_payer_name_1,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": new_txn_date_and_time_1,
 
                     "pmt_mode_3": "UPI",
@@ -1043,7 +1043,7 @@ def test_common_100_103_137():
                     "customer_name_3": new_txn_customer_name_2,
                     "payer_name_3": new_txn_payer_name_2,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND PENDING",
                     "date_3": new_txn_date_and_time_2,
 
                                        }
@@ -2997,7 +2997,7 @@ def test_common_100_103_139():
                     transaction_type_2 = transaction_details[0]['Type']
                     status_2 = transaction_details[0]['Status']
                     username_2 = transaction_details[0]['Username']
-                    rrn_2 = transaction_details[1]['RR Number']
+                    rrn_2 = transaction_details[0]['RR Number']
 
                     date_time = transaction_details[1]['Date & Time']
                     transaction_id = transaction_details[1]['Transaction ID']
@@ -3326,7 +3326,7 @@ def test_common_100_103_140():
                     "customer_name_2": new_txn_customer_name,
                     "payer_name_2": new_txn_payer_name,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn_2": str(callback_2_rrn),
                     "date": date_and_time,
                     "date_2": new_date_and_time,

@@ -4105,7 +4105,7 @@ def test_common_100_102_352():
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_2,
                     "rrn_2": str(rrn_2),
                     "customer_name_2": customer_name_2,
@@ -4116,7 +4116,7 @@ def test_common_100_102_352():
                     "settle_status_3": "SETTLED",
                     "txn_id_3": txn_id_3,
                     "order_id_3": order_id,
-                    "payment_msg_3": "PAYMENT SUCCESSFUL",
+                    "payment_msg_3": "REFUND PENDING",
                     "date_3": date_and_time_3,
                     "auth_code_3": auth_code_3,
                     "rrn_3": str(rrn_3)

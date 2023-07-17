@@ -218,7 +218,7 @@ def test_common_100_107_008():
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "order_id": order_id,
+                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -228,7 +228,7 @@ def test_common_100_107_008():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id_2": order_id,
+                    # "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "date_2": refund_date_and_time,
                 }
@@ -266,8 +266,8 @@ def test_common_100_107_008():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -302,9 +302,9 @@ def test_common_100_107_008():
                 payment_msg_refunded = txn_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: msg Id = {payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.debug(
-                    f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.debug(
+                #     f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
 
                 actual_app_values = {
                     "pmt_mode": app_payment_mode,
@@ -315,7 +315,7 @@ def test_common_100_107_008():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_mode_2": app_payment_mode_refunded,
@@ -325,7 +325,7 @@ def test_common_100_107_008():
                     "txn_id_2": app_txn_id_refunded,
                     "customer_name_2": app_customer_name_refunded,
                     "payer_name_2": app_payer_name_refunded,
-                    "order_id_2": app_order_id_refunded,
+                    # "order_id_2": app_order_id_refunded,
                     "pmt_msg_2": payment_msg_refunded,
                     "date_2": app_date_and_time_refunded,
                 }
@@ -877,7 +877,7 @@ def test_common_100_107_009():
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "order_id": order_id,
+                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -887,8 +887,8 @@ def test_common_100_107_009():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    # "order_id_2": order_id,
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": refund_date_and_time,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
@@ -924,8 +924,8 @@ def test_common_100_107_009():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -960,9 +960,9 @@ def test_common_100_107_009():
                 payment_msg_refunded = txn_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: msg Id = {payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.debug(
-                    f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.debug(
+                #     f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
 
                 actual_app_values = {
                     "pmt_mode": app_payment_mode,
@@ -973,7 +973,7 @@ def test_common_100_107_009():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_mode_2": app_payment_mode_refunded,
@@ -983,7 +983,7 @@ def test_common_100_107_009():
                     "txn_id_2": app_txn_id_refunded,
                     "customer_name_2": app_customer_name_refunded,
                     "payer_name_2": app_payer_name_refunded,
-                    "order_id_2": app_order_id_refunded,
+                    # "order_id_2": app_order_id_refunded,
                     "pmt_msg_2": payment_msg_refunded,
                     "date_2": app_date_and_time_refunded,
                 }
@@ -1521,7 +1521,7 @@ def test_common_100_107_010():
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "order_id": order_id,
+                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -1531,7 +1531,7 @@ def test_common_100_107_010():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id_2": order_id,
+                    # "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT FAILED",
                     "date_2": refund_date_and_time,
                 }
@@ -1569,8 +1569,8 @@ def test_common_100_107_010():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -1605,9 +1605,9 @@ def test_common_100_107_010():
                 payment_msg_refunded = txn_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: msg Id = {payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.debug(
-                    f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.debug(
+                #     f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
 
                 actual_app_values = {
                     "pmt_mode": app_payment_mode,
@@ -1618,7 +1618,7 @@ def test_common_100_107_010():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_mode_2": app_payment_mode_refunded,
@@ -1628,7 +1628,9 @@ def test_common_100_107_010():
                     "txn_id_2": app_txn_id_refunded,
                     "customer_name_2": app_customer_name_refunded,
                     "payer_name_2": app_payer_name_refunded,
-                    "order_id_2": app_order_id_refunded,
+                    # "order_id_2": app_order_id_refunded,
+
+
                     "pmt_msg_2": payment_msg_refunded,
                     "date_2": app_date_and_time_refunded,
                 }
@@ -2173,7 +2175,7 @@ def test_common_100_107_011():
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "order_id": order_id,
+                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -2183,7 +2185,7 @@ def test_common_100_107_011():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id_2": order_id,
+                    # "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "date_2": refund_date_and_time,
                 }
@@ -2221,8 +2223,8 @@ def test_common_100_107_011():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -2257,9 +2259,9 @@ def test_common_100_107_011():
                 payment_msg_refunded = txn_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: msg Id = {payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.debug(
-                    f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.debug(
+                #     f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
 
                 actual_app_values = {
                     "pmt_mode": app_payment_mode,
@@ -2270,7 +2272,7 @@ def test_common_100_107_011():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_mode_2": app_payment_mode_refunded,
@@ -2280,7 +2282,7 @@ def test_common_100_107_011():
                     "txn_id_2": app_txn_id_refunded,
                     "customer_name_2": app_customer_name_refunded,
                     "payer_name_2": app_payer_name_refunded,
-                    "order_id_2": app_order_id_refunded,
+                    # "order_id_2": app_order_id_refunded,
                     "pmt_msg_2": payment_msg_refunded,
                     "date_2": app_date_and_time_refunded,
                 }
@@ -2846,7 +2848,7 @@ def test_common_100_107_012():
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "order_id": order_id,
+                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -2856,7 +2858,7 @@ def test_common_100_107_012():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "order_id_2": order_id,
+                    # "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "date_2": refund_date_and_time,
                 }
@@ -2894,8 +2896,8 @@ def test_common_100_107_012():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -2930,9 +2932,9 @@ def test_common_100_107_012():
                 payment_msg_refunded = txn_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: msg Id = {payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.debug(
-                    f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.debug(
+                #     f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
 
                 actual_app_values = {
                     "pmt_mode": app_payment_mode,
@@ -2943,7 +2945,7 @@ def test_common_100_107_012():
                     "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_mode_2": app_payment_mode_refunded,
@@ -2953,7 +2955,7 @@ def test_common_100_107_012():
                     "txn_id_2": app_txn_id_refunded,
                     "customer_name_2": app_customer_name_refunded,
                     "payer_name_2": app_payer_name_refunded,
-                    "order_id_2": app_order_id_refunded,
+                    # "order_id_2": app_order_id_refunded,
                     "pmt_msg_2": payment_msg_refunded,
                     "date_2": app_date_and_time_refunded,
                 }

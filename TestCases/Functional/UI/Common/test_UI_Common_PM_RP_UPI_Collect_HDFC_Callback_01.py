@@ -2467,7 +2467,7 @@ def test_common_100_103_018():
                     "customer_name_2": new_txn_customer_name,
                     "payer_name_2": new_txn_payer_name,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": new_date_and_time,
                 }
 

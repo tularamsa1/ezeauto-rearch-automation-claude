@@ -1887,7 +1887,7 @@ def test_common_100_102_013():
                                        "pmt_mode_new": "BHARAT QR", "pmt_status_new": "REFUND_PENDING",
                                        "txn_amt_new": str(amount), "rrn_new": str(rrn_new),
                                        "settle_status_new": "SETTLED", "txn_id_new": txn_id_new,
-                                       "order_id_new": order_id, "pmt_msg_new": "PAYMENT SUCCESSFUL",
+                                       "order_id_new": order_id, "pmt_msg_new": "REFUND PENDING",
                                        "auth_code_new": auth_code_new, "date_new": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")

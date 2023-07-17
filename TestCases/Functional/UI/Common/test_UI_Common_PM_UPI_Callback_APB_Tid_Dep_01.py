@@ -1458,7 +1458,7 @@ def test_common_100_101_140():
                 transaction_type = transaction_details[1]['Type']
                 status = transaction_details[1]['Status']
                 username = transaction_details[1]['Username']
-                rrn = transaction_details[1]['RR Number']
+                portal_rrn = transaction_details[1]['RR Number']
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -1466,7 +1466,7 @@ def test_common_100_101_140():
                     "pmt_type": transaction_type,
                     "txn_amt": total_amount[1],
                     "username": username,
-                    "rrn": rrn,
+                    "rrn": portal_rrn,
                     "txn_id": transaction_id,
 
                     "date_time_2": date_time_2,

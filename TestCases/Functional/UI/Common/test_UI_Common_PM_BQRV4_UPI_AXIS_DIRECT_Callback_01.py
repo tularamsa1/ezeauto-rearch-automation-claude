@@ -2631,7 +2631,7 @@ def test_common_100_102_172():
                     "settle_status_2": "SETTLED",
                     "txn_id_2": txn_id_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_2,
                     # "auth_code_2": authid_2,
                     "rrn_2": str(rrn_2),

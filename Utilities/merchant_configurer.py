@@ -1,6 +1,7 @@
 import json
 import random
 import sqlite3
+import string
 import pandas
 import requests
 from datetime import datetime
@@ -874,15 +875,18 @@ def generate_random_number(number_of_digits: int) -> int:
     :return int
     """
     try:
-        length_string = ""
-        for i in range(0, number_of_digits):
-            length_string = length_string + '9'
-        lower_limit = int(length_string[:-1])
-        upper_limit = int(length_string)
-        return random.randint(lower_limit, upper_limit)
+        # Get current date and time
+        now = datetime.now()
+        random_number_len = int(number_of_digits - len(str(int(now.strftime("%Y%m%d%H%M%S")))))
+        logger.info(f"Length of random number to be generated is : {random_number_len}")
+        # Generate a random number of required length
+        random_digits = ''.join(random.choice(string.digits) for i in range(random_number_len))
+        # Combine the current date and time with the random digits
+        random_pan_num = str(int(now.strftime("%Y%m%d%H%M%S"))) + str(random_digits)
+        logger.info(f"Randomly generated PAN number is {random_pan_num}")
+        return int(random_pan_num)
     except Exception as e:
         logger.error(f"Unable to generate the random number due to error {str(e)}")
-
 
 def add_key_to_upi_setting_api_body(merchant_configuration_api_body: dict) -> dict:
     """
@@ -1036,7 +1040,6 @@ def get_unique_pan_for_bqr_settings(digits: int) -> str or None:
     except Exception as e:
         logger.error(f"Unable to get unique pan number due to error {str(e)}")
         return None
-
 
 def get_merchant_code_using_mid(mid: str) -> str or None:
     """
