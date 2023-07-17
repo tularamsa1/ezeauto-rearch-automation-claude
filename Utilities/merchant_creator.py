@@ -1,5 +1,7 @@
 import json
 import sqlite3
+from datetime import datetime
+
 import requests
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, ConfigReader, sqlite_processor
@@ -319,8 +321,8 @@ def generate_merchant_creation_api_body() -> list:
                             for user in users:
                                 if count > 0:
                                     merchant_creation_api["users"].append(
-                                        json.loads(get_api_details_from_db("createMerchant")["RequestBody"])["users"][0])
-                                    merchant_creation_api["users"].append(merchant_creation_api["users"][0])
+                                        json.loads(get_api_details_from_db("createMerchant")["RequestBody"])["users"][
+                                            0])
                                 merchant_creation_api["users"][count]["name"] = user[0]
                                 merchant_creation_api["users"][count]["userToken"] = user[2]
                                 merchant_creation_api["users"][count]["userPassword"] = user[3]
@@ -487,7 +489,8 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 terminal_details['mid'] = terminal_details_unique_value_fields['mid']
                 terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
                     tid_number_increment)
-                if str(ConfigReader.read_config("Setup", "create_and_configure_merchants_with_multi_account")).lower() == "true":
+                if str(ConfigReader.read_config("Setup",
+                                                "create_and_configure_merchants_with_multi_account")).lower() == "true":
                     # Below if conditions is to setup label with terminals if multi_account is enabled.
                     if i == 0:
                         terminal_details['labels'] = [acquisitions[14]]
@@ -522,7 +525,11 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 else:
                     try:
                         DBProcessor.setValueToDB(
-                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0026',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  "
+                            f"device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, "
+                            f"status) VALUES ('{terminal_details['deviceSerial']}',  '"
+                            f"{terminal_details['deviceSerial']}',  '0026',  'PAX A910',  'PAX A910',  'ezetap', "
+                            f"now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
                         logger.info(f"Device {terminal_details['deviceSerial']} added to environment.")
                     except Exception as e:
                         logger.error(f"Unable to insert device details into db due to error {str(e)}")
@@ -556,7 +563,8 @@ def generate_terminal_details(merchant_id: str) -> dict:
     if username:
         terminal_details['mid'] = "MIDIS" + username
         terminal_details['tid'] = username[-8:]
-        terminal_details['device_id'] = "D" + username
+        # terminal_details['device_id'] = "D" + username
+        terminal_details['device_id'] = f'D{datetime.now().strftime("%H%M%S%f")}'
         # rand_int = str(random.randint(1111111111, 9999999999))
         # terminal_details['mid'] = "MIDIS" + rand_int
         # terminal_details['tid'] = rand_int
@@ -715,4 +723,3 @@ def set_merchants_users_available():
         conn.close()
     except Exception as e:
         logger.error(f"Unable to set the status of merchants and users as available, due to error {str(e)}")
-
