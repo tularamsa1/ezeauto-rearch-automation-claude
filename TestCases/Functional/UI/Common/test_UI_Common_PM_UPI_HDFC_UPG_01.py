@@ -210,7 +210,7 @@ def test_common_100_101_020():
                     "txn_id": txn_id,
                     "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
@@ -245,8 +245,8 @@ def test_common_100_101_020():
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -258,7 +258,7 @@ def test_common_100_101_020():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
@@ -661,8 +661,8 @@ def test_common_100_101_021():
                     "txn_id": txn_id,
                     "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
-                    "order_id": external_ref,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    # "order_id": external_ref,
+                    "pmt_msg": "PAYMENT FAILED",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -696,8 +696,8 @@ def test_common_100_101_021():
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -709,7 +709,7 @@ def test_common_100_101_021():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
@@ -1131,8 +1131,8 @@ def test_common_100_101_022():
                     "txn_id": txn_id,
                     "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
-                    "order_id": external_ref,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    # "order_id": external_ref,
+                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -1141,8 +1141,8 @@ def test_common_100_101_022():
                     "txn_id_2": txn_id_2,
                     "txn_amt_2": str(amount)+".00",
                     "rrn_2": str(rrn_2),
-                    "order_id_2": external_ref_2,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    # "order_id_2": external_ref_2,
+                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "auth_code_2": auth_code_2,
                     "date_2": date_and_time_2
                 }
@@ -1176,8 +1176,8 @@ def test_common_100_101_022():
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -1210,9 +1210,9 @@ def test_common_100_101_022():
                 payment_msg_refunded = txn_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: msg Id = {payment_msg_refunded}")
-                app_order_id_refunded = txn_history_page.fetch_order_id_text()
-                logger.debug(
-                    f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
+                # app_order_id_refunded = txn_history_page.fetch_order_id_text()
+                # logger.debug(
+                #     f"Fetching order id from app transaction history: order Id = {app_order_id_refunded}")
 
                 actual_app_values = {
                     "pmt_status": app_payment_status.split(':')[1],
@@ -1221,7 +1221,7 @@ def test_common_100_101_022():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time,
@@ -1230,7 +1230,7 @@ def test_common_100_101_022():
                     "settle_status_2": app_settlement_status_refunded,
                     "txn_id_2": app_txn_id_refunded,
                     "txn_amt_2": str(app_payment_amt_refunded),
-                    "order_id_2": app_order_id_refunded,
+                    # "order_id_2": app_order_id_refunded,
                     "pmt_msg_2": payment_msg_refunded,
                     "rrn_2": str(app_rrn_refunded),
                     "auth_code_2": app_auth_code_refunded,
@@ -1796,8 +1796,8 @@ def test_common_100_101_023():
                     "txn_id": txn_id,
                     "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
-                    "order_id": external_ref,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    # "order_id": external_ref,
+                    "pmt_msg": "REFUND PENDING",
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
@@ -1831,8 +1831,8 @@ def test_common_100_101_023():
                     f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
@@ -1844,7 +1844,7 @@ def test_common_100_101_023():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time

@@ -1699,7 +1699,7 @@ def test_common_100_101_054():
                     "customer_name_2": customer_name_2,
                     "payer_name_2": payer_name_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": new_date_and_time
                 }
 

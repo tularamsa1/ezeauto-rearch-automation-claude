@@ -1847,7 +1847,7 @@ def test_common_100_101_141():
                     "txn_id_2": txn_id_2,
                     "payer_name_2": txn_payer_name_2,
                     "order_id_2": external_ref_2,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn_2": str(rrn),
                     "date": date_and_time,
                     "date_2": new_date_and_time

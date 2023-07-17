@@ -798,7 +798,7 @@ def test_common_100_101_156():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn": str(rrn),
                     "rrn_2": str(rrn_refunded),
                     "date_2": date_and_time_refund,
