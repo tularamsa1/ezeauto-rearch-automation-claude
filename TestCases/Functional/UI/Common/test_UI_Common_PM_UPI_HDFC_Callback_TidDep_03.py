@@ -964,7 +964,7 @@ def test_common_100_101_110():
                     "customer_name_3": new_txn_customer_name_2,
                     "payer_name_3": new_txn_payer_name_2,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND PENDING",
                     "rrn_3": str(callback_2_rrn),
                     "auth_code_3": str(new_txn_auth_code_2),
                     "date_2": new_txn_date_and_time_1,
