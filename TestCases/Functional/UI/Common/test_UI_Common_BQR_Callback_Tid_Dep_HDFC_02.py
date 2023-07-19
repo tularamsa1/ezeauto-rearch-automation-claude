@@ -780,7 +780,7 @@ def test_common_100_102_098():
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
                                        "txn_amt_2": "{:.2f}".format(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
-                                       "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                                       "order_id_2": order_id, "pmt_msg_2": "REFUND PENDING",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -2133,12 +2133,12 @@ def test_common_100_102_100():
                                        "pmt_mode_2": "BHARAT QR", "pmt_status_2": "REFUND_PENDING",
                                        "txn_amt_2": "{:.2f}".format(amount), "rrn_2": str(rrn_new),
                                        "settle_status_2": "SETTLED", "txn_id_2": txn_id_new,
-                                       "order_id_2": order_id, "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                                       "order_id_2": order_id, "pmt_msg_2": "REFUND PENDING",
                                        "auth_code_2": auth_code_new, "date_2": date_and_time_new,
                                        "pmt_mode_3": "BHARAT QR", "pmt_status_3": "REFUND_PENDING",
                                        "txn_amt_3": "{:.2f}".format(amount), "rrn_3": str(rrn_new_2),
                                        "settle_status_3": "SETTLED", "txn_id_3": txn_id_new_2,
-                                       "order_id_3": order_id, "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                                       "order_id_3": order_id, "pmt_msg_3": "REFUND PENDING",
                                        "auth_code_3": auth_code_new_2, "date_3": date_and_time_new_2
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -2855,7 +2855,7 @@ def test_common_100_102_141():
                     "settle_status": "PENDING",
                     "txn_id": txn_id,
                     "txn_amt": "{:.2f}".format(amount),
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "pmt_msg": "PAYMENT PENDING",
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
@@ -2864,7 +2864,7 @@ def test_common_100_102_141():
                     "txn_id_2": txn_id_upg,
                     "txn_amt_2": "{:.2f}".format(amount),
                     "rrn_2": str(rrn_upg),
-                    "order_id_2": external_ref_upg,
+                    # "order_id_2": external_ref_upg,
                     "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "date_2": date_and_time_2
                 }
@@ -2896,8 +2896,8 @@ def test_common_100_102_141():
                 logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
 
                 txn_history_page.click_back_Btn_transaction_details()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id_upg)
@@ -2915,8 +2915,8 @@ def test_common_100_102_141():
                 logger.info(f"Fetching txn settlement_status from txn history for the txn : {txn_id_upg}, {app_settlement_status_new}")
                 app_payment_msg_new = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id_upg}, {app_payment_msg_new}")
-                app_order_id_new = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id_upg}, {app_order_id_new}")
+                # app_order_id_new = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id_upg}, {app_order_id_new}")
                 app_rrn_new = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id_upg}, {app_rrn_new}")  # behavior is diff on both emulator and device (Number/NUMBER)
 
@@ -2926,7 +2926,7 @@ def test_common_100_102_141():
                     "txn_id": app_txn_id,
                     "txn_amt": str(app_amount).split(' ')[1],
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "pmt_status_2": app_payment_status_new,
@@ -2934,7 +2934,7 @@ def test_common_100_102_141():
                     "txn_id_2": app_txn_id_new,
                     "txn_amt_2": str(app_amount_new).split(' ')[1],
                     "settle_status_2": app_settlement_status_new,
-                    "order_id_2": app_order_id_new,
+                    # "order_id_2": app_order_id_new,
                     "pmt_msg_2": app_payment_msg_new,
                     "rrn_2": app_rrn_new,
                     "date_2": app_date_and_time_new

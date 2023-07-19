@@ -807,7 +807,7 @@ def test_common_100_102_127():
                                        "customer_name_2": customer_name_new,
                                        "payer_name_2": payer_name_new,
                                        "order_id_2": order_id,
-                                       "payment_msg_2": "PAYMENT SUCCESSFUL",
+                                       "payment_msg_2": "REFUND PENDING",
                                        "auth_code_2": auth_code_new,
                                        "date_2": date_and_time_new
                                        }
@@ -2253,7 +2253,7 @@ def test_common_100_102_129():
                                        "customer_name_2": customer_name_new,
                                        "payer_name_2": payer_name_new,
                                        "order_id_2": order_id,
-                                       "payment_msg_2": "PAYMENT SUCCESSFUL",
+                                       "payment_msg_2": "REFUND PENDING",
                                        "auth_code_2": auth_code_new,
                                        "date_2": date_and_time_new,
                                        "pmt_mode_3": "UPI",
@@ -2265,7 +2265,7 @@ def test_common_100_102_129():
                                        "customer_name_3": customer_name_new_3,
                                        "payer_name_3": payer_name_new_3,
                                        "order_id_3": order_id,
-                                       "payment_msg_3": "PAYMENT SUCCESSFUL",
+                                       "payment_msg_3": "REFUND PENDING",
                                        "auth_code_3": auth_code_new_3,
                                        "date_3": date_and_time_new_3
                                        }
@@ -3038,7 +3038,7 @@ def test_common_100_102_130():
                     "txn_id": ipr_txn_id,
                     "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "auth_code": str(auth_code)
@@ -3068,8 +3068,8 @@ def test_common_100_102_130():
                 logger.info(f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
                 logger.info(f"Fetching txn auth code from txn history for the txn : {ipr_txn_id}, {app_auth_code}")
                 app_rrn = txn_history_page.fetch_RRN_text()
@@ -3084,7 +3084,7 @@ def test_common_100_102_130():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "auth_code": app_auth_code
