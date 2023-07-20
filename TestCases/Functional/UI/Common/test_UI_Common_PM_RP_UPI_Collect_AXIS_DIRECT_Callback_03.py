@@ -1229,7 +1229,7 @@ def test_common_100_103_142():
                     "customer_name_2": new_txn_customer_name_1,
                     "payer_name_2": new_txn_payer_name_1,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": new_txn_date_and_time_1,
 
                     "pmt_mode_3": "UPI",
@@ -1240,7 +1240,7 @@ def test_common_100_103_142():
                     "customer_name_3": new_txn_customer_name_2,
                     "payer_name_3": new_txn_payer_name_2,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND PENDING",
                     "date_3": new_txn_date_and_time_2
                                        }
                 logger.debug(f"expected_app_values: {expected_app_values}")

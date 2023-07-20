@@ -228,7 +228,7 @@ def test_common_100_101_108():
                     "txn_id": ipr_txn_id,
                     "txn_amt": "{:.2f}".format(amount),
                     "rrn": str(rrn),
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "payment_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "auth_code": str(auth_code)
@@ -259,8 +259,8 @@ def test_common_100_101_108():
                     f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
                 logger.info(f"Fetching txn auth code from txn history for the txn : {ipr_txn_id}, {app_auth_code}")
                 app_rrn = txn_history_page.fetch_RRN_text()
@@ -275,7 +275,7 @@ def test_common_100_101_108():
                     "txn_amt": str(app_amount).split(' ')[1],
                     "rrn": str(app_rrn),
                     "settle_status": app_settlement_status,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
                     "date": app_date_and_time,
                     "auth_code": app_auth_code

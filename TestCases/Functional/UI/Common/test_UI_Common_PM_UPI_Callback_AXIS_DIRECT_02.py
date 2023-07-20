@@ -279,7 +279,7 @@ def test_common_100_101_056():
                     "customer_name_2": customer_name_2,
                     "payer_name_2": payer_name_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_2,
                     "pmt_mode_3": "UPI",
                     "pmt_status_3": "REFUND_PENDING",
@@ -290,7 +290,7 @@ def test_common_100_101_056():
                     "customer_name_3": customer_name_3,
                     "payer_name_3": payer_name_3,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND PENDING",
                     "date_3": date_and_time_3,
                 }
 
@@ -2864,7 +2864,7 @@ def test_common_100_101_060():
                     "customer_name_2": customer_name_2,
                     "payer_name_2": payer_name_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_2,
                 }
 
