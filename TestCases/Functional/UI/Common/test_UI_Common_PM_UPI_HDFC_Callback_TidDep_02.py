@@ -222,7 +222,7 @@ def test_common_100_101_102():
                     "customer_name_2": new_customer_name,
                     "payer_name_2": new_payer_name,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "auth_code_2": new_auth_code,
                     "date_2": new_date_and_time
                 }
@@ -1846,7 +1846,7 @@ def test_common_100_101_105():
                     "customer_name_2": new_txn_customer_name_1,
                     "payer_name_2": new_txn_payer_name_1,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn_2": str(callback_1_rrn),
                     "auth_code_2": str(new_txn_auth_code_1),
                     "pmt_mode_3": "UPI",
@@ -1857,7 +1857,7 @@ def test_common_100_101_105():
                     "customer_name_3": new_txn_customer_name_2,
                     "payer_name_3": new_txn_payer_name_2,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND PENDING",
                     "rrn_3": str(callback_2_rrn),
                     "auth_code_3": str(new_txn_auth_code_2),
                     "date": date_and_time,
