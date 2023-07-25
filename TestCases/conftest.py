@@ -308,38 +308,6 @@ def method_setup(request, playwright: Playwright):
         GlobalVariables.time_calc.teardown.pause()
         print(colored("Teardown Timer paused in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
-        # if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false" and ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "false":
-        #     print("11111111111111111111111111111111111111111111")
-        #     log_on_failure(request)
-        #
-        # if Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]) == 0:
-        #     print("222222222222222222222222222222222222")
-        #     print("Rerun.getRerunCount ==0")
-        #     if (Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True" and
-        #             ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true"):
-        #         print("333333333333333333333333333333333333333333333333")
-        #         print("last_run= true and rerun_at_the_end = true")
-        #         print("Rerun.getRerunCountForAtTheEnd(): ", Rerun.getRerunCount(str(request.node.nodeid).split('::')[1]))
-        #         log_on_failure(request)
-        # else:
-        #     print("Rerun.getRerunCount !=0")
-        #     print("44444444444444444444444")
-        #     if (Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True" and
-        #             Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True" and
-        #             ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true"):
-        #         print("55555555555555555555555555555555555555555")
-        #         print("last_run = true and each_run= true and rerun_at_end = true")
-        #         log_on_failure(request)
-        #
-        # if (ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true" and
-        #         Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True"):
-        #     print("6666666666666666666666666666666666666666666666666")
-        #     print("rerun_at_end = true and each_run = true")
-        #     if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "False":
-        #         print("777777777777777777777777777777777777777")
-        #         print("last_run = False")
-        #         log_on_failure(request)
-
         GlobalVariables.time_calc.teardown.resume()
         print(colored("Teardown Timer resume in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="), 'cyan'))
 
@@ -353,20 +321,11 @@ def method_setup(request, playwright: Playwright):
                 ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "false"):
             rerunCount = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
 
-            # if Base_Actions.is_log_capture_required("bool_capt_log_each_run") == "True":
-            #     print("999999999999999999999999999")
-            #     GlobalVariables.time_calc.teardown.pause()
-            #     print(colored("Teardown Timer paused in 'fin' of method_setup fixture before logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-            #     log_on_failure(request)
-            #     GlobalVariables.time_calc.teardown.resume()
-            #     print(colored("Teardown Timer resumed in 'fin' of method_setup fixture after logonfailure is called".center(shutil.get_terminal_size().columns, "="), 'cyan'))
-
             if rerunCount >= 0:
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 rerunCount -= 1
                 Rerun.rerunTestImmediately(GlobalVariables.EXCEL_testCaseName, GlobalVariables.EXCEL_testCaseFileName,
                                            rerunCount, request)
-
             else:
                 print(str(rerunCount) + " reruns pending for the test case " + GlobalVariables.EXCEL_testCaseName)
                 print("Rerun skipped.")
@@ -624,7 +583,6 @@ def log_on_failure(request):
                         if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
                             print("Inside capturing log of last run TCs in one file")
 
-                            # if ConfigReader.read_config("Validations", "bool_rerun_immediately").lower() == "true":
                             if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
                                 rerun_count = Rerun.getRerunCount(str(request.node.nodeid))
                             else:
@@ -638,7 +596,6 @@ def log_on_failure(request):
                                 Path(path).mkdir(parents=True, exist_ok=True)
 
                                 TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                                # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
                                 if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
                                         "bool_capt_log_api") == "True":
@@ -822,7 +779,6 @@ def log_on_failure(request):
                                     Path(path).mkdir(parents=True, exist_ok=True)
 
                                     TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                                    # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
                                     if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
                                             "bool_capt_log_api") == "True":
@@ -955,7 +911,6 @@ def log_on_failure(request):
                         Path(path).mkdir(parents=True, exist_ok=True)
 
                         TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                        # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
                         if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
                                 "bool_capt_log_api") == "True":
@@ -1244,14 +1199,12 @@ def log_on_success(request):
 
                             TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
 
-                            # Added on 26 Apr
                             testCaseID = str(item.nodeid).split('/')
                             finalTestCaseID = testCaseID[len(testCaseID) - 1]
                             logFileName = str(finalTestCaseID).split('::')[1]
 
                             while i >= 0 and j <= int(ConfigReader.read_config("Validations", "int_rerun_count")):
                                 if Rerun.getRerunCount(str(item.nodeid).split('::')[1]) == i:
-                                    # Added on 26 Apr
                                     path = DirectoryCreator.getDirectoryPath("ServerLog") + "/" + logFileName
 
                                     Path(path).mkdir(parents=True, exist_ok=True)
@@ -1350,7 +1303,6 @@ def log_on_success(request):
                                 Path(path).mkdir(parents=True, exist_ok=True)
 
                                 TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                                # TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
                                 if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
                                         "bool_capt_log_api") == "True":
@@ -1490,7 +1442,6 @@ def log_on_success(request):
                         print("Fetching Logs first time")
 
                         TCIdWithTimeStamp = str(item.nodeid) + '_' + str(datetime.now().time())
-                        TCIdWithTimeStampForInsideFile = str(datetime.now().time())
 
                         if GlobalVariables.api_logs and Base_Actions.is_log_capture_required(
                                 "bool_capt_log_api") == "True":
