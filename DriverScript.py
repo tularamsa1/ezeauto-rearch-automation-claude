@@ -23,12 +23,14 @@ try:
         else:
             print("Immediate rerun is disabled for this execution.")
 
+        if ConfigReader.read_config("Validations", "bool_rerun_at_the_end") == "True":
+            Rerun.prepareAtTheEndRerunExcel()
+
         TestSuiteSetup.executeSelectedTestCases()
 
         # RERUN SECTION ==================================================== #
         if Rerun.is_rerun_at_the_end_required():
             rerun_count = int(ConfigReader.read_config("Validations", "int_rerun_count"))
-            Rerun.prepareAtTheEndRerunExcel()
             number_of_reruns_so_far = 0
             while rerun_count > 0:
                 number_of_reruns_so_far += 1
