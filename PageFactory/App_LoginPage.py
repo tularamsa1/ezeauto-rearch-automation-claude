@@ -1,6 +1,9 @@
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 from Utilities.ConfigReader import read_config
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
 
 
 class LoginPage(BasePage):
@@ -12,6 +15,9 @@ class LoginPage(BasePage):
     img_ezetaplogo = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgLogo')
     btn_goToHistory = (AppiumBy.ID, "com.ezetap.basicapp:id/clGotoHistory")
     dtl_env = (AppiumBy.XPATH, '//android.widget.TextView[@text ="DEV11"]')
+    settings_btn = (AppiumBy.ID, "android:id/button1")
+    allow_acc_btn = (AppiumBy.ID, "android:id/switch_widget")
+    settings_back_btn = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -27,6 +33,19 @@ class LoginPage(BasePage):
         self.wait_for_element(self.txt_password).clear()
         self.perform_sendkeys(self.txt_password, password)
         self.perform_click(self.btn_login)
+
+        try:
+            setting_btn_val = self.visibility_of_elements(self.settings_btn)
+            if len(setting_btn_val) < 0:
+                pass
+            else:
+                self.perform_click(self.settings_btn)
+                self.perform_click(self.allow_acc_btn)
+                self.perform_click(self.settings_back_btn)
+                self.perform_click(self.btn_login)
+
+        except Exception as e:
+            logger.info(f"Settings popup is not displayed")
 
     def validate_login_page(self):
         return self.wait_for_element(self.lbl_login)
