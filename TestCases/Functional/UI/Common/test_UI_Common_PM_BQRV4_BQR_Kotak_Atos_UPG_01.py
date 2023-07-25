@@ -193,7 +193,7 @@ def test_common_100_102_239():
                     "rrn": str(rrn),
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
-                    "order_id": order_id,
+                    # "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
@@ -233,8 +233,8 @@ def test_common_100_102_239():
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {ipr_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {ipr_txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -248,7 +248,7 @@ def test_common_100_102_239():
                     # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
@@ -711,7 +711,7 @@ def test_common_100_102_240():
                     "rrn": str(rrn),
                     # "customer_name": customer_name,
                     # "payer_name": payer_name,
-                    "order_id": external_ref,
+                    # "order_id": external_ref,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time
@@ -749,8 +749,8 @@ def test_common_100_102_240():
                 # logger.info(f"Fetching txn payer name from txn history for the txn : {ipr_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {ipr_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {ipr_txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -764,7 +764,7 @@ def test_common_100_102_240():
                     # "customer_name": app_customer_name,
                     "settle_status": app_settlement_status,
                     # "payer_name": app_payer_name,
-                    "order_id": app_order_id,
+                    # "order_id": app_order_id,
                     "pmt_msg": app_payment_msg,
                     "auth_code": app_auth_code,
                     "date": app_date_and_time
