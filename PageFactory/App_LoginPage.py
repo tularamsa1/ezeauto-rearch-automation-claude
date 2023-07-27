@@ -35,7 +35,7 @@ class LoginPage(BasePage):
         self.perform_click(self.btn_login)
 
         try:
-            setting_btn_val = self.visibility_of_elements(self.settings_btn)
+            setting_btn_val = self.visibility_of_elements(self.btn_settings)
             if len(setting_btn_val) < 0:
                 pass
             else:
