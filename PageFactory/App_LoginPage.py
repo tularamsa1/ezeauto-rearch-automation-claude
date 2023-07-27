@@ -15,9 +15,9 @@ class LoginPage(BasePage):
     img_ezetaplogo = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgLogo')
     btn_goToHistory = (AppiumBy.ID, "com.ezetap.basicapp:id/clGotoHistory")
     dtl_env = (AppiumBy.XPATH, '//android.widget.TextView[@text ="DEV11"]')
-    settings_btn = (AppiumBy.ID, "android:id/button1")
-    allow_acc_btn = (AppiumBy.ID, "android:id/switch_widget")
-    settings_back_btn = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
+    btn_settings = (AppiumBy.ID, "android:id/button1")
+    btn_allow_access = (AppiumBy.ID, "android:id/switch_widget")
+    btn_click_on_back = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -39,9 +39,9 @@ class LoginPage(BasePage):
             if len(setting_btn_val) < 0:
                 pass
             else:
-                self.perform_click(self.settings_btn)
-                self.perform_click(self.allow_acc_btn)
-                self.perform_click(self.settings_back_btn)
+                self.perform_click(self.btn_settings)
+                self.perform_click(self.btn_allow_access)
+                self.perform_click(self.btn_click_on_back)
                 self.perform_click(self.btn_login)
 
         except Exception as e:
