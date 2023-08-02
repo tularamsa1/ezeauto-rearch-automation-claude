@@ -6,6 +6,7 @@ from Utilities import ConfigReader, DirectoryCreator, ExcelProcessor
 from Configuration import TestSuiteSetup
 from termcolor import colored
 import shutil
+from TestCases import conftest
 
 immediateRerun = True
 

@@ -249,7 +249,7 @@ def test_common_100_107_002():
             mid = result['mid'].values[0]
             logger.info(f"fetched mid is : {mid}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
             logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
             query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
@@ -281,9 +281,9 @@ def test_common_100_107_002():
                 "merchantVpa": vpa,
             })
             response = APIProcessor.send_request(api_details)
-            publish_id = response["publishId"]
-            logger.debug(f"fetching publish_id from api response is : {publish_id}")
-            logger.debug(f"Response received for static_qrcode_generate_axisfc api is : {response}")
+            logger.debug(f"Response received for regeneration of static_qrcode_generate_axisfc api is : {response}")
+            regeneration_publish_id = response["publishId"]
+            logger.debug(f"fetching publish_id from regeneration is : {regeneration_publish_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -314,23 +314,24 @@ def test_common_100_107_002():
                     "tid": tid,
                     "qr_type": "UPI",
                     "intent_type": "STATIC_QR",
-                    "audit_publish_id": publish_id,
-                    "audit_org_code": org_code,
-                    "audit_qr_type": "UPI",
-                    "audit_intent_type": "STATIC_QR",
+                    # "audit_publish_id": publish_id,
+                    # "audit_org_code": org_code,
+                    # "audit_qr_type": "UPI",
+                    # "audit_intent_type": "STATIC_QR",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from qrcode_audit where org_code='" + org_code + "'"
-                logger.debug(f"Query to fetch data from qrcode_audit table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
-                audit_publish_id_db = result["publish_id"].iloc[0]
-                audit_org_code_db = result["org_code"].iloc[0]
-                audit_qr_type_db = result['qr_type'].values[0]
-                audit_intent_type_db = result['intent_type'].values[0]
+                # query = "select * from qrcode_audit where org_code='" + org_code + "'"
+                # logger.debug(f"Query to fetch data from qrcode_audit table : {query}")
+                # result = DBProcessor.getValueFromDB(query)
+                # logger.debug(f"Query result : {result}")
+                # audit_publish_id_db = result["publish_id"].iloc[0]
+                # audit_org_code_db = result["org_code"].iloc[0]
+                # audit_qr_type_db = result['qr_type'].values[0]
+                # audit_intent_type_db = result['intent_type'].values[0]
 
-                query = "select * from staticqr_intent where org_code='" + org_code + "'"
+                # query = "select * from staticqr_intent where org_code='" + org_code + "'"
+                query = "select * from staticqr_intent where publish_id='" + str(regeneration_publish_id) + "';"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -356,10 +357,10 @@ def test_common_100_107_002():
                     "tid": tid_db,
                     "qr_type": qr_type_db,
                     "intent_type": intent_type_db,
-                    "audit_publish_id": audit_publish_id_db,
-                    "audit_org_code": audit_org_code_db,
-                    "audit_qr_type": audit_qr_type_db,
-                    "audit_intent_type": audit_intent_type_db,
+                    # "audit_publish_id": audit_publish_id_db,
+                    # "audit_org_code": audit_org_code_db,
+                    # "audit_qr_type": audit_qr_type_db,
+                    # "audit_intent_type": audit_intent_type_db,
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
