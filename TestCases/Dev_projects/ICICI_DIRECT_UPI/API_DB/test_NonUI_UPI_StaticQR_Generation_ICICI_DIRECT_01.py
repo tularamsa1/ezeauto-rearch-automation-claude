@@ -747,7 +747,7 @@ def test_d102_107_004():
                     response = APIProcessor.send_request(api_details)
                     logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
                     publish_id_second = response["publishId"]
-                    logger.debug(f"second publish id : {publish_id}")
+                    logger.debug(f"second publish id : {publish_id_second}")
                     success_api_second = response["success"]
                     username_api_second = response["username"]
                     org_code_api_second = response["merchantCode"]
@@ -772,7 +772,7 @@ def test_d102_107_004():
                 response = APIProcessor.send_request(api_details)
                 logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
                 publish_id_second = response["publishId"]
-                logger.debug(f"second publish id : {publish_id}")
+                logger.debug(f"second publish id : {publish_id_second}")
                 success_api_second = response["success"]
                 username_api_second = response["username"]
                 org_code_api_second = response["merchantCode"]
@@ -810,7 +810,7 @@ def test_d102_107_004():
                     "tid": virtual_tid,
                     "mid_2": virtual_mid,
                     "tid_2": virtual_tid,
-                    "publish_id": publish_id_second,
+                    # "publish_id": publish_id_second,
                }
 
                 actual_api_values = {
@@ -824,7 +824,7 @@ def test_d102_107_004():
                     "tid": tid_api,
                     "mid_2": mid_api_second,
                     "tid_2": tid_api_second,
-                    "publish_id": publish_id_second,
+                    # "publish_id": publish_id_second,
                 }
 
                 logger.debug(f"actual_api_values: {actual_api_values}")
@@ -869,7 +869,7 @@ def test_d102_107_004():
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = "select * from staticqr_intent where publish_id='" + publish_id + "'"
-                logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
+                logger.debug(f"Query to fetch data from staticqr_intent table for first publish id : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 publish_id_db = result['publish_id'].iloc[0]
@@ -884,7 +884,7 @@ def test_d102_107_004():
                 intent_type_db = result['intent_type'].values[0]
 
                 query = "select * from staticqr_intent where publish_id='" + publish_id_second + "'"
-                logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
+                logger.debug(f"Query to fetch data from staticqr_intent table for second publish id : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 publish_id_db_2 = result['publish_id'].iloc[0]

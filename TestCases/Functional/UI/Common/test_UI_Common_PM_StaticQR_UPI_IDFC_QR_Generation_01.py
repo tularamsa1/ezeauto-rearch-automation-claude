@@ -284,8 +284,8 @@ def test_common_100_107_014():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-            res_generateqr_publish_id = response["publishId"]
-            logger.info(f"generated first publish id : {res_generateqr_publish_id}")
+            generateqr_publish_id = response["publishId"]
+            logger.info(f"generated first publish id : {generateqr_publish_id}")
 
             # Select another user for regenerating static QR for same org
             query = "select username from org_employee where org_code='" + str(org_code) + "';"
@@ -384,7 +384,7 @@ def test_common_100_107_014():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "publish_id": res_generateqr_publish_id,
+                    "publish_id": generateqr_publish_id,
                     "org_code": org_code,
                     "vpa": db_upi_config_vpa,
                     "user_mobile": app_username,
@@ -410,7 +410,7 @@ def test_common_100_107_014():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
+                query = "select * from staticqr_intent where publish_id='" + str(generateqr_publish_id) + "';"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
