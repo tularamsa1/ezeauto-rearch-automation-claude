@@ -117,11 +117,13 @@ def test_d100_d101_019():
             try:
 
                     expectedAPIValues = {"success": False, "error_code": "EZETAP_1000002",
-                                         "error_msg":"[IDFC_96] Payment Failed. Please try again. If the problem persists, please contact Ezetap Support.",
-                                         "api_msg_title":"DECLINED","api_msg_txt":"IDFC_96: {4}. Payment Failed. Please try again. If the problem persists, please contact Ezetap Support. EZETAP_1000002",
-                                         "pmt_status":"FAILED",
-                                         "settle_status": "FAILED",
-                                         "acq_code":"IDFC", "voidable":False, "refundable":False}
+                                        "error_msg":"[IDFC_96] Payment Failed. Please try again. If the problem persists, please contact Razorpay POS Support.",
+                                        "api_msg_title":"DECLINED",
+                                        "api_msg_txt":"IDFC_96: {4}. Payment Failed. Please try again. If the problem persists, please contact Razorpay POS Support. EZETAP_1000002",
+                                        "pmt_status":"FAILED",
+                                        "settle_status": "FAILED",
+                                        "acq_code":"IDFC", "voidable":False,
+                                        "refundable":False}
 
                     logger.debug(f"expectedAPIValues: {expectedAPIValues}")
                     error_code = response['errorCode']

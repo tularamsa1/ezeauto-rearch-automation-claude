@@ -250,11 +250,7 @@ def test_common_100_107_014():
         # testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_upi_config_id)
         testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
-        logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
-
-        query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
-        result = DBProcessor.delete_value_from_db(query)
-        logger.debug(f"Query result : {result}")
+        logger.debug(f"deleting data from staticqr_intent table for org_code : {org_code}")
 
         api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                               "password": portal_password})
@@ -289,6 +285,7 @@ def test_common_100_107_014():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
             res_generateqr_publish_id = response["publishId"]
+            logger.info(f"generated first publish id : {res_generateqr_publish_id}")
 
             # Select another user for regenerating static QR for same org
             query = "select username from org_employee where org_code='" + str(org_code) + "';"
@@ -428,7 +425,7 @@ def test_common_100_107_014():
                 db_staticqrIntent_intent_type = result["intent_type"].iloc[0]
 
                 query = "select * from staticqr_intent where publish_id='" + str(regenerateqr_publish_id) + "';"
-                logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
+                logger.debug(f"Query to fetch data from staticqr_intent table for second publish id: {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 db_staticqrIntent_publish_id_2 = result["publish_id"].iloc[0]

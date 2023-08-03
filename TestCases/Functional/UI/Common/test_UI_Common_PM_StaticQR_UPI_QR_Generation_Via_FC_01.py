@@ -251,11 +251,6 @@ def test_common_100_107_002():
 
             testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
-            logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
-            query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
-            result = DBProcessor.delete_value_from_db(query)
-            logger.debug(f"Query result : {result}")
-
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                                   "password": portal_password})
             response = APIProcessor.send_request(api_details)

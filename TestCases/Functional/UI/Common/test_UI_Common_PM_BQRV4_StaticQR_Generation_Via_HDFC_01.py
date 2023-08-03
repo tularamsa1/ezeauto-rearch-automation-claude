@@ -843,8 +843,9 @@ def test_common_100_108_029():
                 "merchantVpa": db_upi_config_vpa
             })
             response = APIProcessor.send_request(api_details)
+            logger.debug(f"Response received for generating static_qrcode_hdfc api is : {response}")
             res_generateqr_publish_id = response["publishId"]
-            logger.debug(f"Response received for generating static_qrcode_hdfc api is : {res_generateqr_publish_id}")
+            logger.debug(f"Publish id received for generating static_qrcode_hdfc api is : {res_generateqr_publish_id}")
 
             # Generate static QR for second time
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
@@ -863,7 +864,7 @@ def test_common_100_108_029():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for regenerating static_qrcode_hdfc api is : {response}")
             regeneration_publish_id = response["publishId"]
-            logger.debug(f"fetching publish_id for regenration from api response is : {regeneration_publish_id}")
+            logger.debug(f"fetching publish_id for regeneration from api response is : {regeneration_publish_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()

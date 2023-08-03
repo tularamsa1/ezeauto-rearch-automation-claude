@@ -254,7 +254,7 @@ def test_d102_107_002():
         mid = result['virtual_mid'].values[0]
         logger.info(f"fetched mid is : {mid}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username,portal_password,vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
         logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
         query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
@@ -292,7 +292,7 @@ def test_d102_107_002():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
             publish_id = response["publishId"]
-            logger.debug(f"first qr publisdh id : {publish_id}")
+            logger.debug(f"first qr publish id : {publish_id}")
             success_api = response["success"]
             username_api = response["username"]
             org_code_api = response["merchantCode"]
@@ -314,14 +314,14 @@ def test_d102_107_002():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for static_qrcode_generate_icici_direct api is : {response}")
             publish_id_2 = response["publishId"]
-            logger.debug(f"second qr publisdh id : {publish_id}")
+            logger.debug(f"second qr publish id : {publish_id_2}")
             success_api_2 = response["success"]
             username_api_2 = response["username"]
             org_code_api_2 = response["merchantCode"]
             mid_api_2 = response["mid"]
             tid_api_2 = response["tid"]
             logger.debug(f"fetching success status,publish_id, username, org code from api response is : "
-                         f"{success_api},{publish_id},{username_api},{org_code_api}")
+                         f"{success_api_2},{publish_id_2},{username_api_2},{org_code_api_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -645,7 +645,7 @@ def test_d102_107_004():
         virtual_mid = result['virtual_mid'].values[0]
         logger.info(f"fetched virtual mid is : {virtual_mid}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username,portal_password,vpa)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
         logger.debug(f"deleting data from qrcode_audit table for org_code : {org_code}")
         query = "delete from qrcode_audit where org_code ='" + str(org_code) + "'"
@@ -959,4 +959,3 @@ def test_d102_107_004():
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
