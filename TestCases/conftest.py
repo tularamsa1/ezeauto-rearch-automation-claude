@@ -765,7 +765,6 @@ def log_on_failure(request):
                                 print("bool_capt_log_last_run == true")
                                 if ConfigReader.read_config("Validations", "bool_rerun_at_the_end").lower() == "true":
                                     rerun_count = Rerun.getRerunCount(str(request.node.nodeid))
-                                    print("AB AB AB AB AB AB AB AB AB AB AB AB AB AB")
                                 else:
                                     print(Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName))
                                     rerun_count = Rerun.getRerunCount(GlobalVariables.EXCEL_testCaseName)
