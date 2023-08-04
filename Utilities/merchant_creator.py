@@ -1,4 +1,5 @@
 import json
+import os
 import sqlite3
 from datetime import datetime
 
@@ -25,6 +26,10 @@ def create_merchants():
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     sqlite_processor.update_acquisitions_to_db()
     if create_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
+        if check_if_username_exists() > 0:
+            os.system("pkill python3.8")
+            os.system("pkill -9 -f appium")
+            os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
         create_merchants_with_users()
     else:
         set_merchants_users_available()
@@ -287,6 +292,51 @@ def check_if_user_exists(name: str) -> bool:
         return True
 
 
+def check_if_username_exists():
+    """
+    This method is used for checking if the user is already available in the system
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users;")
+        app_users = cursor.fetchall()
+        username_list = []
+        if app_users:
+            for app_user in app_users:
+                username_list.append(app_user[2])
+            print(tuple(username_list))
+            query = f"select username from org_employee where username in {tuple(username_list)}"
+            result = DBProcessor.getValueFromDB(query)
+            for i in range(len(result)):
+                username = (result.iloc[i]['username'])
+                cursor.execute(f"SELECT * FROM users where Username = '{username}' and MerchantCode != 'EZETAP';")
+                app_user = cursor.fetchone()
+                if app_user:
+                    query = f"select username from org_employee where username = '{username}' and org_code != '{app_user[1]}'"
+                    result1 = DBProcessor.getValueFromDB(query)
+                    if len(result1) > 0:
+                        logger.debug(f"killing the python process because {result1.iloc[0]['username']} is already "
+                                     f"exist in db please fill unique username in merchant_user_creation.xlsx sheet "
+                                     f"which is not present in the db")
+                    logger.debug(f"Good to go for merchant creation...")
+                    cursor.close()
+                    conn.close()
+                    return len(result1)
+                else:
+                    cursor.close()
+                    conn.close()
+                    return 0
+        else:
+            logger.debug(f"users table is empty")
+            cursor.close()
+            conn.close()
+            return 0
+    except Exception as e:
+        print("Merchant creation details db is empty")
+        logger.fatal(f"Exception occurred while checking username in org_employee table : {e}")
+
+
 def generate_merchant_creation_api_body() -> list:
     """
     This method is used to generate the request body of the merchant creation API.
@@ -329,7 +379,11 @@ def generate_merchant_creation_api_body() -> list:
                                 merchant_creation_api["users"][count]["mobileNumber"] = str(user[4])
                                 if str(user[5]).lower() == "admin":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.ADMIN_USER_ROLES
-                                elif str(user[5]).lower() == "app":
+                                elif str(user[5]).lower() == "app" and str(user[8]).lower() == "cashier":
+                                    merchant_creation_api["users"][count]["roles"] = GlobalConstants.CASHIER_USER_ROLES
+                                elif str(user[5]).lower() == "app" and str(user[8]).lower() != "cashier" and str(user[8]).lower() != "nan":
+                                    merchant_creation_api["users"][count]["roles"] = GlobalConstants.ALL_USER_ROLES
+                                elif str(user[5]).lower() == "app" and str(user[8]).lower() == "nan":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.APP_USER_ROLES
                                 count += 1
                             lst_merchant_creation_api_body.append(merchant_creation_api)
