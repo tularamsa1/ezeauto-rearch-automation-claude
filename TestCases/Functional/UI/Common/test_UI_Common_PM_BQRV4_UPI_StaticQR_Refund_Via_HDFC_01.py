@@ -101,7 +101,6 @@ def test_common_100_108_005():
             db_upi_config_id = result['id'].values[0]
             logger.info(f"fetched id is : {db_upi_config_id}")
 
-
             # Delete existing staticQR entry from staticqr_intent table
             testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
 
@@ -135,7 +134,8 @@ def test_common_100_108_005():
             status_code = "00"
             logger.debug(f"Status code is : {status_code}")
 
-            logger.debug(f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {status_code}, status with {status}  and rrn with {rrn} in the curl_data")
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {status_code}, status with {status}  and rrn with {rrn} in the curl_data")
 
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
                                                                                                'amount': str(
@@ -198,7 +198,7 @@ def test_common_100_108_005():
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
             created_time_second_txn = result["created_time"].values[0]
-
+            order_id = result['external_ref'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -224,7 +224,7 @@ def test_common_100_108_005():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED_REFUNDED",
-                    "txn_amt":  str("%.2f" % amount),
+                    "txn_amt": str("%.2f" % amount),
                     "settle_status": "SETTLED",
                     "txn_id": orig_txn_id,
                     "rrn": str(rrn),
@@ -235,7 +235,7 @@ def test_common_100_108_005():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUNDED",
-                    "txn_amt_2":  str("%.2f" % amount),
+                    "txn_amt_2": str("%.2f" % amount),
                     "settle_status_2": "SETTLED",
                     "txn_id_2": second_txn_id,
                     "rrn_2": str(rrn_new_2),
@@ -281,8 +281,8 @@ def test_common_100_108_005():
                 logger.info(f"Fetching txn payer name from txn history for the txn : {orig_txn_id}, {app_payer_name}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {orig_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {orig_txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -319,9 +319,9 @@ def test_common_100_108_005():
                 app_payment_msg_new_2 = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {second_txn_id}, {app_payment_msg_new_2}")
-                app_order_id_new_2 = txn_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
+                # app_order_id_new_2 = txn_history_page.fetch_order_id_text()
+                # logger.info(
+                #     f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
                 app_rrn_new_2 = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {second_txn_id}, {app_rrn_new_2}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -586,14 +586,13 @@ def test_common_100_108_005():
             except Exception as e:
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation---------------------------------------
+            # -----------------------------------------End of DB Validation---------------------------------------
             # -----------------------------------------Start of Portal Validation---------------------------------
             if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 try:
                     date_and_time_portal = date_time_converter.to_portal_format(created_time_orig_txn)
                     date_and_time_portal_2 = date_time_converter.to_portal_format(created_time_second_txn)
-
 
                     expected_portal_values = {
                         "date_time": date_and_time_portal,
@@ -613,12 +612,10 @@ def test_common_100_108_005():
                         "auth_code_2": auth_code_new_2,
                         "rrn_2": rrn_new_2
 
-
-
                     }
                     logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                    transaction_details = get_transaction_details_for_portal(app_username, app_password, app_order_id
+                    transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id
                                                                              )
                     date_time_2 = transaction_details[0]['Date & Time']
                     transaction_id_2 = transaction_details[0]['Transaction ID']
@@ -815,7 +812,8 @@ def test_common_100_108_006():
             statusCode = "00"
             logger.debug(f"Status code is : {statusCode}")
 
-            logger.debug(f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
+            logger.debug(
+                f"replacing the publish_id with {publish_id}, amount with {amount}.00, ref_id with {ref_id}, statusCode with {statusCode}, status with {status}  and rrn with {rrn} in the curl_data")
 
             api_details = DBProcessor.get_api_details('staticqr_upi_callback_curl', curl_data={'ref_id': ref_id,
                                                                                                'amount': str(
@@ -880,6 +878,7 @@ def test_common_100_108_006():
             payer_name_new_2 = result['payer_name'].values[0]
             auth_code_new_2 = result['auth_code'].values[0]
             created_time_second_txn = result["created_time"].values[0]
+            order_id = result['external_ref'].values[0]
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -911,8 +910,8 @@ def test_common_100_108_006():
                     "settle_status_2": "SETTLED",
                     "txn_id": orig_txn_id,
                     "txn_id_2": second_txn_id,
-                    "txn_amt":  str("%.2f" % amount),
-                    "txn_amt_2":  str("%.2f" % refund_amount),
+                    "txn_amt": str("%.2f" % amount),
+                    "txn_amt_2": str("%.2f" % refund_amount),
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "rrn": str(rrn),
@@ -952,9 +951,9 @@ def test_common_100_108_006():
                 payment_msg_refunded = transactions_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_refunded}")
-                app_order_id_refunded = transactions_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_refunded}")
+                # app_order_id_refunded = transactions_history_page.fetch_order_id_text()
+                # logger.info(
+                #      f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_refunded}")
                 app_date_and_time_refunded = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {orig_txn_id}, {app_date_and_time_refunded}")
 
@@ -976,9 +975,9 @@ def test_common_100_108_006():
                 app_txn_id_original = transactions_history_page.fetch_txn_id_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {app_txn_id_original}")
-                app_order_id_original = transactions_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_original}")
+                # app_order_id_original = transactions_history_page.fetch_order_id_text()
+                # logger.info(
+                #     f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_original}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {orig_txn_id}, {app_date_and_time}")
 
@@ -1273,7 +1272,7 @@ def test_common_100_108_006():
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, app_order_id_refunded
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id
                                                                          )
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
@@ -1552,7 +1551,7 @@ def test_common_100_108_007():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt":  str("%.2f" % amount),
+                    "txn_amt": str("%.2f" % amount),
                     "settle_status": "SETTLED",
                     "txn_id": orig_txn_id,
                     "rrn": str(rrn),
@@ -1561,10 +1560,10 @@ def test_common_100_108_007():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUND_POSTED",
-                    "txn_amt_2":  str("%.2f" % amount),
+                    "txn_amt_2": str("%.2f" % amount),
                     "settle_status_2": "REVPENDING",
                     "txn_id_2": second_txn_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -1598,8 +1597,8 @@ def test_common_100_108_007():
                     f"Fetching txn settlement_status from txn history for the txn : {orig_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {orig_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {orig_txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -1627,9 +1626,9 @@ def test_common_100_108_007():
                 app_payment_msg_new_2 = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {second_txn_id}, {app_payment_msg_new_2}")
-                app_order_id_new_2 = txn_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
+                # app_order_id_new_2 = txn_history_page.fetch_order_id_text()
+                # logger.info(
+                #     f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
                 actual_app_values = {"pmt_mode": payment_mode,
                                      "pmt_status": payment_status.split(':')[1],
                                      "txn_amt": app_amount.split(' ')[1],
@@ -1899,7 +1898,7 @@ def test_common_100_108_007():
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password,external_ref)
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
 
                 date_time_2 = transaction_details[0]['Date & Time']
                 transaction_id_2 = transaction_details[0]['Transaction ID']
@@ -1933,7 +1932,6 @@ def test_common_100_108_007():
                     "txn_amt_2": total_amount_2[1],
                     "username_2": username_2,
                     "txn_id_2": transaction_id_2,
-
 
                 }
 
@@ -2156,7 +2154,7 @@ def test_common_100_108_008():
                 expected_app_values = {
                     "pmt_mode": "UPI",
                     "pmt_status": "AUTHORIZED",
-                    "txn_amt":  str("%.2f" % amount),
+                    "txn_amt": str("%.2f" % amount),
                     "settle_status": "SETTLED",
                     "txn_id": orig_txn_id,
                     "rrn": str(rrn),
@@ -2165,7 +2163,7 @@ def test_common_100_108_008():
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "FAILED",
-                    "txn_amt_2":  str("%.2f" % amount),
+                    "txn_amt_2": str("%.2f" % amount),
                     "settle_status_2": "FAILED",
                     "txn_id_2": second_txn_id,
                     "pmt_msg_2": "PAYMENT FAILED",
@@ -2202,8 +2200,8 @@ def test_common_100_108_008():
                     f"Fetching txn settlement_status from txn history for the txn : {orig_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {orig_txn_id}, {app_payment_msg}")
-                app_order_id = txn_history_page.fetch_order_id_text()
-                logger.info(f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id}")
+                # app_order_id = txn_history_page.fetch_order_id_text()
+                # logger.info(f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(
                     f"Fetching txn_id from txn history for the txn : {orig_txn_id}, {app_rrn}")  # behavior is diff on both emulator and device (Number/NUMBER)
@@ -2231,9 +2229,9 @@ def test_common_100_108_008():
                 app_payment_msg_new_2 = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(
                     f"Fetching txn status msg from txn history for the txn : {second_txn_id}, {app_payment_msg_new_2}")
-                app_order_id_new_2 = txn_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
+                # app_order_id_new_2 = txn_history_page.fetch_order_id_text()
+                # logger.info(
+                #     f"Fetching txn order_id from txn history for the txn : {second_txn_id}, {app_order_id_new_2}")
 
                 actual_app_values = {"pmt_mode": payment_mode,
                                      "pmt_status": payment_status.split(':')[1],
@@ -2784,8 +2782,8 @@ def test_common_100_108_009():
                     "settle_status_2": "SETTLED",
                     "txn_id": orig_txn_id,
                     "txn_id_2": second_txn_id,
-                    "txn_amt":  str("%.2f" % amount),
-                    "txn_amt_2":  str("%.2f" % refund_amount),
+                    "txn_amt": str("%.2f" % amount),
+                    "txn_amt_2": str("%.2f" % refund_amount),
                     "pmt_msg": "PAYMENT SUCCESSFUL",
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
                     "rrn": str(rrn),
@@ -2825,9 +2823,9 @@ def test_common_100_108_009():
                 payment_msg_refunded = transactions_history_page.fetch_txn_payment_msg_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {payment_msg_refunded}")
-                app_order_id_refunded = transactions_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_refunded}")
+                # app_order_id_refunded = transactions_history_page.fetch_order_id_text()
+                # logger.info(
+                #     f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_refunded}")
                 app_date_and_time_refunded = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {orig_txn_id}, {app_date_and_time_refunded}")
 
@@ -2849,9 +2847,9 @@ def test_common_100_108_009():
                 app_txn_id_original = transactions_history_page.fetch_txn_id_text()
                 logger.debug(
                     f"Fetching Transaction id of original txn from transaction history of MPOS app: Txn Id = {app_txn_id_original}")
-                app_order_id_original = transactions_history_page.fetch_order_id_text()
-                logger.info(
-                    f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_original}")
+                # app_order_id_original = transactions_history_page.fetch_order_id_text()
+                # logger.info(
+                #     f"Fetching txn order_id from txn history for the txn : {orig_txn_id}, {app_order_id_original}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {orig_txn_id}, {app_date_and_time}")
 

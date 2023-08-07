@@ -16,8 +16,6 @@ try:
         :param sheet str
         :return testcases_excel_data dict
         """
-        print()
-        print("Fetching details from sheet : ",sheet)
         testcases_excel_data = pandas.read_excel(testcases_excel_path, sheet_name=sheet)
         return testcases_excel_data
 
@@ -34,6 +32,7 @@ try:
         tot_API_Common = 0
         tot_Dev_ICICI_Direct = 0
         tot_Dev_IDFC_IS = 0
+        print()
         print("Collecting all the testcases from EzeAuto suite ...")
         command = f"pytest --collect-only -q {file_path}"
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -59,12 +58,14 @@ try:
                 else:
                     pass
             print()
-            print("Total number of testcases in Functional/UI/SA in EzeAuto: ",tot_UI_SA)
-            print("Total number of testcases in Functional/UI/Common in EzeAuto: ", tot_UI_Common)
-            print("Total number of testcases in Functional/API_DB/SA in EzeAuto: ", tot_API_SA)
-            print("Total number of testcases in Functional/API_DB/Common in EzeAuto: ", tot_API_Common)
-            print("Total number of testcases in Dev_projects/ICICI_DIRECT_UPI in EzeAuto: ", tot_Dev_ICICI_Direct)
-            print("Total number of testcases in Dev_projects/IDFC_Instant_Settlement in EzeAuto: ", tot_Dev_IDFC_IS)
+            total_tc = tot_UI_SA + tot_UI_Common + tot_API_SA + tot_API_Common + tot_Dev_ICICI_Direct + tot_Dev_IDFC_IS
+            print("Total number of testcases in 'TestCases' folder in EzeAuto : ", total_tc)
+            print("    Number of testcases in Functional/UI/SA in EzeAuto: ",tot_UI_SA)
+            print("    Number of testcases in Functional/UI/Common in EzeAuto: ", tot_UI_Common)
+            print("    Number of testcases in Functional/API_DB/SA in EzeAuto: ", tot_API_SA)
+            print("    Number of testcases in Functional/API_DB/Common in EzeAuto: ", tot_API_Common)
+            print("    Number of testcases in Dev_projects/ICICI_DIRECT_UPI in EzeAuto: ", tot_Dev_ICICI_Direct)
+            print("    Number of testcases in Dev_projects/IDFC_Instant_Settlement in EzeAuto: ", tot_Dev_IDFC_IS)
             return values
         except Exception as ex:
             print("EXCEPTION IN COLLECTING TESTCASES FROM FRAMEWORK")
@@ -75,14 +76,17 @@ try:
     testcases_in_script = get_test_case_names_from_script(ConfigReader.read_config_paths("System", "automation_suite_path") + "/TestCases")
     # get_number_of_testcases_from_sheets(newWorkbook)
 
+    print()
+    print()
+    print("Information of testcases from TestCasesDetail.xlsx file")
     for sheet in sheets:
-        flag_complete = True
         print()
+        flag_complete = True
         testcases_excel_data = prepare_list_of_testcases(sheet)
         df_testcaseID = testcases_excel_data.get("Test Case ID") # Create DF with testcases from specific single sheet in TestCasesDetails file
         df_testcaseFile = testcases_excel_data.get("File Name") # Create DF with filename from specific single sheet in TestCasesDetails file
         if len(df_testcaseID) > 0:
-            print("Number of testcases in sheet : ", len(df_testcaseID))
+            print("    Number of testcases in sheet "+sheet+": ",len(df_testcaseID))
             for i in range(0, len(df_testcaseID)):
                 testcaseID = str((df_testcaseID)[i])
                 testcaseFile = str((df_testcaseFile)[i])
@@ -93,13 +97,13 @@ try:
                     testcases_in_script.remove(data_in_file)
                 else: # If testcase in file is not available in EzeAuto
                     flag_complete = False
-                    print("ERROR: "+ testcaseID + " is not present in EzeAuto/TestCases/" + testcaseFile+".py")
+                    print("    ERROR: "+ testcaseID + " is not present in EzeAuto/TestCases/" + testcaseFile+".py")
 
         else: # If no testcases are present in sheet
             flag_complete = False
-            print("No data are given in sheet   :  "+sheet)
+            print("    No data are given in sheet "+sheet)
         if flag_complete:
-            print("All the testcases are available in EzeAuto")
+            print("    All the testcases are available in 'TestCases' folder in EzeAuto")
     if len(testcases_in_script)>0: # To get all the testcases that are not added in TestCaseDetail.xlsx file
         print()
         print("Testcases that are not added in TestCasesDetail.xlsx : ")
@@ -107,6 +111,7 @@ try:
         for j in range(0, len(testcases_in_script)):
             print("    "+testcases_in_script[j])
             total_invalid_tc = total_invalid_tc+1
+    print()
     print("Count of testcases not added in TestCaseDetail.xlsx is : ", total_invalid_tc)
 finally:
     print()

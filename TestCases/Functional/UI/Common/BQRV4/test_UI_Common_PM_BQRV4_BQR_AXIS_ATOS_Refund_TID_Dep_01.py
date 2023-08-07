@@ -816,7 +816,7 @@ def test_common_100_102_302():
                     "rrn_2": str(rrn_new_2),
                     "customer_name_2": customer_name_new_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")

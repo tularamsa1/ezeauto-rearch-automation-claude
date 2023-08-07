@@ -175,7 +175,6 @@ def test_common_100_108_001():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
 
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -246,7 +245,8 @@ def test_common_100_108_002():
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+        # testsuite_teardown.delete_staticqr_intent_table_entry(portal_username, portal_password, db_bqr_config_id)
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -278,7 +278,9 @@ def test_common_100_108_002():
                 "merchantVpa": db_upi_config_vpa
             })
             response = APIProcessor.send_request(api_details)
-            res_generateqr_publish_id = response["publishId"]
+            logger.debug(f"Response received for static_qrcode_generate_hdfc api for first QR is : {response}")
+            generateqr_publish_id = response["publishId"]
+            logger.debug(f"generateqr_publish_id for first QR is : {generateqr_publish_id}")
 
             query = "select username from org_employee where org_code='" + str(org_code) + "';"
             logger.debug(f"Query to fetch all user under the {org_code} org_code from the DB : {query}")
@@ -336,10 +338,9 @@ def test_common_100_108_002():
                         "merchantVpa": db_upi_config_vpa
                     })
                     response = APIProcessor.send_request(api_details)
-                    publish_id = response["publishId"]
-                    logger.debug(f"fetching publish_id from api response is : {publish_id}")
-                    logger.debug(f"Response received for static_qrcode_generate_hdfc api is : {response}")
-
+                    logger.debug(f"Response received for static_qrcode_generate_hdfc api for second QR is : {response}")
+                    regenerateqr_publish_id = response["publishId"]
+                    logger.debug(f"regenerateqr_publish_id is : {regenerateqr_publish_id}")
                 else:
                     logger.error(f"User creation failed : {response}")
             else:
@@ -358,8 +359,9 @@ def test_common_100_108_002():
                     "merchantVpa": db_upi_config_vpa
                 })
                 response = APIProcessor.send_request(api_details)
-
-            logger.debug(f"Response received for regenerating static_qrcode_hdfc api is : {response}")
+                logger.debug(f"Response received for regenerating static_qrcode_hdfc api second QR is : {response}")
+                regenerateqr_publish_id = response["publishId"]
+                logger.debug(f"regenerateqr_publish_id is : {regenerateqr_publish_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -380,20 +382,31 @@ def test_common_100_108_002():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "publish_id": res_generateqr_publish_id,
+                    "publish_id": generateqr_publish_id,
                     "org_code": org_code,
                     "merchant_pan": db_bqr_config_merchant_pan,
                     "vpa": db_upi_config_vpa,
-                    "user_mobile": second_app_username,
-                    "user_name": second_app_username,
+                    "user_mobile": app_username,
+                    "user_name": app_username,
                     "mid": db_bqr_config_mid,
                     "tid": db_bqr_config_tid,
                     "qr_type": "BHARATQR",
-                    "intent_type": "STATIC_QR"
+                    "intent_type": "STATIC_QR",
+
+                    "publish_id_2": regenerateqr_publish_id,
+                    "org_code_2": org_code,
+                    "merchant_pan_2": db_bqr_config_merchant_pan,
+                    "vpa_2": db_upi_config_vpa,
+                    "user_mobile_2": second_app_username,
+                    "user_name_2": second_app_username,
+                    "mid_2": db_bqr_config_mid,
+                    "tid_2": db_bqr_config_tid,
+                    "qr_type_2": "BHARATQR",
+                    "intent_type_2": "STATIC_QR"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
+                query = "select * from staticqr_intent where publish_id='" + str(generateqr_publish_id) + "';"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
@@ -408,6 +421,41 @@ def test_common_100_108_002():
                 db_staticqr_intent_qrtype = result["qr_type"].iloc[0]
                 db_staticqr_intent_intent_type = result["intent_type"].iloc[0]
 
+                query = "select * from staticqr_intent where publish_id='" + str(regenerateqr_publish_id) + "';"
+                logger.debug(f"Query to fetch data from staticqr_intent table for second publish id : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result for second publish_id: {result}")
+                db_staticqr_intent_publish_id_2 = result["publish_id"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_publish_id_2: {db_staticqr_intent_publish_id_2}")
+                db_staticqr_intent_org_code_2 = result["org_code"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_org_code_2: {db_staticqr_intent_org_code_2}")
+                db_staticqr_intent_merchant_pan_2 = result["merchant_pan"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_merchant_pan_2: {db_staticqr_intent_merchant_pan_2}")
+                db_staticqr_intent_vpa_2 = result["vpa"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_vpa_2: {db_staticqr_intent_vpa_2}")
+                db_staticqr_intent_user_mobile_2 = result["user_mobile"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_user_mobile_2: {db_staticqr_intent_user_mobile_2}")
+                db_staticqr_intent_user_name_2 = result["user_name"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_user_name_2: {db_staticqr_intent_user_name_2}")
+                db_staticqr_intent_mid_2 = result["mid"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_mid_2: {db_staticqr_intent_mid_2}")
+                db_staticqr_intent_tid_2 = result["tid"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_tid_2: {db_staticqr_intent_tid_2}")
+                db_staticqr_intent_qrtype_2 = result["qr_type"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_qrtype_2: {db_staticqr_intent_qrtype_2}")
+                db_staticqr_intent_intent_type_2 = result["intent_type"].iloc[0]
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_intent_type_2: {db_staticqr_intent_intent_type_2}")
+
                 actual_db_values = {
                     "publish_id": db_staticqr_intent_publish_id,
                     "org_code": db_staticqr_intent_org_code,
@@ -418,7 +466,18 @@ def test_common_100_108_002():
                     "mid": db_staticqr_intent_mid,
                     "tid": db_staticqr_intent_tid,
                     "qr_type": db_staticqr_intent_qrtype,
-                    "intent_type": db_staticqr_intent_intent_type
+                    "intent_type": db_staticqr_intent_intent_type,
+
+                    "publish_id_2": db_staticqr_intent_publish_id_2,
+                    "org_code_2": db_staticqr_intent_org_code_2,
+                    "merchant_pan_2": db_staticqr_intent_merchant_pan_2,
+                    "vpa_2": db_staticqr_intent_vpa_2,
+                    "user_mobile_2": db_staticqr_intent_user_mobile_2,
+                    "user_name_2": db_staticqr_intent_user_name_2,
+                    "mid_2": db_staticqr_intent_mid_2,
+                    "tid_2": db_staticqr_intent_tid_2,
+                    "qr_type_2": db_staticqr_intent_qrtype_2,
+                    "intent_type_2": db_staticqr_intent_intent_type_2
                 }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
@@ -843,8 +902,9 @@ def test_common_100_108_029():
                 "merchantVpa": db_upi_config_vpa
             })
             response = APIProcessor.send_request(api_details)
-            res_generateqr_publish_id = response["publishId"]
             logger.debug(f"Response received for generating static_qrcode_hdfc api is : {response}")
+            res_generateqr_publish_id = response["publishId"]
+            logger.debug(f"Publish id received for generating static_qrcode_hdfc api is : {res_generateqr_publish_id}")
 
             # Generate static QR for second time
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC', request_body={
@@ -862,6 +922,8 @@ def test_common_100_108_029():
             })
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for regenerating static_qrcode_hdfc api is : {response}")
+            regeneration_publish_id = response["publishId"]
+            logger.debug(f"fetching publish_id for regeneration from api response is : {regeneration_publish_id}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -896,7 +958,7 @@ def test_common_100_108_029():
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = "select * from staticqr_intent where publish_id='" + str(res_generateqr_publish_id) + "';"
+                query = "select * from staticqr_intent where publish_id='" + str(regeneration_publish_id) + "';"
                 logger.debug(f"Query to fetch data from staticqr_intent table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")

@@ -876,7 +876,7 @@ def test_common_100_102_193():
                     "txn_id_2": txn_id_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND PENDING",
                     "date_2": date_and_time_new_2
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")

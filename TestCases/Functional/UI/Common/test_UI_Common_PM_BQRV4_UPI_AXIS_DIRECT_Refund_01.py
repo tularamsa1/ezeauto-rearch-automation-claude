@@ -1687,7 +1687,7 @@ def test_common_100_102_180():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn": str(rrn),
                     # "refund_rrn": str(refund_rrn),
                     # "auth_code": auth_code,
