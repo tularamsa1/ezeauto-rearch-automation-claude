@@ -1,6 +1,6 @@
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
-
+from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 from PageFactory.App_HomePage import HomePage
 
@@ -34,6 +34,10 @@ class PaymentPage(BasePage):
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
     btn_cancel_p2p_request = (By.ID, "com.ezetap.service.demo:id/btnYesCancelPayment")
+    btn_pan = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectPan')
+    btn_form60 = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectForm60')
+    txt_pan_number = (AppiumBy.ID, 'com.ezetap.service.demo:id/txtInputEntryPan')
+    btn_confirm = (AppiumBy.ID, 'com.ezetap.service.demo:id/btnConfirmPanForm')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -110,9 +114,9 @@ class PaymentPage(BasePage):
         txn_id = self.fetch_text(self.txa_transactionId)
         print("Txn id APP:", txn_id)
         status = self.fetch_text(self.txa_status)
-        print("Status APP:",status)
+        print("Status APP:", status)
         self.perform_click(self.btn_closeTransactionDetails)
-        return txn_id,status
+        return txn_id, status
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
@@ -173,10 +177,8 @@ class PaymentPage(BasePage):
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
 
-
     def click_on_cancel_p2p_request_ok(self):
         self.perform_click(self.btn_cancel_p2p_request)
-
 
     def click_on_goto_homepage(self):
         try:
@@ -188,3 +190,22 @@ class PaymentPage(BasePage):
             return False
         self.click_on_proceed_homepage()
         return True
+
+    def perform_pan_entry(self, pan_number):
+        """
+        This method is used to when you try to make transaction more than 50,000 where the pop up will come to enter pan
+        details or form60
+        """
+        self.perform_click(self.btn_pan)
+        self.wait_for_element(self.txt_pan_number).clear()
+        self.perform_sendkeys(self.txt_pan_number, pan_number)
+        self.perform_click(self.btn_confirm)
+
+    def perform_form60(self):
+        """
+        This method is used to when you try to make transaction more than 50,000 where the pop up will come to enter
+        pan details or form60
+        """
+        self.wait_for_element(self.btn_form60)
+        self.perform_click(self.btn_form60)
+        self.perform_click(self.btn_confirm)

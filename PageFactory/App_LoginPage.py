@@ -12,6 +12,9 @@ class LoginPage(BasePage):
     img_ezetaplogo = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgLogo')
     btn_goToHistory = (AppiumBy.ID, "com.ezetap.basicapp:id/clGotoHistory")
     dtl_env = (AppiumBy.XPATH, '//android.widget.TextView[@text ="DEV11"]')
+    txt_auth_password = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvInputEtMpin')
+    txt_auth_username = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvInputEtAccId')
+    btn_auth_login = (AppiumBy.ID, 'com.ezetap.service.demo:id/btnProceed')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -30,3 +33,11 @@ class LoginPage(BasePage):
 
     def validate_login_page(self):
         return self.wait_for_element(self.lbl_login)
+
+    def perform_cash_additional_auth(self, app_username, app_password):
+        # self.wait_for_element(self.txt_auth_username).clear()
+        # self.perform_sendkeys(self.txt_auth_username, app_username)
+        self.wait_for_element(self.txt_auth_password).clear()
+        self.perform_sendkeys(self.txt_auth_password, app_password)
+        self.perform_click(self.btn_auth_login)
+
