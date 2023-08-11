@@ -324,8 +324,8 @@ def test_card():
                 date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
-                    "pmt_state": "AUTHORIZED",
-                    "pmt_type": "BHARATQR",
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_type": "CARD",
                     "txn_amt": "{:.2f}".format(amount),
                     "username": app_username,
                     "txn_id": txn_id,
@@ -346,7 +346,7 @@ def test_card():
                 auth_code_portal = transaction_details[0]['Auth Code']
                 actual_portal_values = {
                     "date_time": date_time,
-                    "pmt_state": str(status),
+                    "pmt_status": str(status),
                     "pmt_type": transaction_type,
                     "txn_amt": total_amount[1],
                     "username": username,
