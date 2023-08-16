@@ -44,6 +44,7 @@ class TransHistoryPage(BasePage):
     txt_batch_number = (By.XPATH, "//*[@text='BATCH NO.']/following-sibling::android.widget.TextView")
     txt_mid = (By.XPATH, "//*[@text='MID']/following-sibling::android.widget.TextView")
     txt_tid = (By.XPATH, "//*[@text='TID']/following-sibling::android.widget.TextView")
+    txt_tip_amt = (By.XPATH, "//*[@text='TIP AMOUNT']/following-sibling::android.widget.TextView")
     txt_card_type_desc = (By.XPATH, "//*[@text='CARD TXN TYPE DESC']/following-sibling::android.widget.TextView")
     btn_void_txn = (By.ID, "com.ezetap.service.demo:id/ll_VoidRefund")
     btn_void_yes = (By.ID, "com.ezetap.service.demo:id/btnPositive")
@@ -191,6 +192,10 @@ class TransHistoryPage(BasePage):
 
     def fetch_tid_text(self):
         return self.fetch_text(self.txt_tid)
+
+    def fetch_tip_amt_text(self):
+        self.scroll_to_text("TIP AMOUNT")
+        return self.fetch_text(self.txt_tip_amt)
 
     def fetch_card_type_desc_text(self):
         return self.fetch_text(self.txt_card_type_desc)
