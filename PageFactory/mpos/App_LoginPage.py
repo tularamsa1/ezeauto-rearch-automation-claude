@@ -1,5 +1,6 @@
 from appium.webdriver.common.appiumby import AppiumBy
-from PageFactory.App_BasePage import BasePage
+
+from PageFactory.mpos.App_BasePage import BasePage
 from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 

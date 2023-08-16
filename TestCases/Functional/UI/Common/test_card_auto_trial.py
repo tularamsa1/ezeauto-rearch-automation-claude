@@ -567,7 +567,7 @@ def test_card_sale_tip():
                     "mid": mid,
                     "tid": tid,
                     "card_type_desc": "*3493 CTLS",
-                    "tip_amt": "₹ "+str(tip_amt)+".00"
+                    "tip_amt": "{:.2f}".format(tip_amt),
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -606,7 +606,7 @@ def test_card_sale_tip():
                     "mid": app_mid,
                     "tid": app_tid,
                     "card_type_desc": app_card_type_desc,
-                    "tip_amt": app_tip_amt
+                    "tip_amt": app_tip_amt.split(' ')[1],
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 

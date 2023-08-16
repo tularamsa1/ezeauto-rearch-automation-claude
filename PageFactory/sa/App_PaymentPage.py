@@ -1,7 +1,6 @@
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
-
-from PageFactory.App_BasePage import BasePage
+from PageFactory.mpos.App_BasePage import BasePage
 from PageFactory.mpos.App_HomePage import HomePage
 
 

@@ -2,7 +2,7 @@ from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-from PageFactory.App_BasePage import BasePage
+from PageFactory.mpos.App_BasePage import BasePage
 
 
 class TransHistoryPage(BasePage):

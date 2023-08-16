@@ -1,10 +1,9 @@
 import time
 from Configuration import TestSuiteSetup
 from DataProvider import GlobalVariables
-from PageFactory.Portal_BasePage import BasePage
 from datetime import datetime, timedelta
-
-from PageFactory.Portal_LoginPage import PortalLoginPage
+from PageFactory.merchant_portal.Portal_BasePage import BasePage
+from PageFactory.merchant_portal.Portal_LoginPage import PortalLoginPage
 from Utilities.Generic_processor import extract_table_data
 
 

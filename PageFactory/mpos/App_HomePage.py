@@ -1,9 +1,6 @@
-from time import sleep
-
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.by import By
-from PageFactory.App_BasePage import BasePage
-
+from PageFactory.mpos.App_BasePage import BasePage
 
 
 class HomePage(BasePage):
@@ -47,9 +44,6 @@ class HomePage(BasePage):
 
     def check_home_page_for_invalid_Login(self):
         return self.fetch_text(self.lbl_home, 5)
-
-    # def click_enter_amount_field(self):
-    #     self.perform_click(self.txt_enterAmountField)
 
     def enter_amount_and_order_number(self, amt, order_number):
         self.perform_click(self.txt_enterAmountField)
@@ -109,10 +103,6 @@ class HomePage(BasePage):
                 li.append((By.ID, "com.ezetap.basicapp:id/button_"+i+""))
         return li
 
-    # def enter_order_number(self, order_number):
-    #     self.perform_click(self.txt_orderNo)
-    #     self.perform_sendkeys(self.txt_orderNo, order_number)
-    #     self.perform_click(self.btn_paymentProceed)
 
     def perform_check_status(self):
         self.perform_click(self.btn_checkStatus)
@@ -199,11 +189,8 @@ class HomePage(BasePage):
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
 
-    def wait_for_navigationTo_load(self):
-        self.wait_for_element(self.lbl_navigation)
-
-    def wait_for_navigation_to_load(self):
-        self.wait_for_element_to_be_clickable(self.lbl_navigation)
+    # def wait_for_navigation_to_load(self):
+    #     self.wait_for_element_to_be_clickable(self.lbl_navigation)
 
     def check_p2p_notification(self):
         return self.fetch_text(self.lbl_p2p_notification, 30)
