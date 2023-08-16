@@ -2,7 +2,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
 from PageFactory.App_BasePage import BasePage
-from PageFactory.App_HomePage import HomePage
+from PageFactory.mpos.App_HomePage import HomePage
 
 
 class PaymentPage(BasePage):
@@ -136,6 +136,52 @@ class PaymentPage(BasePage):
                 self.perform_click(self.btn_back_enter_amt_window)
                 homePage = HomePage(self.driver)
                 homePage.enter_amount_and_order_number(amount, order_id)
+            else:
+                pass
+
+
+    def is_payment_page_displayed_card(self, amount, order_id, device_serial):
+        try:
+            self.wait_for_element(self.lbl_payWith, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.btn_back_enter_amt_window)
+                homePage = HomePage(self.driver)
+                homePage.enter_amount_and_order_number_for_card(amount, order_id, device_serial)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.lbl_skip)
+                self.perform_click(self.btn_back_enter_amt_window)
+                homePage = HomePage(self.driver)
+                homePage.enter_amount_and_order_number_for_card(amount, order_id, device_serial)
+            else:
+                pass
+
+
+    def is_payment_page_displayed_card_with_tip(self, amount, order_id, tip_amt, device_serial):
+        try:
+            self.wait_for_element(self.lbl_payWith, 6)
+        except:
+            self.wait_for_element(self.lbl_checkstatusTitle)
+            self.perform_click(self.lbl_checkstatus)
+            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
+                self.perform_click(self.btn_proceedToHomepage)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.btn_back_enter_amt_window)
+                homePage = HomePage(self.driver)
+                homePage.enter_tip_amount_and_order_number_for_card(amount, order_id, tip_amt, device_serial)
+            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
+                self.perform_click(self.btn_proceedToHomepage)
+                self.perform_click(self.lbl_skip)
+                self.perform_click(self.btn_back_enter_amt_window)
+                homePage = HomePage(self.driver)
+                homePage.enter_tip_amount_and_order_number_for_card(amount, order_id, tip_amt, device_serial)
             else:
                 pass
 
