@@ -46,6 +46,7 @@ class CardPage(BasePage):
     IDFC_EMV_CREDIT_MASTER = (By.XPATH, "//android.widget.TextView[@text='IDFC_EMV_CREDIT_MASTER']")
     IDFC_EMV_DEBIT_VISA = (By.XPATH, "//android.widget.TextView[@text='IDFC_EMV_DEBIT_VISA']")
     IDFC_MSR_CREDIT_RUPAY = (By.XPATH, "//android.widget.TextView[@text='IDFC_MSR_CREDIT_RUPAY']")
+    IDFC_MSR_DEBIT_VISA = (By.XPATH, "//android.widget.TextView[@text='IDFC_MSR_DEBIT_VISA']")
 
     txt_error_code = (By.ID, "com.ezetap.service.demo:id/dialogTitle")
     txt_error_message = (By.ID, "com.ezetap.service.demo:id/dialogText")
@@ -137,6 +138,8 @@ class CardPage(BasePage):
             self.perform_long_press(self.IDFC_EMV_DEBIT_VISA)
         elif text == "IDFC_MSR_CREDIT_RUPAY":
             self.perform_long_press(self.IDFC_MSR_CREDIT_RUPAY)
+        elif text == "IDFC_MSR_DEBIT_VISA":
+            self.perform_long_press(self.IDFC_MSR_DEBIT_VISA)
 
         else:
             raise Exception("Preferred card is invalid")

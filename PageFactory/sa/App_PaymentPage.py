@@ -13,8 +13,8 @@ class PaymentPage(BasePage):
     lbl_mobileNumber = (By.XPATH, "//android.widget.TextView[contains(text(),'9845698456')]")
     btn_upi = (By.XPATH, "//*[@text='UPI']")
     btn_bqr = (By.XPATH, "//*[@text='Bharat QR']")
-    # btn_card = (By.XPATH, "//*[@text='Card']")
-    btn_card = (By.ID, "com.ezetap.service.demo:id/imgCardIcon")
+    btn_card = (By.XPATH, "//*[@text='Card']")
+    # btn_card = (By.ID, "com.ezetap.service.demo:id/imgCardIcon")
     btn_back = (By.ID, "com.ezetap.service.demo:id/ibtnBack")
     btn_back_enter_amt_window = (By.ID, "com.ezetap.basicapp:id/imgBack")
     txa_daAlertMessage = (By.ID, 'com.ezetap.service.demo:id/tvAlert')
@@ -55,7 +55,7 @@ class PaymentPage(BasePage):
 
     def click_on_Card_paymentMode(self):
         # self.scroll_to_text("CARD")
-        self.scroll_to_text("Credit/Debit Card")
+        # self.scroll_to_text("Credit/Debit Card")
         self.perform_click(self.btn_card)
 
     def fetch_da_alert_message(self):

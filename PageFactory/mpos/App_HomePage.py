@@ -94,6 +94,14 @@ class HomePage(BasePage):
         self.perform_sendkeys(self.device_serialNo, device_serial)
         self.perform_click(self.btn_paymentProceed)
 
+
+    def enter_order_number_for_card(self, order_number, device_serial):
+        self.perform_click(self.txt_orderNo)
+        self.perform_sendkeys(self.txt_orderNo, order_number)
+        self.perform_click(self.device_serialNo)
+        self.perform_sendkeys(self.device_serialNo, device_serial)
+        self.perform_click(self.btn_paymentProceed)
+
     def type_amount(self, amt):
         li = []
         for i in str(amt):
@@ -122,12 +130,12 @@ class HomePage(BasePage):
     def enter_cash_at_pos_amount(self, amount):
         self.perform_click(self.txt_cashAtPosAmount)
         self.perform_sendkeys(self.txt_cashAtPosAmount, amount)
-        self.perform_touch_action_using_cordinates(648,1119, 648,1117)
+        # self.perform_touch_action_using_cordinates(648,1119, 648,1117)
 
     def enter_cash_at_pos_sale_amount(self, amount):
         self.perform_click(self.txt_cashAtPosSaleAmount)
         self.perform_sendkeys(self.txt_cashAtPosSaleAmount, amount)
-        self.perform_touch_action_using_cordinates(648,1119, 648,1117)
+        # self.perform_touch_action_using_cordinates(648,1119, 648,1117)
 
     def click_pay_now_button(self):
         self.perform_click(self.btn_payNow)
