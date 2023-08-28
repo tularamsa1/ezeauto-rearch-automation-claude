@@ -305,28 +305,35 @@ def check_if_username_exists():
         if app_users:
             for app_user in app_users:
                 username_list.append(app_user[2])
-            print(tuple(username_list))
+            logger.debug(f"{tuple(username_list)}")
             query = f"select username from org_employee where username in {tuple(username_list)}"
+            logger.debug(f"query : {query}")
             result = DBProcessor.getValueFromDB(query)
-            for i in range(len(result)):
-                username = (result.iloc[i]['username'])
-                cursor.execute(f"SELECT * FROM users where Username = '{username}' and MerchantCode != 'EZETAP';")
-                app_user = cursor.fetchone()
-                if app_user:
-                    query = f"select username from org_employee where username = '{username}' and org_code != '{app_user[1]}'"
-                    result1 = DBProcessor.getValueFromDB(query)
-                    if len(result1) > 0:
-                        logger.debug(f"killing the python process because {result1.iloc[0]['username']} is already "
-                                     f"exist in db please fill unique username in merchant_user_creation.xlsx sheet "
-                                     f"which is not present in the db")
-                    logger.debug(f"Good to go for merchant creation...")
-                    cursor.close()
-                    conn.close()
-                    return len(result1)
-                else:
-                    cursor.close()
-                    conn.close()
-                    return 0
+            logger.debug(f"query result and length : {result}, {len(result)}")
+            if len(result) == 0:
+                return 0
+            else:
+                for i in range(len(result)):
+                    username = (result.iloc[i]['username'])
+                    cursor.execute(f"SELECT * FROM users where Username = '{username}' and MerchantCode != 'EZETAP';")
+                    app_user = cursor.fetchone()
+                    logger.debug(f"app_user : {app_user}")
+                    if app_user:
+                        query = f"select username from org_employee where username = '{username}' and org_code != '{app_user[1]}'"
+                        logger.debug(f"query : {query}")
+                        result1 = DBProcessor.getValueFromDB(query)
+                        logger.debug(f"result1 : {result1}")
+                        if len(result1) > 0:
+                            logger.debug(f"killing the python process because {result1.iloc[0]['username']} is already "
+                                         f"exist in db please fill unique username in merchant_user_creation.xlsx sheet "
+                                         f"which is not present in the db")
+                        cursor.close()
+                        conn.close()
+                        return len(result1)
+                    else:
+                        cursor.close()
+                        conn.close()
+                        return 0
         else:
             logger.debug(f"users table is empty")
             cursor.close()
