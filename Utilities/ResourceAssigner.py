@@ -1,16 +1,12 @@
-#ResourceAssigner
 import sqlite3
 import time
 from datetime import datetime
 from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
+
 logger = EzeAutoLogger(__name__)
 
-dbPath = ConfigReader.read_config_paths("System","automation_suite_path")+"/Database/ezeauto.db"
-
-
-
-
+dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/Database/ezeauto.db"
 
 
 def getDeviceFromDB(testCaseID):
@@ -41,7 +37,8 @@ def getDeviceFromDB(testCaseID):
                             proceed = True
                             break
                         except:
-                            print("Unable to change the status of device in DB, so deleting the entry in devices_blocked table.")
+                            print(
+                                "Unable to change the status of device in DB, so deleting the entry in devices_blocked table.")
                             cursor.execute("DELETE FROM devices_blocked WHERE DeviceId = '" + deviceID + "';")
                             conn.commit()
                             proceed == False
@@ -56,7 +53,7 @@ def getDeviceFromDB(testCaseID):
                 print("Unable to fetch any device. Retrying...")
                 proceed = False
         except Exception as e:
-            print("Unable to retrieve Device details from devices db due to error : "+str(e))
+            print("Unable to retrieve Device details from devices db due to error : " + str(e))
             proceed = False
 
         if proceed:
@@ -67,15 +64,13 @@ def getDeviceFromDB(testCaseID):
     conn.commit()
     conn.close()
 
-    if len(device)==0:
+    if len(device) == 0:
         return None
     else:
         return device
 
 
-
 def releaseDeviceInDBusingTestCaseID(testCaseID):
-
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
@@ -94,11 +89,11 @@ def releaseDeviceInDBusingTestCaseID(testCaseID):
                     except Exception as e:
                         print("Unable to release the device due to " + str(e))
             except Exception as e:
-                print("Unable to delete the device from devices_blocked DB due to "+str(e))
+                print("Unable to delete the device from devices_blocked DB due to " + str(e))
                 proceed = False
 
         except Exception as e:
-            print("Unable to get device from devices_blocked table due to error : "+str(e))
+            print("Unable to get device from devices_blocked table due to error : " + str(e))
             print("Above error is because given test case does not have any devices blocked.")
         conn.commit()
         conn.close()
@@ -111,13 +106,13 @@ def getAppiumServerFromDB(testCaseID):
     print("Trying to get available appium server from DB")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    appiumServer={}
+    appiumServer = {}
     timer = 0
-    while timer<20:
+    while timer < 20:
         try:
             cursor.execute("SELECT PortNumber,ServerName FROM appium_servers WHERE Status = 'Available';")
             availableAppiumServers = cursor.fetchall()
-            if availableAppiumServers != None and len(availableAppiumServers) > 0 :
+            if availableAppiumServers != None and len(availableAppiumServers) > 0:
                 for server in availableAppiumServers:
                     portNumber = str(server[0])
                     serverName = server[1]
@@ -126,7 +121,8 @@ def getAppiumServerFromDB(testCaseID):
                             "INSERT INTO appium_servers_blocked(PortNumber, ServerName, TestCaseID) VALUES('" + portNumber + "','" + serverName + "','" + testCaseID + "');")
                         conn.commit()
                         try:
-                            cursor.execute("UPDATE appium_servers SET Status = 'Blocked' WHERE PortNumber = '"+portNumber+"';")
+                            cursor.execute(
+                                "UPDATE appium_servers SET Status = 'Blocked' WHERE PortNumber = '" + portNumber + "';")
                             conn.commit()
                             print("Appium server with port number " + portNumber + " is available")
                             appiumServer['PortNumber'] = portNumber
@@ -134,8 +130,10 @@ def getAppiumServerFromDB(testCaseID):
                             proceed = True
                             break
                         except:
-                            print("Unable to change the status of appium server in DB, so deleting the entry in appium_servers_blocked table.")
-                            cursor.execute("DELETE FROM appium_servers_blocked WHERE PortNumber = '"+portNumber+"';")
+                            print(
+                                "Unable to change the status of appium server in DB, so deleting the entry in appium_servers_blocked table.")
+                            cursor.execute(
+                                "DELETE FROM appium_servers_blocked WHERE PortNumber = '" + portNumber + "';")
                             conn.commit()
                             proceed == False
                     except Exception as e:
@@ -149,7 +147,7 @@ def getAppiumServerFromDB(testCaseID):
                 print("Unable to fetch any appium server. Retrying...")
                 proceed = False
         except Exception as e:
-            print("Unable to retrieve Device details from devices db due to error : "+str(e))
+            print("Unable to retrieve Device details from devices db due to error : " + str(e))
             proceed = False
 
         if proceed:
@@ -160,15 +158,13 @@ def getAppiumServerFromDB(testCaseID):
     conn.commit()
     conn.close()
 
-    if len(appiumServer)==0:
+    if len(appiumServer) == 0:
         return None
     else:
         return appiumServer
 
 
-
 def releaseAppiumServerInDBUsingTestCaseID(testCaseID):
-
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
@@ -179,20 +175,21 @@ def releaseAppiumServerInDBUsingTestCaseID(testCaseID):
             try:
                 cursor.execute("DELETE FROM appium_servers_blocked WHERE TestCaseID = '" + testCaseID + "';")
                 conn.commit()
-                print("Deleted the entry in appium_servers_blocked table for the test case "+testCaseID)
+                print("Deleted the entry in appium_servers_blocked table for the test case " + testCaseID)
                 for port in PortNumber:
                     try:
-                        cursor.execute("UPDATE appium_servers SET Status='Available' WHERE PortNumber = '" + str(port[0]) + "';")
+                        cursor.execute(
+                            "UPDATE appium_servers SET Status='Available' WHERE PortNumber = '" + str(port[0]) + "';")
                         conn.commit()
                         print(str(port[0]) + " is released at " + str(datetime.now().time()))
                     except Exception as e:
                         print("Unable to release the port number due to " + str(e))
             except Exception as e:
-                print("Unable to delete the port number from appium_servers_blocked DB due to "+str(e))
+                print("Unable to delete the port number from appium_servers_blocked DB due to " + str(e))
                 proceed = False
 
         except Exception as e:
-            print("Unable to get appium server from appium_servers table due to error : "+str(e))
+            print("Unable to get appium server from appium_servers table due to error : " + str(e))
             print("Above error is because given test case does not have any appium servers blocked.")
         conn.commit()
         conn.close()
@@ -205,31 +202,34 @@ def getAppUserCredentials(testCaseID):
     print("Trying to get available app user credentials from DB")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    appUserCredentials={}
+    appUserCredentials = {}
     timer = 0
-    while timer<20:
+    while timer < 20:
         try:
             cursor.execute("SELECT Username, Password FROM app_users WHERE Status = 'Available';")
             availableAppUsers = cursor.fetchall()
-            if availableAppUsers != None and len(availableAppUsers) > 0 :
+            if availableAppUsers != None and len(availableAppUsers) > 0:
                 for appUser in availableAppUsers:
                     username = str(appUser[0])
                     password = appUser[1]
                     try:
-                        cursor.execute("INSERT INTO app_users_blocked(Username, TestCaseID) VALUES('"+username+"','"+testCaseID+"');")
+                        cursor.execute(
+                            "INSERT INTO app_users_blocked(Username, TestCaseID) VALUES('" + username + "','" + testCaseID + "');")
                         conn.commit()
                         try:
-                            cursor.execute("UPDATE app_users SET Status = 'Blocked' WHERE Username = '"+username+"';")
+                            cursor.execute(
+                                "UPDATE app_users SET Status = 'Blocked' WHERE Username = '" + username + "';")
                             conn.commit()
                             print("App username " + username + " is available")
-                            print("App username " + username + " is assigned at "+str(datetime.now().time()))
+                            print("App username " + username + " is assigned at " + str(datetime.now().time()))
                             appUserCredentials['Username'] = username
                             appUserCredentials['Password'] = password
                             proceed = True
                             break
                         except:
-                            print("Unable to change the status of app user in DB, so deleting the entry in app_users_blocked table.")
-                            cursor.execute("DELETE FROM app_users_blocked WHERE username = '"+username+"';")
+                            print(
+                                "Unable to change the status of app user in DB, so deleting the entry in app_users_blocked table.")
+                            cursor.execute("DELETE FROM app_users_blocked WHERE username = '" + username + "';")
                             conn.commit()
                             proceed == False
                     except Exception as e:
@@ -243,7 +243,7 @@ def getAppUserCredentials(testCaseID):
                 print("Unable to fetch any app user. Retrying...")
                 proceed = False
         except Exception as e:
-            print("Unable to retrieve app user details from app_users db due to error : "+str(e))
+            print("Unable to retrieve app user details from app_users db due to error : " + str(e))
             proceed = False
 
         if proceed:
@@ -254,41 +254,179 @@ def getAppUserCredentials(testCaseID):
     conn.commit()
     conn.close()
 
-    if len(appUserCredentials)==0:
+    if len(appUserCredentials) == 0:
         return None
     else:
         return appUserCredentials
+
+
+def get_org_users_credentials(testCaseID: str, category: str):
+    """
+    This method is used to get the username and password on the basis of category from the org_users table and return
+    the org_user_credentials dictionary.
+    :param testCaseID str
+    :param category str
+    :return: dict
+    """
+    proceed = False
+    print("Trying to get available org user credentials from DB")
+    logger.info("Trying to get available org user credentials from DB")
+    conn = sqlite3.connect(dbPath)
+    cursor = conn.cursor()
+    org_user_credentials = {}
+    timer = 0
+    while timer < 20:
+        try:
+            cursor.execute(f"SELECT MerchantCode FROM merchants WHERE Availability = 'Available' AND MerchantCode != "
+                           f"'EZETAP';")
+            available_merchants = cursor.fetchall()
+            if available_merchants is not None and len(available_merchants) > 0:
+                for merchant in available_merchants:
+                    merchant_code = str(merchant[0])
+                    cursor.execute(f"SELECT Username, Password FROM org_users WHERE Status = 'Available' AND "
+                                   f"MerchantCode = '{merchant_code}' AND Category = '{category}';")
+                    available_org_user = cursor.fetchall()
+                    print(f"available_org_user : {available_org_user}")
+                    username = available_org_user[0][0]
+                    password = available_org_user[0][1]
+                    try:
+                        cursor.execute(
+                            "INSERT INTO merchants_blocked(MerchantCode, TestCaseID) VALUES('" + merchant_code + "','" + testCaseID + "');")
+                        conn.commit()
+                        try:
+                            cursor.execute(
+                                "UPDATE merchants SET Availability = 'Blocked' WHERE MerchantCode = '" + merchant_code + "';")
+                            conn.commit()
+                            print("Org username " + username + " is available and assigned at " + str(
+                                datetime.now().time()))
+                            logger.info(
+                                f"Org username {username} is available and assigned at {str(datetime.now().time())}")
+                            print("merchant_code " + merchant_code + " is available and assigned at " + str(
+                                datetime.now().time()))
+                            logger.info(
+                                f"merchant_code {merchant_code} is available and assigned at {str(datetime.now().time())}")
+                            org_user_credentials['Username'] = username
+                            org_user_credentials['Password'] = password
+                            proceed = True
+                            break
+                        except:
+                            print("Unable to change the status of merchants user in DB, so deleting the entry in "
+                                  "merchants_blocked table.")
+                            logger.info("Unable to change the status of merchants user in DB, so deleting the entry in "
+                                        "merchants_blocked table.")
+                            cursor.execute("DELETE FROM merchants_blocked WHERE username = '" + username + "';")
+                            conn.commit()
+                            proceed = False
+                    except Exception as e:
+                        proceed = False
+                        if str(e).__contains__("UNIQUE constraint failed"):
+                            print("Two processes tried accessing the same merchant, hence this test case will retry "
+                                  "to get another merchant.")
+                            logger.info("Two processes tried accessing the same merchant, hence this test case will "
+                                        "retry to get another merchant.")
+                        else:
+                            print("Unable to add entry into the app_users_blocked table due to error : " + str(e))
+                            logger.info(f"Unable to add entry into the app_users_blocked table due to error : {str(e)}")
+            else:
+                print("Unable to fetch any org user. Retrying...")
+                logger.info("Unable to fetch any org user. Retrying...")
+                proceed = False
+        except Exception as e:
+            print("Unable to retrieve org user details from org_users db due to error : " + str(e))
+            logger.info(f"Unable to retrieve org user details from org_users db due to error : {str(e)}")
+            proceed = False
+
+        if proceed:
+            break
+        else:
+            time.sleep(1)
+            timer += 1
+    conn.commit()
+    conn.close()
+
+    if len(org_user_credentials) == 0:
+        return None
+    else:
+        return org_user_credentials
+
+
+def release_merchant(testCaseID: str) -> None:
+    """
+    This method is used to get the username and password on the basis of category from the org_users table and return
+    the org_user_credentials dictionary.
+    :param testCaseID str
+    :return: None
+    """
+    try:
+        conn = sqlite3.connect(dbPath)
+        cursor = conn.cursor()
+        proceed = True
+        cursor.execute("SELECT MerchantCode FROM merchants_blocked WHERE TestCaseID = '" + testCaseID + "';")
+        try:
+            merchant_code = cursor.fetchall()
+            try:
+                cursor.execute("DELETE FROM merchants_blocked WHERE TestCaseID = '" + testCaseID + "';")
+                conn.commit()
+                for merchant in merchant_code:
+                    try:
+                        cursor.execute(
+                            "UPDATE merchants SET Availability='Available' WHERE MerchantCode = '" + merchant[0] + "';")
+                        conn.commit()
+                        print("MerchantCode " + merchant[0] + " is released at " + str(datetime.now().time()))
+                        logger.debug(f"MerchantCode {merchant[0]} is released at {str(datetime.now().time())}")
+                    except Exception as e:
+                        print(f"Unable to release the MerchantCode due to {e}")
+                        logger.exception(f"Unable to release the MerchantCode due to {e}")
+            except Exception as e:
+                print("Unable to delete the MerchantCode from merchants_blocked DB due to " + str(e))
+                logger.exception("Unable to delete the MerchantCode from merchants_blocked DB due to " + str(e))
+                proceed = False
+
+        except Exception as e:
+            print("Unable to get MerchantCode from merchants_blocked table due to error : " + str(e))
+            logger.exception("Unable to get MerchantCode from merchants_blocked table due to error : " + str(e))
+            print("Above error is because given test case does not have any MerchantCode blocked.")
+            logger.exception("Above error is because given test case does not have any MerchantCode blocked.")
+        conn.commit()
+        conn.close()
+    except:
+        print("Unable to release the MerchantCode associated with test case " + testCaseID)
+        logger.exception(f"Unable to release the MerchantCode associated with test case {testCaseID}")
+
 
 def getPortalUserCredentials(testCaseID):
     proceed = False
     print("Trying to get available portal user credentials from DB")
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
-    portalUserCredentials={}
+    portalUserCredentials = {}
     timer = 0
-    while timer<20:
+    while timer < 20:
         try:
             cursor.execute("SELECT Username, Password FROM portal_users WHERE Status = 'Available';")
             availablePortalUsers = cursor.fetchall()
-            if availablePortalUsers != None and len(availablePortalUsers) > 0 :
+            if availablePortalUsers != None and len(availablePortalUsers) > 0:
                 for portalUser in availablePortalUsers:
                     username = str(portalUser[0])
                     password = portalUser[1]
                     try:
-                        cursor.execute("INSERT INTO portal_users_blocked(Username, TestCaseID) VALUES('"+username+"','"+testCaseID+"');")
+                        cursor.execute(
+                            "INSERT INTO portal_users_blocked(Username, TestCaseID) VALUES('" + username + "','" + testCaseID + "');")
                         conn.commit()
                         try:
-                            cursor.execute("UPDATE portal_users SET Status = 'Blocked' WHERE Username = '"+username+"';")
+                            cursor.execute(
+                                "UPDATE portal_users SET Status = 'Blocked' WHERE Username = '" + username + "';")
                             conn.commit()
                             print("Portal username " + username + " is available")
-                            print("Portal username " + username + " is assigned at "+str(datetime.now().time()))
+                            print("Portal username " + username + " is assigned at " + str(datetime.now().time()))
                             portalUserCredentials['Username'] = username
                             portalUserCredentials['Password'] = password
                             proceed = True
                             break
                         except:
-                            print("Unable to change the status of portal user in DB, so deleting the entry in portal_users_blocked table.")
-                            cursor.execute("DELETE FROM portal_users_blocked WHERE username = '"+username+"';")
+                            print(
+                                "Unable to change the status of portal user in DB, so deleting the entry in portal_users_blocked table.")
+                            cursor.execute("DELETE FROM portal_users_blocked WHERE username = '" + username + "';")
                             conn.commit()
                             proceed = False
                     except Exception as e:
@@ -302,7 +440,7 @@ def getPortalUserCredentials(testCaseID):
                 print("Unable to fetch any portal user. Retrying...")
                 proceed = False
         except Exception as e:
-            print("Unable to retrieve portal user details from portal_users db due to error : "+str(e))
+            print("Unable to retrieve portal user details from portal_users db due to error : " + str(e))
             proceed = False
 
         if proceed:
@@ -313,15 +451,13 @@ def getPortalUserCredentials(testCaseID):
     conn.commit()
     conn.close()
 
-    if len(portalUserCredentials)==0:
+    if len(portalUserCredentials) == 0:
         return None
     else:
         return portalUserCredentials
 
 
-
 def releaseAppUser(testCaseID):
-
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
@@ -336,23 +472,23 @@ def releaseAppUser(testCaseID):
                     try:
                         cursor.execute("UPDATE app_users SET Status='Available' WHERE Username = '" + user[0] + "';")
                         conn.commit()
-                        print("App user "+user[0] + " is released at " + str(datetime.now().time()))
+                        print("App user " + user[0] + " is released at " + str(datetime.now().time()))
                     except Exception as e:
                         print("Unable to release the app user due to " + e)
             except Exception as e:
-                print("Unable to delete the app user from app_users_blocked DB due to "+str(e))
+                print("Unable to delete the app user from app_users_blocked DB due to " + str(e))
                 proceed = False
 
         except Exception as e:
-            print("Unable to get app user from app_users table due to error : "+str(e))
+            print("Unable to get app user from app_users table due to error : " + str(e))
             print("Above error is because given test case does not have any app users blocked.")
         conn.commit()
         conn.close()
     except:
         print("Unable to release the app user associated with test case " + testCaseID)
 
-def releasePortalUser(testCaseID):
 
+def releasePortalUser(testCaseID):
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
@@ -367,20 +503,21 @@ def releasePortalUser(testCaseID):
                     try:
                         cursor.execute("UPDATE portal_users SET Status='Available' WHERE Username = '" + user[0] + "';")
                         conn.commit()
-                        print("Portal user "+user[0] + " is released at " + str(datetime.now().time()))
+                        print("Portal user " + user[0] + " is released at " + str(datetime.now().time()))
                     except Exception as e:
                         print("Unable to release the portal user due to " + e)
             except Exception as e:
-                print("Unable to delete the portal user from portal_users_blocked DB due to "+str(e))
+                print("Unable to delete the portal user from portal_users_blocked DB due to " + str(e))
                 proceed = False
 
         except Exception as e:
-            print("Unable to get portal user from portal_users table due to error : "+str(e))
+            print("Unable to get portal user from portal_users table due to error : " + str(e))
             print("Above error is because given test case does not have any portal users blocked.")
         conn.commit()
         conn.close()
     except:
         print("Unable to release the portal user associated with test case " + testCaseID)
+
 
 def clearAssignerTables():
     conn = ""
@@ -397,14 +534,15 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM appium_servers;")
         cursor.execute("DELETE FROM appium_servers_blocked;")
         cursor.execute("DELETE FROM api_details;")
+        cursor.execute("DELETE FROM org_users;")
         conn.commit()
     except Exception as e:
-        print("Unable to clear the user tables due to error : "+str(e))
+        print("Unable to clear the user tables due to error : " + str(e))
     cursor.close()
     conn.close()
 
 
-def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
+def updateAppUsersInDB(listOfDictionariesWithAppUserDetails: []):
     """
     This method is used to update the user details into the user_credentials database.
     Make sure the argument passed is a list of dictionaries containing details of the user i.e., username and password.
@@ -415,15 +553,16 @@ def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        if len(listOfDictionariesWithAppUserDetails)>0:
+        if len(listOfDictionariesWithAppUserDetails) > 0:
             for userDetails in listOfDictionariesWithAppUserDetails:
                 username = userDetails["Username"]
                 password = userDetails["Password"]
                 try:
-                    cursor.execute("INSERT INTO app_users(Username, Password, Status)values('"+username+"','"+password+"', 'Available');")
-                    print("App user "+username+" added successfully to the DB.")
+                    cursor.execute(
+                        "INSERT INTO app_users(Username, Password, Status)values('" + username + "','" + password + "', 'Available');")
+                    print("App user " + username + " added successfully to the DB.")
                 except Exception as e:
-                    print("Unable to add the app user "+username+" to the db due to the error - "+str(e))
+                    print("Unable to add the app user " + username + " to the db due to the error - " + str(e))
             conn.commit()
             conn.close()
         else:
@@ -432,19 +571,20 @@ def updateAppUsersInDB(listOfDictionariesWithAppUserDetails : []):
         print("Unable to update the app user details to DB")
 
 
-def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails : []):
+def updatePortalUsersInDB(listOfDictionariesWithPortalUserDetails: []):
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        if len(listOfDictionariesWithPortalUserDetails)>0:
+        if len(listOfDictionariesWithPortalUserDetails) > 0:
             for userDetails in listOfDictionariesWithPortalUserDetails:
                 username = userDetails["Username"]
                 password = userDetails["Password"]
                 try:
-                    cursor.execute("INSERT INTO portal_users(Username, Password, Status)values('"+username+"','"+password+"', 'Available');")
-                    print("Portal user "+username+" added successfully to the DB.")
+                    cursor.execute(
+                        "INSERT INTO portal_users(Username, Password, Status)values('" + username + "','" + password + "', 'Available');")
+                    print("Portal user " + username + " added successfully to the DB.")
                 except Exception as e:
-                    print("Unable to add the portal user "+username+" to the db due to the error - "+str(e))
+                    print("Unable to add the portal user " + username + " to the db due to the error - " + str(e))
             conn.commit()
             conn.close()
         else:
@@ -457,15 +597,16 @@ def updateAppiumServersInDB(listOfPorts: []):
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        if len(listOfPorts)>0:
-            i=1
+        if len(listOfPorts) > 0:
+            i = 1
             for port in listOfPorts:
                 try:
-                    cursor.execute("INSERT INTO appium_servers(PortNumber, ServerName, Status)values("+str(port)+", 'Server"+str(i)+"', 'Available');")
-                    print("Appium server port "+str(port)+" successfully added to the db.")
-                    i +=1
+                    cursor.execute("INSERT INTO appium_servers(PortNumber, ServerName, Status)values(" + str(
+                        port) + ", 'Server" + str(i) + "', 'Available');")
+                    print("Appium server port " + str(port) + " successfully added to the db.")
+                    i += 1
                 except Exception as e:
-                    print("Unable to add the appium server with port "+port+"to the db due to error - "+str(e))
+                    print("Unable to add the appium server with port " + port + "to the db due to error - " + str(e))
             conn.commit()
             conn.close()
         else:
@@ -478,20 +619,21 @@ def updateDevicesInDB(listOfDevices: []):
     try:
         conn = sqlite3.connect(dbPath)
         cursor = conn.cursor()
-        if len(listOfDevices)>0:
-            i=1
+        if len(listOfDevices) > 0:
+            i = 1
             for device in listOfDevices:
                 try:
-                    cursor.execute("INSERT INTO devices(DeviceId, DeviceName, Status)values('"+str(device)+"', 'Device"+str(i)+"', 'Available');")
+                    cursor.execute(
+                        "INSERT INTO devices(DeviceId, DeviceName, Status)values('" + str(device) + "', 'Device" + str(
+                            i) + "', 'Available');")
                     conn.commit()
-                    print("Device "+device+" successfully added to the db.")
-                    i +=1
+                    print("Device " + device + " successfully added to the db.")
+                    i += 1
                 except Exception as e:
-                    print("Unable to add the device "+device+" in the db due to error -"+str(e))
+                    print("Unable to add the device " + device + " in the db due to error -" + str(e))
             conn.close()
 
         else:
             print("Devices list is empty")
     except Exception as e:
         print("Unable to update the devices to DB")
-

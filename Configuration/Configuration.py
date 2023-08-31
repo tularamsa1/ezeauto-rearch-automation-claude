@@ -32,6 +32,7 @@ def executeFinallyBlock(testcase_Id):
         GlobalVariables.time_calc.execution.resume()
         logger.debug(f"Execution Timer resumed in finally block of testcase function : {testcase_Id}")
     ResourceAssigner.releaseAppUser(testcase_Id)
+    ResourceAssigner.release_merchant(testcase_Id)
     ResourceAssigner.releasePortalUser(testcase_Id)
     ResourceAssigner.releaseDeviceInDBusingTestCaseID(testcase_Id)
     ResourceAssigner.releaseAppiumServerInDBUsingTestCaseID(testcase_Id)

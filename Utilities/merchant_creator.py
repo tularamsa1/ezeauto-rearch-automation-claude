@@ -1,5 +1,8 @@
 import json
+import os
 import sqlite3
+from datetime import datetime
+
 import requests
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, ConfigReader, sqlite_processor
@@ -23,6 +26,10 @@ def create_merchants():
     sqlite_processor.update_users_to_db(sqlite_processor.get_users_list_from_excel())
     sqlite_processor.update_acquisitions_to_db()
     if create_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
+        if check_if_username_exists() > 0:
+            os.system("pkill python3.8")
+            os.system("pkill -9 -f appium")
+            os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
         create_merchants_with_users()
     else:
         set_merchants_users_available()
@@ -285,6 +292,58 @@ def check_if_user_exists(name: str) -> bool:
         return True
 
 
+def check_if_username_exists():
+    """
+    This method is used for checking if the user is already available in the system
+    """
+    try:
+        conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users;")
+        app_users = cursor.fetchall()
+        username_list = []
+        if app_users:
+            for app_user in app_users:
+                username_list.append(app_user[2])
+            logger.debug(f"{tuple(username_list)}")
+            query = f"select username from org_employee where username in {tuple(username_list)}"
+            logger.debug(f"query : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result and length : {result}, {len(result)}")
+            if len(result) == 0:
+                return 0
+            else:
+                for i in range(len(result)):
+                    username = (result.iloc[i]['username'])
+                    cursor.execute(f"SELECT * FROM users where Username = '{username}' and MerchantCode != 'EZETAP';")
+                    app_user = cursor.fetchone()
+                    logger.debug(f"app_user : {app_user}")
+                    if app_user:
+                        query = f"select username from org_employee where username = '{username}' and org_code != '{app_user[1]}'"
+                        logger.debug(f"query : {query}")
+                        result1 = DBProcessor.getValueFromDB(query)
+                        logger.debug(f"result1 : {result1}")
+                        if len(result1) > 0:
+                            logger.debug(f"killing the python process because {result1.iloc[0]['username']} is already "
+                                         f"exist in db please fill unique username in merchant_user_creation.xlsx sheet "
+                                         f"which is not present in the db")
+                        cursor.close()
+                        conn.close()
+                        return len(result1)
+                    else:
+                        cursor.close()
+                        conn.close()
+                        return 0
+        else:
+            logger.debug(f"users table is empty")
+            cursor.close()
+            conn.close()
+            return 0
+    except Exception as e:
+        print("Merchant creation details db is empty")
+        logger.fatal(f"Exception occurred while checking username in org_employee table : {e}")
+
+
 def generate_merchant_creation_api_body() -> list:
     """
     This method is used to generate the request body of the merchant creation API.
@@ -319,15 +378,19 @@ def generate_merchant_creation_api_body() -> list:
                             for user in users:
                                 if count > 0:
                                     merchant_creation_api["users"].append(
-                                        json.loads(get_api_details_from_db("createMerchant")["RequestBody"])["users"][0])
-                                    merchant_creation_api["users"].append(merchant_creation_api["users"][0])
+                                        json.loads(get_api_details_from_db("createMerchant")["RequestBody"])["users"][
+                                            0])
                                 merchant_creation_api["users"][count]["name"] = user[0]
                                 merchant_creation_api["users"][count]["userToken"] = user[2]
                                 merchant_creation_api["users"][count]["userPassword"] = user[3]
                                 merchant_creation_api["users"][count]["mobileNumber"] = str(user[4])
                                 if str(user[5]).lower() == "admin":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.ADMIN_USER_ROLES
-                                elif str(user[5]).lower() == "app":
+                                elif str(user[5]).lower() == "app" and str(user[8]).lower() == "cashier":
+                                    merchant_creation_api["users"][count]["roles"] = GlobalConstants.CASHIER_USER_ROLES
+                                elif str(user[5]).lower() == "app" and str(user[8]).lower() != "cashier" and str(user[8]).lower() != "nan":
+                                    merchant_creation_api["users"][count]["roles"] = GlobalConstants.ALL_USER_ROLES
+                                elif str(user[5]).lower() == "app" and str(user[8]).lower() == "nan":
                                     merchant_creation_api["users"][count]["roles"] = GlobalConstants.APP_USER_ROLES
                                 count += 1
                             lst_merchant_creation_api_body.append(merchant_creation_api)
@@ -487,7 +550,8 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 terminal_details['mid'] = terminal_details_unique_value_fields['mid']
                 terminal_details['tid'] = (terminal_details_unique_value_fields['tid'][:-2]) + "a" + str(
                     tid_number_increment)
-                if str(ConfigReader.read_config("Setup", "create_and_configure_merchants_with_multi_account")).lower() == "true":
+                if str(ConfigReader.read_config("Setup",
+                                                "create_and_configure_merchants_with_multi_account")).lower() == "true":
                     # Below if conditions is to setup label with terminals if multi_account is enabled.
                     if i == 0:
                         terminal_details['labels'] = [acquisitions[14]]
@@ -522,7 +586,11 @@ def generate_terminal_details_for_merchant_creation(merchant_id: str, acquirer_c
                 else:
                     try:
                         DBProcessor.setValueToDB(
-                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, status) VALUES ('{terminal_details['deviceSerial']}',  '{terminal_details['deviceSerial']}',  '0026',  'PAX A910',  'PAX A910',  'ezetap', now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
+                            f"INSERT INTO device(device_id,  device_serial,  batch_no,  firmware_version,  "
+                            f"device_version,  created_by,  created_time,  modified_by,  modified_time,  org_code, "
+                            f"status) VALUES ('{terminal_details['deviceSerial']}',  '"
+                            f"{terminal_details['deviceSerial']}',  '0026',  'PAX A910',  'PAX A910',  'ezetap', "
+                            f"now(),  'ezetap',  now(),  '{merchant_id}', 'ACTIVE');")
                         logger.info(f"Device {terminal_details['deviceSerial']} added to environment.")
                     except Exception as e:
                         logger.error(f"Unable to insert device details into db due to error {str(e)}")
@@ -556,7 +624,8 @@ def generate_terminal_details(merchant_id: str) -> dict:
     if username:
         terminal_details['mid'] = "MIDIS" + username
         terminal_details['tid'] = username[-8:]
-        terminal_details['device_id'] = "D" + username
+        # terminal_details['device_id'] = "D" + username
+        terminal_details['device_id'] = f'D{datetime.now().strftime("%H%M%S%f")}'
         # rand_int = str(random.randint(1111111111, 9999999999))
         # terminal_details['mid'] = "MIDIS" + rand_int
         # terminal_details['tid'] = rand_int
@@ -715,4 +784,3 @@ def set_merchants_users_available():
         conn.close()
     except Exception as e:
         logger.error(f"Unable to set the status of merchants and users as available, due to error {str(e)}")
-

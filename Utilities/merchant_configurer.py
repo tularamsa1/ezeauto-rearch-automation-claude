@@ -663,7 +663,7 @@ def generate_bqr_settings_query_for_merchant(org_code: str, acquirer_code: str, 
         query = query.replace("<provider_name>", provider_name)
         query = query.replace("<merchant_name>", merchant_name)
         query = query.replace("<category_code>", category_code)
-        query = query.replace("<bank_code>", bank_code)
+        query = query.replace("<bank_code>", provider_name)
         query = query.replace("<merchant_pan>", tid)
         query = query.replace("<mid>", mid)
         query = query.replace("<tid>", tid)
@@ -721,8 +721,9 @@ def generate_upi_query_template(acquirer_code: str, payment_gateway: str) -> str
             query = query.replace(", '<encKey>', '<vmid>', '<vtid>'","")
         elif acquirer_code == "YES" and payment_gateway == "ATOS" or \
                 acquirer_code == "AXIS" and payment_gateway == "ATOS_TLE" or \
-                acquirer_code == "KOTAK" and payment_gateway == "KOTAK_WL" or \
-                acquirer_code == "AXIS" and payment_gateway == "FC":
+                acquirer_code == "KOTAK" and payment_gateway == "KOTAK_ATOS" or \
+                acquirer_code == "AXIS" and payment_gateway == "FC" or \
+                acquirer_code == "KOTAK" and payment_gateway == "OLIVE":
             query = query.replace(", upi_app_key, encKey, virtual_mid, virtual_tid", "")
             query = query.replace(", '<upi_app_key>', '<encKey>', '<vmid>', '<vtid>'", "")
         elif acquirer_code == "AIRP" and payment_gateway == "APB":
