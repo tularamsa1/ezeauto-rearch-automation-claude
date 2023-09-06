@@ -51,7 +51,7 @@ def test_common_100_104_163():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -59,7 +59,7 @@ def test_common_100_104_163():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMV_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
                                                                     "username": app_username, #Add step to pass the UN and get the MID
@@ -356,7 +356,7 @@ def test_common_100_104_164():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -364,7 +364,7 @@ def test_common_100_104_164():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMV_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
                                                                     "username": app_username, #Add step to pass the UN and get the MID
@@ -620,6 +620,7 @@ def test_common_100_104_164():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -661,7 +662,7 @@ def test_common_100_104_165():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -669,7 +670,7 @@ def test_common_100_104_165():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMV_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
                                                                     "username": app_username, #Add step to pass the UN and get the MID
@@ -925,6 +926,9 @@ def test_common_100_104_165():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
+
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -966,7 +970,7 @@ def test_common_100_104_166():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -974,7 +978,7 @@ def test_common_100_104_166():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMV_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
                                                                     "username": app_username, #Add step to pass the UN and get the MID
@@ -1271,7 +1275,7 @@ def test_common_100_104_167():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -1279,7 +1283,7 @@ def test_common_100_104_167():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMV_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
                                                                     "username": app_username, #Add step to pass the UN and get the MID
@@ -1535,6 +1539,7 @@ def test_common_100_104_167():
         Configuration.executeFinallyBlock(testcase_id)
 
 
+
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.dbVal
@@ -1576,7 +1581,7 @@ def test_common_100_104_168():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -1584,7 +1589,7 @@ def test_common_100_104_168():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMV_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("ATOS_TLE_EMV_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": device_serial,
                                                                     "username": app_username, #Add step to pass the UN and get the MID

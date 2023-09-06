@@ -8,7 +8,7 @@ from openpyxl.styles import PatternFill, Font, Side, Border
 from prettytable import PrettyTable
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
-#from TestCases import conftest
+from TestCases import conftest
 from Utilities import ExcelProcessor
 from Utilities import ConfigReader, Rerun
 from Utilities import DirectoryCreator
@@ -77,7 +77,6 @@ def get_Log_Collection_Time():
 
 
 def createStatusTable():
-    from TestCases import conftest
     if GlobalVariables.EXCEL_TC_Execution == 'Fail':
         conftest.set_dne_status()
     api_val = "Fail" if GlobalVariables.str_api_val_result=="Failed" else GlobalVariables.str_api_val_result

@@ -50,7 +50,7 @@ def test_common_100_104_067():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -58,7 +58,7 @@ def test_common_100_104_067():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMVCTLS_DEBIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_DEBIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
                                                                     "username":app_username,
@@ -271,7 +271,7 @@ def test_common_100_104_068():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -279,7 +279,7 @@ def test_common_100_104_068():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMVCTLS_DEBIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_DEBIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
                                                                     "username":app_username,
@@ -491,7 +491,7 @@ def test_common_100_104_069():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -499,7 +499,7 @@ def test_common_100_104_069():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMVCTLS_DEBIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_DEBIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
                                                                     "username":app_username,
@@ -710,7 +710,7 @@ def test_common_100_104_070():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -718,7 +718,7 @@ def test_common_100_104_070():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMVCTLS_CREDIT_VISA")
+            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_CREDIT_VISA")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
                                                                     "username":app_username,
@@ -930,7 +930,7 @@ def test_common_100_104_071():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -938,7 +938,7 @@ def test_common_100_104_071():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMVCTLS_CREDIT_MASTER")
+            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_CREDIT_MASTER")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
                                                                     "username":app_username,
@@ -1150,7 +1150,7 @@ def test_common_100_104_072():
 
         Configuration.configureLogCaptureVariables(apiLog = True, portalLog = False, cnpwareLog = False, middlewareLog = True, config_log= False,closedloop_log=False,q2_log=True)
 
-        
+        msg = ""
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         #-----------------------------------------Start of Test Execution-------------------------------------
@@ -1158,7 +1158,7 @@ def test_common_100_104_072():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             original_amount = random.randint(10,1000)
-            card_details = card_processor.get_card_details_from_excel("EMVCTLS_CREDIT_RUPAY")
+            card_details = card_processor.get_card_details_from_excel("PRIZMV2_EMVCTLS_CREDIT_RUPAY")
             api_details = DBProcessor.get_api_details('Card_api',
                                                       request_body={"deviceSerial": merchant_creator.get_device_serial_of_merchant(org_code=org_code,acquisition="AXIS",payment_gateway="PRIZM_V2"),
                                                                     "username":app_username,
