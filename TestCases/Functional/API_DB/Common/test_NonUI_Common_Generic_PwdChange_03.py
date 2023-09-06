@@ -9,14 +9,13 @@ from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
-
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_048():
+def test_common_400_403_011():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_without_numbers
     Sub Feature Description: Add new password without numbers
-    TC naming code description: 400: Generic functions,401: Password change,048: TC048
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 011: TC011
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -176,11 +175,11 @@ def test_common_400_401_048():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_049():
+def test_common_400_403_012():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_LessThan_SevenChars
     Sub Feature Description: Add new password with less than seven characters
-    TC naming code description: 400: Generic functions, 401: Password change, 049: TC049
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 012: TC012
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -334,11 +333,11 @@ def test_common_400_401_049():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_050():
+def test_common_400_403_013():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_OldAndNewSame
     Sub Feature Description: Add new password as same as old password
-    TC naming code description: 400: Generic functions,401: Password change,050: TC050
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 013: TC013
     """
 
     try:
@@ -482,11 +481,11 @@ def test_common_400_401_050():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_051():
+def test_common_400_403_014():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_without_newpassword
     Sub Feature Description: Hit API without newpassword
-    TC naming code description:400: Generic functions, 401: Password change, 051: TC051
+    TC naming code description:400: Generic functions, 403: PasswordChange, 014: TC014
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -629,11 +628,11 @@ def test_common_400_401_051():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_052():
+def test_common_400_403_015():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_invalidUsername
     Sub Feature Description: Hit API with invalid username
-    TC naming code description: 400: Generic functions,401: Password change,052: TC052
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 015: TC015
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

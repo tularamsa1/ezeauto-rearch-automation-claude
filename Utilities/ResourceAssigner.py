@@ -260,6 +260,41 @@ def getAppUserCredentials(testCaseID):
         return appUserCredentials
 
 
+def get_org_users_login_Credentials(category: str, org_code: str):
+    proceed = False
+    print("Trying to get available app user credentials from DB")
+    conn = sqlite3.connect(dbPath)
+    cursor = conn.cursor()
+    login_credentials = {}
+    timer = 0
+    while timer < 20:
+        try:
+            cursor.execute(f"SELECT Username, Password FROM org_users WHERE MerchantCode = '{org_code}' and Category = '{category}';")
+            availableloginUsers = cursor.fetchall()
+            if availableloginUsers != None and len(availableloginUsers) > 0:
+                for user in availableloginUsers:
+                    login_credentials['Username'] = str(user[0])
+                    login_credentials['Password'] = user[1]
+            else:
+                print("Unable to fetch any app user. Retrying...")
+                proceed = False
+        except Exception as e:
+            print(f"Unable to retrieve login credentials details from org_users for the merchant: '{org_code}' db due to error : " + str(e))
+            proceed = False
+
+        if proceed:
+            break
+        else:
+            time.sleep(1)
+            timer += 1
+    conn.close()
+
+    if len(login_credentials) == 0:
+        return None
+    else:
+        return login_credentials
+
+
 def get_org_users_credentials(testCaseID: str, category: str):
     """
     This method is used to get the username and password on the basis of category from the org_users table and return
@@ -307,6 +342,7 @@ def get_org_users_credentials(testCaseID: str, category: str):
                                 f"merchant_code {merchant_code} is available and assigned at {str(datetime.now().time())}")
                             org_user_credentials['Username'] = username
                             org_user_credentials['Password'] = password
+                            org_user_credentials['Merchant_Code'] = merchant_code
                             proceed = True
                             break
                         except:
