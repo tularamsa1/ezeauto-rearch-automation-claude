@@ -12,11 +12,11 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_038():
+def test_common_400_403_001():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_without_specialChars
     Sub Feature Description: Add new password without special chars
-    TC naming code description: 400: Generic functions,401: Autologin,038: TC038
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 001: TC001
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -171,11 +171,11 @@ def test_common_400_401_038():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_039():
+def test_common_400_403_002():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_with_specialChars
     Sub Feature Description: Add new password with special chars
-    TC naming code description: 400: Generic functions, 401: Autologin, 039: TC039
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 002: TC002
     """
 
     try:
@@ -333,11 +333,11 @@ def test_common_400_401_039():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_040():
+def test_common_400_403_003():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_with_upper_numbers
     Sub Feature Description: Add new password with uppercase and numbers
-    TC naming code description: 400: Generic functions, 401: Autologin, 040: TC040
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 003: TC003
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -488,11 +488,11 @@ def test_common_400_401_040():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_041():
+def test_common_400_403_004():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_with_upper_number_specialChars
     Sub Feature Description: Add new password with uppercase, numbers and special characters
-    TC naming code description:400: Generic functions,401: Password change,041: TC041
+    TC naming code description:400: Generic functions, 403: PasswordChange,, 004: TC004
     """
 
     try:
@@ -646,11 +646,11 @@ def test_common_400_401_041():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_400_401_042():
+def test_common_400_403_005():
     """
     Sub Feature Code: NonUI_Common_Generic_pwdChange_with_lower_numbers
     Sub Feature Description: Add new password with lowercase and numbers
-    TC naming code description: 400: Generic functions,401: Password change,042: TC042
+    TC naming code description: 400: Generic functions, 403: PasswordChange, 005: TC005
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
