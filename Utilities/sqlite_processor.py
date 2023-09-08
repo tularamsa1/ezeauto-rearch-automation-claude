@@ -33,6 +33,7 @@ def clearAssignerTables():
         cursor.execute("DELETE FROM pg_details;")
         cursor.execute("DELETE FROM terminal_details;")
         cursor.execute("DELETE FROM remotepay_settings;")
+        cursor.execute("DELETE FROM org_users;")
         conn.commit()
         logger.info("All the assigner tables cleared successfully.")
     except Exception as e:
@@ -70,7 +71,7 @@ def update_users_to_db(users_list: list):
             if check_merchant_exists_in_automation_db(user["MerchantCode"]):
                 try:
                     cursor.execute(
-                        f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\");")
+                        f"insert into users(Name, MerchantCode, Username, Password, Mobile, Type, Category)values(\"{user['Name']}\", \"{user['MerchantCode']}\", \"{user['Username']}\", \"{user['Password']}\", \"{user['Mobile']}\", \"{user['Type']}\", \"{user['Category']}\");")
                     conn.commit()
                     logger.info(f"User {user['Name']} successfully added to the users db.")
                 except Exception as e:
@@ -93,17 +94,30 @@ def update_app_users_to_db():
         cursor.execute("SELECT * FROM users WHERE type = 'App' and CreationStatus IN ('Created','Existed');")
         app_users = cursor.fetchall()
         if app_users:
-            for app_user in app_users:
-                try:
-                    cursor.execute(
-                        f"INSERT INTO app_users(Username, Password, Status)VALUES('{app_user[2]}','{app_user[3]}', 'Available')")
-                    conn.commit()
-                    logger.info(f"App user {app_user[0]} added to the db successfully.")
-                except Exception as e:
-                    if str(e).__contains__("UNIQUE constraint failed"):
-                        logger.info(f"App user {app_user[0]} is already available in the db.")
-                    else:
-                        logger.error(f"Unable to add entries into app_user table due to error {str(e)}")
+            if app_users[0][8] != "NA" and app_users[0][8] != "nan":
+                for app_user in app_users:
+                    try:
+                        cursor.execute(
+                            f"INSERT INTO org_users(Username, Password, Status, MerchantCode, Category)VALUES('{app_user[2]}','{app_user[3]}', 'Available', '{app_user[1]}', '{app_user[8]}')")
+                        conn.commit()
+                        logger.info(f"Org user {app_user[0]} added to the db successfully.")
+                    except Exception as e:
+                        if str(e).__contains__("UNIQUE constraint failed"):
+                            logger.info(f"Org user {app_user[0]} is already available in the db.")
+                        else:
+                            logger.error(f"Unable to add entries into org_user table due to error {str(e)}")
+            else:
+                for app_user in app_users:
+                    try:
+                        cursor.execute(
+                            f"INSERT INTO app_users(Username, Password, Status)VALUES('{app_user[2]}','{app_user[3]}', 'Available')")
+                        conn.commit()
+                        logger.info(f"App user {app_user[0]} added to the db successfully.")
+                    except Exception as e:
+                        if str(e).__contains__("UNIQUE constraint failed"):
+                            logger.info(f"App user {app_user[0]} is already available in the db.")
+                        else:
+                            logger.error(f"Unable to add entries into app_user table due to error {str(e)}")
         else:
             logger.warning("Users table does not contain any app users that was created or existed in this environment")
     except Exception as e:
@@ -178,6 +192,7 @@ def get_users_list_from_excel() -> list:
                 user_details["Password"] = (merchant_creation_excel_data.loc[i]).to_dict()["Password"]
                 user_details["Mobile"] = (merchant_creation_excel_data.loc[i]).to_dict()["Mobile"]
                 user_details["Type"] = (merchant_creation_excel_data.loc[i]).to_dict()["Type"]
+                user_details["Category"] = (merchant_creation_excel_data.loc[i]).to_dict()["Category"]
                 users_list.append(user_details)
             else:
                 logger.error(
