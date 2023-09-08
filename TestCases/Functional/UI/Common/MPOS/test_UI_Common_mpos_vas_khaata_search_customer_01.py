@@ -6,7 +6,7 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.mpos.Mpos_Khaata import Khaata
+from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -91,7 +91,7 @@ def test_mpos_600_601_017():
             logger.debug(f"Generating random user name: {khaata_holder_name_1}")
             khaata_holder_name_2 = f"ezetap{random.randint(400, 500)}"
             logger.debug(f"Generating random user name: {khaata_holder_name_2}")
-            khaata_holder_name_3 = f"ezetap{random.randint(1, 50)}"
+            khaata_holder_name_3 = f"razor{random.randint(1, 50)}"
             logger.debug(f"Generating random user name: {khaata_holder_name_3}")
             khaata = Khaata(app_driver)
             khaata.click_my_khaata()

@@ -8,7 +8,7 @@ from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
-from PageFactory.mpos.Mpos_Khaata import Khaata
+from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 

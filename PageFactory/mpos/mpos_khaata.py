@@ -71,7 +71,6 @@ class Khaata(BasePage):
     btn_back = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgToolbarBack')
     btn_get_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvYouGaveAmount')
     txt_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTopYouGaveAmount')
-    toast_locator = (By.XPATH, '//*[contains(@text, "New Khaata successfully created!")]')
     btn_recent_transaction = (AppiumBy.XPATH, '(//*[@resource-id="com.ezetap.basicapp:id/clRoot"])')
     btn_delete_2 = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnProceed')
     btn_date = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvDate')
@@ -81,11 +80,7 @@ class Khaata(BasePage):
     txt_label = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvCustomerTag')
     txt_edited_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvYouGaveAmount')
     txt_edited_description = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvDescription')
-    # txt_edited_date = (AppiumBy.XPATH, '//*[@resource-id="com.ezetap.basicapp:id/tvName"]')
     txt_edited_date = (AppiumBy.XPATH, '//*[@resource-id ="com.ezetap.basicapp:id/tvDate"]')
-    # txt_edited_date = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvName')
-    # lbl_customer_details = (By.XPATH, '//*[@resource-id ="com.ezetap.basicapp:id/textView2"]')
-    # lbl_customer_details = (AppiumBy.XPATH, '(//*[@class = "android.view.ViewGroup"])[2]')
     lbl_unique_mobile_number = (AppiumBy.ID, 'com.ezetap.basicapp:id/textView2')
     btn_cancel_create_customer = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnCancel')
 
@@ -108,7 +103,6 @@ class Khaata(BasePage):
     txt_amount_in_the_holder_screen = (AppiumBy.ID,'com.ezetap.basicapp:id/tvTopYouGaveAmount')
     txt_payment_mode = (AppiumBy.ID,'com.ezetap.basicapp:id/tvPaidViaData')
     lbl_recent_entry_from_holder_screen = (AppiumBy.ID,'com.ezetap.basicapp:id/clRoot')
-    # TOAST_XPATH = (AppiumBy.XPATH, '//android.widget.Toast')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -137,17 +131,6 @@ class Khaata(BasePage):
         self.wait_for_element(self.lbl_no_customer_created_2)
         khaata_no_customer_created_sub_label = self.fetch_text(self.lbl_no_customer_created_2)
         return khaata_no_customer_created_label, khaata_no_customer_created_sub_label
-
-
-
-    def toast_locator_text(self, x1, y1, x2, y2):
-        screenshot = self.screenshot()
-        cropped_image = Image.open(io.BytesIO(screenshot)).crop((x1, y1, x2, y2))
-        original_text = pytesseract.image_to_string(cropped_image)
-        splitted_text = original_text.split()
-        splitted_text.pop(0)
-        extracted_text = ' '.join(splitted_text)
-        return extracted_text
 
     def fetch_customer_name(self):
         self.wait_for_element(self.txt_customer_name)
@@ -181,7 +164,6 @@ class Khaata(BasePage):
         return amount
 
     def fetch_customer_name_and_label_from_entries(self):
-
         customer_name = self.fetch_text(self.lbl_customer_name_from_entries)
         customer_label = self.fetch_text(self.lbl_tag_from_entries)
         return customer_name, customer_label
@@ -217,12 +199,14 @@ class Khaata(BasePage):
         return self.fetch_elements(self.lbl_unique_mobile_number)
 
     def click_cancel_from_create_customer(self):
+        self.perform_click(self.btn_cancel_create_customer)
+        self.perform_click(self.btn_mykhaata)
+
+    def click_cancel_from_create_customer_pop_up(self):
         """
         This methos click on Cancel button present on  "Add new khaata holder" pop up
         """
         self.perform_click(self.btn_cancel_create_customer)
-
-        self.perform_click(self.btn_mykhaata)
 
     def click_khaata_holders(self):
         self.perform_click(self.btn_khaata_holders)
@@ -231,6 +215,7 @@ class Khaata(BasePage):
         """
         This method clicks on khaata entries present on khaata home page
         """
+        time.sleep(2)
         self.wait_for_element(self.btn_khaata_enteries)
         self.wait_for_element_to_be_clickable(self.btn_khaata_enteries)
         self.perform_click(self.btn_khaata_enteries)
@@ -246,8 +231,6 @@ class Khaata(BasePage):
             This method clicks on proceed button on create new customer screen
          """
         self.perform_click(self.btn_proceed)
-
-
 
     def click_cancel_button(self):
         self.perform_click(self.btn_cancel)
@@ -308,10 +291,10 @@ class Khaata(BasePage):
     def click_on_date(self):
         self.perform_click(self.btn_date)
 
-
     def click_delete_entry(self):
         self.perform_click(self.btn_delete)
         self.perform_click(self.btn_delete_2)
+
     def perform_edit_entry(self, amount: str, edit_details: str):
         self.perform_click(self.btn_edit)
         self.wait_for_element(self.txt_enter_amount).clear()
@@ -341,7 +324,15 @@ class Khaata(BasePage):
         This method will perform a you give transaction for existing khaata customer
         """
         time.sleep(6)
-    def perform_you_give(self, amount, enter_details: str, date):
+        self.wait_for_element(self.btn_you_give)
+        self.perform_click(self.btn_you_give)
+        self.wait_for_element(self.txt_enter_amount_given_or_received).clear()
+        self.perform_sendkeys(self.txt_enter_amount_given_or_received, amount)
+        self.wait_for_element(self.txt_enter_details_for_given_or_received_amount).clear()
+        self.perform_sendkeys(self.txt_enter_details_for_given_or_received_amount, enter_details)
+        self.perform_click(self.btn_save)
+
+    def perform_you_give_with_date(self, amount, enter_details: str, date):
         """
          This methods is used to perform you give tnx in the khaata
         """
@@ -352,9 +343,16 @@ class Khaata(BasePage):
         self.perform_sendkeys(self.txt_enter_amount_given_or_received, amount)
         self.wait_for_element(self.txt_enter_details_for_given_or_received_amount).clear()
         self.perform_sendkeys(self.txt_enter_details_for_given_or_received_amount, enter_details)
+        self.perform_click(self.lbl_calender)
+        self.perform_click((AppiumBy.ACCESSIBILITY_ID, '' + date + ''))
+        self.perform_click(self.btn_ok)
         self.perform_click(self.btn_save)
 
-    def perform_you_got(self, amount: str, enter_details: str):
+    def perform_you_got(self, amount: int, enter_details: str, give_today_date):
+        """
+         This methods is used to perform you got tnx in the khaata
+        """
+        time.sleep(2)
         self.wait_for_element(self.btn_you_got)
         self.perform_click(self.btn_you_got)
         self.wait_for_element(self.txt_enter_amount_given_or_received).clear()
@@ -362,10 +360,11 @@ class Khaata(BasePage):
         self.wait_for_element(self.txt_enter_details_for_given_or_received_amount).clear()
         self.perform_sendkeys(self.txt_enter_details_for_given_or_received_amount, enter_details)
         self.perform_click(self.lbl_calender)
-        # self.perform_click(self.btn_ok)
-        # self.perform_click(self.btn_save)
+        self.perform_click((AppiumBy.ACCESSIBILITY_ID, '' + give_today_date + ''))
+        self.perform_click(self.btn_ok)
+        self.perform_click(self.btn_save)
 
-    def perform_edit_account(self, ph_no: int, name: str, label_name: str):
+    def perform_edit_account(self, ph_no, name, label_name):
         """
         This method is used to edit the existing khaata holder account
         """
@@ -471,13 +470,6 @@ class Khaata(BasePage):
     def date_picker_for_1st_of_every_month(self, date: str):
         self.perform_click((AppiumBy.ACCESSIBILITY_ID, 'Previous month'))
         self.perform_click((AppiumBy.ACCESSIBILITY_ID, '' + date + ''))
-        self.perform_click(self.btn_ok)
-
-
-        lbl_date = (AppiumBy.ACCESSIBILITY_ID, f"//*[@text='{date}']")
-        # perform_click((AppiumBy.ACCESSIBILITY_ID, '' + date + '')
-        self.wait_for_element(lbl_date)
-        self.perform_click(lbl_date)
         self.perform_click(self.btn_ok)
 
     def fetch_account_holder_name(self):

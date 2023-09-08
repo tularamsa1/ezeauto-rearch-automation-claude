@@ -6,7 +6,7 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.mpos.Mpos_Khaata import Khaata
+from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -219,7 +219,7 @@ def test_mpos_600_601_002():
             logger.info(f"Khaata is being clicked successfully")
             app_message_1, app_message_2 = khaata_page.check_khaata_no_customer_created()
             logger.info(f"label are {app_message_1} {app_message_2}")
-
+            time.sleep(4)
             query = "update customer set status='ACTIVE' where merchant_id ='" + str(
                 merchant_id) + "' and status='INACTIVE';"
             result = DBProcessor.setValueToDB(query, 'khata')
@@ -355,7 +355,6 @@ def test_mpos_600_601_003():
             recorded_amount = khaata_page.fetch_amount_from_entries()
             time.sleep(2)
             amount_from_entries = recorded_amount.replace('₹', '').strip()
-            # amount_from_entries = amount_without_symbol
             logger.info(f"amount is {amount_from_entries}")
             customer_name_from_entries, customer_label_from_entries = khaata_page.fetch_customer_name_and_label_from_entries()
             logger.info(

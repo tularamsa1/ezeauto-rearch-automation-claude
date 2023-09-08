@@ -7,7 +7,7 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.mpos.Mpos_Khaata import Khaata
+from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -97,7 +97,7 @@ def test_mpos_600_601_015():
             logger.debug(f"New khaata holder is created with user : {khaata_holder_name}")
             time.sleep(3)
             logger.debug(f"Performing you give function in the khaata")
-            khaata.perform_you_give(amount, 'dress', today_date)
+            khaata.perform_you_give_with_date(amount, 'dress', today_date)
             khaata.click_on_back()
             khaata.click_khaata_entries()
             khaata.click_on_recent_entry()

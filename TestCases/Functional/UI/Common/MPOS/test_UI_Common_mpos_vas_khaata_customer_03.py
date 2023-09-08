@@ -9,8 +9,7 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
 from PageFactory.App_LoginPage import LoginPage
-from PageFactory.mpos.Mpos_Khaata import Khaata
-from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator, APIProcessor
+from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -101,7 +100,7 @@ def test_mpos_600_601_011():
             khaata_page.create_new_khaata_holder(mobile_num, cus_name, label)
             khaata_page.click_proceed_button()
             time.sleep(4)
-            khaata_page.click_cancel_from_create_customer()
+            khaata_page.click_cancel_from_create_customer_pop_up()
             khaata_page.khaata_search(mobile_num)
             try:
                 unique_khaata_customer_count = khaata_page.fetch_count_of_holders()
