@@ -1,14 +1,6 @@
-import base64
-from time import sleep
-
+import time
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
-# from appium.webdriver.common.mobileby import MobileBy
-from selenium.webdriver.common.by import By
-from PIL import Image
-import pytesseract
-import io
-import time
 
 
 class Khaata(BasePage):
@@ -17,6 +9,7 @@ class Khaata(BasePage):
     btn_khaata_enteries = (AppiumBy.ID, 'com.ezetap.basicapp:id/tabKhaataEntries')
     txt_search = (AppiumBy.ID, 'com.ezetap.basicapp:id/searchAutoCompleteTextView')
     btn_search = (AppiumBy.ID, 'com.ezetap.basicapp:id/cvSearch')
+    btn_back = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgToolbarBack')
     txt_first_search_result = (AppiumBy.ID, 'com.ezetap.basicapp:id/itemRoot')
     btn_new_khaata_holder = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnNewKhaataHolder')
     txt_khaata_holder_phNo_input = (AppiumBy.ID, 'com.ezetap.basicapp:id/etKhataHolderNumber')
@@ -96,6 +89,26 @@ class Khaata(BasePage):
     lbl_unique_mobile_number = (AppiumBy.ID, 'com.ezetap.basicapp:id/textView2')
     btn_cancel_create_customer = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnCancel')
 
+    txt_user_name_inline_error_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/textinput_error')
+    txt_entry_account_name = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvName')
+    txt_entry_account_tag = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTag')
+    txt_entry_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTopYouGave')
+    txt_entry_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTopYouGaveAmount')
+    txt_entry_description = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvDescriptionContent')
+    txt_date = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvDate')
+    txt_no_khaata_holder_found = (AppiumBy.XPATH, '//*[@text="No Khaata Holder found"]')
+    btn_collect_payment_proceeed = (AppiumBy.XPATH, '//*[@text="Proceed"]')
+    img_tick_mark = (AppiumBy.ID, 'com.ezetap.basicapp:id/tick1')
+    txt_no_khaata_enteries = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvNoKhaataEntries')
+    txt_status = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_balace_due')
+    txt_reminder_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_amount')
+    txt_reminder_holder_number = (AppiumBy.ID,'com.ezetap.basicapp:id/tv_number')
+    txt_reminder_holder_name = (AppiumBy.ID,'com.ezetap.basicapp:id/tv_khaata_holder_name')
+    txt_amount_status = (AppiumBy.ID,'com.ezetap.basicapp:id/tvTopYouGave')
+    txt_amount_in_the_holder_screen = (AppiumBy.ID,'com.ezetap.basicapp:id/tvTopYouGaveAmount')
+    txt_payment_mode = (AppiumBy.ID,'com.ezetap.basicapp:id/tvPaidViaData')
+    lbl_recent_entry_from_holder_screen = (AppiumBy.ID,'com.ezetap.basicapp:id/clRoot')
+    # TOAST_XPATH = (AppiumBy.XPATH, '//android.widget.Toast')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -209,6 +222,8 @@ class Khaata(BasePage):
         """
         self.perform_click(self.btn_cancel_create_customer)
 
+        self.perform_click(self.btn_mykhaata)
+
     def click_khaata_holders(self):
         self.perform_click(self.btn_khaata_holders)
 
@@ -238,6 +253,12 @@ class Khaata(BasePage):
         self.perform_click(self.btn_cancel)
 
     def click_menu(self):
+        self.perform_click(self.btn_proceed)
+
+    def click_on_back(self):
+        self.perform_click(self.btn_back)
+
+    def click_on_menu(self):
         self.perform_click(self.mnu_khaata_holder)
 
     def click_remove_khaata_holder(self):
@@ -249,17 +270,18 @@ class Khaata(BasePage):
         """
         self.perform_click(self.lbl_clear_khaata_entries)
 
-    def perform_collect_payment(self, enter_amount: str):
+    def perform_collect_payment(self, enter_amount: int):
         self.perform_click(self.btn_collect_pay)
         self.wait_for_element(self.txt_enter_amount).clear()
         self.perform_sendkeys(self.txt_enter_amount, enter_amount)
+        self.perform_click(self.btn_collect_payment_proceeed)
 
-    def perform_set_reminder(self):
+    def click_on_set_reminder_from_home_holder_screen(self):
         """
         This method is used to send reminder to the khhata holder to pay pending amount
         """
+        self.wait_for_element(self.btn_reminder)
         self.perform_click(self.btn_reminder)
-        self.perform_click(self.btn_send_reminder)
 
     def click_tap_to_view_and_hide(self):
         self.wait_for_element(self.lbl_tap_to_view_and_hide)
@@ -290,6 +312,16 @@ class Khaata(BasePage):
     def click_delete_entry(self):
         self.perform_click(self.btn_delete)
         self.perform_click(self.btn_delete_2)
+    def perform_edit_entry(self, amount: str, edit_details: str):
+        self.perform_click(self.btn_edit)
+        self.wait_for_element(self.txt_enter_amount).clear()
+        self.perform_sendkeys(self.txt_enter_amount, amount)
+        self.wait_for_element(self.txt_description).clear()
+        self.perform_sendkeys(self.txt_description, edit_details)
+        self.perform_click(self.btn_proceed)
+
+    def click_delete_entry(self):
+        self.perform_click(self.btn_delete)
 
     def click_on_apply(self):
         self.wait_for_element(self.btn_apply)
@@ -309,6 +341,11 @@ class Khaata(BasePage):
         This method will perform a you give transaction for existing khaata customer
         """
         time.sleep(6)
+    def perform_you_give(self, amount, enter_details: str, date):
+        """
+         This methods is used to perform you give tnx in the khaata
+        """
+        time.sleep(2)
         self.wait_for_element(self.btn_you_give)
         self.perform_click(self.btn_you_give)
         self.wait_for_element(self.txt_enter_amount_given_or_received).clear()
@@ -437,3 +474,81 @@ class Khaata(BasePage):
         self.perform_click(self.btn_ok)
 
 
+        lbl_date = (AppiumBy.ACCESSIBILITY_ID, f"//*[@text='{date}']")
+        # perform_click((AppiumBy.ACCESSIBILITY_ID, '' + date + '')
+        self.wait_for_element(lbl_date)
+        self.perform_click(lbl_date)
+        self.perform_click(self.btn_ok)
+
+    def fetch_account_holder_name(self):
+        return self.fetch_text(self.txt_entry_account_name)
+
+    def fetch_account_holder_tag(self):
+        return self.fetch_text(self.txt_entry_account_tag)
+
+    def fetch_entry_message(self):
+        return self.fetch_text(self.txt_entry_message)
+
+    def fetch_entry_amount(self):
+        return self.fetch_text(self.txt_entry_amount)
+
+    def fetch_entry_description(self):
+        return self.fetch_text(self.txt_entry_description)
+
+    def fetch_date(self):
+        return self.fetch_text(self.txt_date)
+
+    def fetch_payment_mode(self):
+        return self.fetch_text(self.txt_payment_mode)
+
+    def fetch_user_inline_error_message(self):
+        return self.fetch_text(self.txt_user_name_inline_error_message)
+
+    def fetch_khaata_holder_name_from_account(self):
+        return self.fetch_text(self.txt_khaata_holder_name)
+
+    def fetch_khaata_holder_phone_number_from_account(self):
+        return self.fetch_text(self.txt_khaata_holder_phNo)
+
+    def fetch_khaata_holder_tag_from_account(self):
+        return self.fetch_text(self.txt_khaata_holder_tag)
+
+    def fetch_no_search_result_found(self):
+        return self.fetch_text(self.txt_no_khaata_holder_found)
+
+    def button_is_enabled(self):
+        button = self.wait_for_element(self.btn_proceed)
+        return button.is_enabled()
+
+    def check_customer_selected_tick_mark(self):
+        self.wait_for_element(self.img_tick_mark)
+
+    def click_on_create_new_khaata_holder(self):
+        self.wait_for_element(self.btn_new_khaata_holder)
+        self.perform_click(self.btn_new_khaata_holder)
+
+    def fetch_no_khaata_entries(self):
+        self.wait_for_element(self.txt_no_khaata_enteries)
+        return self.fetch_text(self.txt_no_khaata_enteries)
+
+    def click_on_send_reminder(self):
+        self.perform_click(self.btn_send_reminder)
+
+    def validate_sent_reminder_button_is_clickable(self):
+        self.wait_for_element_to_be_clickable(self.btn_send_reminder)
+
+    def fetch_holder_mobile_no_from_reminder(self):
+        return self.fetch_text(self.txt_reminder_holder_number)
+
+    def fetch_holder_name_from_reminder(self):
+        return self.fetch_text(self.txt_reminder_holder_name)
+
+    def validate_khaata_holder_screen(self):
+        return self.wait_for_element(self.txt_amount_status)
+
+    def fetch_amount_from_holder_screen(self):
+        return self.fetch_text(self.txt_amount_in_the_holder_screen)
+
+    def click_on_entry_from_holder_screen(self):
+        self.wait_for_element(self.lbl_recent_entry_from_holder_screen)
+        self.perform_click(self.lbl_recent_entry_from_holder_screen)
