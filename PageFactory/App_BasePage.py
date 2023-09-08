@@ -10,6 +10,9 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
+    def fetch_elements(self, locator):
+        return len(WebDriverWait(self.driver, 45).until(EC.presence_of_all_elements_located(locator)))
+
     def perform_click(self, locator, time=45):
         WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 
@@ -24,9 +27,6 @@ class BasePage:
 
     def wait_for_element(self, locator, time=45):
         return WebDriverWait(self.driver, time).until(EC.visibility_of_element_located(locator))
-
-    def visibility_of_elements(self, locator, time=2):
-        return WebDriverWait(self.driver, time).until(EC.visibility_of_all_elements_located(locator))
 
     def wait_for_element_to_be_clickable(self, locator, time=45):
         return WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator))
