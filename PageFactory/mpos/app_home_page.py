@@ -110,7 +110,7 @@ class HomePage(BasePage):
         self.perform_sendkeys(self.device_serialNo, device_serial)
         self.perform_click(self.btn_paymentProceed)
 
-    def enter_order_number_for_card(self, order_number, device_serial):
+    def enter_order_number_and_device_serial_for_card(self, order_number, device_serial):
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_click(self.device_serialNo)
@@ -156,7 +156,7 @@ class HomePage(BasePage):
     def click_on_transaction_history(self):
         self.perform_click(self.mnu_transactionHistory)
 
-    def click_on_cash_at_pos(self):
+    def click_cash_at_pos(self):
         """
             This method is used to click on cash@pos payment mode.
         """

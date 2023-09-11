@@ -128,7 +128,7 @@ def test_common_100_115_03_009():
             logger.debug(f"Selecting the card type as : CTLS_MASTER_CREDIT_541333")
             card_page.select_cardtype("CTLS_MASTER_CREDIT_541333")
             logger.debug(f"Selected the card type as : CTLS_MASTER_CREDIT_541333")
-            card_page.click_on_ok_error_mssg()
+            card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
             app_driver.back()
             home_page.click_on_history()
@@ -142,7 +142,7 @@ def test_common_100_115_03_009():
             txn_history_page.click_on_confirmation_btn_for_amt(pre_auth_amt)
             logger.debug(f"Entered the confirm pre_auth amount")
             card_page = CardPage(app_driver)
-            card_page.click_on_ok_error_mssg()
+            card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on confirm pre_auth popup")
 
             query = f"select * from txn where org_code='{org_code}' and payment_mode='CARD' and device_serial='{device_serial}' and external_ref='{order_id}' order by created_time desc limit 1 ;"
@@ -997,7 +997,7 @@ def test_common_100_115_03_010():
             logger.debug(f"Selecting the card type as : CTLS_MASTER_CREDIT_541333")
             card_page.select_cardtype("CTLS_MASTER_CREDIT_541333")
             logger.debug(f"Selected the card type as : CTLS_MASTER_CREDIT_541333")
-            card_page.click_on_ok_error_mssg()
+            card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
             app_driver.back()
             home_page.click_on_history()
@@ -1025,7 +1025,7 @@ def test_common_100_115_03_010():
             txn_history_page.click_on_confirmation_btn_for_amt(pre_auth_amt)
             logger.debug(f"Entered the confirm pre_auth amount")
             card_page = CardPage(app_driver)
-            card_page.click_on_ok_error_mssg()
+            card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on confirm pre_auth popup")
 
             # The below query is to fetch the confirm preauth txn_id

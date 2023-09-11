@@ -125,7 +125,7 @@ def test_common_100_115_02_009():
             cash_amount = random_number * 100
             sale_amount = 0
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            home_page.click_on_cash_at_pos()
+            home_page.click_cash_at_pos()
             logger.debug(f"Clicked on cash@pos button")
             home_page.enter_cash_at_pos_amount(cash_amount)
             logger.debug(f"Entered cash amount and sale amount for without sale : {cash_amount}, {sale_amount}")
@@ -704,7 +704,7 @@ def test_common_100_115_02_010():
             cash_amount = random_number * 100
             sale_amount = 0
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            home_page.click_on_cash_at_pos()
+            home_page.click_cash_at_pos()
             logger.debug(f"Clicked on cash@pos button")
             home_page.enter_cash_at_pos_amount(cash_amount)
             logger.debug(f"Entered cash amount and sale amount for with sale : {cash_amount}, {sale_amount}")

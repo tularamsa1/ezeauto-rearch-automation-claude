@@ -54,5 +54,5 @@ class CardPage(BasePage):
     def fetch_error_message_text(self):
         return str(self.fetch_text(self.txt_error_message))
 
-    def click_on_ok_error_mssg(self):
+    def click_on_ok_error_msg(self):
         self.perform_click(self.btn_error_confirm)
