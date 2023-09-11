@@ -35,6 +35,8 @@ class HomePage(BasePage):
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
+    btn_preauth = (By.XPATH, "//android.widget.TextView[@text='Pre-Auth']")
+    txt_enter_pre_auth_amt = (By.ID, "com.ezetap.basicapp:id/textViewAmount")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -115,6 +117,24 @@ class HomePage(BasePage):
         self.perform_sendkeys(self.device_serialNo, device_serial)
         self.perform_click(self.btn_paymentProceed)
 
+    def enter_amt_order_no_and_device_serial_for_pre_auth(self, amt: str, order_number: str, device_serial: str):
+        """
+        This method is used to enter amount, order_id, device_serial for preauth payment mode and click on proceed button.
+            :param amt: str
+            :param order_number: str
+            :param device_serial: str
+        """
+        self.perform_click(self.txt_enter_pre_auth_amt)
+        list = self.type_amount(amt)
+        for i in list:
+            self.perform_click(i)
+        self.perform_click(self.btn_pay)
+        self.perform_click(self.txt_orderNo)
+        self.perform_sendkeys(self.txt_orderNo, order_number)
+        self.perform_click(self.device_serialNo)
+        self.perform_sendkeys(self.device_serialNo, device_serial)
+        self.perform_click(self.btn_paymentProceed)
+
     def type_amount(self, amt):
         li = []
         for i in str(amt):
@@ -136,7 +156,10 @@ class HomePage(BasePage):
     def click_on_transaction_history(self):
         self.perform_click(self.mnu_transactionHistory)
 
-    def click_cash_at_pos(self):
+    def click_on_cash_at_pos(self):
+        """
+            This method is used to click on cash@pos payment mode.
+        """
         self.perform_click(self.btn_cashAtPos)
 
     def enter_cash_at_pos_amount(self, amount):
@@ -156,6 +179,25 @@ class HomePage(BasePage):
         self.perform_click(self.txt_cashAtPosSaleAmount)
         self.perform_sendkeys(self.txt_cashAtPosSaleAmount, amount)
         self.driver.back()
+
+    def enter_order_number_and_device_serial(self, order_number: str, device_serial: str):
+        """
+            This method is used to enter the order number and device serial for cash@pos payment mode and click on proceed button.
+
+            :param order_number: str
+            :param device_serial: str
+        """
+        self.perform_click(self.txt_orderNo)
+        self.perform_sendkeys(self.txt_orderNo, order_number)
+        self.perform_click(self.device_serialNo)
+        self.perform_sendkeys(self.device_serialNo, device_serial)
+        self.perform_click(self.btn_paymentProceed)
+
+    def click_on_pre_auth(self):
+        """
+        This method is used to click on pre-auth payment mode.
+        """
+        self.perform_click(self.btn_preauth)
 
     def click_pay_now_button(self):
         self.perform_click(self.btn_payNow)

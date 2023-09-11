@@ -52,7 +52,11 @@ class TransHistoryPage(BasePage):
     btn_void_txn = (By.ID, "com.ezetap.service.demo:id/ll_VoidRefund")
     btn_void_yes = (By.ID, "com.ezetap.service.demo:id/btnPositive")
     btn_void_no = (By.ID, "com.ezetap.service.demo:id/btnNegative")
-
+    btn_rel_pre_auth = (By.ID, "com.ezetap.service.demo:id/btnRelPreAuth")
+    btn_confirm_pre_auth = (By.ID, "com.ezetap.service.demo:id/btnCnfPreAuth")
+    txt_ref_num_2 = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView")
+    btn_conf_pre_auth_popup = (By.ID, "com.ezetap.service.demo:id/rightButton")
+    btn_confirmation = (By.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.EditText")
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
 
     def __init__(self, driver):
@@ -81,6 +85,35 @@ class TransHistoryPage(BasePage):
         self.perform_sendkeys(locator, order_id)
         locator = (By.ID, 'com.ezetap.service.demo:id/clTxnView')
         self.perform_click(locator)
+
+    def click_on_release_pre_auth(self):
+        """
+            This method is used to click on rlease pre-auth txn.
+        """
+        self.perform_click(self.btn_rel_pre_auth)
+
+    def click_on_confirm_pre_auth(self):
+        """
+            This method is used to click on confirm pre-auth txn.
+        """
+        self.perform_click(self.btn_confirm_pre_auth)
+
+    def click_on_confirmation_btn_for_amt(self, amount):
+        """
+            This method is used to click on confirm the amount for pre-auth txn.
+        """
+        self.perform_click(self.btn_confirmation)
+        self.perform_sendkeys(self.btn_confirmation, amount)
+
+    def fetch_device_serial_text(self):
+        return self.fetch_text(self.txt_ref_num_2)
+
+    def click_on_conf_pre_auth_popup(self):
+        """
+            This method is used to click on confirm pre-auth pop ups
+        """
+        self.perform_click(self.btn_conf_pre_auth_popup)
+        self.perform_click(self.btn_conf_pre_auth_popup)
 
     def click_on_transaction_by_txn_id(self, txn_id):
         locator = (By.ID, 'com.ezetap.service.demo:id/searchView')
