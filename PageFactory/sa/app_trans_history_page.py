@@ -105,9 +105,6 @@ class TransHistoryPage(BasePage):
         self.perform_click(self.btn_confirmation)
         self.perform_sendkeys(self.btn_confirmation, amount)
 
-    def fetch_device_serial_text(self):
-        return self.fetch_text(self.txt_ref_num_2)
-
     def click_on_conf_pre_auth_popup(self):
         """
             This method is used to click on confirm pre-auth pop ups
@@ -260,4 +257,4 @@ class TransHistoryPage(BasePage):
         This method is used to fetch device serial number on transaction history page.
         return: device_serial: str
         """
-        return self.fetch_text(self.device_serial)
+        return self.fetch_text(self.txt_ref_num_2)
