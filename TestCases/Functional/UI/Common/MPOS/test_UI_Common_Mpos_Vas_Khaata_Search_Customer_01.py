@@ -4,8 +4,8 @@ import time
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
-from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
+from PageFactory.mpos.app_home_page import HomePage
+from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -25,7 +25,6 @@ def test_mpos_600_601_017():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -41,12 +40,10 @@ def test_mpos_600_601_017():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code=None, portal_un=portal_username,
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
                                                            portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
@@ -60,13 +57,11 @@ def test_mpos_600_601_017():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -82,36 +77,32 @@ def test_mpos_600_601_017():
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             ph_number_1 = random.randint(6124568645, 6910536941)
-            logger.debug(f"Generating random phone number: {ph_number_1}")
+            logger.debug(f"Generating random phone number 1: {ph_number_1}")
             ph_number_2 = random.randint(7224568645, 7910536941)
-            logger.debug(f"Generating random phone number: {ph_number_2}")
+            logger.debug(f"Generating random phone number 2 : {ph_number_2}")
             ph_number_3 = random.randint(8124568645, 9910536941)
-            logger.debug(f"Generating random phone number: {ph_number_3}")
-            khaata_holder_name_1 = f"ezetap{random.randint(100, 300)}"
-            logger.debug(f"Generating random user name: {khaata_holder_name_1}")
+            logger.debug(f"Generating random phone number 3 : {ph_number_3}")
+            khaata_holder_name_1 = f"razor{random.randint(1, 99)}"
+            logger.debug(f"Generating random user name 1: {khaata_holder_name_1}")
             khaata_holder_name_2 = f"ezetap{random.randint(400, 500)}"
-            logger.debug(f"Generating random user name: {khaata_holder_name_2}")
-            khaata_holder_name_3 = f"razor{random.randint(1, 50)}"
-            logger.debug(f"Generating random user name: {khaata_holder_name_3}")
+            logger.debug(f"Generating random user name 2: {khaata_holder_name_2}")
+            khaata_holder_name_3 = f"ezetap{random.randint(100, 300)}"
+            logger.debug(f"Generating random user name 3: {khaata_holder_name_3}")
             khaata = Khaata(app_driver)
             khaata.click_my_khaata()
             khaata.create_new_khaata_holder(ph_number_1, khaata_holder_name_1, 'Friend')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with phone number : {ph_number_1}")
-            time.sleep(2)
             khaata.click_on_back()
             khaata.create_new_khaata_holder(ph_number_2, khaata_holder_name_2, 'Supplier')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with phone number : {ph_number_2}")
-            time.sleep(2)
             khaata.click_on_back()
             khaata.create_new_khaata_holder(ph_number_3, khaata_holder_name_3, 'Customer')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with phone number : {ph_number_3}")
-            time.sleep(2)
             khaata.click_on_back()
-            khaata.khaata_search(khaata_holder_name_3)
-            time.sleep(3)
+            khaata.khaata_search(khaata_holder_name_1)
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -133,15 +124,17 @@ def test_mpos_600_601_017():
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {
-                    "customer_name": khaata_holder_name_3,
-                    "label":  "Customer",
-                    "mobile_number":   str(ph_number_3)
+                    "customer_name": khaata_holder_name_1,
+                    "label":  "Friend",
+                    "mobile_number":   str(ph_number_1)
                 }
                 khaata.click_first_khaata_holder_search_result()
-                time.sleep(2)
                 khaata_holder_name = khaata.fetch_khaata_holder_name_from_account()
+                logger.debug(f"Fetched khaata customer name: {khaata_holder_name}")
                 khaata_holder_tag = khaata.fetch_khaata_holder_tag_from_account()
+                logger.debug(f"Fetched khaata holder tag : {khaata_holder_tag}")
                 khaata_holder_ph_number = khaata.fetch_khaata_holder_phone_number_from_account()
+                logger.debug(f"Fetched khaata holder mobile number: {khaata_holder_ph_number}")
                 actual_app_values = {
                     "customer_name": khaata_holder_name,
                     "label": khaata_holder_tag,
@@ -190,7 +183,7 @@ def test_mpos_600_601_018():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code=None, portal_un=portal_username,
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
                                                            portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -284,10 +277,12 @@ def test_mpos_600_601_018():
                     "mobile_number":   str(ph_number_2)
                 }
                 khaata.click_first_khaata_holder_search_result()
-                time.sleep(2)
                 khaata_holder_name = khaata.fetch_khaata_holder_name_from_account()
+                logger.debug(f"Fetched khaata customer name: {khaata_holder_name}")
                 khaata_holder_tag = khaata.fetch_khaata_holder_tag_from_account()
+                logger.debug(f"Fetched khaata holder tag : {khaata_holder_tag}")
                 khaata_holder_ph_number = khaata.fetch_khaata_holder_phone_number_from_account()
+                logger.debug(f"Fetched khaata holder mobile number: {khaata_holder_ph_number}")
                 actual_app_values = {
                     "Customer_name": khaata_holder_name,
                     "label": khaata_holder_tag,
@@ -335,12 +330,10 @@ def test_mpos_600_601_019():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code=None, portal_un=portal_username,
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
                                                            portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
@@ -358,7 +351,6 @@ def test_mpos_600_601_019():
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -391,17 +383,14 @@ def test_mpos_600_601_019():
             khaata.create_new_khaata_holder(ph_number_1, khaata_holder_name_1, 'Friend')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with phone number : {ph_number_1}")
-            time.sleep(2)
             khaata.click_on_back()
             khaata.create_new_khaata_holder(ph_number_2, khaata_holder_name_2, 'Supplier')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with phone number : {ph_number_2}")
-            time.sleep(2)
             khaata.click_on_back()
             khaata.create_new_khaata_holder(ph_number_3, khaata_holder_name_3, 'Customer')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with phone number : {ph_number_3}")
-            time.sleep(2)
             khaata.click_on_back()
             khaata.khaata_search(no_customer)
             # ------------------------------------------------------------------------------------------------

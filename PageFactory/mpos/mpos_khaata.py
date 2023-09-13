@@ -1,6 +1,7 @@
+import re
 import time
 from appium.webdriver.common.appiumby import AppiumBy
-from PageFactory.App_BasePage import BasePage
+from PageFactory.mpos.app_base_page import BasePage
 
 
 class Khaata(BasePage):
@@ -37,7 +38,8 @@ class Khaata(BasePage):
     txt_enter_details_for_given_or_received_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/etDetails')
     lbl_calender = (AppiumBy.ID, 'com.ezetap.basicapp:id/cvCalender')
     btn_ok = (AppiumBy.ID, 'android:id/button1')
-    btn_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvReminder')
+    # btn_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvReminder')
+    btn_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnReminder')
     btn_send_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_send_reminder')
     lbl_tap_to_view_and_hide = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnShowHide')
     btn_save = (AppiumBy.XPATH, '//*[@text="Save"]')
@@ -83,6 +85,7 @@ class Khaata(BasePage):
     txt_edited_date = (AppiumBy.XPATH, '//*[@resource-id ="com.ezetap.basicapp:id/tvDate"]')
     lbl_unique_mobile_number = (AppiumBy.ID, 'com.ezetap.basicapp:id/textView2')
     btn_cancel_create_customer = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnCancel')
+    txt_recent_entry_from_khaata_holder_screen = (AppiumBy.XPATH, '(//*[@text="TODAY"])[1]')
 
     txt_user_name_inline_error_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/textinput_error')
     txt_entry_account_name = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvName')
@@ -206,6 +209,8 @@ class Khaata(BasePage):
         """
         This methos click on Cancel button present on  "Add new khaata holder" pop up
         """
+        self.wait_for_element(self.btn_cancel_create_customer)
+        self.wait_for_element_to_be_clickable(self.btn_cancel_create_customer)
         self.perform_click(self.btn_cancel_create_customer)
 
     def click_khaata_holders(self):
@@ -215,7 +220,6 @@ class Khaata(BasePage):
         """
         This method clicks on khaata entries present on khaata home page
         """
-        time.sleep(2)
         self.wait_for_element(self.btn_khaata_enteries)
         self.wait_for_element_to_be_clickable(self.btn_khaata_enteries)
         self.perform_click(self.btn_khaata_enteries)
@@ -224,12 +228,14 @@ class Khaata(BasePage):
         """
         This method is used to click on the first khaata holder based on the result
         """
+        self.wait_for_element_to_be_clickable(self.txt_first_search_result)
         self.perform_click(self.txt_first_search_result)
 
     def click_proceed_button(self):
         """
             This method clicks on proceed button on create new customer screen
          """
+        self.wait_for_element_to_be_clickable(self.btn_proceed)
         self.perform_click(self.btn_proceed)
 
     def click_cancel_button(self):
@@ -239,9 +245,11 @@ class Khaata(BasePage):
         self.perform_click(self.btn_proceed)
 
     def click_on_back(self):
+        self.wait_for_element_to_be_clickable(self.btn_back)
         self.perform_click(self.btn_back)
 
     def click_on_menu(self):
+        self.wait_for_element_to_be_clickable(self.mnu_khaata_holder)
         self.perform_click(self.mnu_khaata_holder)
 
     def click_remove_khaata_holder(self):
@@ -303,7 +311,7 @@ class Khaata(BasePage):
         self.perform_sendkeys(self.txt_description, edit_details)
         self.perform_click(self.btn_proceed)
 
-    def click_delete_entry(self):
+    def click_delete_recent_entry_from_khaata_holder_page(self):
         self.perform_click(self.btn_delete)
 
     def click_on_apply(self):
@@ -315,6 +323,7 @@ class Khaata(BasePage):
         This function is used to search the khaata holder with phone number or name
         """
         self.wait_for_element(self.btn_search)
+        self.wait_for_element_to_be_clickable(self.btn_search)
         self.perform_click(self.btn_search)
         self.wait_for_element(self.txt_search).clear()
         self.perform_sendkeys(self.txt_search, name_or_ph_no)
@@ -323,26 +332,30 @@ class Khaata(BasePage):
         """
         This method will perform a you give transaction for existing khaata customer
         """
-        time.sleep(6)
         self.wait_for_element(self.btn_you_give)
         self.perform_click(self.btn_you_give)
         self.wait_for_element(self.txt_enter_amount_given_or_received).clear()
         self.perform_sendkeys(self.txt_enter_amount_given_or_received, amount)
         self.wait_for_element(self.txt_enter_details_for_given_or_received_amount).clear()
         self.perform_sendkeys(self.txt_enter_details_for_given_or_received_amount, enter_details)
+        self.wait_for_element_to_be_clickable(self.btn_save)
         self.perform_click(self.btn_save)
+
+    def wait_for_khaata_txn_page_to_load(self):
+        self.wait_for_element(self.txt_no_khaata_enteries)
 
     def perform_you_give_with_date(self, amount, enter_details: str, date):
         """
          This methods is used to perform you give tnx in the khaata
         """
-        time.sleep(2)
         self.wait_for_element(self.btn_you_give)
+        self.wait_for_element_to_be_clickable(self.btn_you_give)
         self.perform_click(self.btn_you_give)
         self.wait_for_element(self.txt_enter_amount_given_or_received).clear()
         self.perform_sendkeys(self.txt_enter_amount_given_or_received, amount)
         self.wait_for_element(self.txt_enter_details_for_given_or_received_amount).clear()
         self.perform_sendkeys(self.txt_enter_details_for_given_or_received_amount, enter_details)
+        self.wait_for_element_to_be_clickable(self.lbl_calender)
         self.perform_click(self.lbl_calender)
         self.perform_click((AppiumBy.ACCESSIBILITY_ID, '' + date + ''))
         self.perform_click(self.btn_ok)
@@ -352,8 +365,8 @@ class Khaata(BasePage):
         """
          This methods is used to perform you got tnx in the khaata
         """
-        time.sleep(2)
         self.wait_for_element(self.btn_you_got)
+        self.wait_for_element_to_be_clickable(self.btn_you_got)
         self.perform_click(self.btn_you_got)
         self.wait_for_element(self.txt_enter_amount_given_or_received).clear()
         self.perform_sendkeys(self.txt_enter_amount_given_or_received, amount)
@@ -497,12 +510,14 @@ class Khaata(BasePage):
         return self.fetch_text(self.txt_user_name_inline_error_message)
 
     def fetch_khaata_holder_name_from_account(self):
+        self.wait_for_element(self.txt_khaata_holder_name)
         return self.fetch_text(self.txt_khaata_holder_name)
 
     def fetch_khaata_holder_phone_number_from_account(self):
         return self.fetch_text(self.txt_khaata_holder_phNo)
 
     def fetch_khaata_holder_tag_from_account(self):
+        self.wait_for_element(self.txt_khaata_holder_tag)
         return self.fetch_text(self.txt_khaata_holder_tag)
 
     def fetch_no_search_result_found(self):
@@ -517,6 +532,7 @@ class Khaata(BasePage):
 
     def click_on_create_new_khaata_holder(self):
         self.wait_for_element(self.btn_new_khaata_holder)
+        self.wait_for_element_to_be_clickable(self.btn_new_khaata_holder)
         self.perform_click(self.btn_new_khaata_holder)
 
     def fetch_no_khaata_entries(self):
@@ -544,3 +560,23 @@ class Khaata(BasePage):
     def click_on_entry_from_holder_screen(self):
         self.wait_for_element(self.lbl_recent_entry_from_holder_screen)
         self.perform_click(self.lbl_recent_entry_from_holder_screen)
+
+    def wait_from_recent_entry_in_the_khaata_holder_screen(self):
+        self.wait_for_element(self.txt_recent_entry_from_khaata_holder_screen)
+
+    def extract_number_from_text(self, text):
+        match = re.search(r'\d+', text)
+        if match:
+            return int(match.group())
+        return None
+
+    def wait_for_count_to_change_in_the_khaat_holder_tab(self):
+        self.wait_for_element(self.btn_khaata_holders)
+        btn_text = self.fetch_text(self.btn_khaata_holders)
+        count = self.extract_number_from_text(btn_text)
+        if count is not None:
+            new_count = count - 1
+            count_change_xpath = (AppiumBy.XPATH, f'//*[@text="Khaata Holders ({new_count})"]')
+            self.wait_for_element(count_change_xpath)
+        else:
+            print("No number found in the button text.")

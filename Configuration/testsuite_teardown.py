@@ -193,25 +193,20 @@ def revert_card_payment_settings_default(org_code: str, portal_un: str, portal_p
 
 
 def revert_org_settings_default(org_code, portal_un, portal_pw):
+    orgsettings_apidetails = DBProcessor.get_api_details('org_settings_update', request_body={
+        "username": portal_un,
+        "password": portal_pw,
+        "settingForOrgCode": org_code
+    })
     # Set session expiry as default (86400 sec)
-    orgsettings_apidetails_setExpiry = DBProcessor.get_api_details('org_settings_update',
-                                                                   request_body={"username": portal_un,
-                                                                                 "password": portal_pw,
-                                                                                 "settingForOrgCode": org_code})
-    orgsettings_apidetails_setExpiry["RequestBody"]["settings"]["sessionTimeOut"] = "86400"
-    logger.debug(f"API details  : {orgsettings_apidetails_setExpiry} ")
-    response = APIProcessor.send_request(orgsettings_apidetails_setExpiry)
-    logger.debug(f"Response received for setting sessionExpiry as default is : {response}")
-
+    orgsettings_apidetails["RequestBody"]["settings"]["sessionTimeOut"] = "86400"
     # Set autologin as default (false)
-    orgsettings_apidetails_autoLoginEnable = DBProcessor.get_api_details('org_settings_update',
-                                                                         request_body={"username": portal_un,
-                                                                                       "password": portal_pw,
-                                                                                       "settingForOrgCode": org_code})
-    orgsettings_apidetails_autoLoginEnable["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "false"
-    logger.debug(f"API details  : {orgsettings_apidetails_autoLoginEnable} ")
-    response = APIProcessor.send_request(orgsettings_apidetails_autoLoginEnable)
-    logger.debug(f"Response received for setting autoLoginByTokenEnabled as False is : {response}")
+    orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "false"
+    # disabling khaata
+    orgsettings_apidetails["RequestBody"]["settings"]["enableKhataForMerchants"] = "false"
+    logger.debug(f"API details  : {orgsettings_apidetails} ")
+    response = APIProcessor.send_request(orgsettings_apidetails)
+    logger.debug(f"Response received for setting sessionExpiry as default is : {response}")
 
 
 def revert_config_FC(portal_username, portal_password):

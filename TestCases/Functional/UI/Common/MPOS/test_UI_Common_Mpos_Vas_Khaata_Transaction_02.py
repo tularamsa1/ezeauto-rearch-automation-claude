@@ -1,14 +1,14 @@
+import datetime
 import sys
 import random
-import datetime
 import time
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
-from PageFactory.App_HomePage import HomePage
-from PageFactory.App_LoginPage import LoginPage
+from PageFactory.mpos.app_home_page import HomePage
+from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.mpos.mpos_khaata import Khaata
-from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
+from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -16,12 +16,11 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-@pytest.mark.dbVal
-def test_mpos_600_601_015():
+def test_mpos_600_601_023():
     """
-    Sub Feature Code: UI_mpos_vas_Khaata_Transaction_Gave_01
-    Sub Feature Description: Verify by performing YOU GAVE transction for one customer
-    TC naming code description: 600: value_added_services,601: khaata,015: TC015
+    Sub Feature Code: UI_mpos_vas_Khaata_Transaction_Edit_01
+    Sub Feature Description: Verify the amount edited on a transaction
+    TC naming code description: 600: Value added service, 601: khaata, 023: TC023
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -43,9 +42,9 @@ def test_mpos_600_601_015():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code=None, portal_un=portal_username,
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
                                                            portal_pw=portal_password)
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -61,13 +60,10 @@ def test_mpos_600_601_015():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -82,30 +78,31 @@ def test_mpos_600_601_015():
             home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
-            amount = random.randint(1, 100)
-            logger.debug(f"Generating amount : {amount}")
-            ph_number = random.randint(7724568645, 9010536941)
-            logger.debug(f"Generating random phone number: {ph_number} ")
-            today_date = datetime.date.today().strftime("%d %B %Y")
-            logger.debug(f"Generating today's date: {today_date}")
-            khaata = Khaata(app_driver)
-            khaata.click_my_khaata()
-            khaata_holder_name = f"khaata_automation_{random.randint(1, 9999)}"
-            label = 'Customer'
-            khaata.create_new_khaata_holder(ph_number, khaata_holder_name, label)
-            khaata.click_proceed_button()
-            logger.debug(f"New khaata holder is created with user : {khaata_holder_name}")
-            time.sleep(3)
-            logger.debug(f"Performing you give function in the khaata")
-            khaata.perform_you_give_with_date(amount, 'dress', today_date)
-            khaata.click_on_back()
-            khaata.click_khaata_entries()
-            khaata.click_on_recent_entry()
-            # ------------------------------------------------------------------------------------------------
+            khaata_page = Khaata(app_driver)
+            khaata_page.click_my_khaata()
+            logger.info(f"Khaata is being clicked successfully")
+            cus_name = f"customer_name_{random.randint(0, 99999)}"
+            logger.debug(f"Generating random khaata customer name: {cus_name}")
+            mobile_num = random.randint(6000000000, 8888888888)
+            logger.debug(f"Generating random phone number: {mobile_num}")
+            khaata_page.create_new_khaata_holder(mobile_num, cus_name, "Others")
+            khaata_page.click_proceed_button()
+            khaata_page.wait_for_khaata_txn_page_to_load()
+            khaata_page.perform_you_give(100, "Bill : 123")
+            logger.debug(f"Khaata txn is being done by clicking on you gave button")
+            khaata_page.click_on_recent_transaction()
+            final_amount = random.randint(100, 999)
+            khaata_page.perform_edit_entry_amount_txn(final_amount)
+            khaata_page.click_save_for_edited_transaction()
+            edited_amount_with_rupee_symbol = khaata_page.fetch_edited_amount()
+            edited_amount = int(edited_amount_with_rupee_symbol.replace('₹', '').strip())
+            logger.info(f"amount is {edited_amount}")
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
+
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -121,60 +118,15 @@ def test_mpos_600_601_015():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_app_values = {
-                    "customer_name": khaata_holder_name,
-                    "date": "TODAY",
-                    "label": label,
-                    "entry_msg": 'You Gave',
-                    "amount": f"₹{amount}",
-                    "description": "dress"
-                }
+                expected_app_values = {"edited_amount": final_amount}
 
-                khaat_date = khaata.fetch_date()
-                khaata_entry_amount = khaata.fetch_entry_amount()
-                khaata_amount = khaata_entry_amount.replace("\xa0", "")
-                khaata_message = khaata.fetch_entry_message()
-                khaata_description = khaata.fetch_entry_description()
-                khaata_holder_name = khaata.fetch_account_holder_name()
-                khaata_holder_tag = khaata.fetch_account_holder_tag()
-                actual_app_values = {
-                    "customer_name": khaata_holder_name,
-                    "date": khaat_date,
-                    "label": khaata_holder_tag,
-                    "entry_msg": khaata_message,
-                    "amount": str(khaata_amount),
-                    "description": khaata_description
-                }
+                actual_app_values = {"edited_amount": edited_amount}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
-        # -----------------------------------------Start of DB Validation--------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                # --------------------------------------------------------------------------------------------
-                expected_db_values = {
-                    'created_by': app_username,
-                    'status': 'POSTED'
-                }
-                query = "select * from khata_txn where merchant_code='" + str(org_code) \
-                                 + "' and sale_amount=" + str(amount) + ".000 ORDER BY created_time DESC limit 1;"
-                result = DBProcessor.getValueFromDB(query)
-                created_by = result['created_by'].values[0]
-                status = result['status'].values[0]
-                actual_db_values = {
-                    'created_by': created_by,
-                    'status': status
-                }
-                # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
@@ -186,12 +138,11 @@ def test_mpos_600_601_015():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-@pytest.mark.dbVal
-def test_mpos_600_601_016():
+def test_mpos_600_601_024():
     """
-    Sub Feature Code: UI_mpos_vas_Khaata_Transaction_Got_01
-    Sub Feature Description: Verify by performing YOU GOT transction for one customer
-    TC naming code description: 600: value_added_services,601: khaata,016: TC016
+    Sub Feature Code: UI_mpos_vas_Khaata_Transaction_Edit_Description_01
+    Sub Feature Description: Verify the transaction description which is edited
+    TC naming code description: 600: Value added service, 601: khaata, 024: TC024
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -200,6 +151,7 @@ def test_mpos_600_601_016():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -213,12 +165,10 @@ def test_mpos_600_601_016():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code=None, portal_un=portal_username,
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
                                                            portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
@@ -234,7 +184,6 @@ def test_mpos_600_601_016():
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -252,30 +201,26 @@ def test_mpos_600_601_016():
             home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
-            amount = random.randint(1, 100)
-            logger.debug(f"Generating amount : {amount}")
-            ph_number = random.randint(6024568645, 8010536941)
-            logger.debug(f"Generating random phone number: {ph_number} ")
-            today_date = datetime.date.today().strftime("%d %B %Y")
-            logger.debug(f"Generating today's date: {today_date}")
-            khaata = Khaata(app_driver)
-            khaata.click_my_khaata()
-            khaata_holder_name = f"ezetap{random.randint(1, 9999)}"
-            logger.debug(f"Generating random user nmae: {khaata_holder_name} ")
-            label = 'Customer'
-            khaata.create_new_khaata_holder(ph_number, khaata_holder_name, label)
-            khaata.click_proceed_button()
-            logger.debug(f"New khaata holder is created with user : {khaata_holder_name}")
-            time.sleep(3)
-            khaata.perform_you_got(amount, 'dress', today_date)
-            khaata.click_on_back()
-            khaata.click_khaata_entries()
-            khaata.click_on_recent_entry()
-            # ------------------------------------------------------------------------------------------------
+            khaata_page = Khaata(app_driver)
+            khaata_page.click_my_khaata()
+            logger.info(f"Khaata is being clicked successfully")
+            mobile_num = random.randint(6000000000, 8888888888)
+            logger.debug(f"Generating random phone number: {mobile_num}")
+            cus_name = f"customer_name_{random.randint(0, 99999)}"
+            logger.debug(f"Generating random khaata customer name: {cus_name}")
+            khaata_page.create_new_khaata_holder(mobile_num, cus_name, "Others")
+            khaata_page.click_proceed_button()
+            khaata_page.wait_for_khaata_txn_page_to_load()
+            khaata_page.perform_you_give(100, "awesome!")
+            logger.debug(f"Khaata txn is being done by clicking on you gave button")
+            khaata_page.click_on_recent_transaction()
+            khaata_page.perform_edit_entry_description("Edited Description")
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
+
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
@@ -291,61 +236,17 @@ def test_mpos_600_601_016():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_app_values = {
-                    "customer_name": khaata_holder_name,
-                    "date": "TODAY",
-                    "label": label,
-                    "entry_msg": 'You Got',
-                    "amount": f"₹{amount}",
-                    "description": "dress"
-                }
-
-                khaat_date = khaata.fetch_date()
-                khaata_entry_amount = khaata.fetch_entry_amount()
-                khaata_amount = khaata_entry_amount.replace("\xa0", "")
-                khaata_message = khaata.fetch_entry_message()
-                khaata_description = khaata.fetch_entry_description()
-                khaata_holder_name = khaata.fetch_account_holder_name()
-                khaata_holder_tag = khaata.fetch_account_holder_tag()
-                actual_app_values = {
-                    "customer_name": khaata_holder_name,
-                    "date": khaat_date,
-                    "label": khaata_holder_tag,
-                    "entry_msg": khaata_message,
-                    "amount": str(khaata_amount).strip(),
-                    "description": khaata_description
-                }
+                expected_app_values = {"edited_description": "Edited Description"}
+                khaata_page.click_save_for_edited_transaction()
+                edited_description_app = khaata_page.fetch_edited_description()
+                logger.debug(f" edited_description: {edited_description_app}")
+                actual_app_values = {"edited_description": edited_description_app}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
-            # -----------------------------------------Start of DB Validation--------------------------------------
-            if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-                logger.info(f"Started DB validation for the test case : {testcase_id}")
-                try:
-                    # --------------------------------------------------------------------------------------------
-                    expected_db_values = {
-                        'created_by': app_username,
-                        'status': 'POSTED'
-                    }
-                    query = "select * from khata_txn where merchant_code='" + str(org_code) \
-                            + "' and sale_amount=" + str(amount) + ".000 ORDER BY created_time DESC limit 1;"
-                    result = DBProcessor.getValueFromDB(query)
-                    created_by = result['created_by'].values[0]
-                    status = result['status'].values[0]
-                    actual_db_values = {
-                        'created_by': created_by,
-                        'status': status
-                    }
-                    # ---------------------------------------------------------------------------------------------
-                    Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-                except Exception as e:
-                    Configuration.perform_db_val_exception(testcase_id, e)
-                logger.info(f"Completed DB validation for the test case : {testcase_id}")
-            # -----------------------------------------End of DB Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -356,17 +257,16 @@ def test_mpos_600_601_016():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_mpos_600_601_022():
+def test_mpos_600_601_025():
     """
-    Sub Feature Code: UI_mpos_vas_Khaata_Transaction_Clear_01
-    Sub Feature Description: Verify Khaata Enteries are cleared
-    TC naming code description: 600: value_added_services,601: khaata,022: TC022
+    Sub Feature Code: UI_Common_Card_VAS_Khaata_Transaction_Edit_Date_01
+    Sub Feature Description:  Verify the transaction date which is edited
+    TC naming code description: 600: Value added service, 601: khaata, 016: TC016
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -382,12 +282,10 @@ def test_mpos_600_601_022():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code=None, portal_un=portal_username,
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
                                                            portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
@@ -400,13 +298,10 @@ def test_mpos_600_601_022():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
                                                    config_log=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -421,48 +316,55 @@ def test_mpos_600_601_022():
             home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
-            amount = random.randint(1, 100)
-            logger.debug(f"Generating amount : {amount}")
-            ph_number = random.randint(7024568645, 9610536941)
-            logger.debug(f"Generating random phone number: {ph_number} ")
-            today_date = datetime.date.today().strftime("%d %B %Y")
-            logger.debug(f"Generating today's date: {today_date}")
-            khaata = Khaata(app_driver)
-            khaata.click_my_khaata()
-            khaata_holder_name = f"khaata_automation_{random.randint(1, 9999)}"
-            khaata.create_new_khaata_holder(ph_number, khaata_holder_name, 'Customer')
-            khaata.click_proceed_button()
-            logger.debug(f"New khaata holder is created with user : {khaata_holder_name}")
-            time.sleep(3)
-            khaata.perform_you_got(amount, 'dress', today_date)
-            time.sleep(3)
-            khaata.click_on_menu()
-            khaata.click_clear_khaata_entries()
-            khaata.click_proceed_button()
-            # ------------------------------------------------------------------------------------------------
+            khaata_page = Khaata(app_driver)
+            khaata_page.click_my_khaata()
+            logger.info(f"Khaata is being clicked successfully")
+            mobile_num = random.randint(6000000000, 8888888888)
+            logger.debug(f"Generating random phone number: {mobile_num}")
+            cus_name = f"customer_name_{random.randint(0, 99999)}"
+            logger.debug(f"Generating random khaata customer name: {cus_name}")
+            khaata_page.create_new_khaata_holder(mobile_num, cus_name, "Others")
+            khaata_page.click_proceed_button()
+            khaata_page.wait_for_khaata_txn_page_to_load()
+            khaata_page.perform_you_give(100, "awesome")
+            logger.debug(f"Khaata txn is being done by clicking on you gave button")
+            khaata_page.click_on_recent_transaction()
+            khaata_page.click_on_edit()
+            khaata_page.click_on_date()
+            today = datetime.date.today()
+            today_string_format = today.strftime("%d %B %Y")
+            DD = today_string_format[:2]
+            yesterday_date = (today - datetime.timedelta(days=1)).strftime("%d %B %Y")
+            if DD == "01":
+                khaata_page.date_picker_for_1st_of_every_month(yesterday_date)
+            else:
+                khaata_page.date_picker(yesterday_date)
+            khaata_page.click_save_for_edited_transaction()
+            khaata_page.click_on_recent_transaction()
+            khaata_page.click_on_edit()
+            edited_date = khaata_page.fetch_edited_date()
+            logger.debug(f"edited date for transaction is {edited_date}")
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
             logger.info(f"Execution is completed for the test case : {testcase_id}")
+
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                expected_app_values = {"message": "No khaata entries to show"}
-                time.sleep(4)
-                no_entries_found = khaata.fetch_no_khaata_entries()
-                actual_app_values = {"message": str(no_entries_found)}
+                expected_app_values = {"edited_date": yesterday_date}
+                actual_app_values = {"edited_date": edited_date}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
@@ -475,4 +377,3 @@ def test_mpos_600_601_022():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-

@@ -1,3 +1,5 @@
+from time import sleep
+
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.by import By
 from PageFactory.mpos.app_base_page import BasePage
@@ -23,11 +25,21 @@ class HomePage(BasePage):
     txt_orderNo = (By.ID, "com.ezetap.basicapp:id/editTextOrderNo")
     txt_tip_amount = (By.ID, "com.ezetap.basicapp:id/editTextTipAmount")
     device_serialNo = (By.ID, 'com.ezetap.basicapp:id/editTextRef2')
+    # NUMBER_PRESS_1 = (By.ID,"com.ezetap.basicapp:id/button_1")
+    # NUMBER_PRESS_2 = (By.ID, "com.ezetap.basicapp:id/button_2")
+    # NUMBER_PRESS_3 = (By.ID, "com.ezetap.basicapp:id/button_3")
+    # NUMBER_PRESS_4 = (By.ID,"com.ezetap.basicapp:id/button_4")
+    # NUMBER_PRESS_5 = (By.ID, "com.ezetap.basicapp:id/button_5")
+    # NUMBER_PRESS_6 = (By.ID, "com.ezetap.basicapp:id/button_6")
+    # NUMBER_PRESS_7 = (By.ID, "com.ezetap.basicapp:id/button_7")
+    # NUMBER_PRESS_8 = (By.ID, "com.ezetap.basicapp:id/button_8")
+    # NUMBER_PRESS_9 = (By.ID, "com.ezetap.basicapp:id/button_9")
+    # NUMBER_PRESS_0 = (By.ID, "com.ezetap.basicapp:id/button_0")
+
     btn_checkStatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
     mnu_navigationDrawer = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_transactionHistory = (By.XPATH, "//android.widget.CheckedTextView[@text='Transaction History']")
     btn_cashAtPos = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Cash @ POS")')
-
     txt_cashAtPosAmount = (By.ID, 'com.ezetap.basicapp:id/etCashAmount')
     btn_payNow = (By.ID, "com.ezetap.basicapp:id/btnPayNow")
     btn_cashAtPosWithSale = (By.ID, 'com.ezetap.basicapp:id/switchSale')
@@ -230,7 +242,6 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.scroll_to_text("Go to History")
         self.wait_for_element(self.btn_goToHistory, 30)
 
     def click_side_menu_eng(self):
@@ -256,12 +267,6 @@ class HomePage(BasePage):
 
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
-
-    def wait_for_navigationTo_load(self):
-        self.wait_for_element(self.lbl_navigation)
-
-    # def wait_for_navigation_to_load(self):
-    #     self.wait_for_element_to_be_clickable(self.lbl_navigation)
 
     def check_p2p_notification(self):
         return self.fetch_text(self.lbl_p2p_notification, 30)
