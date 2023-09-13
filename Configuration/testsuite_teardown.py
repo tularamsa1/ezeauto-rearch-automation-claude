@@ -163,6 +163,35 @@ def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_p
     logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
 
+def revert_card_payment_settings_default(org_code: str, portal_un: str, portal_pw: str):
+    """
+    This method is used to revert the card related settings.
+    param: org_code str
+    param: portal_un str
+    param: portal_pw str
+    """
+    logger.info(f"Inside the function revert_card_payment_settings_default in testsuite_teardown")
+
+    api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_un,
+                                                                                   "password": portal_pw,
+                                                                                   "settingForOrgCode": org_code})
+    api_details["RequestBody"]["settings"]["cardPaymentEnabled"] = "true"
+    api_details["RequestBody"]["settings"]["tipEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["tipPercentage"] = "15"
+    api_details["RequestBody"]["settings"]["cashBackOption"] = 0
+    api_details["RequestBody"]["settings"]["minCashBackAmount"] = "100"
+    api_details["RequestBody"]["settings"]["maxCashBackAmount"] = "2000"
+    api_details["RequestBody"]["settings"]["preAuthOption"] = "0"
+    api_details["RequestBody"]["settings"]["twoStepConfirmPreAuthEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["mqttEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["mqttRetryPeriod"] = "30"
+    api_details["RequestBody"]["settings"]["refundEnabled"] = "true"
+
+    logger.debug(f"API details  : {api_details} ")
+    response = APIProcessor.send_request(api_details)
+    logger.debug(f"Response received for setting preconditions is : {response}")
+
+
 def revert_org_settings_default(org_code, portal_un, portal_pw):
     # Set session expiry as default (86400 sec)
     orgsettings_apidetails_setExpiry = DBProcessor.get_api_details('org_settings_update',
