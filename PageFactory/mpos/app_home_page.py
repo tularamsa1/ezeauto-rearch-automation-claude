@@ -49,6 +49,7 @@ class HomePage(BasePage):
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
     btn_preauth = (By.XPATH, "//android.widget.TextView[@text='Pre-Auth']")
     txt_enter_pre_auth_amt = (By.ID, "com.ezetap.basicapp:id/textViewAmount")
+    btn_cash_at_pos_back = (By.ID, 'com.ezetap.basicapp: id / imgToolbarBack')
 
     def __init__(self, driver):
         super().__init__(driver)
