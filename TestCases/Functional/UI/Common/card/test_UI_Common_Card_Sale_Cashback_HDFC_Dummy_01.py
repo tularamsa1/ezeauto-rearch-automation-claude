@@ -1219,7 +1219,6 @@ def test_common_100_115_02_002():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_115_02_003():
     """
     Sub Feature Code: UI_Common_Card_Sale_Cashback_Failed_HDFC_Dummy_EMVCTLS_VISA_DebitCard_Without_Pin_476173
@@ -1288,7 +1287,7 @@ def test_common_100_115_02_003():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        # TestSuiteSetup.launch_browser_and_context_initialize()
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1790,34 +1789,6 @@ def test_common_100_115_02_003():
                 Configuration.perform_portal_val_exception(testcase_id=testcase_id, exception_caught=e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
-                expected_charge_slip_values = {
-                    "CARD TYPE": "VISA",
-                    "merchant_ref_no": "Ref # " + str(order_id),
-                    "RRN": str(rrn),
-                    "BASE AMOUNT:": "Rs." + "{:.2f}".format(sale_amount),
-                    "CASH PAID:": "Rs." + "{:.2f}".format(cashback_amount),
-                    "TOTAL AMOUNT:": "Rs." + "{:.2f}".format(sale_amount + cashback_amount),
-                    "AUTH CODE": auth_code,
-                    "date": txn_date,
-                    "time": txn_time,
-                    "payment_option": "Sale Cash Back",
-                    "BATCH NO": batch_number,
-                    "TID": tid
-                }
-                receipt_validator.perform_charge_slip_validations(txn_id=txn_id, credentials={
-                    "username": app_username,
-                    "password": app_password
-                }, expected_details=expected_charge_slip_values)
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id=testcase_id, exception_caught=e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

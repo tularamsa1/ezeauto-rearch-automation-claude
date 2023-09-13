@@ -83,7 +83,7 @@ def test_common_100_115_086():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -656,7 +656,7 @@ def test_common_100_115_087():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1209,7 +1209,7 @@ def test_common_100_115_088():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1786,7 +1786,7 @@ def test_common_100_115_089():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------

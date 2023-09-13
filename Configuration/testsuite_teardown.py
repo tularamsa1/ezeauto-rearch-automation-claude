@@ -185,7 +185,7 @@ def revert_card_payment_settings_default(org_code: str, portal_un: str, portal_p
     api_details["RequestBody"]["settings"]["twoStepConfirmPreAuthEnabled"] = "false"
     api_details["RequestBody"]["settings"]["mqttEnabled"] = "false"
     api_details["RequestBody"]["settings"]["mqttRetryPeriod"] = "30"
-    api_details["RequestBody"]["settings"]["refundEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["refundEnabled"] = "true"
 
     logger.debug(f"API details  : {api_details} ")
     response = APIProcessor.send_request(api_details)
