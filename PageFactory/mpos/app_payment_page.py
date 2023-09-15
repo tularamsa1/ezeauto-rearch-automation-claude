@@ -1,3 +1,6 @@
+import re
+from time import sleep
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from appium.webdriver.common.appiumby import AppiumBy
@@ -38,6 +41,19 @@ class PaymentPage(BasePage):
     btn_form60 = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectForm60')
     txt_pan_number = (AppiumBy.ID, 'com.ezetap.service.demo:id/txtInputEntryPan')
     btn_confirm = (AppiumBy.ID, 'com.ezetap.service.demo:id/btnConfirmPanForm')
+    btn_cheque = (By.XPATH, '//android.widget.TextView[@text = "Cheque"]')
+    txt_enterChequeNumber = (By.ID, "com.ezetap.service.demo:id/txtInputEntryChequeNum")
+    btn_selectbankName = (By.ID, "com.ezetap.service.demo:id/txtInputEntryBankName")
+    btn_select_date = (By.XPATH, "//*[@text='OK']")
+    btn_ok =(By.XPATH, "//*[@text='Cheque Dated']")
+    btn_cheque_submit = (By.ID, "com.ezetap.service.demo:id/btnConfirmCheque")
+    btn_sign_required = (By.ID, "com.ezetap.service.demo:id/rltvSignRequired")
+    btn_addSignature = (By.ID, "com.ezetap.service.demo:id/btnAddSignature")
+    btn_signatureSubmit = (By.ID, "com.ezetap.service.demo:id/btnSubmitSign")
+    btn_sign_submit =(By.ID, "com.ezetap.service.demo:id/btnSubmitSign")
+    txt_signature_success_status = (By.ID, "com.ezetap.service.demo:id/tvSignSubmitted")
+    btn_click_sign = (By.XPATH, "//*[@text='Click here to sign']")
+    lbl_amount = (By.ID, 'com.ezetap.service.demo:id/tvAmount')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -55,9 +71,6 @@ class PaymentPage(BasePage):
     def click_on_Bqr_paymentMode(self):
         self.scroll_to_text("Bharat QR")
         self.perform_click(self.btn_bqr)
-
-    # def get_user_action_text(self):
-    #     return self.get_text(self.USER_ACTION_MESSAGE)
 
     def fetch_da_alert_message(self):
         return self.fetch_text(self.txa_daAlertMessage)
@@ -193,8 +206,7 @@ class PaymentPage(BasePage):
 
     def perform_pan_entry(self, pan_number):
         """
-        This method is used to when you try to make transaction more than 50,000 where the pop up will come to enter pan
-        details or form60
+        This method is used when user wants to perform PAN entry during cash trx
         """
         self.perform_click(self.btn_pan)
         self.wait_for_element(self.txt_pan_number).clear()
@@ -203,8 +215,7 @@ class PaymentPage(BasePage):
 
     def perform_form60(self):
         """
-        This method is used to when you try to make transaction more than 50,000 where the pop up will come to enter
-        pan details or form60
+        This method is used when user wants to perform FORM60  during cash trx
         """
         self.wait_for_element(self.btn_form60)
         self.perform_click(self.btn_form60)

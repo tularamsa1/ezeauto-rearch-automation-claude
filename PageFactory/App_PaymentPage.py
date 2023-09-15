@@ -56,9 +56,6 @@ class PaymentPage(BasePage):
         self.scroll_to_text("Bharat QR")
         self.perform_click(self.btn_bqr)
 
-    # def get_user_action_text(self):
-    #     return self.get_text(self.USER_ACTION_MESSAGE)
-
     def fetch_da_alert_message(self):
         return self.fetch_text(self.txa_daAlertMessage)
 
@@ -143,7 +140,6 @@ class PaymentPage(BasePage):
             else:
                 pass
 
-
     def is_payment_page_displayed_card(self, amount, order_id, device_serial):
         try:
             self.wait_for_element(self.lbl_payWith, 6)
@@ -165,7 +161,6 @@ class PaymentPage(BasePage):
                 homePage.enter_amount_and_order_number_for_card(amount, order_id, device_serial)
             else:
                 pass
-
 
     def is_payment_page_displayed_card_with_tip(self, amount, order_id, tip_amt, device_serial):
         try:
@@ -239,8 +234,7 @@ class PaymentPage(BasePage):
 
     def perform_pan_entry(self, pan_number):
         """
-        This method is used to when you try to make transaction more than 50,000 where the pop up will come to enter pan
-        details or form60
+        This method is used when user wants to perform PAN entry during cash trx
         """
         self.perform_click(self.btn_pan)
         self.wait_for_element(self.txt_pan_number).clear()
@@ -249,8 +243,7 @@ class PaymentPage(BasePage):
 
     def perform_form60(self):
         """
-        This method is used to when you try to make transaction more than 50,000 where the pop up will come to enter
-        pan details or form60
+        This method is used when user wants to perform FORM60  during cash trx
         """
         self.wait_for_element(self.btn_form60)
         self.perform_click(self.btn_form60)

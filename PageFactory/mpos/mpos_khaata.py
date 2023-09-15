@@ -38,7 +38,6 @@ class Khaata(BasePage):
     txt_enter_details_for_given_or_received_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/etDetails')
     lbl_calender = (AppiumBy.ID, 'com.ezetap.basicapp:id/cvCalender')
     btn_ok = (AppiumBy.ID, 'android:id/button1')
-    # btn_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvReminder')
     btn_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnReminder')
     btn_send_reminder = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_send_reminder')
     lbl_tap_to_view_and_hide = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnShowHide')
@@ -64,7 +63,6 @@ class Khaata(BasePage):
     lbl_sort_by_name = (AppiumBy.ID, 'com.ezetap.basicapp:id/rbByName')
     btn_apply = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnApply')
     btn_clear = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvClear')
-
     lbl_for_khaata = (AppiumBy.XPATH, '//*[@text="My Khaata"]')
     lbl_no_customer_created = (AppiumBy.XPATH, '//*[@text="No khaata holders created"]')
     lbl_no_customer_created_2 = (AppiumBy.XPATH, '//*[@text="Add your first khaata holder, then add a new entry"]')
@@ -86,7 +84,6 @@ class Khaata(BasePage):
     lbl_unique_mobile_number = (AppiumBy.ID, 'com.ezetap.basicapp:id/textView2')
     btn_cancel_create_customer = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnCancel')
     txt_recent_entry_from_khaata_holder_screen = (AppiumBy.XPATH, '(//*[@text="TODAY"])[1]')
-
     txt_user_name_inline_error_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/textinput_error')
     txt_entry_account_name = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvName')
     txt_entry_account_tag = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTag')
