@@ -7,7 +7,7 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
-from PageFactory.mpos.app_payment_page import PaymentPage
+from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.mpos.mpos_khaata import Khaata
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
