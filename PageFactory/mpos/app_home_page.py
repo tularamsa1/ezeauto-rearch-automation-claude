@@ -1,3 +1,5 @@
+from time import sleep
+
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.by import By
 from PageFactory.mpos.app_base_page import BasePage
@@ -27,7 +29,6 @@ class HomePage(BasePage):
     mnu_navigationDrawer = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_transactionHistory = (By.XPATH, "//android.widget.CheckedTextView[@text='Transaction History']")
     btn_cashAtPos = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Cash @ POS")')
-
     txt_cashAtPosAmount = (By.ID, 'com.ezetap.basicapp:id/etCashAmount')
     btn_payNow = (By.ID, "com.ezetap.basicapp:id/btnPayNow")
     btn_cashAtPosWithSale = (By.ID, 'com.ezetap.basicapp:id/switchSale')
@@ -37,6 +38,7 @@ class HomePage(BasePage):
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
     btn_preauth = (By.XPATH, "//android.widget.TextView[@text='Pre-Auth']")
     txt_enter_pre_auth_amt = (By.ID, "com.ezetap.basicapp:id/textViewAmount")
+    btn_cash_at_pos_back = (By.ID, 'com.ezetap.basicapp: id / imgToolbarBack')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -230,7 +232,6 @@ class HomePage(BasePage):
         self.perform_click(self.tab_history)
 
     def wait_for_home_page_load(self):
-        self.scroll_to_text("Go to History")
         self.wait_for_element(self.btn_goToHistory, 30)
 
     def click_side_menu_eng(self):
@@ -256,12 +257,6 @@ class HomePage(BasePage):
 
     def wait_for_navigationTo_load(self):
         self.wait_for_element(self.lbl_navigation)
-
-    def wait_for_navigationTo_load(self):
-        self.wait_for_element(self.lbl_navigation)
-
-    # def wait_for_navigation_to_load(self):
-    #     self.wait_for_element_to_be_clickable(self.lbl_navigation)
 
     def check_p2p_notification(self):
         return self.fetch_text(self.lbl_p2p_notification, 30)

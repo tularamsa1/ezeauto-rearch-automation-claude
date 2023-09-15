@@ -1,8 +1,8 @@
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
-
+from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
-from PageFactory.mpos.App_HomePage import HomePage
+from PageFactory.App_HomePage import HomePage
 
 
 class PaymentPage(BasePage):
@@ -34,6 +34,10 @@ class PaymentPage(BasePage):
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     btn_cancelTransactionYes = (By.XPATH, '//*[contains(@text,"Yes")]')
     btn_cancel_p2p_request = (By.ID, "com.ezetap.service.demo:id/btnYesCancelPayment")
+    btn_pan = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectPan')
+    btn_form60 = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectForm60')
+    txt_pan_number = (AppiumBy.ID, 'com.ezetap.service.demo:id/txtInputEntryPan')
+    btn_confirm = (AppiumBy.ID, 'com.ezetap.service.demo:id/btnConfirmPanForm')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -51,9 +55,6 @@ class PaymentPage(BasePage):
     def click_on_Bqr_paymentMode(self):
         self.scroll_to_text("Bharat QR")
         self.perform_click(self.btn_bqr)
-
-    # def get_user_action_text(self):
-    #     return self.get_text(self.USER_ACTION_MESSAGE)
 
     def fetch_da_alert_message(self):
         return self.fetch_text(self.txa_daAlertMessage)
@@ -110,9 +111,9 @@ class PaymentPage(BasePage):
         txn_id = self.fetch_text(self.txa_transactionId)
         print("Txn id APP:", txn_id)
         status = self.fetch_text(self.txa_status)
-        print("Status APP:",status)
+        print("Status APP:", status)
         self.perform_click(self.btn_closeTransactionDetails)
-        return txn_id,status
+        return txn_id, status
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
@@ -136,52 +137,6 @@ class PaymentPage(BasePage):
                 self.perform_click(self.btn_back_enter_amt_window)
                 homePage = HomePage(self.driver)
                 homePage.enter_amount_and_order_number(amount, order_id)
-            else:
-                pass
-
-
-    def is_payment_page_displayed_card(self, amount, order_id, device_serial):
-        try:
-            self.wait_for_element(self.lbl_payWith, 6)
-        except:
-            self.wait_for_element(self.lbl_checkstatusTitle)
-            self.perform_click(self.lbl_checkstatus)
-            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
-                self.perform_click(self.btn_proceedToHomepage)
-            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
-                self.perform_click(self.btn_proceedToHomepage)
-                self.perform_click(self.btn_back_enter_amt_window)
-                homePage = HomePage(self.driver)
-                homePage.enter_amount_and_order_number_for_card(amount, order_id, device_serial)
-            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
-                self.perform_click(self.btn_proceedToHomepage)
-                self.perform_click(self.lbl_skip)
-                self.perform_click(self.btn_back_enter_amt_window)
-                homePage = HomePage(self.driver)
-                homePage.enter_amount_and_order_number_for_card(amount, order_id, device_serial)
-            else:
-                pass
-
-
-    def is_payment_page_displayed_card_with_tip(self, amount, order_id, tip_amt, device_serial):
-        try:
-            self.wait_for_element(self.lbl_payWith, 6)
-        except:
-            self.wait_for_element(self.lbl_checkstatusTitle)
-            self.perform_click(self.lbl_checkstatus)
-            if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
-                self.perform_click(self.btn_proceedToHomepage)
-            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
-                self.perform_click(self.btn_proceedToHomepage)
-                self.perform_click(self.btn_back_enter_amt_window)
-                homePage = HomePage(self.driver)
-                homePage.enter_tip_amount_and_order_number_for_card(amount, order_id, tip_amt, device_serial)
-            elif self.fetch_text(self.lbl_paymentStatus) == "Payment Pending":
-                self.perform_click(self.btn_proceedToHomepage)
-                self.perform_click(self.lbl_skip)
-                self.perform_click(self.btn_back_enter_amt_window)
-                homePage = HomePage(self.driver)
-                homePage.enter_tip_amount_and_order_number_for_card(amount, order_id, tip_amt, device_serial)
             else:
                 pass
 
@@ -219,10 +174,8 @@ class PaymentPage(BasePage):
     def click_on_transaction_cancel_yes(self):
         self.perform_click(self.btn_cancelTransactionYes)
 
-
     def click_on_cancel_p2p_request_ok(self):
         self.perform_click(self.btn_cancel_p2p_request)
-
 
     def click_on_goto_homepage(self):
         try:
@@ -234,3 +187,20 @@ class PaymentPage(BasePage):
             return False
         self.click_on_proceed_homepage()
         return True
+
+    def perform_pan_entry(self, pan_number):
+        """
+        This method is used when user wants to perform PAN entry during cash trx
+        """
+        self.perform_click(self.btn_pan)
+        self.wait_for_element(self.txt_pan_number).clear()
+        self.perform_sendkeys(self.txt_pan_number, pan_number)
+        self.perform_click(self.btn_confirm)
+
+    def perform_form60(self):
+        """
+        This method is used when user wants to perform FORM60  during cash trx
+        """
+        self.wait_for_element(self.btn_form60)
+        self.perform_click(self.btn_form60)
+        self.perform_click(self.btn_confirm)

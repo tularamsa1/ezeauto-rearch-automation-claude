@@ -23,16 +23,6 @@ class HomePage(BasePage):
     txt_mobileField = (By.ID, 'com.ezetap.basicapp:id/editTextMobile')
     txt_emailField = (By.ID, 'com.ezetap.basicapp:id/editTextEmail')
     btn_paymentProceed = (By.ID, 'com.ezetap.basicapp:id/buttonProceed')
-    # NUMBER_PRESS_1 = (By.ID,"com.ezetap.basicapp:id/button_1")
-    # NUMBER_PRESS_2 = (By.ID, "com.ezetap.basicapp:id/button_2")
-    # NUMBER_PRESS_3 = (By.ID, "com.ezetap.basicapp:id/button_3")
-    # NUMBER_PRESS_4 = (By.ID,"com.ezetap.basicapp:id/button_4")
-    # NUMBER_PRESS_5 = (By.ID, "com.ezetap.basicapp:id/button_5")
-    # NUMBER_PRESS_6 = (By.ID, "com.ezetap.basicapp:id/button_6")
-    # NUMBER_PRESS_7 = (By.ID, "com.ezetap.basicapp:id/button_7")
-    # NUMBER_PRESS_8 = (By.ID, "com.ezetap.basicapp:id/button_8")
-    # NUMBER_PRESS_9 = (By.ID, "com.ezetap.basicapp:id/button_9")
-    # NUMBER_PRESS_0 = (By.ID, "com.ezetap.basicapp:id/button_0")
     txt_orderNo = (By.ID, "com.ezetap.basicapp:id/editTextOrderNo")
     btn_checkStatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
     mnu_navigationDrawer = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
@@ -55,9 +45,6 @@ class HomePage(BasePage):
 
     def check_home_page_for_invalid_Login(self):
         return self.fetch_text(self.lbl_home, 5)
-
-    # def click_enter_amount_field(self):
-    #     self.perform_click(self.txt_enterAmountField)
 
     def enter_amount_and_order_number(self, amt, order_number):
         self.perform_click(self.txt_enterAmountField)
@@ -90,11 +77,6 @@ class HomePage(BasePage):
             else:
                 li.append((By.ID, "com.ezetap.basicapp:id/button_"+i+""))
         return li
-
-    # def enter_order_number(self, order_number):
-    #     self.perform_click(self.txt_orderNo)
-    #     self.perform_sendkeys(self.txt_orderNo, order_number)
-    #     self.perform_click(self.btn_paymentProceed)
 
     def perform_check_status(self):
         self.perform_click(self.btn_checkStatus)
@@ -174,15 +156,6 @@ class HomePage(BasePage):
 
     def wait_for_navigation_to_load(self):
         self.wait_for_element_to_be_clickable(self.lbl_navigation)
-
-    def wait_for_navigationTo_load(self):
-        self.wait_for_element(self.lbl_navigation)
-
-    def wait_for_navigationTo_load(self):
-        self.wait_for_element(self.lbl_navigation)
-
-    def wait_for_navigationTo_load(self):
-        self.wait_for_element(self.lbl_navigation)
 
     def wait_for_navigation_to_load(self):
         self.wait_for_element_to_be_clickable(self.lbl_navigation)
