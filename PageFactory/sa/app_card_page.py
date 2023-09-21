@@ -14,6 +14,15 @@ class CardPage(BasePage):
     CTLS_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='CTLS_MASTER_CREDIT_541333']")
     CTLS_WITH_PIN_VISA_CREDIT_417666 = (By.XPATH, "//android.widget.TextView[@text='CTLS_WITH_PIN_VISA_CREDIT_417666']")
     CTLS_WITH_PIN_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='CTLS_WITH_PIN_MASTER_CREDIT_541333']")
+    EMV_WITH_PIN_VISA_DEBIT_428090 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_VISA_DEBIT_428090']")
+    EMV_WITH_PIN_RUPAY_DEBIT_608326 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_RUPAY_DEBIT_608326']")
+    EMV_VISA_DEBIT_476173 = (By.XPATH, "//android.widget.TextView[@text='EMV_VISA_DEBIT_476173']")
+    EMV_MASTER_DEBIT_222360 = (By.XPATH, "//android.widget.TextView[@text='EMV_MASTER_DEBIT_222360']")
+    EMV_RUPAY_DEBIT_608326 = (By.XPATH, "//android.widget.TextView[@text='EMV_RUPAY_DEBIT_608326']")
+    EMV_WITH_PIN_VISA_CREDIT_417666 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_VISA_CREDIT_417666']")
+    EMV_WITH_PIN_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_MASTER_CREDIT_541333']")
+    EMV_VISA_CREDIT_417666 = (By.XPATH, "//android.widget.TextView[@text='EMV_VISA_CREDIT_417666']")
+    EMV_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='EMV_MASTER_CREDIT_541333']")
 
     txt_error_code = (By.ID, "com.ezetap.service.demo:id/dialogTitle")
     txt_error_message = (By.ID, "com.ezetap.service.demo:id/dialogText")
@@ -45,6 +54,25 @@ class CardPage(BasePage):
             self.perform_long_press(self.CTLS_WITH_PIN_MASTER_DEBIT_222360)
         elif text == "CTLS_WITH_PIN_RUPAY_DEBIT_608326":
             self.perform_long_press(self.CTLS_WITH_PIN_RUPAY_DEBIT_608326)
+        elif text == "EMV_WITH_PIN_VISA_DEBIT_428090":
+            self.perform_long_press(self.EMV_WITH_PIN_VISA_DEBIT_428090)
+        elif text == "EMV_WITH_PIN_RUPAY_DEBIT_608326":
+            self.perform_long_press(self.EMV_WITH_PIN_RUPAY_DEBIT_608326)
+        elif text == "EMV_VISA_DEBIT_476173":
+            self.perform_long_press(self.EMV_VISA_DEBIT_476173)
+        elif text == "EMV_MASTER_DEBIT_222360":
+            self.perform_long_press(self.EMV_MASTER_DEBIT_222360)
+        elif text == "EMV_RUPAY_DEBIT_608326":
+            self.perform_long_press(self.EMV_RUPAY_DEBIT_608326)
+        elif text == "EMV_WITH_PIN_VISA_CREDIT_417666":
+            self.perform_long_press(self.EMV_WITH_PIN_VISA_CREDIT_417666)
+        elif text == "EMV_WITH_PIN_MASTER_CREDIT_541333":
+            self.perform_long_press(self.EMV_WITH_PIN_MASTER_CREDIT_541333)
+        elif text == "EMV_VISA_CREDIT_417666":
+            self.perform_long_press(self.EMV_VISA_CREDIT_417666)
+        elif text == "EMV_MASTER_CREDIT_541333":
+            self.perform_long_press(self.EMV_MASTER_CREDIT_541333)
+
         else:
             raise Exception("Preferred card is invalid")
 

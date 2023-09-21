@@ -10,9 +10,9 @@ class HomePage(BasePage):
     txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
     btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
     btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/clGotoHistory")
-    img_companyLogo = (By.XPATH,'//android.widget.ImageView[@content-desc="Company Logo"]')
-    tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
-    mnu_engSideMenu =(By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
+    img_companyLogo = (By.XPATH, '//android.widget.ImageView[@content-desc="Company Logo"]')
+    tab_history = (By.ID, "com.ezetap.basicapp:id/nav_txn_history")
+    mnu_engSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')
     mnu_merchantDetail = (By.ID, 'com.ezetap.basicapp:id/arrow')
     rdo_langSelection = (By.ID, 'com.ezetap.basicapp:id/clLanguage')
@@ -102,7 +102,7 @@ class HomePage(BasePage):
         self.perform_click(self.btn_paymentProceed)
 
     def enter_tip_and_amount_and_order_number_and_device_serial_for_card(self, amt: int, order_number: str,
-                                                                     tip_amt: int, device_serial: str):
+                                                                         tip_amt: int, device_serial: str):
         """
           This method is used to enter amount, order number, tip amount and device serial in the home page.
           :param amt: int,
@@ -154,7 +154,7 @@ class HomePage(BasePage):
             if i == '.':
                 li.append((By.ID, "com.ezetap.basicapp:id/button_dot"))
             else:
-                li.append((By.ID, "com.ezetap.basicapp:id/button_"+i+""))
+                li.append((By.ID, "com.ezetap.basicapp:id/button_" + i + ""))
         return li
 
     def perform_check_status(self):
