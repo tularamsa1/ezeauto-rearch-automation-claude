@@ -23,6 +23,8 @@ start_line_number_closedloop = ''
 start_line_number_q2 = ''
 start_line_number_commx = ''
 start_line_number_ezestore = ''
+start_line_number_khata = ''
+start_line_number_reward = ''
 
 
 api_logs = False
@@ -34,6 +36,8 @@ closedloop_logs = False
 q2_logs = False
 commx_logs = False
 ezestore_logs = False
+khata_logs = False
+reward_logs = False
 
 # portalSS = False
 

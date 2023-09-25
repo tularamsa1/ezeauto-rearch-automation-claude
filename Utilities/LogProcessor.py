@@ -167,6 +167,40 @@ def fetch_ezestore_logs() -> str:
     return data_buffer
 
 
+def fetch_khata_logs() -> str:
+    """
+    To fetch the khata logs
+    :return: string
+    """
+    data_buffer = ''
+    start_line_num = GlobalVariables.start_line_number_khata
+    log_file_name = Base_Actions.pathToLogFile('khata')
+    end_line_no = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_no + " { print }' " + log_file_name
+    print(command)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
+    return data_buffer
+
+
+def fetch_reward_logs() -> str:
+    """
+    To fetch the reward logs
+    :return: string
+    """
+    data_buffer = ''
+    start_line_num = GlobalVariables.start_line_number_reward
+    log_file_name = Base_Actions.pathToLogFile('reward')
+    end_line_no = get_no_of_log_lines(log_file_name)
+    command = "awk " + "'NR>=" + start_line_num + " && " + "NR<=" + end_line_no + " { print }' " + log_file_name
+    print(command)
+    ssh_stdin, ssh_stdout, ssh_stderr = GlobalVariables.ssh.exec_command(command, get_pty=True)
+    for line in iter(lambda: ssh_stdout.readline(), ''):
+        data_buffer += line
+    return data_buffer
+
+
 class LogFileNotFoundError(Exception):
     pass
 
@@ -230,6 +264,10 @@ def startLineNoOfServerLogFile():
             GlobalVariables.start_line_number_commx = get_no_of_log_lines(Base_Actions.pathToLogFile('commx'))
         if Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
             GlobalVariables.start_line_number_ezestore = get_no_of_log_lines(Base_Actions.pathToLogFile('ezestore'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_khata") == "True":
+            GlobalVariables.start_line_number_khata = get_no_of_log_lines(Base_Actions.pathToLogFile('khata'))
+        if Base_Actions.is_log_capture_required("bool_capt_log_reward") == "True":
+            GlobalVariables.start_line_number_reward = get_no_of_log_lines(Base_Actions.pathToLogFile('reward'))
         #========================================================================================
         # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
         if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":

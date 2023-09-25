@@ -58,8 +58,7 @@ def test_mpos_600_601_020():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, khata_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -92,6 +91,7 @@ def test_mpos_600_601_020():
             khaata.click_on_menu()
             khaata.perform_edit_account(ph_no=edit_mobile_no,name=edit_name,label_name= "Friend")
             khaata.click_proceed_button()
+            khaata.wait_for_element_to_load_after_edit_account(edit_name)
             # -----------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -184,8 +184,7 @@ def test_mpos_600_601_021():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, khata_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
