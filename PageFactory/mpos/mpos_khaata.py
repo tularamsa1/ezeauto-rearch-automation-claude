@@ -577,3 +577,11 @@ class Khaata(BasePage):
             self.wait_for_element(count_change_xpath)
         else:
             print("No number found in the button text.")
+
+    def click_on_back_botton_to_go_to_main_screen(self):
+        self.wait_for_element(self.btn_back)
+        self.perform_click(self.btn_back)
+
+    def wait_for_element_to_load_after_edit_account(self, edit_name: str):
+        element = (AppiumBy.XPATH, f'//*[@text="{edit_name}"]')
+        self.wait_for_element(element)

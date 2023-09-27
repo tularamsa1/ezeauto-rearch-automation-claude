@@ -579,6 +579,18 @@ def log_on_failure(request):
                             ezestore_logs = LogProcessor.fetch_ezestore_logs()
                             rerun_file = Path(path + "/ezestore.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+
+                        if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_khata") == "True":
+                            khata_logs = LogProcessor.fetch_khata_logs()
+                            rerun_file = Path(path + "/khata.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                        if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_reward") == "True":
+                            reward_logs = LogProcessor.fetch_reward_logs()
+                            rerun_file = Path(path + "/reward.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                     else:
                         if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
                             print("Inside capturing log of last run TCs in one file")
@@ -650,6 +662,18 @@ def log_on_failure(request):
                                     ezestoreLogs = LogProcessor.fetch_ezestore_logs()
                                     rerun_file = Path(path + "/ezestore.log")
                                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                                if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_khata") == "True":
+                                    khata_logs = LogProcessor.fetch_khata_logs()
+                                    rerun_file = Path(path + "/khata.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                                if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_reward") == "True":
+                                    reward_logs = LogProcessor.fetch_reward_logs()
+                                    rerun_file = Path(path + "/reward.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                             else:
                                 print("This is not last run")
                         else:
@@ -757,6 +781,24 @@ def log_on_failure(request):
                                             rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
                                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
+                                    if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_khata") == "True":
+                                        khata_logs = LogProcessor.fetch_khata_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/khata.log")
+                                        else:
+                                            rerun_file = Path(path + "/khata_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                                    if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_reward") == "True":
+                                        reward_logs = LogProcessor.fetch_reward_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/reward.log")
+                                        else:
+                                            rerun_file = Path(path + "/reward_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
                                 i -= 1
                                 j += 1
                         else:
@@ -832,6 +874,18 @@ def log_on_failure(request):
                                         ezestoreLogs = LogProcessor.fetch_ezestore_logs()
                                         rerun_file = Path(path + "/ezestore.log")
                                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                                    if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_khata") == "True":
+                                        khata_logs = LogProcessor.fetch_khata_logs()
+                                        rerun_file = Path(path + "/khata.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                                    if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_reward") == "True":
+                                        reward_logs = LogProcessor.fetch_reward_logs()
+                                        rerun_file = Path(path + "/reward.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                                 else:
                                     print("This is not last run")
                             else:
@@ -900,6 +954,18 @@ def log_on_failure(request):
                         ezestore_logs = LogProcessor.fetch_ezestore_logs()
                         rerun_file = Path(path + "/ezestore.log")
                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+
+                    if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_khata") == "True":
+                        khata_logs = LogProcessor.fetch_khata_logs()
+                        rerun_file = Path(path + "/khata.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                    if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_reward") == "True":
+                        reward_logs = LogProcessor.fetch_reward_logs()
+                        rerun_file = Path(path + "/reward.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                 else:
                     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
                         testCaseID = str(item.nodeid).split('/')
@@ -973,6 +1039,20 @@ def log_on_failure(request):
                             rerun_file = Path(path + "/ezestore.log")
                             open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                        if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_khata") == "True":
+                            khata_logs = LogProcessor.fetch_khata_logs()
+                            rerun_file = Path(path + "/khata.log")
+                            open(rerun_file, 'w').close()
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                        if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_reward") == "True":
+                            reward_logs = LogProcessor.fetch_reward_logs()
+                            rerun_file = Path(path + "/reward.log")
+                            open(rerun_file, 'w').close()
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                     else:
                         print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 
@@ -1128,6 +1208,18 @@ def log_on_success(request):
                             ezestore_logs = LogProcessor.fetch_ezestore_logs()
                             rerun_file = Path(path + "/ezestore.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+
+                        if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_khata") == "True":
+                            khata_logs = LogProcessor.fetch_khata_logs()
+                            rerun_file = Path(path + "/khata.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                        if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_reward") == "True":
+                            reward_logs = LogProcessor.fetch_reward_logs()
+                            rerun_file = Path(path + "/reward.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                     else:
                         if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
                             print("capt_log_last_run == true")
@@ -1188,6 +1280,18 @@ def log_on_success(request):
                                 ezestore_logs = LogProcessor.fetch_ezestore_logs()
                                 rerun_file = Path(path + "/ezestore.log")
                                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+
+                            if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_khata") == "True":
+                                khata_logs = LogProcessor.fetch_khata_logs()
+                                rerun_file = Path(path + "/khata.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                            if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_reward") == "True":
+                                reward_logs = LogProcessor.fetch_reward_logs()
+                                rerun_file = Path(path + "/reward.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                         else:
                             print("Both last_run and all_run are disabled")
                 else:
@@ -1289,6 +1393,24 @@ def log_on_success(request):
                                             rerun_file = Path(path + "/ezestore_Rerun_" + str(j) + ".log")
                                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
 
+                                    if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_khata") == "True":
+                                        khata_logs = LogProcessor.fetch_khata_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/khata.log")
+                                        else:
+                                            rerun_file = Path(path + "/khata_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                                    if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_reward") == "True":
+                                        reward_logs = LogProcessor.fetch_reward_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/reward.log")
+                                        else:
+                                            rerun_file = Path(path + "/reward_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
                                 i -= 1
                                 j += 1
                         else:
@@ -1365,6 +1487,18 @@ def log_on_success(request):
                                     rerun_file = Path(path + "/ezestore.log")
                                     open(rerun_file, 'w').close()
                                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                                if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_khata") == "True":
+                                    khata_logs = LogProcessor.fetch_khata_logs()
+                                    rerun_file = Path(path + "/khata.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                                if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_reward") == "True":
+                                    reward_logs = LogProcessor.fetch_reward_logs()
+                                    rerun_file = Path(path + "/reward.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                             else:
                                 print("Both last_run and each_run are disabled")
                     else:
@@ -1430,6 +1564,18 @@ def log_on_success(request):
                         ezestore_logs = LogProcessor.fetch_ezestore_logs()
                         rerun_file = Path(path + "/ezestore.log")
                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestore_logs)
+
+                    if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_khata") == "True":
+                        khata_logs = LogProcessor.fetch_khata_logs()
+                        rerun_file = Path(path + "/khata.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                    if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_reward") == "True":
+                        reward_logs = LogProcessor.fetch_reward_logs()
+                        rerun_file = Path(path + "/reward.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                 else:
                     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
                         testCaseID = str(item.nodeid).split('/')
@@ -1495,6 +1641,18 @@ def log_on_success(request):
                             ezestoreLogs = LogProcessor.fetch_ezestore_logs()
                             rerun_file = Path(path + "/ezestore.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, ezestoreLogs)
+
+                        if GlobalVariables.khata_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_khata") == "True":
+                            khata_logs = LogProcessor.fetch_khata_logs()
+                            rerun_file = Path(path + "/khata.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, khata_logs)
+
+                        if GlobalVariables.reward_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_reward") == "True":
+                            reward_logs = LogProcessor.fetch_reward_logs()
+                            rerun_file = Path(path + "/reward.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
                     else:
                         print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 

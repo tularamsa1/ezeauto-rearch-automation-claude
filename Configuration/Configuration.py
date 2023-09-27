@@ -8,7 +8,10 @@ from Utilities.execution_log_processor import EzeAutoLogger
 logger = EzeAutoLogger(__name__)
 
 
-def configureLogCaptureVariables(apiLog : bool = False, portalLog : bool = False, cnpwareLog : bool = False, middlewareLog : bool = False, config_log: bool=False, closedloop_log: bool=False, q2_log: bool=False, commx_log: bool=False, ezestore_log: bool=False):
+def configureLogCaptureVariables(apiLog: bool = False, portalLog: bool = False, cnpwareLog: bool = False,
+                                 middlewareLog: bool = False, config_log: bool=False, closedloop_log: bool = False,
+                                 q2_log: bool = False, commx_log: bool = False, ezestore_log: bool = False,
+                                 khata_log: bool = False, reward_log: bool = False):
     GlobalVariables.api_logs = apiLog
     GlobalVariables.portal_logs = portalLog
     GlobalVariables.cnpware_logs = cnpwareLog
@@ -18,6 +21,8 @@ def configureLogCaptureVariables(apiLog : bool = False, portalLog : bool = False
     GlobalVariables.q2_logs = q2_log
     GlobalVariables.commx_logs = commx_log
     GlobalVariables.ezestore_logs = ezestore_log
+    GlobalVariables.khata_logs = khata_log
+    GlobalVariables.reward_logs = reward_log
 
 
 def executeFinallyBlock(testcase_Id):

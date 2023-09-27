@@ -58,8 +58,7 @@ def test_mpos_600_601_013():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, khata_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -168,8 +167,7 @@ def test_mpos_600_601_014():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, khata_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -200,8 +198,10 @@ def test_mpos_600_601_014():
             except Exception as e:
                 result = f'FAILURE {e}'
             khaata.click_cancel_button()
-            logger.debug(f"perfrom the Khaata Holder creation without entering phone number")
-            khaata.create_new_khaata_holder(ph_number,khaata_holder_name, 'Friend')
+            khaata.click_on_back_botton_to_go_to_main_screen()
+            khaata.click_my_khaata()
+            logger.debug(f"Khaata is being clicked from home page for second time")
+            khaata.create_new_khaata_holder(ph_number, khaata_holder_name, 'Friend')
             khaata.click_proceed_button()
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -288,8 +288,7 @@ def test_mpos_600_601_027():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, khata_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
