@@ -2544,7 +2544,7 @@ def test_common_100_115_076():
                     "mid": app_mid,
                     "tid": app_tid,
                     "batch_number": app_batch_number,
-                    "card_type_desc": app_card_type_desc.split('*')[1]
+                    "card_type_desc": app_card_type_desc
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------

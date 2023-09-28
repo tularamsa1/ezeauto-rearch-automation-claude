@@ -279,6 +279,12 @@ class HomePage(BasePage):
         self.perform_click(self.btn_cash_at_pos_back)
 
     def perform_online_refund(self, password: str, card_last_four_digit: str, device_serial: str):
+        """
+        This method is used to perform online refund
+        param: password str
+        param: card_last_four_digit str
+        param: device_serial str
+        """
         self.perform_click(self.btn_Refund)
         self.perform_sendkeys(self.txt_password, password)
         self.perform_click(self.btn_proceed)
@@ -292,5 +298,4 @@ class HomePage(BasePage):
         self.perform_click(self.btn_refund)
         self.perform_click(self.proceed_btn)
         self.perform_sendkeys(self.device_serial, device_serial)
-        # self.perform_click(self.btn_ok)
         self.perform_click(self.btn_externalSerialProceed)
