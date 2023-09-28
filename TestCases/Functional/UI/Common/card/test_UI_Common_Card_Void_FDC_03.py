@@ -2781,7 +2781,7 @@ def test_common_100_115_235():
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),
-                    'SALE AMOUNT': "Rs." + str(amount) + ".00",
+                    'SALE AMOUNT:': "Rs." + str(amount) + ".00",
                     'date': txn_date, 'time': txn_time,
                     'AUTH CODE': str(auth_code).strip(),
                     'BATCH NO': str(batch_number),

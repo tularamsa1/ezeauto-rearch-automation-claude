@@ -1,7 +1,5 @@
 import random
 import sys
-import time
-
 import pytest
 from datetime import datetime
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -577,7 +575,8 @@ def test_common_100_115_02_009():
                     'BATCH NO': batch_number,
                     'CARD TYPE': 'VISA',
                     'AUTH CODE': auth_code,
-                    'payment_option': 'CASH only',
+                    'payment_option': 'Cash Only',
+                    "CASH PAID:": "Rs." + "{:,.2f}".format(cash_amount),
                     "TID": tid
                 }
 
@@ -1166,7 +1165,7 @@ def test_common_100_115_02_010():
                     'AUTH CODE': auth_code,
                     'payment_option': 'VOID CASH ONLY',
                     "TID": tid,
-                    "BASE AMOUNT:": "Rs." + "{:,.2f}".format(cash_amount)
+                    "CASH PAID:": "Rs." + "{:,.2f}".format(cash_amount)
                 }
 
                 receipt_validator.perform_charge_slip_validations(txn_id,{"username": app_username,
