@@ -14,13 +14,15 @@ class CardPage(BasePage):
     CTLS_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='CTLS_MASTER_CREDIT_541333']")
     CTLS_WITH_PIN_VISA_CREDIT_417666 = (By.XPATH, "//android.widget.TextView[@text='CTLS_WITH_PIN_VISA_CREDIT_417666']")
     CTLS_WITH_PIN_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='CTLS_WITH_PIN_MASTER_CREDIT_541333']")
+
     EMV_WITH_PIN_VISA_DEBIT_428090 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_VISA_DEBIT_428090']")
     EMV_WITH_PIN_RUPAY_DEBIT_608326 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_RUPAY_DEBIT_608326']")
     EMV_VISA_DEBIT_476173 = (By.XPATH, "//android.widget.TextView[@text='EMV_VISA_DEBIT_476173']")
     EMV_MASTER_DEBIT_222360 = (By.XPATH, "//android.widget.TextView[@text='EMV_MASTER_DEBIT_222360']")
     EMV_RUPAY_DEBIT_608326 = (By.XPATH, "//android.widget.TextView[@text='EMV_RUPAY_DEBIT_608326']")
     EMV_WITH_PIN_VISA_CREDIT_417666 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_VISA_CREDIT_417666']")
-    EMV_WITH_PIN_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_MASTER_CREDIT_541333']")
+    EMV_WITH_PIN_MASTER_CREDIT_541333 = (
+    By.XPATH, "//android.widget.TextView[@text='EMV_WITH_PIN_MASTER_CREDIT_541333']")
     EMV_VISA_CREDIT_417666 = (By.XPATH, "//android.widget.TextView[@text='EMV_VISA_CREDIT_417666']")
     EMV_MASTER_CREDIT_541333 = (By.XPATH, "//android.widget.TextView[@text='EMV_MASTER_CREDIT_541333']")
 
