@@ -10,7 +10,7 @@ from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_card_page import CardPage
 from PageFactory.sa.app_payment_page import PaymentPage
-from PageFactory.sa.app_online_refund_page import RefundPage
+from PageFactory.mpos.app_online_refund_page import RefundPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
 from Utilities import Validator, ConfigReader, receipt_validator, ResourceAssigner, DBProcessor, APIProcessor, \
     date_time_converter
@@ -27,7 +27,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_115_04_001():
     """
-    Sub Feature Code: UI_Common_Card_Refund_Online_HDFC_Dummy_EMVCTLS_WITH_PIN_MASTER_CREDIT_541333
+    Sub Feature Code: UI_Common_Card_Online_Refund_HDFC_Dummy_EMVCTLS_WITH_PIN_MASTER_CREDIT_541333
     Sub Feature Description: Performing the EMVCTLS Refund Online transaction via HDFC Dummy PG using MASTER Credit card
     having 16 digit PAN length with pin (bin:541333)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 04: Online_Refund, 001: TC001
@@ -142,7 +142,7 @@ def test_common_100_115_04_001():
             logger.debug(f"Response received for Settlement api is : {settle_response}")
 
             query = f"select * from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
-            logger.debug(f"Query to fetch txn id, card_last_four_digit  from the txn table : {query}")
+            logger.debug(f"Query to fetch data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result from txn table :{result}")
             txn_id = result['id'].values[0]
@@ -150,36 +150,11 @@ def test_common_100_115_04_001():
             card_last_four_digit = result['card_last_four_digit'].values[0]
             logger.debug(f"Fetching card_last_four_digit from the txn table : {card_last_four_digit}")
 
-            home_page.perform_online_refund(password=app_password, txt_last_digits_card=card_last_four_digit, device_serial=device_serial)
-            logger.debug(f"to refund selecting the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
+            home_page.perform_online_refund(password=app_password, card_last_four_digit=card_last_four_digit, device_serial=device_serial)
+            logger.debug(f"To refund selecting the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
             card_page.select_cardtype(text="CTLS_WITH_PIN_MASTER_CREDIT_541333")
-            logger.debug(f"to refund selected the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
+            logger.debug(f"To refund selected the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
             payment_page.click_on_proceed_homepage()
-            refund_page = RefundPage(driver=app_driver)
-            ref_amount = refund_page.fetch_amount_text()
-            logger.info(f"Fetching amount from refund page : {ref_amount}")
-            ref_amount = re.search(r'[0-9,\.]+', ref_amount.split(" ")[0])
-            extracted_amount = ref_amount.group()
-            ref_card_type_desc = refund_page.fetch_card_type_desc_text()
-            logger.info(f"Fetching card_type_desc from refund page : {ref_card_type_desc}")
-            ref_date_time = refund_page.fetch_date_time_text()
-            logger.info(f"Fetching date_time from refund page : {ref_date_time}")
-            ref_status = refund_page.fetch_status_text()
-            logger.info(f"Fetching status from refund page : {ref_status}")
-            ref_device_serial = refund_page.fetch_device_serial_text()
-            logger.info(f"Fetching device_serial from refund page : {ref_device_serial}")
-            ref_customer_name = refund_page.fetch_customer_name_text()
-            logger.info(f"Fetching customer_name from refund page : {ref_customer_name}")
-            ref_auth_code = refund_page.fetch_auth_code_text()
-            logger.info(f"Fetching auth_code from refund page : {ref_auth_code}")
-            ref_tid = refund_page.fetch_tid_text()
-            logger.info(f"Fetching tid from refund page : {ref_tid}")
-            ref_mid = refund_page.fetch_mid_text()
-            logger.info(f"Fetching mid from refund page : {ref_mid}")
-            ref_rrn = refund_page.fetch_rrn_text()
-            logger.info(f"Fetching rrn from refund page : {ref_rrn}")
-            ref_batch_number = refund_page.fetch_batch_number_text()
-            logger.info(f"Fetching batch_number from refund page : {ref_batch_number}")
 
             query = f"select * from txn where id = '{txn_id}'"
             logger.debug(f"Query to fetch txn details for original txn from the txn table : {query}")
@@ -238,7 +213,7 @@ def test_common_100_115_04_001():
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
 
-            query = f"select * from txn where rr_number='{ref_rrn}' and orig_txn_id = '{txn_id}'"
+            query = f"select * from txn where org_code='{org_code}' and orig_txn_id='{txn_id}'"
             logger.debug(f"Query to fetch txn details for refund txn from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result from txn table for refund txn : {result}")
@@ -319,6 +294,7 @@ def test_common_100_115_04_001():
             try:
                 # --------------------------------------------------------------------------------------------
                 date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -336,30 +312,60 @@ def test_common_100_115_04_001():
                     "card_type_desc": "*1034 CTLS",
                     "mid": mid,
                     "tid": tid,
-                    "txn_amt_2": extracted_amount,
+                    "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": refund_txn_id,
-                    "pmt_status_2": ref_status,
-                    "rr_number_2": ref_rrn,
+                    "pmt_status_2": "REFUNDED",
+                    "rr_number_2": refund_rrn,
                     "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
-                    "customer_name_2": ref_customer_name,
+                    "customer_name_2": "MASTERCARD",
                     "settle_status_2": "PENDING",
-                    "auth_code_2": ref_auth_code,
-                    "date_2": ref_date_time,
-                    "device_serial_2": ref_device_serial,
-                    "batch_number_2": ref_batch_number,
-                    "card_type_desc_2": ref_card_type_desc,
-                    "mid_2": ref_mid,
-                    "tid_2": ref_tid
+                    "auth_code_2": refund_auth_code,
+                    "date_2": refund_date_and_time,
+                    "device_serial_2": device_serial,
+                    "batch_number_2": refund_batch_number,
+                    "card_type_desc_2": "*1034 CTLS",
+                    "mid_2": mid,
+                    "tid_2": tid,
+
+                    "or_device_serial": device_serial,
+                    "or_amount": "{:,.2f}".format(amount),
+                    "or_card_type_desc": "*1034 CTLS",
+                    "or_date_time": date_time,
+                    "or_status": "AUTHORIZED_REFUNDED",
+                    "or_auth_code_name": auth_code,
+                    "or_mid": mid_txn,
+                    "or_tid": tid_txn,
+                    "or_rrn": rrn,
+                    "or_batch_number": batch_number,
+                    "or_customer_name": customer_name,
+                    "or_ref1": order_id,
+                    "or_device_serial_2": device_serial,
+                    "or_amount_2": "{:,.2f}".format(amount),
+                    "or_card_type_desc_2": "*1034 CTLS",
+                    "or_date_time_2": refund_date_and_time,
+                    "or_status_2": "REFUNDED",
+                    "or_ref3_2": device_serial,
+                    "or_auth_code_name_2": refund_auth_code,
+                    "or_mid_2": refund_mid_txn,
+                    "or_tid_2": refund_tid_txn,
+                    "or_rrn_2": refund_rrn,
+                    "or_batch_number_2": refund_batch_number,
+                    "or_customer_name_2": refund_customer_name,
+                    "or_ref1_2": order_id
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                app_driver.back()
-                home_page.check_home_page_logo()
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
-                logger.info(f"App homepage loaded successfully")
+                refund_page = RefundPage(driver=app_driver)
+                online_refund_txn_data = refund_page.capture_online_refund_txn_data(password=app_password, card_last_four_digit=card_last_four_digit,
+                                                                                    customer_name=customer_name, txn_type=None)
+                logger.debug(f"captured transaction data from refund page: {online_refund_txn_data}")
+                or_amount = re.search(r'[0-9,\.]+', online_refund_txn_data["or_amount"].split(" ")[0])
+                or_amount = or_amount.group()
+                or_amount_2 = re.search(r'[0-9,\.]+', online_refund_txn_data["or_amount_2"].split(" ")[0])
+                or_amount_2 = or_amount_2.group()
+
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(driver=app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
@@ -463,7 +469,33 @@ def test_common_100_115_04_001():
                     "batch_number_2": app_batch_number_refund,
                     "card_type_desc_2": app_card_type_desc_refund,
                     "mid_2": app_mid_refund,
-                    "tid_2": app_tid_refund
+                    "tid_2": app_tid_refund,
+
+                    "or_device_serial": online_refund_txn_data["or_device_serial"],
+                    "or_amount": or_amount,
+                    "or_card_type_desc": online_refund_txn_data["or_card_type_desc"],
+                    "or_date_time": online_refund_txn_data["or_date_time"],
+                    "or_status": online_refund_txn_data["or_status"],
+                    "or_auth_code_name": online_refund_txn_data["or_auth_code_name"],
+                    "or_mid": online_refund_txn_data["or_mid"],
+                    "or_tid": online_refund_txn_data["or_tid"],
+                    "or_rrn": online_refund_txn_data["or_rrn"],
+                    "or_batch_number": online_refund_txn_data["or_batch_number"],
+                    "or_customer_name": online_refund_txn_data["or_customer_name"],
+                    "or_ref1": online_refund_txn_data["or_ref1"],
+                    "or_device_serial_2": online_refund_txn_data["or_device_serial_2"],
+                    "or_amount_2": or_amount_2,
+                    "or_card_type_desc_2": online_refund_txn_data["or_card_type_desc_2"],
+                    "or_date_time_2": online_refund_txn_data["or_date_time_2"],
+                    "or_status_2": online_refund_txn_data["or_status_2"],
+                    "or_ref3_2": online_refund_txn_data["or_ref3_2"],
+                    "or_auth_code_name_2": online_refund_txn_data["or_auth_code_name_2"],
+                    "or_mid_2": online_refund_txn_data["or_mid_2"],
+                    "or_tid_2": online_refund_txn_data["or_tid_2"],
+                    "or_rrn_2": online_refund_txn_data["or_rrn_2"],
+                    "or_batch_number_2": online_refund_txn_data["or_batch_number_2"],
+                    "or_customer_name_2": online_refund_txn_data["or_customer_name_2"],
+                    "or_ref1_2": online_refund_txn_data["or_ref1_2"]
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------
@@ -971,7 +1003,7 @@ def test_common_100_115_04_001():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_04_002():
     """
-    Sub Feature Code: UI_Common_Card_Refund_Online_HDFC_Dummy_EMV_WITH_PIN_MASTER_CREDIT_541333
+    Sub Feature Code: UI_Common_Card_Online_Refund_HDFC_Dummy_EMV_WITH_PIN_MASTER_CREDIT_541333
     Sub Feature Description: Performing the EMV Refund Online transaction via HDFC Dummy PG using MASTER Credit card
     having 16 digit PAN length with pin (bin:541333)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 04: Online_Refund, 002: TC002
@@ -1086,7 +1118,7 @@ def test_common_100_115_04_002():
             logger.debug(f"Response received for Settlement api is : {settle_response}")
 
             query = f"select * from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
-            logger.debug(f"Query to fetch txn id, card_last_four_digit  from the txn table : {query}")
+            logger.debug(f"Query to fetch data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result from txn table :{result}")
             txn_id = result['id'].values[0]
@@ -1094,36 +1126,11 @@ def test_common_100_115_04_002():
             card_last_four_digit = result['card_last_four_digit'].values[0]
             logger.debug(f"Fetching card_last_four_digit from the txn table : {card_last_four_digit}")
 
-            home_page.perform_online_refund(password=app_password, txt_last_digits_card=card_last_four_digit, device_serial=device_serial)
-            logger.debug(f"to refund selecting the card type as : EMV_WITH_PIN_MASTER_CREDIT_541333")
+            home_page.perform_online_refund(password=app_password, card_last_four_digit=card_last_four_digit, device_serial=device_serial)
+            logger.debug(f"To refund selecting the card type as : EMV_WITH_PIN_MASTER_CREDIT_541333")
             card_page.select_cardtype(text="EMV_WITH_PIN_MASTER_CREDIT_541333")
-            logger.debug(f"to refund selected the card type as : EMV_WITH_PIN_MASTER_CREDIT_541333")
+            logger.debug(f"To refund selected the card type as : EMV_WITH_PIN_MASTER_CREDIT_541333")
             payment_page.click_on_proceed_homepage()
-            refund_page = RefundPage(driver=app_driver)
-            ref_amount = refund_page.fetch_amount_text()
-            logger.info(f"Fetching amount from refund page : {ref_amount}")
-            ref_amount = re.search(r'[0-9,\.]+', ref_amount.split(" ")[0])
-            extracted_amount = ref_amount.group()
-            ref_card_type_desc = refund_page.fetch_card_type_desc_text()
-            logger.info(f"Fetching card_type_desc from refund page : {ref_card_type_desc}")
-            ref_date_time = refund_page.fetch_date_time_text()
-            logger.info(f"Fetching date_time from refund page : {ref_date_time}")
-            ref_status = refund_page.fetch_status_text()
-            logger.info(f"Fetching status from refund page : {ref_status}")
-            ref_device_serial = refund_page.fetch_device_serial_text()
-            logger.info(f"Fetching device_serial from refund page : {ref_device_serial}")
-            ref_customer_name = refund_page.fetch_customer_name_text()
-            logger.info(f"Fetching customer_name from refund page : {ref_customer_name}")
-            ref_auth_code = refund_page.fetch_auth_code_text()
-            logger.info(f"Fetching auth_code from refund page : {ref_auth_code}")
-            ref_tid = refund_page.fetch_tid_text()
-            logger.info(f"Fetching tid from refund page : {ref_tid}")
-            ref_mid = refund_page.fetch_mid_text()
-            logger.info(f"Fetching mid from refund page : {ref_mid}")
-            ref_rrn = refund_page.fetch_rrn_text()
-            logger.info(f"Fetching rrn from refund page : {ref_rrn}")
-            ref_batch_number = refund_page.fetch_batch_number_text()
-            logger.info(f"Fetching batch_number from refund page : {ref_batch_number}")
 
             query = f"select * from txn where id = '{txn_id}'"
             logger.debug(f"Query to fetch txn details for original txn from the txn table : {query}")
@@ -1182,7 +1189,7 @@ def test_common_100_115_04_002():
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
 
-            query = f"select * from txn where rr_number='{ref_rrn}' and orig_txn_id = '{txn_id}'"
+            query = f"select * from txn where org_code='{org_code}' and orig_txn_id='{txn_id}'"
             logger.debug(f"Query to fetch txn details for refund txn from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result from txn table for refund txn : {result}")
@@ -1263,6 +1270,7 @@ def test_common_100_115_04_002():
             try:
                 # --------------------------------------------------------------------------------------------
                 date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1280,30 +1288,60 @@ def test_common_100_115_04_002():
                     "card_type_desc": "*1034 EMV with PIN",
                     "mid": mid,
                     "tid": tid,
-                    "txn_amt_2": extracted_amount,
+                    "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": refund_txn_id,
-                    "pmt_status_2": ref_status,
-                    "rr_number_2": ref_rrn,
+                    "pmt_status_2": "REFUNDED",
+                    "rr_number_2": refund_rrn,
                     "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
-                    "customer_name_2": ref_customer_name,
+                    "customer_name_2": "MASTERCARD",
                     "settle_status_2": "PENDING",
-                    "auth_code_2": ref_auth_code,
-                    "date_2": ref_date_time,
-                    "device_serial_2": ref_device_serial,
-                    "batch_number_2": ref_batch_number,
-                    "card_type_desc_2": ref_card_type_desc,
-                    "mid_2": ref_mid,
-                    "tid_2": ref_tid
+                    "auth_code_2": refund_auth_code,
+                    "date_2": refund_date_and_time,
+                    "device_serial_2": device_serial,
+                    "batch_number_2": refund_batch_number,
+                    "card_type_desc_2": "*1034 EMV with PIN",
+                    "mid_2": mid,
+                    "tid_2": tid,
+
+                    "or_device_serial": device_serial,
+                    "or_amount": "{:,.2f}".format(amount),
+                    "or_card_type_desc": "*1034 EMV with PIN",
+                    "or_date_time": date_time,
+                    "or_status": "AUTHORIZED_REFUNDED",
+                    "or_auth_code_name": auth_code,
+                    "or_mid": mid_txn,
+                    "or_tid": tid_txn,
+                    "or_rrn": rrn,
+                    "or_batch_number": batch_number,
+                    "or_customer_name": customer_name,
+                    "or_ref1": order_id,
+                    "or_device_serial_2": device_serial,
+                    "or_amount_2": "{:,.2f}".format(amount),
+                    "or_card_type_desc_2": "*1034 EMV with PIN",
+                    "or_date_time_2": refund_date_and_time,
+                    "or_status_2": "REFUNDED",
+                    "or_ref3_2": device_serial,
+                    "or_auth_code_name_2": refund_auth_code,
+                    "or_mid_2": refund_mid_txn,
+                    "or_tid_2": refund_tid_txn,
+                    "or_rrn_2": refund_rrn,
+                    "or_batch_number_2": refund_batch_number,
+                    "or_customer_name_2": refund_customer_name,
+                    "or_ref1_2": order_id
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                app_driver.back()
-                home_page.check_home_page_logo()
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
-                logger.info(f"App homepage loaded successfully")
+                refund_page = RefundPage(driver=app_driver)
+                online_refund_txn_data = refund_page.capture_online_refund_txn_data(password=app_password, card_last_four_digit=card_last_four_digit,
+                                                                                    customer_name=customer_name, txn_type=None)
+                logger.debug(f"captured transaction data from refund page: {online_refund_txn_data}")
+                or_amount = re.search(r'[0-9,\.]+', online_refund_txn_data["or_amount"].split(" ")[0])
+                or_amount = or_amount.group()
+                or_amount_2 = re.search(r'[0-9,\.]+', online_refund_txn_data["or_amount_2"].split(" ")[0])
+                or_amount_2 = or_amount_2.group()
+
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(driver=app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
@@ -1407,7 +1445,33 @@ def test_common_100_115_04_002():
                     "batch_number_2": app_batch_number_refund,
                     "card_type_desc_2": app_card_type_desc_refund,
                     "mid_2": app_mid_refund,
-                    "tid_2": app_tid_refund
+                    "tid_2": app_tid_refund,
+
+                    "or_device_serial": online_refund_txn_data["or_device_serial"],
+                    "or_amount": or_amount,
+                    "or_card_type_desc": online_refund_txn_data["or_card_type_desc"],
+                    "or_date_time": online_refund_txn_data["or_date_time"],
+                    "or_status": online_refund_txn_data["or_status"],
+                    "or_auth_code_name": online_refund_txn_data["or_auth_code_name"],
+                    "or_mid": online_refund_txn_data["or_mid"],
+                    "or_tid": online_refund_txn_data["or_tid"],
+                    "or_rrn": online_refund_txn_data["or_rrn"],
+                    "or_batch_number": online_refund_txn_data["or_batch_number"],
+                    "or_customer_name": online_refund_txn_data["or_customer_name"],
+                    "or_ref1": online_refund_txn_data["or_ref1"],
+                    "or_device_serial_2": online_refund_txn_data["or_device_serial_2"],
+                    "or_amount_2": or_amount_2,
+                    "or_card_type_desc_2": online_refund_txn_data["or_card_type_desc_2"],
+                    "or_date_time_2": online_refund_txn_data["or_date_time_2"],
+                    "or_status_2": online_refund_txn_data["or_status_2"],
+                    "or_ref3_2": online_refund_txn_data["or_ref3_2"],
+                    "or_auth_code_name_2": online_refund_txn_data["or_auth_code_name_2"],
+                    "or_mid_2": online_refund_txn_data["or_mid_2"],
+                    "or_tid_2": online_refund_txn_data["or_tid_2"],
+                    "or_rrn_2": online_refund_txn_data["or_rrn_2"],
+                    "or_batch_number_2": online_refund_txn_data["or_batch_number_2"],
+                    "or_customer_name_2": online_refund_txn_data["or_customer_name_2"],
+                    "or_ref1_2": online_refund_txn_data["or_ref1_2"]
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------
@@ -1915,7 +1979,7 @@ def test_common_100_115_04_002():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_04_003():
     """
-    Sub Feature Code: UI_Common_Card_Refund_Online_HDFC_Dummy_EMV_WITH_PIN_RUPAY_DEBIT_608326
+    Sub Feature Code: UI_Common_Card_Online_Refund_HDFC_Dummy_EMV_WITH_PIN_RUPAY_DEBIT_608326
     Sub Feature Description: Performing the EMV Refund Online transaction via HDFC Dummy PG using RUPAY Debit card
     having 16 digit PAN length with pin (bin:608326)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 04: Online_Refund, 003: TC003
@@ -2030,7 +2094,7 @@ def test_common_100_115_04_003():
             logger.debug(f"Response received for Settlement api is : {settle_response}")
 
             query = f"select * from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
-            logger.debug(f"Query to fetch txn id, card_last_four_digit  from the txn table : {query}")
+            logger.debug(f"Query to fetch data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result from txn table :{result}")
             txn_id = result['id'].values[0]
@@ -2038,36 +2102,11 @@ def test_common_100_115_04_003():
             card_last_four_digit = result['card_last_four_digit'].values[0]
             logger.debug(f"Fetching card_last_four_digit from the txn table : {card_last_four_digit}")
 
-            home_page.perform_online_refund(password=app_password, txt_last_digits_card=card_last_four_digit, device_serial=device_serial)
-            logger.debug(f"to refund selecting the card type as : EMV_WITH_PIN_RUPAY_DEBIT_608326")
+            home_page.perform_online_refund(password=app_password, card_last_four_digit=card_last_four_digit, device_serial=device_serial)
+            logger.debug(f"To refund selecting the card type as : EMV_WITH_PIN_RUPAY_DEBIT_608326")
             card_page.select_cardtype(text="EMV_WITH_PIN_RUPAY_DEBIT_608326")
-            logger.debug(f"to refund selected the card type as : EMV_WITH_PIN_RUPAY_DEBIT_608326")
+            logger.debug(f"To refund selected the card type as : EMV_WITH_PIN_RUPAY_DEBIT_608326")
             payment_page.click_on_proceed_homepage()
-            refund_page = RefundPage(driver=app_driver)
-            ref_amount = refund_page.fetch_amount_text()
-            logger.info(f"Fetching amount from refund page : {ref_amount}")
-            ref_amount = re.search(r'[0-9,\.]+', ref_amount.split(" ")[0])
-            extracted_amount = ref_amount.group()
-            ref_card_type_desc = refund_page.fetch_card_type_desc_text()
-            logger.info(f"Fetching card_type_desc from refund page : {ref_card_type_desc}")
-            ref_date_time = refund_page.fetch_date_time_text()
-            logger.info(f"Fetching date_time from refund page : {ref_date_time}")
-            ref_status = refund_page.fetch_status_text()
-            logger.info(f"Fetching status from refund page : {ref_status}")
-            ref_device_serial = refund_page.fetch_device_serial_text()
-            logger.info(f"Fetching device_serial from refund page : {ref_device_serial}")
-            ref_customer_name = refund_page.fetch_customer_name_text()
-            logger.info(f"Fetching customer_name from refund page : {ref_customer_name}")
-            ref_auth_code = refund_page.fetch_auth_code_text()
-            logger.info(f"Fetching auth_code from refund page : {ref_auth_code}")
-            ref_tid = refund_page.fetch_tid_text()
-            logger.info(f"Fetching tid from refund page : {ref_tid}")
-            ref_mid = refund_page.fetch_mid_text()
-            logger.info(f"Fetching mid from refund page : {ref_mid}")
-            ref_rrn = refund_page.fetch_rrn_text()
-            logger.info(f"Fetching rrn from refund page : {ref_rrn}")
-            ref_batch_number = refund_page.fetch_batch_number_text()
-            logger.info(f"Fetching batch_number from refund page : {ref_batch_number}")
 
             query = f"select * from txn where id = '{txn_id}'"
             logger.debug(f"Query to fetch txn details for original txn from the txn table : {query}")
@@ -2126,7 +2165,7 @@ def test_common_100_115_04_003():
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
 
-            query = f"select * from txn where rr_number='{ref_rrn}' and orig_txn_id = '{txn_id}'"
+            query = f"select * from txn where org_code='{org_code}' and orig_txn_id='{txn_id}'"
             logger.debug(f"Query to fetch txn details for refund txn from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result from txn table for refund txn : {result}")
@@ -2207,6 +2246,7 @@ def test_common_100_115_04_003():
             try:
                 # --------------------------------------------------------------------------------------------
                 date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2224,30 +2264,60 @@ def test_common_100_115_04_003():
                     "card_type_desc": "*0017 EMV with PIN",
                     "mid": mid,
                     "tid": tid,
-                    "txn_amt_2": extracted_amount,
+                    "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": refund_txn_id,
-                    "pmt_status_2": ref_status,
-                    "rr_number_2": ref_rrn,
+                    "pmt_status_2": "REFUNDED",
+                    "rr_number_2": refund_rrn,
                     "order_id_2": order_id,
                     "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
-                    "customer_name_2": ref_customer_name,
+                    "customer_name_2": "RUPAY CARD IMAGE 01",
                     "settle_status_2": "PENDING",
-                    "auth_code_2": ref_auth_code,
-                    "date_2": ref_date_time,
-                    "device_serial_2": ref_device_serial,
-                    "batch_number_2": ref_batch_number,
-                    "card_type_desc_2": ref_card_type_desc,
-                    "mid_2": ref_mid,
-                    "tid_2": ref_tid
+                    "auth_code_2": refund_auth_code,
+                    "date_2": refund_date_and_time,
+                    "device_serial_2": device_serial,
+                    "batch_number_2": refund_batch_number,
+                    "card_type_desc_2":  "*0017 EMV with PIN",
+                    "mid_2": mid,
+                    "tid_2": tid,
+
+                    "or_device_serial": device_serial,
+                    "or_amount": "{:,.2f}".format(amount),
+                    "or_card_type_desc": "*0017 EMV with PIN",
+                    "or_date_time": date_time,
+                    "or_status": "AUTHORIZED_REFUNDED",
+                    "or_auth_code_name": auth_code,
+                    "or_mid": mid_txn,
+                    "or_tid": tid_txn,
+                    "or_rrn": rrn,
+                    "or_batch_number": batch_number,
+                    "or_customer_name": customer_name,
+                    "or_ref1": order_id,
+                    "or_device_serial_2": device_serial,
+                    "or_amount_2": "{:,.2f}".format(amount),
+                    "or_card_type_desc_2": "*0017 EMV with PIN",
+                    "or_date_time_2": refund_date_and_time,
+                    "or_status_2": "REFUNDED",
+                    "or_ref3_2": device_serial,
+                    "or_auth_code_name_2": refund_auth_code,
+                    "or_mid_2": refund_mid_txn,
+                    "or_tid_2": refund_tid_txn,
+                    "or_rrn_2": refund_rrn,
+                    "or_batch_number_2": refund_batch_number,
+                    "or_customer_name_2": refund_customer_name,
+                    "or_ref1_2": order_id
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                app_driver.back()
-                home_page.check_home_page_logo()
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
-                logger.info(f"App homepage loaded successfully")
+                refund_page = RefundPage(driver=app_driver)
+                online_refund_txn_data = refund_page.capture_online_refund_txn_data(password=app_password, card_last_four_digit=card_last_four_digit,
+                                                                                    customer_name=customer_name, txn_type=None)
+                logger.debug(f"captured transaction data from refund page: {online_refund_txn_data}")
+                or_amount = re.search(r'[0-9,\.]+', online_refund_txn_data["or_amount"].split(" ")[0])
+                or_amount = or_amount.group()
+                or_amount_2 = re.search(r'[0-9,\.]+', online_refund_txn_data["or_amount_2"].split(" ")[0])
+                or_amount_2 = or_amount_2.group()
+
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(driver=app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
@@ -2351,7 +2421,33 @@ def test_common_100_115_04_003():
                     "batch_number_2": app_batch_number_refund,
                     "card_type_desc_2": app_card_type_desc_refund,
                     "mid_2": app_mid_refund,
-                    "tid_2": app_tid_refund
+                    "tid_2": app_tid_refund,
+
+                    "or_device_serial": online_refund_txn_data["or_device_serial"],
+                    "or_amount": or_amount,
+                    "or_card_type_desc": online_refund_txn_data["or_card_type_desc"],
+                    "or_date_time": online_refund_txn_data["or_date_time"],
+                    "or_status": online_refund_txn_data["or_status"],
+                    "or_auth_code_name": online_refund_txn_data["or_auth_code_name"],
+                    "or_mid": online_refund_txn_data["or_mid"],
+                    "or_tid": online_refund_txn_data["or_tid"],
+                    "or_rrn": online_refund_txn_data["or_rrn"],
+                    "or_batch_number": online_refund_txn_data["or_batch_number"],
+                    "or_customer_name": online_refund_txn_data["or_customer_name"],
+                    "or_ref1": online_refund_txn_data["or_ref1"],
+                    "or_device_serial_2": online_refund_txn_data["or_device_serial_2"],
+                    "or_amount_2": or_amount_2,
+                    "or_card_type_desc_2": online_refund_txn_data["or_card_type_desc_2"],
+                    "or_date_time_2": online_refund_txn_data["or_date_time_2"],
+                    "or_status_2": online_refund_txn_data["or_status_2"],
+                    "or_ref3_2": online_refund_txn_data["or_ref3_2"],
+                    "or_auth_code_name_2": online_refund_txn_data["or_auth_code_name_2"],
+                    "or_mid_2": online_refund_txn_data["or_mid_2"],
+                    "or_tid_2": online_refund_txn_data["or_tid_2"],
+                    "or_rrn_2": online_refund_txn_data["or_rrn_2"],
+                    "or_batch_number_2": online_refund_txn_data["or_batch_number_2"],
+                    "or_customer_name_2": online_refund_txn_data["or_customer_name_2"],
+                    "or_ref1_2": online_refund_txn_data["or_ref1_2"]
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------

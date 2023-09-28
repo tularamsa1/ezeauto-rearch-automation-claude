@@ -1,5 +1,4 @@
 import random
-import re
 import sys
 from datetime import datetime
 import pytest
@@ -10,7 +9,6 @@ from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_card_page import CardPage
 from PageFactory.sa.app_payment_page import PaymentPage
-from PageFactory.sa.app_online_refund_page import RefundPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
 from Utilities import Validator, ConfigReader, receipt_validator, ResourceAssigner, DBProcessor, APIProcessor, \
     date_time_converter
