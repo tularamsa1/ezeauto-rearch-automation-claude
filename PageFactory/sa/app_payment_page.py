@@ -244,3 +244,9 @@ class PaymentPage(BasePage):
         This method is used for proceed to home page after failed payment
         """
         self.perform_click(self.btn_go_to_home)
+
+    def click_on_back_btn_in_enter_amt_window(self):
+        """
+        This method is used for proceed back from the enter amount window
+        """
+        self.perform_click(self.btn_back_enter_amt_window)
