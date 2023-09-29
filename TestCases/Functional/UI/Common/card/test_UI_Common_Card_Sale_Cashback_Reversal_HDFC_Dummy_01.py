@@ -6,13 +6,12 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.merchant_portal.portal_trans_history_page import get_transaction_details_for_portal
 from PageFactory.sa.app_card_page import CardPage
-from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
-from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor, \
-    receipt_validator
+from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
+
 logger = EzeAutoLogger(__name__)
 
 
@@ -22,7 +21,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_02_007():
+def test_common_100_115_02_011():
     """
     Sub Feature Code: UI_Common_Card_Sale_Cashback_Reversal_HDFC_Dummy_EMVCTLS_VISA_DebitCard_Without_Pin_476173
     Sub Feature Description:  Performing the EMVCTLS sale cashback Reversal transaction via HDFC Dummy PG using VISA Debit card having 16 digit
@@ -80,7 +79,6 @@ def test_common_100_115_02_007():
             "settingForOrgCode": org_code
         })
         api_details["RequestBody"]["settings"]["cashBackOption"] = "1"
-
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for cash back option to be enabled : {response}")
@@ -91,7 +89,7 @@ def test_common_100_115_02_007():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -126,7 +124,6 @@ def test_common_100_115_02_007():
             home_page.enter_order_number_and_device_serial_for_card(order_number=order_id, device_serial=device_serial)
             logger.debug(f"Entered order id is : {order_id}")
             logger.debug(f"Entered device serial is : {device_serial}")
-            payment_page = PaymentPage(driver=app_driver)
             card_page = CardPage(driver=app_driver)
             logger.debug(f"Selecting card type CTLS_VISA_DEBIT_476173")
             card_page.select_cardtype("CTLS_VISA_DEBIT_476173")
@@ -599,7 +596,7 @@ def test_common_100_115_02_007():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_02_008():
+def test_common_100_115_02_012():
     """
     Sub Feature Code: UI_Common_Card_Sale_Cashback_Reversal_HDFC_Dummy_EMVCTLS_VISA_CreditCard_Without_Pin_417666
     Sub Feature Description:  Performing the EMVCTLS sale cashback Reversal transaction via HDFC Dummy PG using VISA Credit card having 16 digit
@@ -668,7 +665,7 @@ def test_common_100_115_02_008():
         issuer_code_info = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code_info}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
+        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -703,7 +700,6 @@ def test_common_100_115_02_008():
             home_page.enter_order_number_and_device_serial_for_card(order_number=order_id, device_serial=device_serial)
             logger.debug(f"Entered order id is : {order_id}")
             logger.debug(f"Entered device serial is : {device_serial}")
-            payment_page = PaymentPage(driver=app_driver)
             card_page = CardPage(driver=app_driver)
             logger.debug(f"Selecting card type CTLS_VISA_CREDIT_417666")
             card_page.select_cardtype("CTLS_VISA_CREDIT_417666")

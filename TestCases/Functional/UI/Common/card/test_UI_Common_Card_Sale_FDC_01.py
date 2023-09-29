@@ -28,7 +28,7 @@ def test_common_100_115_019():
     """
     Sub Feature Code: UI_Common_Card_Sale_FDC_CTLS_VISA_DEBIT_476173
     Sub Feature Description:  Performing the EMV sale transaction via FDC PG using CTLS VISA Debit card having 16 digit
-     PAN length with pin (bin: 476173)
+     PAN length without pin (bin: 476173)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 019: TC019
     """
     try:
@@ -987,7 +987,7 @@ def test_common_100_115_021():
     """
     Sub Feature Code: UI_Common_Card_Sale_FDC_CTLS_MASTER_DEBIT_222360
     Sub Feature Description:  Performing the EMV sale transaction via FDC PG using CTLS MASTER Debit card
-    having 16 digit PAN length with pin (bin: 222360)
+    having 16 digit PAN length without pin (bin: 222360)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 021: TC021
     """
     try:
@@ -1951,7 +1951,7 @@ def test_common_100_115_023():
     """
     Sub Feature Code: UI_Common_Card_Sale_FDC_CTLS_RUPAY_DEBIT_608326
     Sub Feature Description:  Performing the EMV sale transaction via FDC PG using CTLS RUPAY Debit card
-    having 16 digit PAN length with pin (bin: 608326)
+    having 16 digit PAN length without pin (bin: 608326)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 023: TC023
     """
     try:
