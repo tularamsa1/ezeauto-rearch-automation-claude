@@ -21,7 +21,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 def test_mp_700_701_062():
     """
-    Sub Feature Code: UI_MP_Performance_Matrix_for_Country_head_as_country_head
+    Sub Feature Code: UI_MP_Performance_Matrix_top10_performer_for_below_20_nodes_as_Country_head
     Sub Feature Description: Verifying Performance Matrix for TOP 10 performers when country head has logged in for all lower level hierarchies having less than 20 nodes
     TC naming code description:
     700: Merchant Portal
@@ -41,10 +41,11 @@ def test_mp_700_701_062():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -137,14 +138,16 @@ def test_mp_700_701_062():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_performance_matrix', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1,
                 "labelId": "0"})
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for profile is: {response}")
@@ -231,7 +234,7 @@ def test_mp_700_701_062():
 @pytest.mark.portalVal
 def test_mp_700_701_063():
     """
-    Sub Feature Code: UI_MP_Performance_Matrix_for_Country_head_as_country_head
+    Sub Feature Code: UI_MP_Performance_Matrix_top10_and_bottom10_performer_for_more_than_20_nodes_as_Country_head
     Sub Feature Description: Verifying Performance Matrix for TOP 10  and BOTTOM 10 performers when country head has logged in for all lower level hierarchies having only more than 20 nodes
     TC naming code description:
     700: Merchant Portal
@@ -251,10 +254,12 @@ def test_mp_700_701_063():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
+        cashier_username = cred_dict['CASHIER']['username']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -346,6 +351,14 @@ def test_mp_700_701_063():
             top_to_bottom_all_performers = dict(
                 sorted(top_to_bottom_all_performers_1.items(), key=operator.itemgetter(1), reverse=True))
 
+            query = "select sum(amount) from txn where" \
+                    " id between '" + current_start_date_1 + "' and '" + current_end_date_1 + "' and org_code = '" + org_code + "' and username = '" + cashier_username + "' and status = 'AUTHORIZED';"
+            logger.debug(f"Query to txn details from database : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            cashier_volume = float(result.values[0])
+            top_to_bottom_all_performers['Store1'] += cashier_volume
+            logger.debug(f"cashier volume : {cashier_volume}")
+
             node_names_db = []
             volumes_db = []
             for name, volume in top_to_bottom_all_performers.items():
@@ -399,6 +412,9 @@ def test_mp_700_701_063():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_performance_matrix', request_body={
@@ -406,7 +422,7 @@ def test_mp_700_701_063():
                 "endDate": this_end_date_1,
                 "labelId": "6"})
             logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for profile is: {response}")
