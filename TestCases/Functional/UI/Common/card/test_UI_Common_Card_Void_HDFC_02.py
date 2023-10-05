@@ -519,7 +519,7 @@ def test_common_100_115_016():
     """
     Sub Feature Code: UI_Common_Card_Void_HDFC_CTLS_VISA_CREDIT_417666
     Sub Feature Description:  Performing the EMV void transaction via HDFC PG using CTLS VISA Credit card
-    having 16 digit PAN length with pin (bin: 417666)
+    having 16 digit PAN length without pin (bin: 417666)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 016: TC016
     """
     try:
@@ -1009,7 +1009,7 @@ def test_common_100_115_017():
     """
     Sub Feature Code: UI_Common_Card_Void_HDFC_CTLS_MASTER_CREDIT_541333
     Sub Feature Description:  Performing the EMV void transaction via HDFC PG using CTLS MASTER Credit card
-    having 16 digit PAN length with pin (bin: 541333)
+    having 16 digit PAN length without pin (bin: 541333)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 017: TC017
     """
     try:

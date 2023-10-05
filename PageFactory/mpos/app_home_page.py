@@ -1,5 +1,3 @@
-from time import sleep
-
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.by import By
 from PageFactory.mpos.app_base_page import BasePage
@@ -12,9 +10,9 @@ class HomePage(BasePage):
     txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
     btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
     btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/clGotoHistory")
-    img_companyLogo = (By.XPATH,'//android.widget.ImageView[@content-desc="Company Logo"]')
-    tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
-    mnu_engSideMenu =(By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
+    img_companyLogo = (By.XPATH, '//android.widget.ImageView[@content-desc="Company Logo"]')
+    tab_history = (By.ID, "com.ezetap.basicapp:id/nav_txn_history")
+    mnu_engSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')
     mnu_merchantDetail = (By.ID, 'com.ezetap.basicapp:id/arrow')
     rdo_langSelection = (By.ID, 'com.ezetap.basicapp:id/clLanguage')
@@ -38,7 +36,20 @@ class HomePage(BasePage):
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
     btn_preauth = (By.XPATH, "//android.widget.TextView[@text='Pre-Auth']")
     txt_enter_pre_auth_amt = (By.ID, "com.ezetap.basicapp:id/textViewAmount")
-    btn_cash_at_pos_back = (By.ID, 'com.ezetap.basicapp: id / imgToolbarBack')
+    btn_cash_at_pos_back = (By.ID, 'com.ezetap.basicapp:id/imgToolbarBack')
+
+    btn_Refund = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Refund")')
+    btn_proceed = (AppiumBy.ID, 'com.ezetap.basicapp:id/btn_authenticate')
+    txt_password = (AppiumBy.ID, 'com.ezetap.basicapp:id/txt_password')
+    card_last_four_digit = (AppiumBy.ID, "com.ezetap.basicapp:id/txt_last_digits_card")
+    txt_date_txn_history = (AppiumBy.ID, "com.ezetap.basicapp:id/txt_date_txn_history")
+    button1 = (AppiumBy.ID, "android:id/button1")
+    btn_authenticate = (AppiumBy.ID, "com.ezetap.basicapp:id/btn_authenticate")
+    txnCard = (AppiumBy.ID, "com.ezetap.basicapp:id/txnCard")
+    btn_refund = (AppiumBy.ID, "com.ezetap.basicapp:id/btn_refund")
+    proceed_btn = (AppiumBy.ID, "com.ezetap.basicapp:id/proceed_btn")
+    device_serial = (AppiumBy.ID, "com.ezetap.service.demo:id/et_DeviceSerialNo")
+    btn_externalSerialProceed = (AppiumBy.ID, "com.ezetap.service.demo:id/btn_externalSerialProceed")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -91,7 +102,7 @@ class HomePage(BasePage):
         self.perform_click(self.btn_paymentProceed)
 
     def enter_tip_and_amount_and_order_number_and_device_serial_for_card(self, amt: int, order_number: str,
-                                                                     tip_amt: int, device_serial: str):
+                                                                         tip_amt: int, device_serial: str):
         """
           This method is used to enter amount, order number, tip amount and device serial in the home page.
           :param amt: int,
@@ -143,7 +154,7 @@ class HomePage(BasePage):
             if i == '.':
                 li.append((By.ID, "com.ezetap.basicapp:id/button_dot"))
             else:
-                li.append((By.ID, "com.ezetap.basicapp:id/button_"+i+""))
+                li.append((By.ID, "com.ezetap.basicapp:id/button_" + i + ""))
         return li
 
     def perform_check_status(self):
@@ -266,3 +277,25 @@ class HomePage(BasePage):
         This method clicks on the back btn on the cash@pos enter amount page
        """
         self.perform_click(self.btn_cash_at_pos_back)
+
+    def perform_online_refund(self, password: str, card_last_four_digit: str, device_serial: str):
+        """
+        This method is used to perform online refund
+        param: password str
+        param: card_last_four_digit str
+        param: device_serial str
+        """
+        self.perform_click(self.btn_Refund)
+        self.perform_sendkeys(self.txt_password, password)
+        self.perform_click(self.btn_proceed)
+        self.perform_sendkeys(self.card_last_four_digit, card_last_four_digit)
+        self.perform_click(self.txt_date_txn_history)
+        self.perform_click(self.button1)
+        self.perform_click(self.btn_authenticate)
+        self.visibility_of_elements(self.txnCard)
+        txn_locator_list = self.driver.find_elements(By.ID, 'com.ezetap.basicapp:id/txnCard')
+        txn_locator_list[0].click()
+        self.perform_click(self.btn_refund)
+        self.perform_click(self.proceed_btn)
+        self.perform_sendkeys(self.device_serial, device_serial)
+        self.perform_click(self.btn_externalSerialProceed)
