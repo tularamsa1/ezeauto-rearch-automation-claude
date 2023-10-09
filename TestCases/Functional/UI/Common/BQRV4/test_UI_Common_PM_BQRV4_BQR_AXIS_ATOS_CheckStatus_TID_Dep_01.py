@@ -484,6 +484,8 @@ def test_common_100_102_296():
     """
     Sub Feature code: TID_Dep_UI_Common_BQRV4_BQR_CheckStatus_After_Expiry_AXIS_ATOS
     Sub Feature Description: TID Dep - Verification of a BQR Checkstatus After Expiry via AXIS_ATOS
+    New RC Change(2023-09-07): From latest RC change child txns will won't appear in App and API of BQRV4 AXIS_ATOS,
+    From App and API child txns has been removed, If test case belongs to expiry charge slip validation also removed.
     TC naming code description: 100: Payment Method, 102: BQRV4, 296: TC296
     """
     try:
@@ -641,7 +643,6 @@ def test_common_100_102_296():
             auth_code_db_1 = result['auth_code'].values[0]
             customer_name_1 = result['customer_name'].values[0]
 
-            # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -670,19 +671,7 @@ def test_common_100_102_296():
                     "txn_id": txn_id,
                     "order_id": order_id,
                     "payment_msg": "PAYMENT FAILED",
-                    "date": date_and_time,
-
-                    "pmt_mode_1": "BHARAT QR",
-                    "pmt_status_1": "AUTHORIZED",
-                    "txn_amt_1": str(amount) + ".00",
-                    "settle_status_1": "SETTLED",
-                    "customer_name_1": customer_name_1,
-                    "txn_id_1": txn_id_1,
-                    "order_id_1": order_id,
-                    "payment_msg_1": "PAYMENT SUCCESSFUL",
-                    "date_1": date_and_time_1,
-                    "rrn_1": rrn_db_1,
-                    "auth_code_1": auth_code_db_1,
+                    "date": date_and_time
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
@@ -705,20 +694,6 @@ def test_common_100_102_296():
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 app_order_id = txn_history_page.fetch_order_id_text()
 
-                txn_history_page.click_back_Btn_transaction_details()
-                txn_history_page.click_on_transaction_by_txn_id(txn_id_1)
-                payment_status_1 = txn_history_page.fetch_txn_status_text()
-                app_date_and_time_1 = txn_history_page.fetch_date_time_text()
-                payment_mode_1 = txn_history_page.fetch_txn_type_text()
-                app_customer_name_1 = txn_history_page.fetch_customer_name_text()
-                app_txn_id_1 = txn_history_page.fetch_txn_id_text()
-                app_amount_1 = txn_history_page.fetch_txn_amount_text()
-                app_settlement_status_1 = txn_history_page.fetch_settlement_status_text()
-                app_payment_msg_1 = txn_history_page.fetch_txn_payment_msg_text()
-                app_order_id_1 = txn_history_page.fetch_order_id_text()
-                app_rrn_1 = txn_history_page.fetch_RRN_text()
-                app_auth_code_1 = txn_history_page.fetch_auth_code_text()
-
                 actual_app_values = {
                     "pmt_mode": payment_mode,
                     "pmt_status": payment_status.split(':')[1],
@@ -727,19 +702,7 @@ def test_common_100_102_296():
                     "settle_status": app_settlement_status,
                     "order_id": app_order_id,
                     "payment_msg": app_payment_msg,
-                    "date": app_date_and_time,
-
-                    "pmt_mode_1": payment_mode_1,
-                    "pmt_status_1": payment_status_1.split(':')[1],
-                    "txn_amt_1": app_amount_1.split(' ')[1],
-                    "settle_status_1": app_settlement_status_1,
-                    "customer_name_1": app_customer_name_1,
-                    "txn_id_1": app_txn_id_1,
-                    "order_id_1": app_order_id_1,
-                    "payment_msg_1": app_payment_msg_1,
-                    "date_1": app_date_and_time_1,
-                    "rrn_1": app_rrn_1,
-                    "auth_code_1": app_auth_code_1,
+                    "date": app_date_and_time
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
@@ -765,18 +728,7 @@ def test_common_100_102_296():
                     "txn_type": txn_type, "mid": mid, "tid": tid,
                     "org_code": org_code_txn,
                     "date": date,
-                    "device_serial": str(device_serial),
-
-                    "pmt_status_1": "AUTHORIZED",
-                    "txn_amt_1": amount, "pmt_mode_1": "BHARATQR",
-                    "pmt_state_1": "SETTLED",
-                    "settle_status_1": "SETTLED",
-                    "acquirer_code_1": "AXIS",
-                    "issuer_code_1": "AXIS",
-                    "txn_type_1": txn_type, "mid_1": mid, "tid_1": tid,
-                    "org_code_1": org_code_txn,
-                    "date_1": date_1,
-                    "device_serial_1": str(device_serial)
+                    "device_serial": str(device_serial)
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -802,22 +754,6 @@ def test_common_100_102_296():
                 date_api = response["createdTime"]
                 device_serial_api = response["deviceSerial"]
 
-                response_1 = [x for x in resp["txns"] if x["txnId"] == txn_id_1][0]
-                logger.debug(f"Response after filtering data of current txn is : {response_1}")
-                status_api_1 = response_1["status"]
-                amount_api_1 = int(response_1["amount"])
-                payment_mode_api_1 = response_1["paymentMode"]
-                state_api_1 = response_1["states"][0]
-                settlement_status_api_1 = response_1["settlementStatus"]
-                issuer_code_api_1 = response_1["issuerCode"]
-                acquirer_code_api_1 = response_1["acquirerCode"]
-                orgCode_api_1 = response_1["orgCode"]
-                mid_api_1 = response_1["mid"]
-                tid_api_1 = response_1["tid"]
-                txn_type_api_1 = response_1["txnType"]
-                date_api_1 = response_1["createdTime"]
-                device_serial_api_1 = response_1["deviceSerial"]
-
                 actual_api_values = {
                     "pmt_status": status_api, "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
@@ -828,18 +764,7 @@ def test_common_100_102_296():
                     "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
                     "org_code": orgCode_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api),
-                    "device_serial": str(device_serial_api),
-
-                    "pmt_status_1": status_api_1, "txn_amt_1": amount_api_1,
-                    "pmt_mode_1": payment_mode_api_1,
-                    "pmt_state_1": state_api_1,
-                    "settle_status_1": settlement_status_api_1,
-                    "acquirer_code_1": acquirer_code_api_1,
-                    "issuer_code_1": issuer_code_api_1,
-                    "txn_type_1": txn_type_api_1, "mid_1": mid_api_1, "tid_1": tid_api_1,
-                    "org_code_1": orgCode_api_1,
-                    "date_1": date_time_converter.from_api_to_datetime_format(date_api_1),
-                    "device_serial_1": str(device_serial_api_1)
+                    "device_serial": str(device_serial_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -1042,25 +967,6 @@ def test_common_100_102_296():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
-
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time_1)
-                expected_charge_slip_values = {
-                    'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_db_1),
-                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date,
-                    'time': txn_time, 'AUTH CODE': str(auth_code_db_1)
-                }
-                receipt_validator.perform_charge_slip_validations(txn_id_1,
-                                                                  {"username": app_username,
-                                                                   "password": app_password},
-                                                                  expected_charge_slip_values)
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

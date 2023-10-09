@@ -208,7 +208,7 @@ class PortalDashboardPage(BasePage):
 
     def fetch_sales_overview_indicators_dates(self):
         """ Fetching the sales overview date indicators and returns the date indicators """
-        return self.fetch_text(self.lbl_sales_overview_indicator)
+        return self.fetch_text(self.lbl_sales_overview_indicator).split()
 
     def fetch_org_structure(self):
         """ Fetching org structure and returning org structure """

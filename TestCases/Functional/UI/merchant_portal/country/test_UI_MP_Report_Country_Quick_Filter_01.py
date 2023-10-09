@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import random
 import sys
 import pytest
+import locale
 from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.Portal_LoginPage import PortalLoginPage
@@ -40,10 +41,12 @@ def test_mp_700_701_020():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
+        logger.debug(f"Fetched login_password credentials from the ezeauto db : {login_password}")
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -92,7 +95,7 @@ def test_mp_700_701_020():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
-            validate_auth_token = response
+            validate_auth_token = response['token']
             logger.debug(f"validate_auth_token after hitting mp_login API is : {validate_auth_token}")
 
             current_date = datetime.now()
@@ -103,7 +106,7 @@ def test_mp_700_701_020():
             api_details = DBProcessor.get_api_details('mp_txn_report', request_body={
                 "startDateAndTime": current_date + " 00:00",
                 "endDateAndTime": current_date + " 23:59",
-                "maxRecordsPerPage": 10,
+                "maxRecordsPerPage": 100,
                 "pageNumber": 0,
                 "usersList": [],
                 "cardType": [],
@@ -143,14 +146,12 @@ def test_mp_700_701_020():
             api_first_txn_id = api_first_txn_details['id']
             api_first_hierarchy = api_first_txn_details['hierarchy']
             api_first_org_code = api_first_txn_details['merchantCode']
-            # api_first_rrn = api_first_txn_details['rrNumber']
-            # api_first_auth_code = api_first_txn_details['authCode']
 
             if total_pages > 1:
                 api_details = DBProcessor.get_api_details('mp_txn_report', request_body={
                     "startDateAndTime": current_date + " 00:00",
                     "endDateAndTime": current_date + " 23:59",
-                    "maxRecordsPerPage": 10,
+                    "maxRecordsPerPage": 100,
                     "pageNumber": total_pages - 1,
                     "usersList": [],
                     "cardType": [],
@@ -185,8 +186,6 @@ def test_mp_700_701_020():
                 api_last_pmt_status = api_last_txn_details['status']
                 api_last_order_id = api_last_txn_details['externalRefNumber']
                 api_last_hierarchy = api_last_txn_details['hierarchy']
-                # api_last_rrn = api_last_txn_details['rrNumber']
-                # api_last_auth_code = api_last_txn_details['authCode']
             else:
                 api_last_txn_details = response["transactions"][-1]
                 logger.debug(f"api_last_txn_details: {api_last_txn_details}")
@@ -203,8 +202,6 @@ def test_mp_700_701_020():
                 api_last_pmt_status = api_last_txn_details['status']
                 api_last_order_id = api_last_txn_details['externalRefNumber']
                 api_last_hierarchy = api_last_txn_details['hierarchy']
-                # api_last_rrn = api_last_txn_details['rrNumber']
-                # api_last_auth_code = api_last_txn_details['authCode']
 
             GlobalVariables.portal_page = TestSuiteSetup.initialize_portal_browser()
             login_page_portal = PortalLoginPage(GlobalVariables.portal_page)
@@ -342,8 +339,6 @@ def test_mp_700_701_020():
                     "pmt_status": db_status,
                     "pmt_mode": db_pmt_mode,
                     "txn_amt": str(db_amount),
-                    # "rrn": db_rrn,
-                    # "auth_code": db_auth_code,
                     "txn_type": db_txn_type,
                     "order_id": db_order_id,
                     "username": db_username,
@@ -357,8 +352,6 @@ def test_mp_700_701_020():
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_mode_2": db_pmt_mode_last,
                     "txn_amt_2": str(db_amount_last),
-                    # "rrn_2": db_rrn_last,
-                    # "auth_code_2": db_auth_code_last,
                     "txn_type_2": db_txn_type_last,
                     "order_id_2": db_order_id_last,
                     "username_2": db_username_last,
@@ -374,8 +367,6 @@ def test_mp_700_701_020():
                     "pmt_status": api_first_pmt_status,
                     "pmt_mode": api_first_pmt_mode,
                     "txn_amt": str(api_first_amount),
-                    # "rrn": api_first_rrn,
-                    # "auth_code": api_first_auth_code,
                     "txn_type": api_first_txn_type,
                     "order_id": api_first_order_id,
                     "username": api_first_username,
@@ -389,8 +380,6 @@ def test_mp_700_701_020():
                     "pmt_status_2": api_last_pmt_status,
                     "pmt_mode_2": api_last_pmt_mode,
                     "txn_amt_2": str(api_last_amount),
-                    # "rrn_2": api_last_rrn,
-                    # "auth_code_2": api_last_auth_code,
                     "txn_type_2": api_last_txn_type,
                     "order_id_2": api_last_order_id,
                     "username_2": api_last_username,
@@ -416,8 +405,6 @@ def test_mp_700_701_020():
                     "pmt_status": api_first_pmt_status,
                     "pmt_mode": api_first_pmt_mode,
                     "txn_amt": str(api_first_amount),
-                    # "rrn": api_first_rrn,
-                    # "auth_code": api_first_auth_code,
                     "txn_type": api_first_txn_type,
                     "order_id": api_first_order_id,
                     "username": api_first_username,
@@ -431,8 +418,6 @@ def test_mp_700_701_020():
                     "pmt_status_2": api_last_pmt_status,
                     "pmt_mode_2": api_last_pmt_mode,
                     "txn_amt_2": str(api_last_amount),
-                    # "rrn_2": api_last_rrn,
-                    # "auth_code_2": api_last_auth_code,
                     "txn_type_2": api_last_txn_type,
                     "order_id_2": api_last_order_id,
                     "username_2": api_last_username,
@@ -448,8 +433,6 @@ def test_mp_700_701_020():
                     "pmt_status": db_status,
                     "pmt_mode": db_pmt_mode,
                     "txn_amt": str(db_amount),
-                    # "rrn": db_rrn,
-                    # "auth_code": db_auth_code,
                     "txn_type": db_txn_type,
                     "order_id": db_order_id,
                     "username": db_username,
@@ -463,8 +446,6 @@ def test_mp_700_701_020():
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_mode_2": db_pmt_mode_last,
                     "txn_amt_2": str(db_amount_last),
-                    # "rrn_2": db_rrn_last,
-                    # "auth_code_2": db_auth_code_last,
                     "txn_type_2": db_txn_type_last,
                     "order_id_2": db_order_id_last,
                     "username_2": db_username_last,
@@ -482,11 +463,14 @@ def test_mp_700_701_020():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
+                locale.setlocale(locale.LC_ALL, 'en_IN')
+                formatted_amount_first = str(locale.currency(db_amount, grouping=True)).replace('₹', '₹ ')
+                formatted_amount_last = str(locale.currency(db_amount_last, grouping=True)).replace('₹', '₹ ')
                 expected_portal_values = {
                     "date_time": db_date_first,
                     "pmt_status": db_status,
                     "pmt_type": db_pmt_mode,
-                    "txn_amt": str(db_amount) + "0",
+                    "txn_amt": formatted_amount_first,
                     "username": db_username,
                     "txn_id": db_txn_id,
                     "rrn": "-" if db_rrn is None else db_rrn,
@@ -498,7 +482,7 @@ def test_mp_700_701_020():
                     "date_time_2": db_date_last,
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_type_2": db_pmt_mode_last,
-                    "txn_amt_2": str(db_amount_last) + "0",
+                    "txn_amt_2": formatted_amount_last,
                     "username_2": db_username_last,
                     "txn_id_2": db_txn_id_last,
                     "rrn_2": "-" if db_rrn_last is None else db_rrn_last,
@@ -512,7 +496,7 @@ def test_mp_700_701_020():
 
                 date_time = txn_details[0]['Date & Time']
                 transaction_id = txn_details[0]['Transaction ID']
-                total_amount = txn_details[0]['Total Amount'].split()
+                total_amount = txn_details[0]['Total Amount']
                 rr_number = txn_details[0]['RR Number']
                 transaction_type = txn_details[0]['Type']
                 status = txn_details[0]['Status']
@@ -524,7 +508,7 @@ def test_mp_700_701_020():
 
                 date_time_last = txn_details[-1]['Date & Time']
                 transaction_id_last = txn_details[-1]['Transaction ID']
-                total_amount_last = txn_details[-1]['Total Amount'].split()
+                total_amount_last = txn_details[-1]['Total Amount']
                 rr_number_last = txn_details[-1]['RR Number']
                 transaction_type_last = txn_details[-1]['Type']
                 status_last = txn_details[-1]['Status']
@@ -538,7 +522,7 @@ def test_mp_700_701_020():
                     "date_time": date_time,
                     "pmt_status": str(status),
                     "pmt_type": transaction_type,
-                    "txn_amt": total_amount[1].replace(',',''),
+                    "txn_amt": total_amount,
                     "username": username,
                     "txn_id": transaction_id,
                     "rrn": rr_number,
@@ -550,7 +534,7 @@ def test_mp_700_701_020():
                     "date_time_2": date_time_last,
                     "pmt_status_2": status_last,
                     "pmt_type_2": transaction_type_last,
-                    "txn_amt_2": total_amount_last[1].replace(',',''),
+                    "txn_amt_2": total_amount_last,
                     "username_2": username_last,
                     "txn_id_2": transaction_id_last,
                     "rrn_2": rr_number_last,
@@ -604,10 +588,12 @@ def test_mp_700_701_021():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
+        logger.debug(f"Fetched login_password credentials from the ezeauto db : {login_password}")
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -657,7 +643,7 @@ def test_mp_700_701_021():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
-            validate_auth_token = response
+            validate_auth_token = response['token']
             logger.debug(f"validate_auth_token after hitting userlogin API is : {validate_auth_token}")
 
             current_date = datetime.now()
@@ -672,7 +658,7 @@ def test_mp_700_701_021():
             api_details = DBProcessor.get_api_details('mp_txn_report', request_body={
                 "startDateAndTime": last_30_days + " 00:00",
                 "endDateAndTime": current_date + " 23:59",
-                "maxRecordsPerPage": 10,
+                "maxRecordsPerPage": 100,
                 "pageNumber": 0,
                 "usersList": [],
                 "cardType": [],
@@ -710,14 +696,12 @@ def test_mp_700_701_021():
             api_first_txn_id = api_first_txn_details['id']
             api_first_hierarchy = api_first_txn_details['hierarchy']
             api_first_org_code = api_first_txn_details['merchantCode']
-            # api_first_rrn = api_first_txn_details['rrNumber']
-            # api_first_auth_code = api_first_txn_details['authCode']
 
             if total_pages>1 :
                 api_details = DBProcessor.get_api_details('mp_txn_report', request_body={
                     "startDateAndTime": last_30_days + " 00:00",
                     "endDateAndTime": current_date + " 23:59",
-                    "maxRecordsPerPage": 10,
+                    "maxRecordsPerPage": 100,
                     "pageNumber": total_pages-1,
                     "usersList": [],
                     "cardType": [],
@@ -752,8 +736,6 @@ def test_mp_700_701_021():
                 api_last_pmt_status = api_last_txn_details['status']
                 api_last_order_id = api_last_txn_details['externalRefNumber']
                 api_last_hierarchy = api_last_txn_details['hierarchy']
-                # api_last_rrn = api_last_txn_details['rrNumber']
-                # api_last_auth_code = api_last_txn_details['authCode']
             else:
                 api_last_txn_details = response["transactions"][-1]
                 logger.debug(f"api_last_txn_details: {api_last_txn_details}")
@@ -770,8 +752,6 @@ def test_mp_700_701_021():
                 api_last_pmt_status = api_last_txn_details['status']
                 api_last_order_id = api_last_txn_details['externalRefNumber']
                 api_last_hierarchy = api_last_txn_details['hierarchy']
-                # api_last_rrn = api_last_txn_details['rrNumber']
-                # api_last_auth_code = api_last_txn_details['authCode']
 
             GlobalVariables.portal_page = TestSuiteSetup.initialize_portal_browser()
             login_page_portal = PortalLoginPage(GlobalVariables.portal_page)
@@ -911,8 +891,6 @@ def test_mp_700_701_021():
                     "pmt_status": db_status,
                     "pmt_mode": db_pmt_mode,
                     "txn_amt": str(db_amount),
-                    # "rrn": db_rrn,
-                    # "auth_code": db_auth_code,
                     "txn_type": db_txn_type,
                     "order_id": db_order_id,
                     "username": db_username,
@@ -926,8 +904,6 @@ def test_mp_700_701_021():
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_mode_2": db_pmt_mode_last,
                     "txn_amt_2": str(db_amount_last),
-                    # "rrn_2": db_rrn_last,
-                    # "auth_code_2": db_auth_code_last,
                     "txn_type_2": db_txn_type_last,
                     "order_id_2": db_order_id_last,
                     "username_2": db_username_last,
@@ -943,8 +919,6 @@ def test_mp_700_701_021():
                     "pmt_status": api_first_pmt_status,
                     "pmt_mode": api_first_pmt_mode,
                     "txn_amt": str(api_first_amount),
-                    # "rrn": api_first_rrn,
-                    # "auth_code": api_first_auth_code,
                     "txn_type": api_first_txn_type,
                     "order_id": api_first_order_id,
                     "username": api_first_username,
@@ -958,8 +932,6 @@ def test_mp_700_701_021():
                     "pmt_status_2": api_last_pmt_status,
                     "pmt_mode_2": api_last_pmt_mode,
                     "txn_amt_2": str(api_last_amount),
-                    # "rrn_2": api_last_rrn,
-                    # "auth_code_2": api_last_auth_code,
                     "txn_type_2": api_last_txn_type,
                     "order_id_2": api_last_order_id,
                     "username_2": api_last_username,
@@ -986,8 +958,6 @@ def test_mp_700_701_021():
                     "pmt_status": api_first_pmt_status,
                     "pmt_mode": api_first_pmt_mode,
                     "txn_amt": str(api_first_amount),
-                    # "rrn": api_first_rrn,
-                    # "auth_code": api_first_auth_code,
                     "txn_type": api_first_txn_type,
                     "order_id": api_first_order_id,
                     "username": api_first_username,
@@ -1001,8 +971,6 @@ def test_mp_700_701_021():
                     "pmt_status_2": api_last_pmt_status,
                     "pmt_mode_2": api_last_pmt_mode,
                     "txn_amt_2": str(api_last_amount),
-                    # "rrn_2": api_last_rrn,
-                    # "auth_code_2": api_last_auth_code,
                     "txn_type_2": api_last_txn_type,
                     "order_id_2": api_last_order_id,
                     "username_2": api_last_username,
@@ -1018,8 +986,6 @@ def test_mp_700_701_021():
                     "pmt_status": db_status,
                     "pmt_mode": db_pmt_mode,
                     "txn_amt": str(db_amount),
-                    # "rrn": db_rrn,
-                    # "auth_code": db_auth_code,
                     "txn_type": db_txn_type,
                     "order_id": db_order_id,
                     "username": db_username,
@@ -1033,8 +999,6 @@ def test_mp_700_701_021():
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_mode_2": db_pmt_mode_last,
                     "txn_amt_2": str(db_amount_last),
-                    # "rrn_2": db_rrn_last,
-                    # "auth_code_2": db_auth_code_last,
                     "txn_type_2": db_txn_type_last,
                     "order_id_2": db_order_id_last,
                     "username_2": db_username_last,
@@ -1053,11 +1017,14 @@ def test_mp_700_701_021():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
+                locale.setlocale(locale.LC_ALL, 'en_IN')
+                formatted_amount_first = str(locale.currency(db_amount, grouping=True)).replace('₹', '₹ ')
+                formatted_amount_last = str(locale.currency(db_amount_last, grouping=True)).replace('₹', '₹ ')
                 expected_portal_values = {
                     "date_time": db_date_first,
                     "pmt_status": db_status,
                     "pmt_type": db_pmt_mode,
-                    "txn_amt": str(db_amount) + "0",
+                    "txn_amt": formatted_amount_first,
                     "username": db_username,
                     "txn_id": db_txn_id,
                     "rrn": "-" if db_rrn is None else db_rrn,
@@ -1069,7 +1036,7 @@ def test_mp_700_701_021():
                     "date_time_2": db_date_last,
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_type_2": db_pmt_mode_last,
-                    "txn_amt_2": str(db_amount_last) + "0",
+                    "txn_amt_2": formatted_amount_last,
                     "username_2": db_username_last,
                     "txn_id_2": db_txn_id_last,
                     "rrn_2": "-" if db_rrn_last is None else db_rrn_last,
@@ -1083,7 +1050,7 @@ def test_mp_700_701_021():
 
                 date_time = txn_details[0]['Date & Time']
                 transaction_id = txn_details[0]['Transaction ID']
-                total_amount = txn_details[0]['Total Amount'].split()
+                total_amount = txn_details[0]['Total Amount']
                 rr_number = txn_details[0]['RR Number']
                 transaction_type = txn_details[0]['Type']
                 status = txn_details[0]['Status']
@@ -1095,7 +1062,7 @@ def test_mp_700_701_021():
 
                 date_time_last = txn_details[-1]['Date & Time']
                 transaction_id_last = txn_details[-1]['Transaction ID']
-                total_amount_last = txn_details[-1]['Total Amount'].split()
+                total_amount_last = txn_details[-1]['Total Amount']
                 rr_number_last = txn_details[-1]['RR Number']
                 transaction_type_last = txn_details[-1]['Type']
                 status_last = txn_details[-1]['Status']
@@ -1109,7 +1076,7 @@ def test_mp_700_701_021():
                     "date_time": date_time,
                     "pmt_status": str(status),
                     "pmt_type": transaction_type,
-                    "txn_amt": total_amount[1].replace(',',''),
+                    "txn_amt": total_amount,
                     "username": username,
                     "txn_id": transaction_id,
                     "rrn": rr_number,
@@ -1121,7 +1088,7 @@ def test_mp_700_701_021():
                     "date_time_2": date_time_last,
                     "pmt_status_2": status_last,
                     "pmt_type_2": transaction_type_last,
-                    "txn_amt_2": total_amount_last[1].replace(',',''),
+                    "txn_amt_2": total_amount_last,
                     "username_2": username_last,
                     "txn_id_2": transaction_id_last,
                     "rrn_2": rr_number_last,
@@ -1175,10 +1142,12 @@ def test_mp_700_701_022():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
+        logger.debug(f"Fetched login_password credentials from the ezeauto db : {login_password}")
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -1228,7 +1197,7 @@ def test_mp_700_701_022():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
-            validate_auth_token = response
+            validate_auth_token = response['token']
             logger.debug(f"validate_auth_token after hitting userlogin API is : {validate_auth_token}")
 
             current_date = datetime.now()
@@ -1243,7 +1212,7 @@ def test_mp_700_701_022():
             api_details = DBProcessor.get_api_details('mp_txn_report', request_body={
                 "startDateAndTime": last_7_days + " 00:00",
                 "endDateAndTime": current_date + " 23:59",
-                "maxRecordsPerPage": 10,
+                "maxRecordsPerPage": 100,
                 "pageNumber": 0,
                 "usersList": [],
                 "cardType": [],
@@ -1282,14 +1251,12 @@ def test_mp_700_701_022():
             api_first_txn_id = api_first_txn_details['id']
             api_first_hierarchy = api_first_txn_details['hierarchy']
             api_first_org_code = api_first_txn_details['merchantCode']
-            # api_first_rrn = api_first_txn_details['rrNumber']
-            # api_first_auth_code = api_first_txn_details['authCode']
 
             if total_pages > 1:
                 api_details = DBProcessor.get_api_details('mp_txn_report', request_body={
                     "startDateAndTime": last_7_days + " 00:00",
                     "endDateAndTime": current_date + " 23:59",
-                    "maxRecordsPerPage": 10,
+                    "maxRecordsPerPage": 100,
                     "pageNumber": total_pages - 1,
                     "usersList": [],
                     "cardType": [],
@@ -1324,8 +1291,6 @@ def test_mp_700_701_022():
                 api_last_pmt_status = api_last_txn_details['status']
                 api_last_order_id = api_last_txn_details['externalRefNumber']
                 api_last_hierarchy = api_last_txn_details['hierarchy']
-                # api_last_rrn = api_last_txn_details['rrNumber']
-                # api_last_auth_code = api_last_txn_details['authCode']
             else:
                 api_last_txn_details = response["transactions"][-1]
                 logger.debug(f"api_last_txn_details: {api_last_txn_details}")
@@ -1342,8 +1307,6 @@ def test_mp_700_701_022():
                 api_last_pmt_status = api_last_txn_details['status']
                 api_last_order_id = api_last_txn_details['externalRefNumber']
                 api_last_hierarchy = api_last_txn_details['hierarchy']
-                # api_last_rrn = api_last_txn_details['rrNumber']
-                # api_last_auth_code = api_last_txn_details['authCode']
 
             GlobalVariables.portal_page = TestSuiteSetup.initialize_portal_browser()
             login_page_portal = PortalLoginPage(GlobalVariables.portal_page)
@@ -1483,8 +1446,6 @@ def test_mp_700_701_022():
                     "pmt_status": db_status,
                     "pmt_mode": db_pmt_mode,
                     "txn_amt": str(db_amount),
-                    # "rrn": db_rrn,
-                    # "auth_code": db_auth_code,
                     "txn_type": db_txn_type,
                     "order_id": db_order_id,
                     "username": db_username,
@@ -1498,8 +1459,6 @@ def test_mp_700_701_022():
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_mode_2": db_pmt_mode_last,
                     "txn_amt_2": str(db_amount_last),
-                    # "rrn_2": db_rrn_last,
-                    # "auth_code_2": db_auth_code_last,
                     "txn_type_2": db_txn_type_last,
                     "order_id_2": db_order_id_last,
                     "username_2": db_username_last,
@@ -1515,8 +1474,6 @@ def test_mp_700_701_022():
                     "pmt_status": api_first_pmt_status,
                     "pmt_mode": api_first_pmt_mode,
                     "txn_amt": str(api_first_amount),
-                    # "rrn": api_first_rrn,
-                    # "auth_code": api_first_auth_code,
                     "txn_type": api_first_txn_type,
                     "order_id": api_first_order_id,
                     "username": api_first_username,
@@ -1530,8 +1487,6 @@ def test_mp_700_701_022():
                     "pmt_status_2": api_last_pmt_status,
                     "pmt_mode_2": api_last_pmt_mode,
                     "txn_amt_2": str(api_last_amount),
-                    # "rrn_2": api_last_rrn,
-                    # "auth_code_2": api_last_auth_code,
                     "txn_type_2": api_last_txn_type,
                     "order_id_2": api_last_order_id,
                     "username_2": api_last_username,
@@ -1558,8 +1513,6 @@ def test_mp_700_701_022():
                     "pmt_status": api_first_pmt_status,
                     "pmt_mode": api_first_pmt_mode,
                     "txn_amt": str(api_first_amount),
-                    # "rrn": api_first_rrn,
-                    # "auth_code": api_first_auth_code,
                     "txn_type": api_first_txn_type,
                     "order_id": api_first_order_id,
                     "username": api_first_username,
@@ -1573,8 +1526,6 @@ def test_mp_700_701_022():
                     "pmt_status_2": api_last_pmt_status,
                     "pmt_mode_2": api_last_pmt_mode,
                     "txn_amt_2": str(api_last_amount),
-                    # "rrn_2": api_last_rrn,
-                    # "auth_code_2": api_last_auth_code,
                     "txn_type_2": api_last_txn_type,
                     "order_id_2": api_last_order_id,
                     "username_2": api_last_username,
@@ -1590,8 +1541,6 @@ def test_mp_700_701_022():
                     "pmt_status": db_status,
                     "pmt_mode": db_pmt_mode,
                     "txn_amt": str(db_amount),
-                    # "rrn": db_rrn,
-                    # "auth_code": db_auth_code,
                     "txn_type": db_txn_type,
                     "order_id": db_order_id,
                     "username": db_username,
@@ -1605,8 +1554,6 @@ def test_mp_700_701_022():
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_mode_2": db_pmt_mode_last,
                     "txn_amt_2": str(db_amount_last),
-                    # "rrn_2": db_rrn_last,
-                    # "auth_code_2": db_auth_code_last,
                     "txn_type_2": db_txn_type_last,
                     "order_id_2": db_order_id_last,
                     "username_2": db_username_last,
@@ -1625,11 +1572,14 @@ def test_mp_700_701_022():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
+                locale.setlocale(locale.LC_ALL, 'en_IN')
+                formatted_amount_first = str(locale.currency(db_amount, grouping=True)).replace('₹', '₹ ')
+                formatted_amount_last = str(locale.currency(db_amount_last, grouping=True)).replace('₹', '₹ ')
                 expected_portal_values = {
                     "date_time": db_date_first,
                     "pmt_status": db_status,
                     "pmt_type": db_pmt_mode,
-                    "txn_amt": str(db_amount) + "0",
+                    "txn_amt": formatted_amount_first,
                     "username": db_username,
                     "txn_id": db_txn_id,
                     "rrn": "-" if db_rrn is None else db_rrn,
@@ -1641,7 +1591,7 @@ def test_mp_700_701_022():
                     "date_time_2": db_date_last,
                     "pmt_status_2": db_pmt_status_last,
                     "pmt_type_2": db_pmt_mode_last,
-                    "txn_amt_2": str(db_amount_last) + "0",
+                    "txn_amt_2": formatted_amount_last,
                     "username_2": db_username_last,
                     "txn_id_2": db_txn_id_last,
                     "rrn_2": "-" if db_rrn_last is None else db_rrn_last,
@@ -1655,7 +1605,7 @@ def test_mp_700_701_022():
 
                 date_time = txn_details[0]['Date & Time']
                 transaction_id = txn_details[0]['Transaction ID']
-                total_amount = txn_details[0]['Total Amount'].split()
+                total_amount = txn_details[0]['Total Amount']
                 rr_number = txn_details[0]['RR Number']
                 transaction_type = txn_details[0]['Type']
                 status = txn_details[0]['Status']
@@ -1667,7 +1617,7 @@ def test_mp_700_701_022():
 
                 date_time_last = txn_details[-1]['Date & Time']
                 transaction_id_last = txn_details[-1]['Transaction ID']
-                total_amount_last = txn_details[-1]['Total Amount'].split()
+                total_amount_last = txn_details[-1]['Total Amount']
                 rr_number_last = txn_details[-1]['RR Number']
                 transaction_type_last = txn_details[-1]['Type']
                 status_last = txn_details[-1]['Status']
@@ -1681,7 +1631,7 @@ def test_mp_700_701_022():
                     "date_time": date_time,
                     "pmt_status": str(status),
                     "pmt_type": transaction_type,
-                    "txn_amt": total_amount[1].replace(',',''),
+                    "txn_amt": total_amount,
                     "username": username,
                     "txn_id": transaction_id,
                     "rrn": rr_number,
@@ -1693,7 +1643,7 @@ def test_mp_700_701_022():
                     "date_time_2": date_time_last,
                     "pmt_status_2": status_last,
                     "pmt_type_2": transaction_type_last,
-                    "txn_amt_2": total_amount_last[1].replace(',',''),
+                    "txn_amt_2": total_amount_last,
                     "username_2": username_last,
                     "txn_id_2": transaction_id_last,
                     "rrn_2": rr_number_last,
