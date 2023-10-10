@@ -12,20 +12,25 @@ from Utilities.Generic_processor import extract_table_data
 class PortalTransHistoryPage(BasePage):
     txt_reports = "//p[contains(text(),'Reports')]"
     # btn_txn = "//body/div[@id='root']//div[1]/div[3]//div[1]/div[2]//div[1]/div[2]/a[1]/div[1]/p[1]"
-    btn_txn = "//*[@id='root']/div/div/div[2]/div[1]/div/div[2]/div[1]/div[1]/div[2]/a/div/p"
-    lbl_select_search = "//span[contains(text(),'Search')]"
+    # lbl_select_search = "//span[contains(text(),'Search')]"
     # lbl_oder_number = "//span[contains(text(),'Order Number')]"
-    # lbl_oder_number = "//*[@id='root']/div/div/div[2]/div[2]/div/div[1]/div[1]/input"
-    lbl_oder_number = "//span[text()='Order Number']"
     # lbl_search = "//body/div[@id='root']//div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/input[1]"
-    lbl_search = "//*[@id='root']/div/div/div[2]/div[2]/div/div[1]/div[1]/input"
-    btn_search = "//*[@id='root']/div/div/div[2]/div[2]/div/div[1]/div[1]/img"
+    # btn_search = "//body/div[@id='root']//div[1]/div[3]/div[2]//div[1]/img[1]"
     tbl_data = "//div[@class='txnReportsTable_loaderContainer__om+oI']/following-sibling::div[1]"
     lbl_date_picker = "//div[@icon='[object Object]']//span[1]"
     lbl_current_date = "(//div[@class='rs-calendar-table'])[1]"
     lbl_submit = "//button[text()='Apply']"
     lbl_month = "//body/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]//div[1]/button[2]"
     lbl_next_month = "//body/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[2]//div[1]/button[2]"
+
+    # btn_txn = "//body/div[@id='root']//div[1]/div[3]//div[1]/div[2]//div[1]/div[2]/a[1]/div[1]/p[1]"
+    btn_txn = "//*[@id='root']/div/div/div[2]/div[1]/div/div[2]/div[1]/div[1]/div[2]/a/div/p"
+    lbl_select_search = "//span[contains(text(),'Search')]"
+    # lbl_oder_number = "//span[contains(text(),'Order Number')]"
+    lbl_oder_number = "//*[@id='root']/div/div/div[2]/div[2]/div/div[1]/div[1]/input"
+    # lbl_search = "//body/div[@id='root']//div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/input[1]"
+    lbl_search = "//*[@id='root']/div/div/div[2]/div[2]/div/div[1]/div[1]/input"
+    btn_search = "//*[@id='root']/div/div/div[2]/div[2]/div/div[1]/div[1]/img"
 
     def __init__(self, page):
         super().__init__(page)

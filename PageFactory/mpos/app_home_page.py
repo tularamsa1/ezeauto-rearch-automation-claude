@@ -1,6 +1,11 @@
+import re
 from appium.webdriver.common.appiumby import AppiumBy
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver.common.by import By
 from PageFactory.mpos.app_base_page import BasePage
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
 
 
 class HomePage(BasePage):
@@ -50,6 +55,13 @@ class HomePage(BasePage):
     proceed_btn = (AppiumBy.ID, "com.ezetap.basicapp:id/proceed_btn")
     device_serial = (AppiumBy.ID, "com.ezetap.service.demo:id/et_DeviceSerialNo")
     btn_externalSerialProceed = (AppiumBy.ID, "com.ezetap.service.demo:id/btn_externalSerialProceed")
+
+    txt_my_reports = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvReportsTitle')
+    scrollable_it = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_goToHistory2')
+    txt_todays_sales = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTodaySale')
+    btn_refund = (AppiumBy.ID, 'com.ezetap.basicapp:id/nav_online_refund')
+    mnu_account_hindi = (AppiumBy.XPATH, '//android.widget.FrameLayout[@content-desc="अकाउंट"]')
+    today_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -299,3 +311,41 @@ class HomePage(BasePage):
         self.perform_click(self.proceed_btn)
         self.perform_sendkeys(self.device_serial, device_serial)
         self.perform_click(self.btn_externalSerialProceed)
+
+    def fetch_text_from_my_reports_tab(self):
+        return self.fetch_text(self.txt_my_reports)
+
+    def click_on_go_to_history(self):
+        self.wait_for_element(self.btn_goToHistory)
+        self.perform_click(self.btn_goToHistory)
+
+    def fetch_todays_sales_text(self):
+        return self.fetch_text(self.txt_todays_sales)
+
+    def todays_sales_go_to_history(self):
+        self.perform_click(self.scrollable_it)
+
+    def get_coordinates(self):
+        today_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
+        bounds_str = self.wait_for_element(today_sales).get_attribute("bounds")
+        print(bounds_str)
+        matches = re.findall(r'\d+', bounds_str)
+        if len(matches) >= 2:
+            b = int(matches[0])
+            b1 = round(int(matches[0]) * 0.16)
+            c1 = round(int(matches[1]))
+            return b, b1, c1
+        else:
+            logger.info("Not enough numeric values found in the string")
+
+    def scroll_to_element_horizontally(self, swipe_count, b, b1, c1):
+        for i in range(1, swipe_count + 1):
+            action = TouchAction(self.driver)
+            action.press(x=b, y=c1).move_to(x=b1, y=c1).release().perform()
+
+    def click_on_account_mnu_hindi(self):
+        self.perform_click(self.mnu_account_hindi)
+
+    def wait_to_load_today_sales(self):
+        self.wait_for_element(self.txt_todays_sales)
+
