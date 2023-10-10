@@ -41,10 +41,11 @@ def test_mp_700_701_008():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -160,30 +161,26 @@ def test_mp_700_701_008():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
-            txn_by_type_cards = ['credit', 'debit', 'others']
-            total_amount_api = sum(
-                [float(element['amount']) for element in response['aggregatedTxnResults']])
+            total_amount_api = sum([float(element['amount']) for element in response['paymentModeSegregation']])
             logger.info(f"total sale from api  :{total_amount_api}")
-            card_total_amount_api = 0
-            for card_type in txn_by_type_cards:
-                card_total_amount_api += sum([float(element['cards'][card_type]['amount'])
-                                              for element in response['aggregatedTxnResults']])
+            card_total_amount_api = sum([float(element['amount']) for element in response['paymentModeSegregation']
+                                         if element['paymentMode'] == 'CARD'])
             logger.info(f"card total sale from api  :{card_total_amount_api}")
-            total_number_of_txns_api = 0
-            for card_type in txn_by_type_cards:
-                total_number_of_txns_api += sum([element['cards'][card_type]['count']
-                                                 for element in response['aggregatedTxnResults']])
+            total_number_of_txns_api = sum([element['count'] for element in response['paymentModeSegregation']
+                                            if element['paymentMode'] == 'CARD'])
             logger.info(f"card total number of txns from api  :{total_number_of_txns_api}")
             org_code_api_1 = response['orgCode']
             logger.info(f"org code from api :{org_code_api_1}")
@@ -327,10 +324,11 @@ def test_mp_700_701_009():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -420,27 +418,27 @@ def test_mp_700_701_009():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
             total_amount_api = sum(
-                [float(element['amount']) for element in response['aggregatedTxnResults']])
+                [float(element['amount']) for element in response['paymentModeSegregation']])
             logger.info(f"total sale from api  :{total_amount_api}")
-            cash_total_amount_api = 0
-            cash_total_amount_api += sum([float(element['cash']['amount'])
-                                          for element in response['aggregatedTxnResults']])
+            cash_total_amount_api = sum([float(element['amount']) for element in response['paymentModeSegregation']
+                                         if element['paymentMode'] == 'CASH'])
             logger.info(f"cash total sale from api  :{cash_total_amount_api}")
-            total_number_of_txns_api = 0
-            total_number_of_txns_api += sum([element['cash']['count']
-                                             for element in response['aggregatedTxnResults']])
+            total_number_of_txns_api = sum([element['count'] for element in response['paymentModeSegregation']
+                                            if element['paymentMode'] == 'CASH'])
             logger.info(f"cash total number of txns from api  :{total_number_of_txns_api}")
 
             cash_sale_percent_api = float(cash_total_amount_api) / float(total_amount_api) * 100
@@ -565,10 +563,11 @@ def test_mp_700_701_010():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -676,27 +675,27 @@ def test_mp_700_701_010():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
             total_amount_api = sum(
-                [float(element['amount']) for element in response['aggregatedTxnResults']])
+                [float(element['amount']) for element in response['paymentModeSegregation']])
             logger.info(f"total sale amount from api  :{total_amount_api}")
-            upi_total_amount_api = 0
-            upi_total_amount_api += sum([float(element['upi']['amount'])
-                                         for element in response['aggregatedTxnResults']])
+            upi_total_amount_api = sum([float(element['amount']) for element in response['paymentModeSegregation']
+                                         if element['paymentMode'] == 'UPI'])
             logger.info(f"upi total sale from api  :{upi_total_amount_api}")
-            upi_total_number_of_txns_api = 0
-            upi_total_number_of_txns_api += sum([element['upi']['count']
-                                                 for element in response['aggregatedTxnResults']])
+            upi_total_number_of_txns_api = sum([element['count'] for element in response['paymentModeSegregation']
+                                                if element['paymentMode'] == 'UPI'])
             logger.info(f"upi total number of txns from api  :{upi_total_number_of_txns_api}")
 
             upi_sale_percent_api = float(upi_total_amount_api) / float(total_amount_api) * 100
@@ -821,10 +820,11 @@ def test_mp_700_701_011():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -941,27 +941,27 @@ def test_mp_700_701_011():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"bqr details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
             total_amount_api = sum(
-                [float(element['amount']) for element in response['aggregatedTxnResults']])
+                [float(element['amount']) for element in response['paymentModeSegregation']])
             logger.info(f"total sale amount of bqr  :{total_amount_api}")
-            bqr_total_amount_api = 0
-            bqr_total_amount_api += sum([float(element['bqr']['amount'])
-                                         for element in response['aggregatedTxnResults']])
+            bqr_total_amount_api = sum([float(element['amount']) for element in response['paymentModeSegregation']
+                                         if element['paymentMode'] == 'BHARATQR'])
             logger.info(f"bqr total sale from api  :{bqr_total_amount_api}")
-            bqr_total_number_of_txns_api = 0
-            bqr_total_number_of_txns_api += sum([element['bqr']['count']
-                                                 for element in response['aggregatedTxnResults']])
+            bqr_total_number_of_txns_api = sum([element['count'] for element in response['paymentModeSegregation']
+                                            if element['paymentMode'] == 'BHARATQR'])
             logger.info(f"bqr total number of txns from api  :{bqr_total_number_of_txns_api}")
 
             bqr_sale_percent_api = float(bqr_total_amount_api) / float(total_amount_api) * 100
@@ -1087,10 +1087,11 @@ def test_mp_700_701_012():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -1197,27 +1198,27 @@ def test_mp_700_701_012():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             this_start_date_1 = current_start_date.format('YYYY-MM-DD')
             this_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"cnp details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
             total_amount_api = sum(
-                [float(element['amount']) for element in response['aggregatedTxnResults']])
+                [float(element['amount']) for element in response['paymentModeSegregation']])
             logger.info(f"total sale amount of cnp  :{total_amount_api}")
-            cnp_total_amount_api = 0
-            cnp_total_amount_api += sum([float(element['cnp']['amount'])
-                                         for element in response['aggregatedTxnResults']])
+            cnp_total_amount_api = sum([float(element['amount']) for element in response['paymentModeSegregation']
+                                        if element['paymentMode'] == 'CNP'])
             logger.info(f"cnp total sale from api  :{cnp_total_amount_api}")
-            cnp_total_number_of_txns_api = 0
-            cnp_total_number_of_txns_api += sum([element['cnp']['count']
-                                                 for element in response['aggregatedTxnResults']])
+            cnp_total_number_of_txns_api = sum([element['count'] for element in response['paymentModeSegregation']
+                                                if element['paymentMode'] == 'CNP'])
             logger.info(f"cnp total number of txns from api  :{cnp_total_number_of_txns_api}")
 
             cnp_sale_percent_api = float(cnp_total_amount_api) / float(total_amount_api) * 100

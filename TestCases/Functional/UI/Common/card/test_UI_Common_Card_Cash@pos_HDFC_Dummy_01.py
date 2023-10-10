@@ -597,7 +597,7 @@ def test_common_100_115_02_007():
                     'AUTH CODE': auth_code,
                     'payment_option': 'Cash Only',
                     "TID": tid,
-                    "BASE AMOUNT:": "Rs." + "{:,.2f}".format(cash_amount)
+                    "CASH PAID:": "Rs." + "{:,.2f}".format(cash_amount)
                 }
 
                 receipt_validator.perform_charge_slip_validations(txn_id,{"username": app_username,

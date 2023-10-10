@@ -28,7 +28,7 @@ def test_common_100_115_010():
     """
     Sub Feature Code: UI_Common_Card_Void_HDFC_CTLS_VISA_DEBIT_476173
     Sub Feature Description:  Performing the EMV void transaction via HDFC PG using CTLS VISA Debit card having 16 digit
-     PAN length with pin (bin: 476173)
+     PAN length without pin (bin: 476173)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 010: TC010
     """
     try:
@@ -1008,7 +1008,7 @@ def test_common_100_115_012():
     """
     Sub Feature Code: UI_Common_Card_Void_HDFC_CTLS_MASTER_DEBIT_222360
     Sub Feature Description:  Performing the EMV void transaction via HDFC PG using CTLS MASTER Debit card
-    having 16 digit PAN length with pin (bin: 222360)
+    having 16 digit PAN length without pin (bin: 222360)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 012: TC012
     """
     try:
@@ -1986,7 +1986,7 @@ def test_common_100_115_014():
     """
     Sub Feature Code: UI_Common_Card_Void_HDFC_CTLS_RUPAY_DEBIT_608326
     Sub Feature Description:  Performing the EMV void transaction via HDFC PG using CTLS RUPAY Debit card
-    having 16 digit PAN length with pin (bin: 608326)
+    having 16 digit PAN length without pin (bin: 608326)
     TC naming code description:  100: Payment Method, 115: CARD_UI, 014: TC014
     """
     try:

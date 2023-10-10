@@ -39,10 +39,13 @@ def test_mp_700_701_006():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
+        cashier_username = cred_dict['CASHIER']['username']
+        logger.debug(f"cashier username {cashier_username}")
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -123,14 +126,14 @@ def test_mp_700_701_006():
 
             # Fetching total sales of current from DB
             query = "select sum(amount) from txn where id between '" + current_start_date_1 + "' AND '" \
-                    + current_end_date_1 + "' and org_code='" + org_code + "' and username = '" + txn_username + "' and status = 'AUTHORIZED';"
+                    + current_end_date_1 + "' and org_code='" + org_code + "' and username in ('" + txn_username + "', '" + cashier_username + "') and status = 'AUTHORIZED';"
             logger.info(f"query to fetch total sales of current : {query}")
             result = DBProcessor.getValueFromDB(query)
             current_total_sales_db = ["0.00" if str(result).split()[-1] == "None" else str(result).split()[-1]]
             logger.debug(f"current total sales from DB : {current_total_sales_db}")
 
             query = "select count(*) from txn where id between '" + current_start_date_1 + "' AND '" \
-                    + current_end_date_1 + "' and org_code='" + org_code + "' and username = '" + txn_username + "' and status = 'AUTHORIZED';"
+                    + current_end_date_1 + "' and org_code='" + org_code + "' and username in  ('" + txn_username + "', '" + cashier_username + "') and status = 'AUTHORIZED';"
             logger.info(f"query to fetch total sales of current : {query}")
             result = DBProcessor.getValueFromDB(query)
             current_total_txns_db = str(result.values[0]).strip("[]")
@@ -148,6 +151,9 @@ def test_mp_700_701_006():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             current_start_date_1 = current_start_date.format('YYYY-MM-DD')
             current_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
@@ -155,22 +161,14 @@ def test_mp_700_701_006():
                 "endDate": current_end_date_1,
                 "nodeIds": [parent_node_id]
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
 
-            current_total_amount_api = sum([float(element['amount']) for element in response['aggregatedTxnResults']])
+            current_total_amount_api = sum([float(element['amount']) for element in response['dailySegrgationForAmount']])
             logger.info(f"current total sale from api  :{current_total_amount_api}")
-            total_number_of_txns_api = 0
-            txn_by_type = ['bqr', 'cash', 'cheque', 'cnp', 'nbfc', 'upi', 'wallet']
-            txn_by_type_cards = ['credit', 'debit', 'others']
-            for by_type in txn_by_type:
-                total_number_of_txns_api += sum([ele[by_type]['count'] for ele in response['aggregatedTxnResults']])
-            for card_type in txn_by_type_cards:
-                total_number_of_txns_api += sum(
-                    [ele['cards'][card_type]['count'] for ele in response['aggregatedTxnResults']])
+            total_number_of_txns_api = sum([txns['count'] for txns in response['paymentModeSegregation']])
             logger.info(f"total number of txns of {node_name} : {total_number_of_txns_api}")
             org_code_api_1 = response['orgCode']
             logger.info(f"org code from api :{org_code_api_1}")
@@ -298,16 +296,17 @@ def test_mp_700_701_007():
 
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
-        txn_cred = ResourceAssigner.get_org_users_credentials(testcase_id, 'STORE5')
+        txn_cred = ResourceAssigner.get_org_users_credentials(testcase_id, 'STORE2')
         logger.debug(f"Fetched txn credentials from the ezeauto db : {txn_cred}")
         txn_username = txn_cred['Username']
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -385,13 +384,15 @@ def test_mp_700_701_007():
             current_end_date_1 = current_end_date.format('YYMMDD') + "1829"
             logger.info(f"current end date : {current_end_date_1}")
 
-            query = "select sum(amount) from txn where username  = '" + txn_username + "' and status = 'AUTHORIZED';"
+            query = "select sum(amount) from txn where" \
+                    " id between '" + current_start_date_1 + "' and '" + current_end_date_1 + "' and username  = '" + txn_username + "' and status = 'AUTHORIZED';"
             logger.debug(f"query to fetch total sales from db : {query}")
             result = DBProcessor.getValueFromDB(query)
             total_sales_db = str(result).split()[-1]
             logger.debug(f"total sales from db : {total_sales_db}")
 
-            query = "select count(*) from txn where username  = '" + txn_username + "' and status = 'AUTHORIZED';"
+            query = "select count(*) from txn where" \
+                    " id between '" + current_start_date_1 + "' and '" + current_end_date_1 + "' and username  = '" + txn_username + "' and status = 'AUTHORIZED';"
             logger.debug(f"query to fetch total number of txns from db : {query}")
             result = DBProcessor.getValueFromDB(query)
             total_txns_db = str(result).split()[-1]
@@ -409,6 +410,9 @@ def test_mp_700_701_007():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
             current_start_date_1 = current_start_date.format('YYYY-MM-DD')
             current_end_date_1 = current_end_date.format('YYYY-MM-DD')
             api_details = DBProcessor.get_api_details('mp_txn_details', request_body={
@@ -416,23 +420,15 @@ def test_mp_700_701_007():
                 "endDate": current_end_date_1,
                 "nodeIds": [parent_node_id]
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for TxnReport : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Txn Dashboard is: {response}")
 
             current_total_amount_api = sum(
-                [float(element['amount']) for element in response['aggregatedTxnResults']])
+                [float(element['amount']) for element in response['dailySegrgationForAmount']])
             logger.info(f"current total sale from api  :{current_total_amount_api}")
-            total_number_of_txns = 0
-            txn_by_type = ['bqr', 'cash', 'cheque', 'cnp', 'nbfc', 'upi', 'wallet']
-            txn_by_type_cards = ['credit', 'debit', 'others']
-            for by_type in txn_by_type:
-                total_number_of_txns += sum([ele[by_type]['count'] for ele in response['aggregatedTxnResults']])
-            for card_type in txn_by_type_cards:
-                total_number_of_txns += sum(
-                    [ele['cards'][card_type]['count'] for ele in response['aggregatedTxnResults']])
+            total_number_of_txns = sum([txns['count'] for txns in response['paymentModeSegregation']])
             logger.info(f"total number of txns of {node_name} : {total_number_of_txns}")
             org_code_api_1 = response['orgCode']
             logger.info(f"org code from api :{org_code_api_1}")

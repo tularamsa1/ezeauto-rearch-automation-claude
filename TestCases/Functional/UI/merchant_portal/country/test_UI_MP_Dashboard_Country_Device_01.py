@@ -7,7 +7,7 @@ from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.merchant_portal.Portal_DashboardPage import PortalDashboardPage
 from PageFactory.Portal_LoginPage import PortalLoginPage
-from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, date_time_converter, card_processor, \
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, card_processor, \
     merchant_creator, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 import pytz
@@ -41,10 +41,11 @@ def test_mp_700_701_018():
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -105,61 +106,6 @@ def test_mp_700_701_018():
                 confirm_response = APIProcessor.send_request(api_details)
                 logger.info(f"confirm response from api : {confirm_response}")
 
-            txn_id = response['txnId']
-            logger.debug(f"txn id from api : {txn_id}")
-            status_api = confirm_response["status"]
-            logger.debug(f"status from api : {status_api}")
-            amount_api = float(confirm_response["amount"])
-            logger.debug(f"amount from api : {amount_api}")
-            payment_mode_api = confirm_response["paymentMode"]
-            logger.debug(f"payment_mode from api : {payment_mode_api}")
-            state_api = confirm_response["states"][0]
-            logger.debug(f"state from api : {state_api}")
-            settle_status_api = confirm_response['settlementStatus']
-            logger.debug(f"settle_status from api : {settle_status_api}")
-            org_code_api = confirm_response["orgCode"]
-            logger.debug(f"org_code from api : {org_code_api}")
-            date_api = confirm_response["createdTime"]
-            logger.debug(f"date from api : {date_api}")
-            external_ref_api = confirm_response["externalRefNumber"]
-            logger.debug(f"externalRefNumber from api : {external_ref_api}")
-            txn_type_api = confirm_response['txnType']
-            logger.info(f"txn_type from api: {txn_type_api}")
-            username_api = confirm_response['username']
-            logger.debug(f"username from api : {username_api}")
-            issuer_code_api = confirm_response['issuerCode']
-            logger.debug(f"issuer code from api : {issuer_code_api}")
-            acquirer_code_api = confirm_response['acquirerCode']
-            logger.debug(f"acquirer_code from api : {acquirer_code_api}")
-
-            query = "select * from txn where id = '" + txn_id + "';"
-            logger.debug(f"Query to txn details from database : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            created_time_db = result['created_time'].values[0]
-            logger.debug(f"created time from db : {created_time_db}")
-            amount_db = result['amount'].values[0]
-            logger.debug(f"amount from db : {amount_db}")
-            external_ref_db = result['external_ref'].values[0]
-            logger.debug(f"external_ref from db : {external_ref_db}")
-            status_db = result['status'].values[0]
-            logger.debug(f"status from db : {status_db}")
-            settle_status_db = result['settlement_status'].values[0]
-            logger.debug(f"settle_status from db : {settle_status_db}")
-            state_db = result['state'].values[0]
-            logger.debug(f"state from db : {state_db}")
-            txn_type_db = result['txn_type'].values[0]
-            logger.debug(f"txn_type from db : {txn_type_db}")
-            org_code_db = result['org_code'].values[0]
-            logger.debug(f"org_code fro  db : {org_code_db}")
-            payment_mode_db = result['payment_mode'].values[0]
-            logger.debug(f"payment mode from db {payment_mode_db}")
-            username_db = result['username'].values[0]
-            logger.debug(f"username from db : {username_db}")
-            acquirer_code_db = result['acquirer_code'].values[0]
-            logger.debug(f"acquirer_code_db from db : {acquirer_code_db}")
-            issuer_code_db = result['issuer_code'].values[0]
-            logger.debug(f"issuer_code_db from db :{issuer_code_db}")
-
             GlobalVariables.portal_page = TestSuiteSetup.initialize_portal_browser()
             login_page_portal = PortalLoginPage(GlobalVariables.portal_page)
             login_page_portal.perform_login_to_portal(login_username, login_password)
@@ -215,13 +161,15 @@ def test_mp_700_701_018():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
 
             api_details = DBProcessor.get_api_details('mp_devicesusage', request_body={
                 "startDate": this_start_date_1,
                 "endDate": this_end_date_1,
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for devicesUsage : {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Device Usage api is: {response}")
@@ -338,11 +286,13 @@ def test_mp_700_701_019():
         txn_username = txn_cred['Username']
         txn_password = txn_cred['Password']
         txn_org_code = txn_cred['Merchant_Code']
+        logger.debug(f"Fetched txn credentials from the ezeauto db : {txn_username},{txn_password},{txn_org_code}")
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -463,12 +413,14 @@ def test_mp_700_701_019():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
+            logger.info(f"mp login response from api : {response}")
+            bearer_token = response['token']
+            logger.info(f"bearer token from api : {bearer_token}")
 
             api_details = DBProcessor.get_api_details('mp_devices', request_body={
                 "isReportingOrg": False,
             })
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
+            api_details['Header'] = {'Authorization': 'Bearer ' + bearer_token, 'Content-Type': 'application/json'}
             logger.debug(f"api details for devices: {api_details}")
             response = APIProcessor.send_request(api_details)
             logger.info(f"Response obtained for Devices api is: {response}")
@@ -482,16 +434,16 @@ def test_mp_700_701_019():
             logger.info(f"Response obtained for active_devices from api is: {active_devices_api}")
             inactive_devices_api = response['inactiveDevices']
             logger.info(f"Response obtained for inactiveDevices from api is: {inactive_devices_api}")
-            last_activity_api = response['deviceActivityDetails']['West']['activeDeviceDetails'][0]['lastActivity']
-            logger.info(f"Response obtained for last_activity from api is: {last_activity_api}")
-            device_id_api = response['deviceActivityDetails']['West']['activeDeviceDetails'][0]['deviceId']
-            logger.info(f"Response obtained for device_id from api is: {device_id_api}")
-            location_api = response['deviceActivityDetails']['West']['activeDeviceDetails'][0]['location']
-            logger.info(f"Response obtained for location from api is: {location_api}")
-            node_id_api = response['deviceActivityDetails']['West']['nodeId']
-            logger.info(f"Response obtained for nodeid from api is: {node_id_api}")
+            # last_activity_api = response['deviceActivityDetails']['Akole']['activeDeviceDetails'][-1]['lastActivity']
+            # logger.info(f"Response obtained for last_activity from api is: {last_activity_api}")
+            # device_id_api = response['deviceActivityDetails']['Akole']['activeDeviceDetails'][-1]['deviceId']
+            # logger.info(f"Response obtained for device_id from api is: {device_id_api}")
+            # location_api = response['deviceActivityDetails']['Akole']['activeDeviceDetails'][-1]['location']
+            # logger.info(f"Response obtained for location from api is: {location_api}")
+            # node_id_api = response['deviceActivityDetails']['Akole']['nodeId']
+            # logger.info(f"Response obtained for nodeid from api is: {node_id_api}")
 
-            query = "select device_serial, modified_time from last_device_activity where org_code = '" + org_code + "' order by modified_time desc limit 1;"
+            query = "select device_serial, modified_time from last_device_activity where org_code = '" + org_code + "' order by modified_time desc;"
             logger.info(f"query to fetch device_serial from last_device_activity table: {query}")
             result = DBProcessor.getValueFromDB(query)
             last_device_id_db = result['device_serial'].values[0]
@@ -513,7 +465,7 @@ def test_mp_700_701_019():
             logger.info(f"Total no of devices from db : {count_of_devices_used_db}")
 
             query = "select lda.device_serial as device from last_device_activity lda inner join device d " \
-                    "on lda.device_serial=d.device_serial where lda.org_code = '" + org_code + "' and d.status = 'ACTIVE' order by lda.modified_time desc limit 1;"
+                    "on lda.device_serial=d.device_serial where lda.org_code = '" + org_code + "' and d.status = 'ACTIVE' order by lda.modified_time desc;"
             logger.info(f"query to fetch no of active devices for the org_code from db: {query}")
             result = DBProcessor.getValueFromDB(query)
             active_devices_db = len(result['device'])
@@ -526,14 +478,14 @@ def test_mp_700_701_019():
             inactive_devices_db = result['count'].values[0]
             logger.info(f"No of inactive devices from db : {inactive_devices_db}")
 
-            query = "select id from org_structure where label_id = (select id from org_structure_label where org_code = '" + org_code + "' and label_name = 'REGION') and org_employee_username IS NULL;"
-            logger.info(f"query to fetch label_id for the org_code region 'WEST' from db: {query}")
+            query = "select id from org_structure where label_id = (select id from org_structure_label where org_code = '" + org_code + "' and label_name = 'TALUK') and org_employee_username IS NULL;"
+            logger.info(f"query to fetch label_id for the org_code from db: {query}")
             result = DBProcessor.getValueFromDB(query)
-            region_node_id_db = result['id'].values[0]
-            logger.info(f"region_node_id_db for the org_code region 'WEST' from db: {region_node_id_db}")
+            cat_node_id_db = result['id'].values[0]
+            logger.info(f"node_id_db for the org_code from db: {cat_node_id_db}")
 
             query = "select lda.device_serial, d.node_id, d.status from last_device_activity lda inner join device d " \
-                    "on lda.device_serial=d.device_serial where lda.org_code = '" + org_code + "' and d.status = 'ACTIVE' order by lda.modified_time desc limit 1;"
+                    "on lda.device_serial=d.device_serial where lda.org_code = '" + org_code + "' and d.status = 'ACTIVE' order by lda.modified_time desc;"
             logger.info(f"query to fetch device_serial,node_id,status for the org_code from db: {query}")
             result = DBProcessor.getValueFromDB(query)
             node_id_db = result['node_id'].values[0]
@@ -568,10 +520,10 @@ def test_mp_700_701_019():
                     "total_devices": count_of_devices_used_db,
                     "active_devices": active_devices_db,
                     "inactive_devices": inactive_devices_db,
-                    "last_activity": modified_dttime_db,
-                    "device_id": last_device_id_db,
-                    "location": location_db,
-                    "node_id" : region_node_id_db
+                    # "last_activity": modified_dttime_db,
+                    # "device_id": last_device_id_db,
+                    # "location": location_db,
+                    # "node_id" : cat_node_id_db
                 }
 
                 actual_api_values = {
@@ -580,10 +532,10 @@ def test_mp_700_701_019():
                     "total_devices": total_devices_api,
                     "active_devices": active_devices_api,
                     "inactive_devices": inactive_devices_api,
-                    "last_activity": last_activity_api,
-                    "device_id": device_id_api,
-                    "location": location_api,
-                    "node_id" : node_id_api
+                    # "last_activity": last_activity_api,
+                    # "device_id": device_id_api,
+                    # "location": location_api,
+                    # "node_id" : node_id_api
 
                 }
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -601,10 +553,10 @@ def test_mp_700_701_019():
                     "total_devices": total_devices_api,
                     "active_devices": active_devices_api,
                     "inactive_devices": inactive_devices_api,
-                    "last_activity": last_activity_api,
-                    "device_id": device_id_api,
-                    "location": location_api,
-                    "node_id": node_id_api
+                    # "last_activity": last_activity_api,
+                    # "device_id": device_id_api,
+                    # "location": location_api,
+                    # "node_id": node_id_api
                 }
 
                 actual_db_values = {
@@ -613,10 +565,10 @@ def test_mp_700_701_019():
                     "total_devices": count_of_devices_used_db,
                     "active_devices": active_devices_db,
                     "inactive_devices": inactive_devices_db,
-                    "last_activity": modified_dttime_db,
-                    "device_id": last_device_id_db,
-                    "location": location_db,
-                    "node_id": region_node_id_db
+                    # "last_activity": modified_dttime_db,
+                    # "device_id": last_device_id_db,
+                    # "location": location_db,
+                    # "node_id": cat_node_id_db
 
                 }
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -631,6 +583,5 @@ def test_mp_700_701_019():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
 
 

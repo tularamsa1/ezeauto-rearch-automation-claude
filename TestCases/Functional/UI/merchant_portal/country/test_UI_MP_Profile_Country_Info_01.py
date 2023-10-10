@@ -34,10 +34,11 @@ def test_mp_700_701_064():
         logger.debug(f"Fetched txn credentials from the ezeauto db : {txn_cred}")
         txn_org_code = txn_cred['Merchant_Code']
 
-        login_cred = ResourceAssigner.get_org_users_login_Credentials('COUNTRY', txn_org_code)
-        logger.debug(f"Fetched login credentials from the ezeauto db : {login_cred}")
-        login_username = login_cred['Username']
-        login_password = login_cred['Password']
+        cred_dict = ResourceAssigner.get_org_users_using_category(txn_org_code)
+        logger.debug(f"Fetched all category credentials from the ezeauto db : {cred_dict}")
+        login_username = cred_dict['COUNTRY']['username']
+        logger.debug(f"Fetched login_username credentials from the ezeauto db : {login_username}")
+        login_password = cred_dict['COUNTRY']['password']
 
         query = "select org_code from org_employee where username='" + str(login_username) + "';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
@@ -86,20 +87,17 @@ def test_mp_700_701_064():
                 "password": login_password
             })
             response = APIProcessor.send_request(api_details)
-            api_details = DBProcessor.get_api_details('mp_profile')
-            logger.info(f"bearer token from api : {response}")
-            api_details['Header'] = {'Authorization': 'Bearer ' + response, 'Content-Type': 'application/json'}
-            logger.debug(f"api details for TxnReport : {api_details}")
-            response = APIProcessor.get_request(api_details)
-            logger.info(f"Response obtained for profile is: {response}")
+            logger.info(f"mp login response from api : {response}")
+            user_profile_details = response['config']['userProfile']
+            logger.debug(f"user profile details from api response: {user_profile_details}")
 
-            name_api = response['name']
+            name_api = user_profile_details['name']
             logger.debug(f"name from api : {name_api}")
             username_api = response['username']
             logger.debug(f"username from api : {username_api}")
-            email_api = response['userEmail']
+            email_api = user_profile_details['userEmail']
             logger.debug(f"email from api : {email_api}")
-            mobile_number_api = response['userMobileNo']
+            mobile_number_api = user_profile_details['userMobileNo']
             logger.debug(f"mobile number from api : {mobile_number_api}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
