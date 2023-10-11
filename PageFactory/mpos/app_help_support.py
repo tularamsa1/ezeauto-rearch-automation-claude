@@ -30,12 +30,21 @@ class HelpSupport(BasePage):
         super().__init__(driver)
 
     def click_help_support_from_nav_bar(self):
+        """
+        Performs a click action on the 'Help & Support' button present at nav bar
+        """
         self.perform_click(self.btn_help_support)
 
     def click_help_menu(self):
+        """
+        Performs a click action on side menu
+        """
         self.perform_click(self.mnu_bar_home_page)
 
     def click_request_callback(self, mobile_number):
+        """
+        Clicks multiple elements to request a callback and enters the given mobile number.
+        """
         self.wait_for_element(self.btn_request_callback)
         self.perform_click(self.btn_request_callback)
         self.wait_for_element(self.btn_request_callback_2)
@@ -45,11 +54,20 @@ class HelpSupport(BasePage):
         self.perform_click(self.btn_request_callback_3)
 
     def is_request_callback_successful(self):
+        """
+        Retrieve and returns success message for request callback
+        """
         label_1 = self.fetch_text(self.txt_callback_request_successful_message_1)
         label_2 = self.fetch_text(self.txt_callback_request_successful_message_2)
         return label_1, label_2
 
     def click_register_a_complaint(self, email, mobile_num, random_description):
+        """Navigate to complaint registration, fill in details, and submit.
+        Args:
+            email (str): User's email address.
+            mobile_num (str): User's mobile number.
+            random_description (str): Description of the complaint.
+        """
         self.scroll_to_text('Register a Complaint')
         self.perform_click(self.btn_register_a_complaint)
         self.wait_for_element(self.txt_mob_number_complaint_register).clear()
@@ -59,9 +77,15 @@ class HelpSupport(BasePage):
         self.perform_click(self.btn_submit)
 
     def is_register_complaint_successful(self):
+        """
+        Retrieve and returns success message for complaint registration
+        """
         return self.fetch_text(self.txt_complaint_register_successful_message_1)
 
     def click_help_navbar(self):
+        """
+        Perform a click action on "Help and support" button
+        """
         self.perform_click(self.btn_help_support_navbar)
 
     def click_help_menu(self):
@@ -69,9 +93,16 @@ class HelpSupport(BasePage):
         self.perform_click(self.btn_menu_help_support)
 
     def fetch_text_help_and_support(self):
+        """
+        Retrieves text of the tittle for the Help and Support screen
+        Returns : (str) Help and Support
+        """
         self.wait_for_element(self.txt_help_and_support)
         return self.fetch_text(self.txt_help_and_support)
 
     def click_on_help_from_top_of_home_screen(self):
+        """
+        Click the 'Help and support' button present at the top of the home screen.
+        """
         self.wait_for_element(self.btn_help_from_top_of_home_screen)
         self.perform_click(self.btn_help_from_top_of_home_screen)

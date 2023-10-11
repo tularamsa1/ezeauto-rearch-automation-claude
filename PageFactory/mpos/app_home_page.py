@@ -326,8 +326,10 @@ class HomePage(BasePage):
         self.perform_click(self.scrollable_it)
 
     def get_coordinates(self):
-        today_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
-        bounds_str = self.wait_for_element(today_sales).get_attribute("bounds")
+        """
+        gives the relative co_ordinates of an element based on bounds attribute
+        """
+        bounds_str = self.wait_for_element(self.today_sales).get_attribute("bounds")
         print(bounds_str)
         matches = re.findall(r'\d+', bounds_str)
         if len(matches) >= 2:
@@ -339,13 +341,22 @@ class HomePage(BasePage):
             logger.info("Not enough numeric values found in the string")
 
     def scroll_to_element_horizontally(self, swipe_count, b, b1, c1):
+        """
+        This function is used to scroll horizontally using relative co-ordinates
+        """
         for i in range(1, swipe_count + 1):
             action = TouchAction(self.driver)
             action.press(x=b, y=c1).move_to(x=b1, y=c1).release().perform()
 
     def click_on_account_mnu_hindi(self):
+        """
+        performs clicking on hindi language
+        """
         self.perform_click(self.mnu_account_hindi)
 
     def wait_to_load_today_sales(self):
+        """
+        This function is used to wait until today sales element is visible
+        """
         self.wait_for_element(self.txt_todays_sales)
 

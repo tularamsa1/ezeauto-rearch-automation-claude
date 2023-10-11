@@ -55,7 +55,6 @@ def test_mpos_400_405_001():
         id_of_device = device_id
         given_version_to_pin = ConfigReader.read_config("OtaUpdate", "mpos_version")
         ver_code = ConfigReader.read_config("OtaUpdate", "mpos_version_code")
-        logger.debug(f"Result:- {result} and type:- {type(result)}")
         directory_path = ConfigReader.read_config_paths("System", "automation_suite_path") + "/App"
         app_list = get_all_file_names(directory_path)
         try:
@@ -81,10 +80,10 @@ def test_mpos_400_405_001():
                             DBProcessor.setValueToDB(query)
                             logger.debug("updated the status in to active")
                         pin_to_merchant = "False"
-                        logger.debug(f"update Pax version is already pinned to merchant")
+                        logger.debug(f"update Pax version is already pinned to the merchant")
                     else:
                         pin_to_merchant = "True"
-                        logger.info(f"update Pax version is not pinned to merchant")
+                        logger.info(f"update Pax version is not pinned to the merchant")
             else:
                 app_file_name = "mpos"
                 query = "select * from app_version where org_code='" + str(
@@ -107,10 +106,10 @@ def test_mpos_400_405_001():
                             DBProcessor.setValueToDB(query)
                             logger.debug("updated the status in to active")
                         pin_to_merchant = "False"
-                        logger.debug(f"update mobile version is already pinned to merchant")
+                        logger.debug(f"update mobile version is already pinned to the merchant")
                     else:
                         pin_to_merchant = "True"
-                        logger.info(f"update mobile version is not pinned to merchant")
+                        logger.info(f"update mobile version is not pinned to the merchant")
 
             original_mpos_app_version = get_mpos_version(str(id_of_device))
             logger.debug(f"app_version: {original_mpos_app_version}")
@@ -302,9 +301,6 @@ def test_mpos_400_405_002():
                     org_code) + "' and severity = 0  and device_type = 'PAX' AND application_id = 'ezetap_android' and version_name = '" + str(
                     given_version_to_pin) + "';"
                 result = DBProcessor.getValueFromDB(query)
-                mpos_apk_path = ConfigReader.read_config_paths("System",
-                                                               "automation_suite_path") + "/App/" + ConfigReader.read_config(
-                    "Applications", "pax_mpos")
                 if result.empty:
                     pin_to_merchant = "True"
                     logger.info(f"empty data frame is validated successfully")
@@ -321,19 +317,16 @@ def test_mpos_400_405_002():
                             DBProcessor.setValueToDB(query)
                             logger.debug("updated the status in to active")
                         pin_to_merchant = "False"
-                        logger.debug(f"update Pax version is already pinned to merchant")
+                        logger.debug(f"update Pax version is already pinned to the merchant")
                     else:
                         pin_to_merchant = "True"
-                        logger.info(f"update Pax version is not pinned to merchant")
+                        logger.info(f"update Pax version is not pinned to the merchant")
             else:
                 app_file_name = "mpos"
                 query = "select * from app_version where org_code='" + str(
                     org_code) + "' and severity = 0 AND application_id = 'ezetap_android' and version_name = '" + str(
                     given_version_to_pin) + "' and device_type = 'REGULAR_ANDROID';"
                 result = DBProcessor.getValueFromDB(query)
-                mpos_apk_path = ConfigReader.read_config_paths("System",
-                                                               "automation_suite_path") + "/App/" + ConfigReader.read_config(
-                    "Applications", "mpos")
                 if result.empty:
                     pin_to_merchant = "True"
                     logger.info(f"empty data frame is validated successfully")

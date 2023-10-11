@@ -11,6 +11,7 @@ dbPath = ConfigReader.read_config_paths("System", "automation_suite_path") + "/D
 def get_device_id():
     """
     This function will give the available device id
+    return: device_id
     """
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
@@ -22,6 +23,7 @@ def get_device_id():
 def get_sa_app_path():
     """
     This function is used to get the sa application path
+    return: sa_path
     """
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
         sa_path = ConfigReader.read_config_paths("System",
@@ -40,6 +42,7 @@ def get_sa_app_path():
 def get_mpos_app_path():
     """
     This function is used to get the mpos application path
+    return: mpos_path
     """
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
         mpos_apk_path = ConfigReader.read_config_paths("System",
@@ -55,7 +58,8 @@ def get_mpos_app_path():
 
 def check_sa_installed_or_not():
     """
-     This function checks weather sa is installed or not
+     This function checks whether sa is installed or not
+     return: bool value
     """
     adb_command_sa = ["adb", "shell", "pm", "list", "packages", "com.ezetap.service.demo"]
     result_sa = subprocess.run(adb_command_sa, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -68,7 +72,8 @@ def check_sa_installed_or_not():
 
 def check_mpos_installed_or_not():
     """
-    This function checks weather mpos installed or not
+    This function checks whether mpos installed or not
+    return: bool values
     """
     adb_command_mpos = ["adb", "shell", "pm", "list", "packages", "com.ezetap.basicapp"]
     result = subprocess.run(adb_command_mpos, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -82,6 +87,8 @@ def check_mpos_installed_or_not():
 def install_sa_application(id_of_devices: str, sa_path: str):
     """
     This function installs the SA application
+    param: id_of_devices
+    param: sa_path
     """
     install_command = ["adb", "-s", id_of_devices, "install", "-r", "-g", sa_path]
     result = subprocess.run(install_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -94,6 +101,8 @@ def install_sa_application(id_of_devices: str, sa_path: str):
 def install_mpos_application(id_of_devices: str, mpos_apk_path: str):
     """
       This function installs the MPOS application
+      param: id_of_devices
+      param: mpos_apk_path
     """
     install_command = ["adb", "-s", id_of_devices, "install", "-r", "-g", mpos_apk_path]
     result = subprocess.run(install_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

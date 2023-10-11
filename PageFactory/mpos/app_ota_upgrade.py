@@ -1,7 +1,6 @@
 import os
 import re
 import subprocess
-import time
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 from Utilities import ConfigReader, DBProcessor
@@ -24,42 +23,71 @@ class OTA_upgrade(BasePage):
         super().__init__(driver)
 
     def click_skip(self):
+        """
+        performs the click on skip button in the update tab
+        """
         self.wait_for_element(self.btn_skip)
         self.perform_click(self.btn_skip)
 
     def click_on_update_now(self):
+        """
+        performs the click on update now button in the update tab
+        """
         self.wait_for_element(self.btn_update_now)
         self.perform_click(self.btn_update_now)
 
     def fetch_update_tap_tittle(self):
+        """
+        Retrieves the text from the tittle of the update tab
+        return: txt_update_tap_tittle
+        """
         self.wait_for_element(self.txt_update_tap_tittle)
         return self.fetch_text(self.txt_update_tap_tittle)
 
     def fetch_skip_txt_from_skip_button(self):
+        """
+        Retrieves the text from the skip button in the update tab
+        return: btn_skip
+        """
         self.wait_for_element(self.btn_skip)
         return self.fetch_text(self.btn_skip)
 
     def validate_downloading_tab(self):
+        """
+        verifies the availability od downloading tab after clicking on the update now button
+        """
         self.wait_for_element(self.txt_update_tap_tittle)
 
     def click_on_install(self):
+        """
+        performs click on install button
+        """
         self.wait_for_element(self.btn_install, time=220)
-        time.sleep(5)
         self.perform_click(self.btn_install)
 
     def click_on_done(self):
+        """
+        performs click on done(Done) button
+        """
         self.perform_click(self.btn_done, time=60)
 
     def click_on_update_btn(self):
+        """
+        performs click on update button
+        """
         self.perform_click(self.btn_update, time=180)
 
     def click_on_done_2(self):
+        """
+        performs click on done(Done) button
+        """
         self.perform_click(self.btn_done_2)
 
 
 def get_all_file_names(directory_path):
     """
      This function gets all the file name that present in the App directory
+     return: apps_lst : list
     """
     file_names = os.listdir(directory_path)
     apps_lst = []
@@ -76,6 +104,9 @@ def get_all_file_names(directory_path):
 def find_file_path_by_name(directory_path_to_search, file_name_to_get_path):
     """
     This function gets the path of a mpos or sa apk path
+    param: directory_path_to_search
+    param: file_name_to_get_path
+    return: file path or None
     """
     for root, _, files in os.walk(directory_path_to_search):
         if file_name_to_get_path in files:
@@ -86,6 +117,10 @@ def find_file_path_by_name(directory_path_to_search, file_name_to_get_path):
 def install_lower_mpos_version(apps_lst: list, given_version_to_pin: str, directory_path: str, id_of_device: str):
     """
     This function compares the version the mpos app version and install the lower version the given version
+    param:apps_lst
+    param: given_version_to_pin
+    param: directory_path
+    param: id_of_device
     """
     logger.debug(f"list of App version :- {apps_lst}")
     for app in apps_lst:
@@ -114,6 +149,9 @@ def install_lower_mpos_version(apps_lst: list, given_version_to_pin: str, direct
 def unpining_mpos_update_version(org_code: str, given_version_to_pin: str, severity: int):
     """
       This function is used to unpin the mpos update version from a particular merchant depends on org_code
+      param :org_code
+      param: given_version_to_pin
+      param: severity
     """
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
         device_type = 'PAX'
@@ -137,6 +175,10 @@ def unpining_mpos_update_version(org_code: str, given_version_to_pin: str, sever
 def pinning_mpos_version_to_merchant(org_code : str, ver_code: str, given_version_to_pin: str, severity: int):
     """
     This function is used to pin the mpos update version from a particular merchant depends on org_code
+    param:org_code
+    param: ver_code
+    param: given_version_to_pin
+    param: severity
     """
     device_type = 'PAX'
     if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':

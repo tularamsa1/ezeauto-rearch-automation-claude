@@ -19,37 +19,69 @@ class AccountPage(BasePage):
         super().__init__(driver)
 
     def click_on_logout(self):
+        """
+        performs logout from the mpos application
+        """
         self.perform_click(self.mnu_setting)
         self.perform_click(self.btn_logout)
         self.perform_click(self.btn_confirmLogout)
 
     def click_on_setting(self):
+        """
+        performs click on setting menu
+        """
         self.perform_click(self.mnu_setting)
 
     def click_on_Language(self):
+        """
+        performs clicking on language menu
+        """
         self.perform_click(self.mnu_Language)
 
     def click_on_eng_Lang(self):
+        """
+        performs clicking in english language
+        """
         self.perform_clickIndex(self.rdo_Language,0)
 
-
     def click_on_hindi_Lang(self):
+        """
+        performs clicking on hindi language
+        """
         self.perform_clickIndex(self.rdo_Language,1)
 
     def click_on_proceed_btn(self):
+        """
+        performs clicking on proceed button
+        """
         self.perform_click(self.btn_LanguageProceed)
 
     def get_Lang_text(self):
+        """
+        fetches text from language menu
+        """
         return self.fetch_text(self.mnu_Language)
 
     def get_SA_version(self):
+        """
+        fetches text of service application version from account page
+        """
         return self.fetch_text(self.lbl_SAVersion)
 
     def fetch_mpos_version(self):
+        """
+        fetches text of mpos application version from account page
+        """
         return self.fetch_text(self.txt_mpos_version)
 
     def fetch_sa_version(self):
+        """
+         fetches text of service application version from account page
+         """
         return self.fetch_text(self.txt_sa_version)
 
     def click_on_back(self):
+        """
+        performs clicking on back buttom
+        """
         self.perform_click(self.btn_back)

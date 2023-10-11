@@ -55,10 +55,18 @@ class LoginPage(BasePage):
         return self.wait_for_element(self.lbl_login)
 
     def perform_cash_additional_auth(self, app_password):
+        """
+        performs additional authorization when cash txn
+        param: password
+        """
         self.wait_for_element(self.txt_auth_password).clear()
         self.perform_sendkeys(self.txt_auth_password, app_password)
         self.perform_click(self.btn_auth_login)
 
     def fetch_login_failed_msg(self):
+        """
+        fetches text from login failed pop tab in the login page
+        return:txt_login_failed_msg:str
+        """
         self.wait_for_element(self.txt_login_failed_msg)
         return self.fetch_text(self.txt_login_failed_msg)
