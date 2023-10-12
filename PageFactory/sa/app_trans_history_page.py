@@ -58,6 +58,7 @@ class TransHistoryPage(BasePage):
     btn_conf_pre_auth_popup = (By.ID, "com.ezetap.service.demo:id/rightButton")
     btn_confirmation = (By.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.EditText")
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
+    txt_history = (By.XPATH, '//*[@text="Transactions"]')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -258,3 +259,6 @@ class TransHistoryPage(BasePage):
         return: device_serial: str
         """
         return self.fetch_text(self.txt_ref_num_2)
+
+    def fetch_history_txt(self):
+        return self.fetch_text(self.txt_history)
