@@ -59,6 +59,12 @@ class TransHistoryPage(BasePage):
     btn_confirmation = (By.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.EditText")
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
     txt_history = (By.XPATH, '//*[@text="Transactions"]')
+    txt_e_order_id = (By.XPATH, '(//*[@class="android.view.View"])[9]')
+    txt_e_receipt_created_date = (By.XPATH, '(//*[@class="android.view.View"])[10]')
+    txt_e_receipt_time = (By.XPATH, '(//*[@class="android.view.View"])[11]')
+    txt_e_receipt_payment_mode = (By.XPATH, '(//*[@class="android.view.View"])[16]')
+    txt_e_receipt_amount = (By.XPATH, '(//*[@class="android.view.View"])[19]')
+    lbl_logo = (By.XPATH, '//*[@text = "Ezetap"]')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -261,4 +267,81 @@ class TransHistoryPage(BasePage):
         return self.fetch_text(self.txt_ref_num_2)
 
     def fetch_history_txt(self):
+        """
+        fetches the tittle text from transaction history page
+        return: txt_history: str
+        """
         return self.fetch_text(self.txt_history)
+
+    def click_on_e_receipt(self):
+        """
+        Performs a click action on the 'E-Receipt' link element
+        """
+        self.wait_for_element(self.lnk_chargeSlip)
+        self.perform_click(self.lnk_chargeSlip)
+
+    def wait_for_e_receipt_to_load(self):
+        """
+        Waits for the e-receipt to be displayed by waiting for the 'lbl_logo' element
+        """
+        self.wait_for_element(self.lbl_logo)
+
+    def wait_for_order_id_to_load(self):
+        """
+        Waits for the order ID element to load and become clickable
+        """
+        self.wait_for_element(self.txt_e_order_id)
+        self.wait_for_element_to_be_clickable(self.txt_e_order_id)
+
+    def fetch_e_receipt_order_id(self):
+        """
+        Fetch and return the order ID from the e-receipt
+        """
+        self.wait_for_element(self.txt_e_order_id)
+        order = self.fetch_text(self.txt_e_order_id)
+        print(f"order id is {order}")
+        return order.strip()
+
+    def fetch_e_receipt_created_date(self):
+        """
+        Retrieve and returns the e-receipt created date
+        """
+        self.wait_for_element(self.txt_e_receipt_created_date)
+        return self.fetch_text(self.txt_e_receipt_created_date)
+
+    def fetch_e_receipt_time(self):
+        """
+        Retrieve and return the e-receipt time.
+        """
+        self.wait_for_element(self.txt_e_receipt_time)
+        time = self.fetch_text(self.txt_e_receipt_time)
+        return time.strip()
+
+    def wait_for_payment_mode_to_load(self):
+        self.wait_for_element(self.txt_e_receipt_payment_mode)
+
+    def fetch_e_receipt_payment_mode(self):
+        """
+        Retrieves and return the payment mode from e-receipt.
+        """
+        self.wait_for_element(self.txt_e_receipt_payment_mode)
+        return self.fetch_text(self.txt_e_receipt_payment_mode)
+
+    def wait_for_amount_to_load(self):
+        """
+        Waits for amount element to load.
+        """
+        self.wait_for_element(self.txt_e_receipt_amount)
+
+    def fetch_e_receipt_amount(self):
+        """
+        Retrieves and return amount from e-receipt.
+        """
+        self.wait_for_element(self.txt_e_receipt_amount)
+        return self.fetch_text(self.txt_e_receipt_amount)
+
+    def wait_for_filter_to_load(self):
+        """
+        Waits for the filter button to become clickable before using it.
+        """
+        self.wait_for_element_to_be_clickable(self.btn_filters)

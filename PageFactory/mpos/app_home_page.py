@@ -360,3 +360,14 @@ class HomePage(BasePage):
         """
         self.wait_for_element(self.txt_todays_sales)
 
+    def enter_amount_without_order_number(self, amt):
+        """
+        Enters amount without order ID and clicks on proceed button
+        """
+        self.perform_click(self.txt_enterAmountField)
+        list = self.type_amount(amt)
+        for i in list:
+            self.perform_click(i)
+        self.perform_click(self.btn_pay)
+        self.perform_click(self.btn_paymentProceed)
+
