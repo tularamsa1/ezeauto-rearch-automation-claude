@@ -386,6 +386,20 @@ def get_org_users_credentials(testCaseID: str, category: str):
         return org_user_credentials
 
 
+def get_org_users_using_category(org_code: str):
+    users_creds = {}
+    conn = sqlite3.connect(dbPath)
+    cursor = conn.cursor()
+    cursor.execute("select Username, Password, Category from org_users where MerchantCode = '" + org_code + "';")
+    devices = cursor.fetchall()
+    for users in devices:
+        username = users[0]
+        password = users[1]
+        category = users[2]
+        users_creds[category] = {"username": username, "password": password}
+    return users_creds
+
+
 def release_merchant(testCaseID: str) -> None:
     """
     This method is used to get the username and password on the basis of category from the org_users table and return
