@@ -29,9 +29,9 @@ class PortalTransHistoryPage(BasePage):
     btn_txn = '//p[text()="Transactions"]'
     tbl_data = "//div[@class='txnReportsTable_loaderContainer__om+oI']/following-sibling::div[1]"
     btn_search = '//button[text()="Search"]'
-    txt_dsn = '//*[@id="root"]/div/div/div[3]/div[2]/div/div[4]/div/div[1]/div/div/div[3]/div/div[3]/p[2]'
-    txt_txn_id = '//*[@id="root"]/div/div/div[3]/div[2]/div/div[4]/div/div[2]/div[3]/div/table/tbody/tr/td[2]'
-    txt_cust_and_merchant = '//*[@id="root"]/div/div/div[3]/div[2]/div/div[4]/div/div[1]/div/div/div[2]/div[2]/p'
+    txt_dsn = '//*[@id="root"]//div/div[2]/div[2]/div/div[4]/div/div[1]/div/div/div[3]/div/div[3]/p[2]'
+    txt_txn_id = '//*[@id="root"]//div/div[2]/div[2]/div/div[4]/div/div[2]/div[3]/div/table/tbody/tr[1]/td[2]'
+    txt_cust_and_merchant = '//*[@id="root"]//div/div[2]/div[2]/div/div[4]/div/div[1]/div/div/div[2]/div[2]/p'
 
     def __init__(self, page):
         super().__init__(page)
@@ -112,7 +112,7 @@ class PortalTransHistoryPage(BasePage):
 
     def click_on_txt_cust_and_merchants(self):
         """
-        performs clicking on the txn id in merchant portal
+        performs clicking on the customer and merchants in merchant portal
         """
         self.perform_click(self.txt_cust_and_merchant)
 
@@ -121,6 +121,8 @@ class PortalTransHistoryPage(BasePage):
         fetches the dsn from the reports in the merchants
         return: txt_dsn: str
         """
+        self.click_on_txn_id()
+        self.click_on_txt_cust_and_merchants()
         return self.fetch_text(self.txt_dsn)
 
 
@@ -171,30 +173,3 @@ def get_txn_details_for_diff_order_id(order_id: str = None) -> list:
     table_html = table_element.inner_html()
     transaction_details = extract_table_data(table_html)
     return transaction_details
-
-
-def get_dsn_number(app_username: str, app_password: str, order_id: str):
-    """
-    This method is used to get the device serial number from merchant portal
-    param: app_username :str
-    param : app_password :str
-    param: order_id :str
-    return: portal_dsn :str
-    """
-    GlobalVariables.portal_page = TestSuiteSetup.initialize_portal_browser()
-    login_page_portal = PortalLoginPage(GlobalVariables.portal_page)
-    login_page_portal.perform_login_to_portal(app_username, app_password)
-    merchant_portal = PortalTransHistoryPage(GlobalVariables.portal_page)
-    merchant_portal.click_on_reports()
-    merchant_portal.click_on_txn()
-    merchant_portal.click_on_search_box()
-    merchant_portal.select_order_number()
-    merchant_portal.click_on_search()
-    merchant_portal.select_order_number()
-    merchant_portal.enter_order_number(order_id)
-    merchant_portal.perform_search()
-    merchant_portal.wait_for_given_timeout(2000)
-    merchant_portal.click_on_txn_id()
-    merchant_portal.click_on_txt_cust_and_merchants()
-    portal_dsn = merchant_portal.get_dsn_number().split('/')[1]
-    return portal_dsn

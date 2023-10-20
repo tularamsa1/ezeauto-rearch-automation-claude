@@ -81,7 +81,6 @@ def test_common_400_408_001():
             payment_page.click_on_confirm()
             payment_page.click_on_signature_required()
             x, y = payment_page.get_relative_coordinate_for_signature()
-            payment_page.wait_for_amount_to_load()
             payment_page.add_signature(x, y)
             payment_page.signature_submit()
             logger.info("Signature submitted successfully")

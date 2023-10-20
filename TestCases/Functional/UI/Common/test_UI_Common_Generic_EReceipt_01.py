@@ -48,16 +48,10 @@ def test_common_400_410_001():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
-                                                                                       "password": portal_password,
-                                                                                       "settingForOrgCode": org_code})
-        logger.debug(f"API details  : {api_details} ")
-        response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, khata_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -90,7 +84,7 @@ def test_common_400_410_001():
             home_page.check_home_page_logo()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
-            txn_history_page.click_first_amount_field()
+            txn_history_page.click_on_transaction_by_order_id(order_id)
             txn_history_page.click_on_e_receipt()
             txn_history_page.wait_for_e_receipt_to_load()
             logger.info(f"E-receipt is loaded successfully")
@@ -122,11 +116,12 @@ def test_common_400_410_001():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 logger.debug(f"created date and time are {txn_date} and {txn_time}")
 
-                expected_app_values = {'PAID BY:': 'CASH',
-                                       'BASE AMOUNT:': "Rs." + str(amount) + ".00",
-                                       'date': f'Date: {txn_date}',
-                                       'time': f'Time: {txn_time}'
-                                       }
+                expected_app_values = {
+                    'PAID BY:': 'CASH',
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': f'Date: {txn_date}',
+                    'time': f'Time: {txn_time}'
+                }
 
                 e_amount = txn_history_page.fetch_e_receipt_amount()
                 logger.info(f"Fetched amount from e receipt : {e_amount}")
@@ -134,15 +129,15 @@ def test_common_400_410_001():
                 logger.info(f"Fetched created date from e receipt : {e_created_date}")
                 e_created_time = txn_history_page.fetch_e_receipt_time()
                 logger.info(f"Fetched created time from e receipt : {e_created_time}")
-                txn_history_page.wait_for_payment_mode_to_load()
                 e_payment_mode = txn_history_page.fetch_e_receipt_payment_mode()
                 logger.info(f"Fetched payment mode from e receipt : {e_payment_mode}")
 
-                actual_app_values = {'PAID BY:': e_payment_mode,
-                                     'BASE AMOUNT:': str(e_amount),
-                                     'date': e_created_date,
-                                     'time': e_created_time
-                                     }
+                actual_app_values = {
+                    'PAID BY:': e_payment_mode,
+                    'BASE AMOUNT:': str(e_amount),
+                    'date': e_created_date,
+                    'time': e_created_time
+                }
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:

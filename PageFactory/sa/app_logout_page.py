@@ -1,5 +1,3 @@
-import time
-
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 
@@ -18,7 +16,7 @@ class Logout(BasePage):
 
     def perform_logout(self):
         """
-        This method is used to logout from the app
+        This method is used to logout from the app when the autoLoginByTokenLogOutEnabled is enabled
         """
         self.perform_click(self.btn_sidemenu)
         self.perform_click(self.btn_arrow)

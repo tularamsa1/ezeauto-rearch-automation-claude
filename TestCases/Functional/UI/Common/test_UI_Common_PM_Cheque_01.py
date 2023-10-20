@@ -88,13 +88,13 @@ def test_common_100_114_001():
             logger.info("Selected payment mode is cheque")
             payment_page.fill_cheque_number(123456)
             payment_page.fill_bank_name("Allahabad Bank")
-            x, y = payment_page.get_relative_cordinate()
+            x, y = payment_page.get_relative_coordinate_for_bank()
             payment_page.perform_click_to_bank(x, y)
             today_date = datetime.today().date().strftime("%d %B %Y")
             logger.debug(f"Generating today's date: {today_date}")
             payment_page.click_on_date(today_date)
             payment_page.fill_ifsc_code("ALLA0210329")
-            x1, y1 = payment_page.get_relative_cordinate_for_ifsc_code()
+            x1, y1 = payment_page.get_relative_coordinate_for_ifsc_code()
             payment_page.perform_touch_action_on_cheque_home_page(x1, y1)
             payment_page.click_on_cheque_submit()
             payment_page.click_on_proceed_homepage()
@@ -228,6 +228,9 @@ def test_common_100_114_001():
                     "pmt_mode": "CHEQUE",
                     "txn_amt": amount,
                     "order_id": order_id,
+                    "cheque_number": 123456,
+                    "bank_name": "Allahabad Bank",
+                    "bank_code": "ALLA0210329"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -241,12 +244,19 @@ def test_common_100_114_001():
                     result["amount"].iloc[0])  # actual=345.0000, expected should be in the same format
                 new_txn_state_db = result["state"].iloc[0]
                 new_txn_order_id_db = result['external_ref'].values[0]
+                new_bank_name = result['bank_name'].values[0]
+                new_bank_code = result['bank_name'].values[0]
+                new_cheque_number = int(result["cheque_number"].iloc[0])
                 actual_db_values = {
                     "pmt_status": new_txn_status_db,
                     "pmt_state": new_txn_state_db,
                     "pmt_mode": new_txn_payment_mode_db,
                     "txn_amt": new_txn_amount_db,
                     "order_id": new_txn_order_id_db,
+                    "cheque_number": new_cheque_number,
+                    "bank_name": new_bank_name,
+                    "bank_code": new_bank_code
+
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 

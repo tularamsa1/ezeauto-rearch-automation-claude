@@ -16,7 +16,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_400_404_001():
     """
-    Sub Feature Code: UI_Common_Generic_App_Installation_Verification_01
+    Sub Feature Code: UI_Common_Generic_App_Installation_Verification
     Sub Feature Description: Verify the successful installation of the SA
     TC naming code description:400: Generic Actions,404: App Installation,001: TC001
     """
@@ -24,7 +24,6 @@ def test_common_400_404_001():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -44,7 +43,6 @@ def test_common_400_404_001():
                                                            portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         device_id = get_device_id()

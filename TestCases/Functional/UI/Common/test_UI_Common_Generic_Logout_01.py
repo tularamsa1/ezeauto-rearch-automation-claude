@@ -15,7 +15,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_400_402_001():
     """
-    Sub Feature Code: UI_Common_Generic_Logout_TokenEnabled_01
+    Sub Feature Code: UI_Common_Generic_Logout_TokenEnabled
     Sub Feature Description:Verify the autologin functionality when the token Logout is enabled
     TC naming code description: 400: Generic Actions,402: Logout,001: TC001
     """
@@ -102,8 +102,7 @@ def test_common_400_402_001():
                     login_page.validate_login_page()
                     result = 'SUCCESS'
                 except Exception as e:
-                    home_page.check_home_page_logo()
-                    result = f'FAILURE{e}'
+                    result = f'FAILURE: {e}'
                 actual_app_values = {'Result': result}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -124,7 +123,7 @@ def test_common_400_402_001():
 @pytest.mark.appVal
 def test_common_400_402_002():
     """
-    Sub Feature Code: UI_Sa_Generic_Logout_TokenDisabled_01
+    Sub Feature Code: UI_Sa_Generic_Logout_TokenDisabled
     Sub Feature Description: Verify the user would have to enter the credentials to login to the app after killing and launching the app
     TC naming code description:400: Generic Actions,402: Logout,002: TC002
     """
@@ -132,7 +131,6 @@ def test_common_400_402_002():
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
@@ -152,7 +150,6 @@ def test_common_400_402_002():
                                                        portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
@@ -198,7 +195,6 @@ def test_common_400_402_002():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -209,8 +205,7 @@ def test_common_400_402_002():
                     home_page.check_home_page_logo()
                     result = 'SUCCESS'
                 except Exception as e :
-                    login_page.validate_login_page()
-                    result = f'FAILURE{e}'
+                    result = f'FAILURE: {e}'
                 actual_app_values = {'Result': result}
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -218,7 +213,6 @@ def test_common_400_402_002():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")

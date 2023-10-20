@@ -17,7 +17,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_100_101_114():
     """
-    Sub Feature Code: UI_Common_PM_UPI_check_status_after_App_kill_HDFC01
+    Sub Feature Code: UI_Common_PM_UPI_check_status_after_App_kill_HDFC
     Sub Feature Description: verify the Check status after the app is killed and lunched again
     TC naming code description:100: Payment Method, 101: UPI, 114: TC114
     """
@@ -112,22 +112,22 @@ def test_common_100_101_114():
                     "txn_amt": f"{amount}.00",
                     "error_message_tittle": "Pending"
                 }
-                tittle = payment_page.fetch_check_status_tittle()
+                title = payment_page.fetch_check_status_title()
                 skip_txt = payment_page.fetch_skip_txt()
                 check_status_btn_txt = payment_page.fetch_check_status_btn_txt()
                 payment_page.click_on_check_status()
-                status = payment_page.fetch_add_auth_payment_failed_status()
-                app_amount = payment_page.fetch_add_auth_payment_failed_amount().split(" ")
+                status = payment_page.fetch_payment_failed_status()
+                app_amount = payment_page.fetch_payment_failed_amount().split(" ")
                 payment_mode = payment_page.fetch_add_auth_payment_failed_mode()
-                error_tittle = payment_page.fetch_error_tittle()
+                error_title = payment_page.fetch_error_title()
                 actual_app_values = {
-                    "tittle": tittle,
+                    "tittle": title,
                     "skip_btn": skip_txt,
                     "check_status_btn": check_status_btn_txt,
                     "pmt_status": status,
                     "pmt_mode": payment_mode,
                     "txn_amt": app_amount[1],
-                    "error_message_tittle": error_tittle
+                    "error_message_tittle": error_title
                 }
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)

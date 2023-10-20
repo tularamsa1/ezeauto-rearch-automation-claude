@@ -268,7 +268,7 @@ class TransHistoryPage(BasePage):
 
     def fetch_history_txt(self):
         """
-        fetches the tittle text from transaction history page
+        fetches the title text from transaction history page
         return: txt_history: str
         """
         return self.fetch_text(self.txt_history)
@@ -285,13 +285,6 @@ class TransHistoryPage(BasePage):
         Waits for the e-receipt to be displayed by waiting for the 'lbl_logo' element
         """
         self.wait_for_element(self.lbl_logo)
-
-    def wait_for_order_id_to_load(self):
-        """
-        Waits for the order ID element to load and become clickable
-        """
-        self.wait_for_element(self.txt_e_order_id)
-        self.wait_for_element_to_be_clickable(self.txt_e_order_id)
 
     def fetch_e_receipt_order_id(self):
         """
@@ -317,21 +310,12 @@ class TransHistoryPage(BasePage):
         time = self.fetch_text(self.txt_e_receipt_time)
         return time.strip()
 
-    def wait_for_payment_mode_to_load(self):
-        self.wait_for_element(self.txt_e_receipt_payment_mode)
-
     def fetch_e_receipt_payment_mode(self):
         """
         Retrieves and return the payment mode from e-receipt.
         """
         self.wait_for_element(self.txt_e_receipt_payment_mode)
         return self.fetch_text(self.txt_e_receipt_payment_mode)
-
-    def wait_for_amount_to_load(self):
-        """
-        Waits for amount element to load.
-        """
-        self.wait_for_element(self.txt_e_receipt_amount)
 
     def fetch_e_receipt_amount(self):
         """

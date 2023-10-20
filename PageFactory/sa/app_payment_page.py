@@ -5,6 +5,9 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from PageFactory.mpos.app_base_page import BasePage
 from PageFactory.mpos.app_home_page import HomePage
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
 
 
 class PaymentPage(BasePage):
@@ -41,8 +44,8 @@ class PaymentPage(BasePage):
     btn_cancel_p2p_request = (By.ID, "com.ezetap.service.demo:id/btnYesCancelPayment")
     btn_go_to_home = (By.ID, "com.ezetap.service.demo:id/btnGoToHome")
     btn_cheque = (By.XPATH, '//android.widget.TextView[@text = "Cheque"]')
-    txt_enterChequeNumber = (By.ID, "com.ezetap.service.demo:id/txtInputEntryChequeNum")
-    btn_selectbankName = (AppiumBy.XPATH, "//*[@resource-id ='com.ezetap.service.demo:id/txtInputEntryBankName']")
+    txt_enter_cheque_number = (By.ID, "com.ezetap.service.demo:id/txtInputEntryChequeNum")
+    btn_bank_name = (AppiumBy.XPATH, "//*[@resource-id ='com.ezetap.service.demo:id/txtInputEntryBankName']")
     btn_select_date = (By.XPATH, "//*[@text='OK']")
     btn_ok =(By.XPATH, "//*[@text='Cheque Dated']")
     btn_cheque_submit = (By.ID, "com.ezetap.service.demo:id/btnConfirmCheque")
@@ -59,15 +62,15 @@ class PaymentPage(BasePage):
     txt_payment_status = (By.ID, 'com.ezetap.service.demo:id/tvTxnStatus')
     txt_payment_mode = (By.ID, 'com.ezetap.service.demo:id/tvPaymentType')
     txt_payment_amount = (By.ID, 'com.ezetap.service.demo:id/tvTxnAmount')
-    txt_payment_error_tittle = (By.ID, 'com.ezetap.service.demo:id/tvErrorTitle')
     txt_error_message = (By.ID, 'com.ezetap.service.demo:id/tvErrorMessage')
     btn_check_status_skip = (By.ID, 'com.ezetap.service.demo:id/btnSkip')
     btn_check_status = (By.ID, 'com.ezetap.service.demo:id/btn_check_status')
-    txt_check_status_tittle = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
     btn_pan = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectPan')
     btn_form60 = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvSelectForm60')
     txt_pan_number = (AppiumBy.ID, 'com.ezetap.service.demo:id/txtInputEntryPan')
     btn_confirm = (AppiumBy.ID, 'com.ezetap.service.demo:id/btnConfirmPanForm')
+    txt_payment_error_title = (By.ID, 'com.ezetap.service.demo:id/tvErrorTitle')
+    txt_check_status_title = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -289,34 +292,35 @@ class PaymentPage(BasePage):
         self.scroll_to_text("Cheque")
         self.perform_click(self.btn_cheque)
 
-    def fill_cheque_number(self, chequenumber):
-        """Fill the cheque number field with the passed 'chequeNumber'.
+    def fill_cheque_number(self, cheque_number: int):
         """
-        self.perform_click(self.txt_enterChequeNumber)
-        self.perform_sendkeys(self.txt_enterChequeNumber, chequenumber)
+        Fill the cheque number field with the passed 'chequeNumber'.
+        """
+        self.perform_click(self.txt_enter_cheque_number)
+        self.perform_sendkeys(self.txt_enter_cheque_number, cheque_number)
 
-    def fill_bank_name(self, bank_name):
+    def fill_bank_name(self, bank_name: str):
         """
         Clicks the bank name field, then enters 'bank_name' text into the input field
         """
-        self.wait_for_element_to_be_clickable(self.btn_selectbankName)
-        self.perform_click(self.btn_selectbankName)
-        self.perform_sendkeys(self.btn_selectbankName, bank_name)
+        self.wait_for_element_to_be_clickable(self.btn_bank_name)
+        self.perform_click(self.btn_bank_name)
+        self.perform_sendkeys(self.btn_bank_name, bank_name)
 
-    def get_relative_cordinate(self):
+    def get_relative_coordinate_for_bank(self):
         """
           Returns relative co-ordinates of Bank name text field on cheque txn page.
         """
-        bounds_str = self.wait_for_element(self.btn_selectbankName).get_attribute("bounds")
+        bounds_str = self.wait_for_element(self.btn_bank_name).get_attribute("bounds")
         matches = re.findall(r'\d+', bounds_str)
         if len(matches) >= 2:
             x1 = int(matches[0]) * 4.29
-            a1 = int(matches[1]) * 1.29
-            y1 = round(a1)
+            y1 = int(matches[1]) * 1.29
+            y1 = round(y1)
             x1 = round(x1)
             return x1, y1
         else:
-            print("Not enough numeric values found in the string")
+            logger.info("Not enough numeric values found in the string")
 
     def perform_click_to_bank(self, x, y):
         """Perform a tap action on the screen at the specified coordinates.
@@ -326,7 +330,7 @@ class PaymentPage(BasePage):
         """
         TouchAction(self.driver).tap(x=x, y=y).perform()
 
-    def click_on_date(self, give_today_date):
+    def click_on_date(self, give_today_date: str):
         """Click a date in the calendar.
           Args:
               give_today_date (str): The date to be clicked in the calendar.
@@ -335,7 +339,7 @@ class PaymentPage(BasePage):
         self.perform_click((AppiumBy.ACCESSIBILITY_ID, '' + give_today_date + ''))
         self.perform_click(self.btn_okk)
 
-    def fill_ifsc_code(self, ifsc_code):
+    def fill_ifsc_code(self, ifsc_code: str):
         """Fill the IFSC code field with the provided code.
         Args:
             ifsc_code (str): The IFSC code to be entered.
@@ -344,7 +348,7 @@ class PaymentPage(BasePage):
         self.perform_click(self.btn_ifsc)
         self.perform_sendkeys(self.btn_ifsc, ifsc_code)
 
-    def get_relative_cordinate_for_ifsc_code(self):
+    def get_relative_coordinate_for_ifsc_code(self):
         """
         Calculate and return relative coordinates for the IFSC code element
         """
@@ -352,26 +356,18 @@ class PaymentPage(BasePage):
         matches = re.findall(r'\d+', bounds_str)
         if len(matches) >= 2:
             x1 = int(matches[0]) * 3.59
-            a1 = int(matches[1]) * 0.96
-            y1 = round(a1)
+            y1 = int(matches[1]) * 0.96
+            y1 = round(y1)
             x1 = round(x1)
             return x1, y1
         else:
-            print("Not enough numeric values found in the string")
+            logger.info("Not enough numeric values found in the string")
 
-    def perform_touch_action_on_cheque_home_page(self, x, y):
+    def perform_touch_action_on_cheque_home_page(self, x: int, y: int):
         """
         Perform a touch action on the Cheque Home page to minimize keyboard
         """
         TouchAction(self.driver).tap(x=x, y=y).perform()
-
-    def select_bank(self, bank_name):
-        """Select and input the bank name in the designated field.
-        Args:
-            bank_name (str): The name of the bank to be selected and input.
-        """
-        self.perform_click(self.btn_selectbankName)
-        self.perform_sendkeys(self.btn_selectbankName, bank_name)
 
     def click_on_cheque_submit(self):
         """
@@ -385,13 +381,7 @@ class PaymentPage(BasePage):
         """
         self.perform_click(self.btn_sign_required)
 
-    def wait_for_amount_to_load(self):
-        """
-         Waits for the 'amount' element to become visible.
-        """
-        self.wait_for_element(self.lbl_amount)
-
-    def add_signature(self, x, y):
+    def add_signature(self, x: int, y: int):
         """Add a signature by performing a swipe gesture from (x, y) to (x+60, y).
         Args:
             x (int): The starting x-coordinate of the signature.
@@ -426,9 +416,9 @@ class PaymentPage(BasePage):
             y1 = round(a1)
             return x1, y1
         else:
-            print("Not enough numeric values found in the string")
+            logger.info("Not enough numeric values found in the string")
 
-    def fetch_add_auth_payment_failed_status(self):
+    def fetch_payment_failed_status(self):
         """
         fetches the payment status text from check status pop up
         return: txt_payment_status:str
@@ -436,7 +426,7 @@ class PaymentPage(BasePage):
         self.wait_for_element(self.txt_payment_status)
         return self.fetch_text(self.txt_payment_status)
 
-    def fetch_add_auth_payment_failed_amount(self):
+    def fetch_payment_failed_amount(self):
         """
         fetches the payment amount from the check status pop up
         return: txt_payment_amount: str
@@ -444,7 +434,7 @@ class PaymentPage(BasePage):
         self.wait_for_element(self.txt_payment_amount)
         return self.fetch_text(self.txt_payment_amount)
 
-    def fetch_add_auth_payment_failed_error_message(self):
+    def fetch_payment_failed_error_message(self):
         """
         fetches the payment message form the check status pop up
         return: txt_error_message: str
@@ -460,19 +450,19 @@ class PaymentPage(BasePage):
         self.wait_for_element(self.txt_payment_mode)
         return self.fetch_text(self.txt_payment_mode)
 
-    def fetch_error_tittle(self):
+    def fetch_error_title(self):
         """
-        fetches payment status tittle from the check status pop
+        fetches payment status title from the check status pop up
         return: txt_payment_error_tittle :str
         """
-        return self.fetch_text(self.txt_payment_error_tittle)
+        return self.fetch_text(self.txt_payment_error_title)
 
-    def fetch_check_status_tittle(self):
+    def fetch_check_status_title(self):
         """
-        fetches tittle of the check status
+        fetches title of the check status
         return: txt_check_status_tittle: str
         """
-        return self.fetch_text(self.txt_check_status_tittle)
+        return self.fetch_text(self.txt_check_status_title)
 
     def fetch_skip_txt(self):
         """
@@ -490,7 +480,7 @@ class PaymentPage(BasePage):
 
     def click_on_check_status(self):
         """
-        performs clicking on the check status button
+        performs click on the check status button
         """
         self.perform_click(self.btn_check_status)
 
