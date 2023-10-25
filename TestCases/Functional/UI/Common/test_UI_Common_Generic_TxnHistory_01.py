@@ -11,7 +11,7 @@ from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_filters_page import FiltersPage
 from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
-from PageFactory.sa.app_txn_history_summary import Trans_summary
+from PageFactory.sa.app_txn_history_summary import TxnSummary
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor, date_time_converter, \
     receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -25,7 +25,7 @@ def test_common_400_409_001():
     """
     Sub Feature Code: UI_Sa_Generic_TxnHistory_Txn_Summary
     Sub Feature Description: Verify that the transaction summary data is as expected on the transaction summary screen.
-    TC naming code description: 400: GenericActions, 409: TransactionHistory, 002: TC002
+    TC naming code description: 400: GenericActions, 409: TransactionHistory, 001: TC001
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -234,18 +234,18 @@ def test_common_400_409_001():
                 expected_app_values = {
                     "sales_volume": str(total_amount).rstrip("0").rstrip("."),
                     "total_sales": str(total_sales),
-                    "payment_mode_1": str(top_payment_mode_1),
-                    "payment_mode_2": str(top_payment_mode_2),
-                    "payment_mode_3": str(top_payment_mode_3),
+                    "pmt_mode": str(top_payment_mode_1),
+                    "pmt_mode_2": str(top_payment_mode_2),
+                    "pmt_mode_3": str(top_payment_mode_3),
                     "other_mode": str(None) if cumulative_amount_others == 0 else "OTHERS",
-                    "top_amount_1": str(top_amount_1).rstrip("0").rstrip("."),
-                    "top_amount_2": str(top_amount_2).rstrip("0").rstrip("."),
-                    "top_amount_3": str(top_amount_3).rstrip("0").rstrip("."),
+                    "amt": str(top_amount_1).rstrip("0").rstrip("."),
+                    "amt_2": str(top_amount_2).rstrip("0").rstrip("."),
+                    "amt_3": str(top_amount_3).rstrip("0").rstrip("."),
                     "other_amount": str(0) if cumulative_amount_others == 0 else str(cumulative_amount_others)
                 }
                 logger.debug(f"expected values : {expected_app_values}")
                 home_page.click_on_history()
-                trans_summary = Trans_summary(app_driver)
+                trans_summary = TxnSummary(app_driver)
                 trans_summary.click_on_txn_summary()
                 total_volume_amount = trans_summary.fetch_total_volume().split(" ")[1]
                 total_sales_count = trans_summary.fetch_total_sales()
@@ -266,13 +266,13 @@ def test_common_400_409_001():
                 actual_app_values = {
                     "sales_volume": str(total_volume_amount).replace(",", "").rstrip("0").rstrip("."),
                     "total_sales": str(total_sales_count),
-                    "payment_mode_1": str(primary_payment_mode_1).strip(),
-                    "payment_mode_2": str(payment_mode_2).strip(),
-                    "payment_mode_3": str(payment_mode_3).strip(),
+                    "pmt_mode": str(primary_payment_mode_1).strip(),
+                    "pmt_mode_2": str(payment_mode_2).strip(),
+                    "pmt_mode_3": str(payment_mode_3).strip(),
                     "other_mode": str(others_mode).strip(),
-                    "top_amount_1": primary_amount_1.replace(",", "").rstrip("0").rstrip("."),
-                    "top_amount_2": amount_2.replace(",", "").rstrip("0").rstrip("."),
-                    "top_amount_3": amount_3.replace(",", "").rstrip("0").rstrip("."),
+                    "amt": primary_amount_1.replace(",", "").rstrip("0").rstrip("."),
+                    "amt_2": amount_2.replace(",", "").rstrip("0").rstrip("."),
+                    "amt_3": amount_3.replace(",", "").rstrip("0").rstrip("."),
                     "other_amount": others_amount.replace(",", "").rstrip("0").rstrip(".")
                 }
                 logger.debug(f"actual app values: {actual_app_values}")
@@ -446,7 +446,7 @@ def test_common_400_409_002():
                 }
                 logger.debug(f"Expected App Values : {expected_app_values} ")
 
-                filter_page.click_on_first_tnx_after_filtration()
+                filter_page.click_on_first_txn_after_filtration()
                 payment_status = transactions_history_page.fetch_txn_status_text().split(':')
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = transactions_history_page.fetch_date_time_text()

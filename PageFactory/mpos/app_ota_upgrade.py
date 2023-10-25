@@ -102,7 +102,7 @@ class OTA_upgrade(BasePage):
             logger.info(f"Settings popup to give permission to install unknown application is not displayed")
 
 
-def get_all_file_names(directory_path):
+def get_all_file_names(directory_path: str):
     """
      This function gets all the file name that present in the App directory
      return: apps_lst : list

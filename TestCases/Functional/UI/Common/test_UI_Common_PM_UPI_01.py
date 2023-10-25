@@ -15,11 +15,11 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_common_100_101_114():
+def test_common_100_101_208():
     """
     Sub Feature Code: UI_Common_PM_UPI_check_status_after_App_kill_HDFC
     Sub Feature Description: verify the Check status after the app is killed and lunched again
-    TC naming code description:100: Payment Method, 101: UPI, 114: TC114
+    TC naming code description:100: Payment Method, 101: UPI, 208: TC208
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

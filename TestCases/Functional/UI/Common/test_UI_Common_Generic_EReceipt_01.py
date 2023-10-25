@@ -89,7 +89,8 @@ def test_common_400_410_001():
             txn_history_page.wait_for_e_receipt_to_load()
             logger.info(f"E-receipt is loaded successfully")
 
-            query = "select * from txn where org_code='" + org_code + "' order by created_time desc limit 1"
+            query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' " \
+                                                                            "order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction details from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Fetching result : {result}")
@@ -125,7 +126,7 @@ def test_common_400_410_001():
 
                 e_amount = txn_history_page.fetch_e_receipt_amount()
                 logger.info(f"Fetched amount from e receipt : {e_amount}")
-                e_created_date = txn_history_page.fetch_e_receipt_created_date()
+                e_created_date = txn_history_page.fetch_e_receipt_date()
                 logger.info(f"Fetched created date from e receipt : {e_created_date}")
                 e_created_time = txn_history_page.fetch_e_receipt_time()
                 logger.info(f"Fetched created time from e receipt : {e_created_time}")

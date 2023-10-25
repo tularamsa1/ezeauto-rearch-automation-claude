@@ -215,7 +215,7 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "false"
     orgsettings_apidetails["RequestBody"]["settings"]["addlAuthReqdForCash"] = "false"
     orgsettings_apidetails["RequestBody"]["settings"]["customerAuthDataCaptureEnabled"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["amountCutOffForCustomerAuth"] = "0"
+    orgsettings_apidetails["RequestBody"]["settings"]["amountCutOffForCustomerAuth"] = ""
     orgsettings_apidetails["RequestBody"]["settings"]["appMaxRows"] = "20"
     orgsettings_apidetails["RequestBody"]["settings"]["serviceRequestEnabled"] = "false"
 

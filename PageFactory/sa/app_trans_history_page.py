@@ -292,10 +292,9 @@ class TransHistoryPage(BasePage):
         """
         self.wait_for_element(self.txt_e_order_id)
         order = self.fetch_text(self.txt_e_order_id)
-        print(f"order id is {order}")
         return order.strip()
 
-    def fetch_e_receipt_created_date(self):
+    def fetch_e_receipt_date(self):
         """
         Retrieve and returns the e-receipt created date
         """

@@ -322,7 +322,7 @@ class PaymentPage(BasePage):
         else:
             logger.info("Not enough numeric values found in the string")
 
-    def perform_click_to_bank(self, x, y):
+    def perform_click_to_bank(self, x: int, y: int):
         """Perform a tap action on the screen at the specified coordinates.
         Args:
             x (int): The x-coordinate for the tap.
@@ -484,7 +484,7 @@ class PaymentPage(BasePage):
         """
         self.perform_click(self.btn_check_status)
 
-    def perform_pan_entry(self, pan_number):
+    def perform_pan_entry(self, pan_number: str):
         """
         This method is used when user wants to perform PAN entry during cash txn
         """

@@ -24,7 +24,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_114_001():
     """
-    Sub Feature Code: UI_Common_PM_Cheque_Order_Number_01
+    Sub Feature Code: UI_Common_PM_Cheque_With_Order_Number
     Sub Feature Description: Verify a successful cheque transaction
     TC naming code description: 100: Payment Method, 114: Cheque, 001: TC001
     """
@@ -184,7 +184,10 @@ def test_common_100_114_001():
                                        "pmt_state": "SETTLEMENT_POSTED",
                                        "settle_status": "POSTED",
                                         "org_code": org_code,
-                                       "date": date, }
+                                       "date": date,
+                                       "bank_code": "ALLA0210329",
+                                       "bank_name": "Allahabad Bank",
+                                       "cheque_number": 123456}
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
@@ -202,6 +205,9 @@ def test_common_100_114_001():
                 settlement_status_api = response["settlementStatus"]
                 org_code_api = response["orgCode"]
                 date_api = response["createdTime"]
+                bank_code_api = response["bankCode"]
+                bank_name_api = response["bankName"]
+                cheque_number_api = response["chequeNumber"]
 
                 actual_api_values = {"pmt_status": status_api,
                                      "txn_amt": amount_api,
@@ -210,7 +216,10 @@ def test_common_100_114_001():
                                      "settle_status": settlement_status_api,
                                      "org_code": org_code_api,
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
-                                   }
+                                     "bank_code": bank_code_api,
+                                     "bank_name": bank_name_api,
+                                     "cheque_number": int(cheque_number_api)
+                                    }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -245,7 +254,7 @@ def test_common_100_114_001():
                 new_txn_state_db = result["state"].iloc[0]
                 new_txn_order_id_db = result['external_ref'].values[0]
                 new_bank_name = result['bank_name'].values[0]
-                new_bank_code = result['bank_name'].values[0]
+                new_bank_code = result['bank_code'].values[0]
                 new_cheque_number = int(result["cheque_number"].iloc[0])
                 actual_db_values = {
                     "pmt_status": new_txn_status_db,
@@ -320,9 +329,12 @@ def test_common_100_114_001():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
-                expected_values = {'PAID BY:': 'CHEQUE', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                expected_values = {
+                                   'PAID BY:': 'CHEQUE', 'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
-                                 }
+                                   'Bank Code:': 'ALLA0210329', 'Bank Name:': 'Allahabad Bank', 'Cheque Number:': '123456',
+                                   'Cheque Date:': '25/10/23'
+                                   }
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
                                                                   expected_values)

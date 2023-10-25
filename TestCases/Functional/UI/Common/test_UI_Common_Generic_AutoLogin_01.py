@@ -13,11 +13,11 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_common_400_401_020():
+def test_common_400_401_036():
     """
     Sub Feature Code: UI_Common_Card_Generic_Autologin_TokenEnabled
     Sub Feature Description: Verify the autologin by token enabled
-    TC naming code description:400: Generic Actions,401: Autologin,020: TC020
+    TC naming code description:400: Generic Actions,401: Autologin,020: TC036
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -114,11 +114,11 @@ def test_common_400_401_020():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_common_400_401_021():
+def test_common_400_401_037():
     """
     Sub Feature Code:UI_Common_Generic_Autologin_TokenDisabled
     Sub Feature Description: Verify AutoLogin of the application with Autologin Token disabled
-    TC naming code description:400: Generic Actions,401: Autologin,021: TC021
+    TC naming code description:400: Generic Actions,401: Autologin,037: TC037
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

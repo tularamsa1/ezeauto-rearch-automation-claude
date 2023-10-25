@@ -42,10 +42,7 @@ class FiltersPage(BasePage):
 
     def apply_filter_card_and_success(self):
         """
-        performs click
-
-
-         on the card in the txn type and success in the txn status
+        performs click on the card in the txn type and success in the txn status
         """
         self.perform_click(self.rdo_card)
         TouchAction(self.driver).press(x=317, y=980).move_to(x=315, y=148).release().perform()
@@ -226,7 +223,7 @@ class FiltersPage(BasePage):
         self.wait_for_element(self.btn_sort_by_date_ascending)
         self.perform_click(self.btn_sort_by_date_ascending)
 
-    def click_on_first_tnx_after_filtration(self):
+    def click_on_first_txn_after_filtration(self):
         """
         performs click on the first txn after applying all the required filter
         """

@@ -331,7 +331,7 @@ def test_common_100_106_001():
 @pytest.mark.chargeSlipVal
 def test_common_100_106_002():
     """
-    Sub Feature Code: UI_Common_PM_Cash_No_Order_Number
+    Sub Feature Code: UI_Common_PM_Cash_Without_Order_Number
     Sub Feature Description: Verify a successful cash transaction without order number
     TC naming code description: 100: Payment Method, 106: CASH, 002: TC002
 
@@ -405,13 +405,13 @@ def test_common_100_106_002():
             created_time = result["created_time"].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
             org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Fetching org_code from the tnx table : org_code : {org_code_txn}")
+            logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
             auth_code = result['auth_code'].values[0]
-            logger.debug(f"Fetching org_code from the tnx table : org_code : {auth_code}")
+            logger.debug(f"Fetching auth_code from the txn table :  {auth_code}")
             rrn = result['rr_number'].iloc[0]
-            logger.debug(f"Fetching org_code from the tnx table : org_code : {rrn}")
+            logger.debug(f"Fetching rrn from the txn table : {rrn}")
             dsn = result['device_serial'].values[0]
-            logger.debug(f"Fetching device_serial number from the tnx table : dsn :{dsn}")
+            logger.debug(f"Fetching device_serial number from the txn table : dsn :{dsn}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -718,9 +718,9 @@ def test_common_100_106_003():
             created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from the txn table : created_time : {created_time}")
             org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Fetching org_code from the tnx table : org_code : {org_code_txn}")
+            logger.debug(f"Fetching org_code from the txn table : org_code : {org_code_txn}")
             auth_code = result['auth_code'].values[0]
-            logger.debug(f"Fetching auth_code from the tnx table : auth_code : {auth_code}")
+            logger.debug(f"Fetching auth_code from the txn table : auth_code : {auth_code}")
             dsn = result['device_serial'].values[0]
             logger.debug(f"Fetching device_serial number from the tnx table : dsn :{dsn}")
             # ------------------------------------------------------------------------------------------------
@@ -817,9 +817,11 @@ def test_common_100_106_003():
                     "username": app_username,
                     "password": app_password
                 })
-
-                logger.debug("API DETAILS:", api_details)
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = int(response["amount"])
                 payment_mode_api = response["paymentMode"]
@@ -1297,9 +1299,11 @@ def test_common_100_106_005():
                     "password": app_password
                 })
 
-                logger.debug("API DETAILS:", api_details)
+                logger.debug(f"API DETAILS for original txn : {api_details}")
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for ")
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = int(response["amount"])
                 payment_mode_api = response["paymentMode"]

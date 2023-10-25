@@ -3,13 +3,13 @@ from selenium.webdriver.common.by import By
 from PageFactory.App_BasePage import BasePage
 
 
-class Trans_summary(BasePage):
+class TxnSummary(BasePage):
     btn_txn_summary = (By.ID, 'com.ezetap.service.demo:id/cl_Summary')
     txt_sales_volume = (By.ID, 'com.ezetap.service.demo:id/tv_SalesVolume')
     txt_total_sales_count = (By.ID, 'com.ezetap.service.demo:id/tv_SalesCount')
-    txt_payment_mode_1 = (By.ID, 'com.ezetap.service.demo:id/tv_Card')
-    txt_payment_mode_2 = (By.ID, 'com.ezetap.service.demo:id/tv_Upi')
-    txt_payment_mode_3 = (By.ID, 'com.ezetap.service.demo:id/tv_BrandEmi')
+    txt_pmt_mode_1st_highest_amt = (By.ID, 'com.ezetap.service.demo:id/tv_Card')
+    txt_pmt_mode_2nd_highest_amt = (By.ID, 'com.ezetap.service.demo:id/tv_Upi')
+    txt_pmt_mode_3rd_highest_amt = (By.ID, 'com.ezetap.service.demo:id/tv_BrandEmi')
     txt_others = (By.ID, "com.ezetap.service.demo:id/tv_Others")
 
     def __init__(self, driver):
@@ -34,21 +34,21 @@ class Trans_summary(BasePage):
         fetches the first highest amount and respective  payment mode
         return: txt_payment_mode_1 :str
         """
-        return self.fetch_text(self.txt_payment_mode_1)
+        return self.fetch_text(self.txt_pmt_mode_1st_highest_amt)
 
     def fetch_second_highest_payment_mode_and_amount(self):
         """
          fetches the second highest amount and respective  payment mode
          return: txt_payment_mode_2 :str
          """
-        return self.fetch_text(self.txt_payment_mode_2)
+        return self.fetch_text(self.txt_pmt_mode_2nd_highest_amt)
 
     def fetch_third_highest_payment_mode_and_amount(self):
         """
          fetches the third highest amount and respective  payment mode
          return: txt_payment_mode_3 :str
          """
-        return self.fetch_text(self.txt_payment_mode_3)
+        return self.fetch_text(self.txt_pmt_mode_3rd_highest_amt)
 
     def fetch_other_payment_mode_and_amount(self):
         """
