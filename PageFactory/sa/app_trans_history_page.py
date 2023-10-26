@@ -262,14 +262,14 @@ class TransHistoryPage(BasePage):
     def fetch_device_serial_text(self) -> str:
         """
         This method is used to fetch device serial number on transaction history page.
-        return: device_serial: str
+        return: str
         """
         return self.fetch_text(self.txt_ref_num_2)
 
     def fetch_history_txt(self):
         """
         fetches the title text from transaction history page
-        return: txt_history: str
+        return: str
         """
         return self.fetch_text(self.txt_history)
 

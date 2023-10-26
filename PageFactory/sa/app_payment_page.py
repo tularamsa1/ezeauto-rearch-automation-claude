@@ -421,7 +421,7 @@ class PaymentPage(BasePage):
     def fetch_payment_failed_status(self):
         """
         fetches the payment status text from check status pop up
-        return: txt_payment_status:str
+        return: str
         """
         self.wait_for_element(self.txt_payment_status)
         return self.fetch_text(self.txt_payment_status)
@@ -429,7 +429,7 @@ class PaymentPage(BasePage):
     def fetch_payment_failed_amount(self):
         """
         fetches the payment amount from the check status pop up
-        return: txt_payment_amount: str
+        return: str
         """
         self.wait_for_element(self.txt_payment_amount)
         return self.fetch_text(self.txt_payment_amount)
@@ -437,7 +437,7 @@ class PaymentPage(BasePage):
     def fetch_payment_failed_error_message(self):
         """
         fetches the payment message form the check status pop up
-        return: txt_error_message: str
+        return: str
         """
         self.wait_for_element(self.txt_error_message)
         return self.fetch_text(self.txt_error_message)
@@ -445,7 +445,7 @@ class PaymentPage(BasePage):
     def fetch_add_auth_payment_failed_mode(self):
         """
         fetches the payment mode from the check status pop up
-        return: txt_payment_mode: str`
+        return: str
         """
         self.wait_for_element(self.txt_payment_mode)
         return self.fetch_text(self.txt_payment_mode)
@@ -453,28 +453,28 @@ class PaymentPage(BasePage):
     def fetch_error_title(self):
         """
         fetches payment status title from the check status pop up
-        return: txt_payment_error_tittle :str
+        return: str
         """
         return self.fetch_text(self.txt_payment_error_title)
 
     def fetch_check_status_title(self):
         """
         fetches title of the check status
-        return: txt_check_status_tittle: str
+        return: str
         """
         return self.fetch_text(self.txt_check_status_title)
 
     def fetch_skip_txt(self):
         """
         fetches text from skip button in the check status
-        return: btn_check_status_skip :str
+        return: str
         """
         return self.fetch_text(self.btn_check_status_skip)
 
     def fetch_check_status_btn_txt(self):
         """
         fetches text from check status button in the check status
-        return: btn_check_status : str
+        return: str
         """
         return self.fetch_text(self.btn_check_status)
 

@@ -18,42 +18,42 @@ class TxnSummary(BasePage):
     def fetch_total_volume(self):
         """
         fetches the volume(total amount of txn) from the txn summary page
-        return: txt_sales_volume: str
+        return: str
         """
         return self.fetch_text(self.txt_sales_volume)
 
     def fetch_total_sales(self):
         """
         fetches the total count of sales done for today from txn summary
-        return: txt_total_sales_count :str
+        return: str
         """
         return self.fetch_text(self.txt_total_sales_count)
 
     def fetch_first_highest_payment_mode_and_amount(self):
         """
         fetches the first highest amount and respective  payment mode
-        return: txt_payment_mode_1 :str
+        return: str
         """
         return self.fetch_text(self.txt_pmt_mode_1st_highest_amt)
 
     def fetch_second_highest_payment_mode_and_amount(self):
         """
          fetches the second highest amount and respective  payment mode
-         return: txt_payment_mode_2 :str
+         return: str
          """
         return self.fetch_text(self.txt_pmt_mode_2nd_highest_amt)
 
     def fetch_third_highest_payment_mode_and_amount(self):
         """
          fetches the third highest amount and respective  payment mode
-         return: txt_payment_mode_3 :str
+         return: str
          """
         return self.fetch_text(self.txt_pmt_mode_3rd_highest_amt)
 
     def fetch_other_payment_mode_and_amount(self):
         """
          fetches the other amount and respective  payment mode
-         return: txt_others :str
+         return: str
          """
         return self.fetch_text(self.txt_others)
 
@@ -66,14 +66,13 @@ class TxnSummary(BasePage):
     def extract_data(self, input_str: str):
         """
         Use regular expressions to extract text and numeric values
-        param: input :str
-        return: primary_text :str and numeric_value: str or None
+        param: input : str
+        return: str or None
         """
         match = re.search(r'([\w\s]+)\n.*?([\d,.]+)', input_str)
         if match:
             primary_text = match.group(1).strip()
             numeric_value = match.group(2)
-
             return [primary_text, numeric_value]
         else:
             return None

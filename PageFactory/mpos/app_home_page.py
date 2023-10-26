@@ -360,7 +360,7 @@ class HomePage(BasePage):
         """
         self.wait_for_element(self.txt_todays_sales)
 
-    def enter_amount_without_order_number(self, amt):
+    def enter_amount_without_order_number(self, amt: int):
         """
         Enters amount without order ID and clicks on proceed button
         """
