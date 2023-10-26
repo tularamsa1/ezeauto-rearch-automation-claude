@@ -212,6 +212,13 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     #disabling MultilingualForApp
     orgsettings_apidetails["RequestBody"]["settings"]["enableMultilingualForApp"] = "false"
 
+    orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "false"
+    orgsettings_apidetails["RequestBody"]["settings"]["addlAuthReqdForCash"] = "false"
+    orgsettings_apidetails["RequestBody"]["settings"]["customerAuthDataCaptureEnabled"] = "false"
+    orgsettings_apidetails["RequestBody"]["settings"]["amountCutOffForCustomerAuth"] = ""
+    orgsettings_apidetails["RequestBody"]["settings"]["appMaxRows"] = "20"
+    orgsettings_apidetails["RequestBody"]["settings"]["serviceRequestEnabled"] = "false"
+
     logger.debug(f"API details  : {orgsettings_apidetails} ")
     response = APIProcessor.send_request(orgsettings_apidetails)
     logger.debug(f"Response received for setting sessionExpiry as default is : {response}")
