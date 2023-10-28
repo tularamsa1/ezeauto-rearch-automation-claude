@@ -204,7 +204,6 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     orgsettings_apidetails["RequestBody"]["settings"]["enableKhataForMerchants"] = "false"
     # disabling emi
     orgsettings_apidetails["RequestBody"]["settings"]["emiEnabled"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["brandEmiEnabled"] = "true"
     # disabling paylater
     orgsettings_apidetails["RequestBody"]["settings"]["paylaterEnabled"] = "false"
     # disabling collectMobileEmailUpfront
