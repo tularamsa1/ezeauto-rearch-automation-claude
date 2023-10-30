@@ -59,7 +59,6 @@ class HomePage(BasePage):
     txt_my_reports = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvReportsTitle')
     scrollable_it = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_goToHistory2')
     txt_todays_sales = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTodaySale')
-    btn_refund = (AppiumBy.ID, 'com.ezetap.basicapp:id/nav_online_refund')
     mnu_account_hindi = (AppiumBy.XPATH, '//android.widget.FrameLayout[@content-desc="अकाउंट"]')
     today_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
 
