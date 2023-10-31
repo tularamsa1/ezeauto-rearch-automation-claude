@@ -59,7 +59,6 @@ class HomePage(BasePage):
     txt_my_reports = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvReportsTitle')
     scrollable_it = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_goToHistory2')
     txt_todays_sales = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTodaySale')
-    btn_refund = (AppiumBy.ID, 'com.ezetap.basicapp:id/nav_online_refund')
     mnu_account_hindi = (AppiumBy.XPATH, '//android.widget.FrameLayout[@content-desc="अकाउंट"]')
     today_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
 
@@ -359,4 +358,15 @@ class HomePage(BasePage):
         This function is used to wait until today sales element is visible
         """
         self.wait_for_element(self.txt_todays_sales)
+
+    def enter_amount_without_order_number(self, amt: int):
+        """
+        Enters amount without order ID and clicks on proceed button
+        """
+        self.perform_click(self.txt_enterAmountField)
+        list = self.type_amount(amt)
+        for i in list:
+            self.perform_click(i)
+        self.perform_click(self.btn_pay)
+        self.perform_click(self.btn_paymentProceed)
 

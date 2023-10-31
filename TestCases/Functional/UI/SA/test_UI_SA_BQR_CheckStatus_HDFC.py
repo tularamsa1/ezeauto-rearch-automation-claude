@@ -149,7 +149,7 @@ def test_sa_100_102_007():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
-                expected_app_values = {"pmt_mode": "BHARAT QRRR", "pmt_status": "AUTHORIZED",
+                expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "AUTHORIZED",
                                        "txn_amt": str(amount)+".00","settle_status": "SETTLED",
                                        "txn_id": txn_id, "rrn": str(rrn),
                                        "order_id": order_id,"pmt_msg": "PAYMENT SUCCESSFUL",

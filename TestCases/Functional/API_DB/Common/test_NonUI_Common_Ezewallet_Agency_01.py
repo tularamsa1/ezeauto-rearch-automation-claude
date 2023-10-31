@@ -1,8 +1,6 @@
 import random
-import re
 import shutil
 import time
-from datetime import datetime, date
 import pytest
 import sys
 from termcolor import colored
@@ -27,7 +25,7 @@ def test_common_200_201_001():
     """
 
     try:
-        Ezewallet_processor.db_reset()
+        #Ezewallet_processor.db_reset()
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         print(colored("Setup Timer resumed in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))

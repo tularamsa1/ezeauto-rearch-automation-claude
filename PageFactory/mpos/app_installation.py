@@ -118,3 +118,11 @@ def uninstall_mpos_application():
     """
     subprocess.run(['adb', 'uninstall', 'com.ezetap.basicapp'])
     logger.info(f"uninstallation of Mpos is done")
+
+
+def uninstall_sa_application():
+    """
+    This function is used to uninstall the SA application
+    """
+    subprocess.run(['adb', 'uninstall', 'com.ezetap.service.demo'])
+    logger.debug(f"Uninstallation of SA is done")

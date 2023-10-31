@@ -214,21 +214,4 @@ class EmiCalc(BasePage):
             plan_without_interest.append(result)
         return plan_without_interest
 
-    element = AppiumBy.XPATH, "//*[@text='{}']"
-
-    def wait_for_element_to_load_after_edit_account(edit_name: str = "test"):
-
-        element_1 = element[1].format(edit_name)
-        print(element_1)
-
-    wait_for_element_to_load_after_edit_account()
-
-
-
-
-
-
-
-
-
 

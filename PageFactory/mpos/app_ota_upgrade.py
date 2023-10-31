@@ -14,10 +14,13 @@ class OTA_upgrade(BasePage):
     btn_update_now = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnUpdateNow')
     txt_update_tap_tittle = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvUpdateTitle')
     txt_download_tab = (AppiumBy.ID, 'android:id/alertTitle')
-    btn_install = (AppiumBy.XPATH, '//*[@text="INSTALL"]')
+    btn_install = (AppiumBy.ID, "android:id/button1")
     btn_update = (AppiumBy.XPATH, '//*[@text="Update"]')
     btn_done_2 = (AppiumBy.XPATH, '//*[@text="Done"]')
     btn_done = (AppiumBy.XPATH, '//*[@text="DONE"]')
+    btn_settings = (AppiumBy.ID, '//*[@text="Settings"]')
+    btn_allow_access = (AppiumBy.ID, "android:id/switch_widget")
+    btn_click_on_back = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -83,8 +86,23 @@ class OTA_upgrade(BasePage):
         """
         self.perform_click(self.btn_done_2)
 
+    def handle_install_unknown_permission_setting(self):
+        """
+        This function is used to handle setting of install unknown apps
+        """
+        try:
+            setting_btn_val = self.visibility_of_elements(self.btn_settings, time=100)
+            if len(setting_btn_val) < 0:
+                pass
+            else:
+                self.perform_click(self.btn_settings)
+                self.perform_click(self.btn_allow_access)
+                self.perform_click(self.btn_click_on_back)
+        except:
+            logger.info(f"Settings popup to give permission to install unknown application is not displayed")
 
-def get_all_file_names(directory_path):
+
+def get_all_file_names(directory_path: str):
     """
      This function gets all the file name that present in the App directory
      return: apps_lst : list
@@ -203,3 +221,4 @@ def pinning_mpos_version_to_merchant(org_code : str, ver_code: str, given_versio
                 device) + "');"
             DBProcessor.setValueToDB(query)
             logger.info(f"update version is pinned to merchant successfully(Emulator)")
+
