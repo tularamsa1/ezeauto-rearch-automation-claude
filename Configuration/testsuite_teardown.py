@@ -53,9 +53,10 @@ def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, p
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
+
     api_details = DBProcessor.get_api_details('UPI_Enabled', request_body={"username": portal_un,
-                                                                           "password": portal_pw,
-                                                                           "settingForOrgCode": org_code})
+                                                                            "password": portal_pw,
+                                                                            "settingForOrgCode": org_code})
     api_details["RequestBody"]["settings"]["upiEnabled"] = "true"
     logger.debug(f"API details  : {api_details} ")
     response = APIProcessor.send_request(api_details)
@@ -113,6 +114,7 @@ def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_p
                                                                               "password": portal_pw})
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
 
     if payment_gateway == "TPSL":
         query = "update merchant_pg_config set status = 'INACTIVE' where org_code='" + org_code + "';"
@@ -210,6 +212,8 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     orgsettings_apidetails["RequestBody"]["settings"]["collectMobileEmailUpfront"] = "false"
     #disabling MultilingualForApp
     orgsettings_apidetails["RequestBody"]["settings"]["enableMultilingualForApp"] = "false"
+    #disabling RewardForMerchants
+    orgsettings_apidetails["RequestBody"]["settings"]["enableRewardForMerchants"] = "false"
 
     orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "false"
     orgsettings_apidetails["RequestBody"]["settings"]["addlAuthReqdForCash"] = "false"
@@ -270,7 +274,7 @@ def delete_staticqr_intent_table_entry(portal_username, portal_password, config_
     This method is to delete the static_qr data from staticqr_intent table based on config id
     """
 
-    query = "delete from staticqr_intent where config_id ='" + str(config_id) + "';"
+    query = "delete from staticqr_intent where config_id ='"+str(config_id)+"';"
     result = DBProcessor.delete_value_from_db(query)
     logger.debug(f"Result for the query '{query}' is : {result} ")
 
@@ -285,7 +289,7 @@ def delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, 
     This method is to delete the static_qr data from staticqr_intent table based on vpa
     """
 
-    query = "delete from staticqr_intent where vpa ='" + str(vpa) + "';"
+    query = "delete from staticqr_intent where vpa ='"+str(vpa)+"';"
     result = DBProcessor.delete_value_from_db(query)
     logger.debug(f"Result for the query '{query}' is : {result} ")
 
@@ -294,13 +298,12 @@ def delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, 
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for DB refresh is : {response}")
 
-
 def delete_qrcode_audit_table_entry(portal_username, portal_password, org_code):
     """
     This method is to delete all the entries from qrcode_audit table based on org code
     """
 
-    query = "delete from qrcode_audit where org_code ='" + str(org_code) + "';"
+    query = "delete from qrcode_audit where org_code ='"+str(org_code)+"';"
     result = DBProcessor.delete_value_from_db(query)
     logger.debug(f"Result for the query '{query}' is : {result} ")
 
@@ -315,7 +318,7 @@ def delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_passw
     This method is to delete the static_qr data from staticqr_intent table based on org code
     """
 
-    query = "delete from staticqr_intent where org_code ='" + str(org_code) + "';"
+    query = "delete from staticqr_intent where org_code ='"+str(org_code)+"';"
     result = DBProcessor.delete_value_from_db(query)
     logger.debug(f"Result for the query '{query}' is : {result} ")
 
@@ -354,6 +357,7 @@ def get_account_labels_and_set_default_account(org_code: str, portal_un: str, po
 
 
 def revert_p2p_settings(portal_un, portal_pw, app_username, app_password, org_code):
+
     # Enable P2P, Autologin, and disable AutologinForLogout
     api_details = DBProcessor.get_api_details('org_settings_update', request_body={
         "username": portal_un,
@@ -390,11 +394,9 @@ def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
     :param org_code str
     :return: string
     """
-    query_all_users = "select username from org_employee where org_code ='" + str(
-        org_code) + "' and roles = 'ROLE_CLAGENT' and username!='" + str(app_un) + "';"
+    query_all_users = "select username from org_employee where org_code ='" + str(org_code) + "' and roles = 'ROLE_CLAGENT' and username!='" + str(app_un) + "';"
     result_all_users = DBProcessor.getValueFromDB(query_all_users)
-    logger.info(
-        f"Query to select all users under the org {org_code} with only Agent role except the current user {app_un}")
+    logger.info(f"Query to select all users under the org {org_code} with only Agent role except the current user {app_un}")
     logger.debug(f"Result of fetching all users with agent role except the current user: {result_all_users}")
     logger.debug(f"Count of users selected except the current user {app_un} : {len(result_all_users)}")
     if len(result_all_users) >= 1:
@@ -402,18 +404,14 @@ def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
         for i in range(len(result_all_users)):
             user = result_all_users['username'].values[i]
             logger.debug(f"Selected existing user is {user}")
-            query_sett = "select sett.setting_value from org_employee empl LEFT JOIN setting sett on sett.entity_id =empl.id where empl.username='" + str(
-                user) + "' and sett.setting_name='onlyP2PUser';"
+            query_sett = "select sett.setting_value from org_employee empl LEFT JOIN setting sett on sett.entity_id =empl.id where empl.username='" + str(user) + "' and sett.setting_name='onlyP2PUser';"
             result_sett_val = DBProcessor.getValueFromDB(query_sett)
 
-            logger.info(
-                f"Query to get the setting_value of 'OnlyP2PUser' from setting table for the user {user} : {query_sett}")
-            logger.debug(
-                f"Result of setting_value of 'OnlyP2PUser' from setting table for the user {user} : {result_sett_val}")
+            logger.info(f"Query to get the setting_value of 'OnlyP2PUser' from setting table for the user {user} : {query_sett}")
+            logger.debug(f"Result of setting_value of 'OnlyP2PUser' from setting table for the user {user} : {result_sett_val}")
 
             if len(result_sett_val) >= 1:
-                logger.info(
-                    f"Value of setting_value for 'OnlyP2PUser' for {user} is : {result_sett_val['setting_value'].values[0]}")
+                logger.info(f"Value of setting_value for 'OnlyP2PUser' for {user} is : {result_sett_val['setting_value'].values[0]}")
                 # If the selected user is OnlyP2P allowed user
                 if result_sett_val['setting_value'].values[0] == "true":
                     logger.info(f"Selected user {user} is allowed to do only P2P txns")
@@ -421,15 +419,13 @@ def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
                     continue;
                 else:
                     # Change password of the newly selected existing user by calling create_user API
-                    logger.info(
-                        f"Selected user {user} has an entry in setting table and can do normal transactions as well")
+                    logger.info(f"Selected user {user} has an entry in setting table and can do normal transactions as well")
                     app_user, app_password = p2p_change_password(portal_un, portal_pw, user, org_code)
                     return app_user, app_password
                     break
             else:
                 # Change password of the newly selected existing user by calling create_user API
-                logger.info(
-                    f"Selected user {user} can do normal transactions as well and has no entry in setting table")
+                logger.info(f"Selected user {user} can do normal transactions as well and has no entry in setting table")
                 app_user, app_password = p2p_change_password(portal_un, portal_pw, user, org_code)
                 return app_user, app_password
                 break
