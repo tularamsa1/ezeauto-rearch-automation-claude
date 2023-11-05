@@ -5,7 +5,7 @@ from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.mpos.app_help_support import HelpSupport
-from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator
+from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -48,6 +48,13 @@ def test_mpos_400_415_004():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["serviceRequestEnabled"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------

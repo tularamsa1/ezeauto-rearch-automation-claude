@@ -7,7 +7,7 @@ from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_payment_page import PaymentPage
-from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator
+from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -42,11 +42,18 @@ def test_common_400_408_001():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_payment_settings_default(org_code, None, portal_username, portal_password)
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username, portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["eSignatureForNonCardEnabled"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------

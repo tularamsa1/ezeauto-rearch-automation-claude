@@ -219,6 +219,7 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     orgsettings_apidetails["RequestBody"]["settings"]["amountCutOffForCustomerAuth"] = ""
     orgsettings_apidetails["RequestBody"]["settings"]["appMaxRows"] = "20"
     orgsettings_apidetails["RequestBody"]["settings"]["serviceRequestEnabled"] = "false"
+    orgsettings_apidetails["RequestBody"]["settings"]["eSignatureForNonCardEnabled"] = "false"
 
     logger.debug(f"API details  : {orgsettings_apidetails} ")
     response = APIProcessor.send_request(orgsettings_apidetails)

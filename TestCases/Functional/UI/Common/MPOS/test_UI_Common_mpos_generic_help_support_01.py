@@ -50,9 +50,15 @@ def test_mpos_400_415_008():
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
-
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["serviceRequestEnabled"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
