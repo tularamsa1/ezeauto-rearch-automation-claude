@@ -7,8 +7,8 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
-from PageFactory.mpos.app_rewards import Rewards, collect_all_the_campaign_id_from_db, revert_back_to_original_status
-from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
+from PageFactory.mpos.app_rewards import Rewards, collect_all_campaign_ids_for_org, revert_back_to_original_status
+from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor, rewards_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -47,7 +47,7 @@ def test_mpos_600_602_020():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_the_campaign_id_from_db(org_code)
+        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_campaign_ids_for_org(org_code)
         logger.debug(f"Collected campaign ids with status IN_PROGRESS, WON and CLAIMED")
         try:
             yesterday_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -64,7 +64,8 @@ def test_mpos_600_602_020():
             logger.debug(f"Response received for setting preconditions is : {response}")
             unq_reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
             reward_name = unq_reward_name
-            response_create_campaign = APIProcessor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code,
+                                                                         reward_name)
             logger.debug(f"Response for create campaign : {response_create_campaign}")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -72,15 +73,15 @@ def test_mpos_600_602_020():
             query = "update campaign SET campaign_status = 'LIVE' where campaign_id = '" + str(campaign_id) + "';"
             DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"Updated campaign status into Live for campaign_id = {campaign_id}")
-            response = APIProcessor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
+            response = rewards_processor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
             logger.debug(f"Response received for updated campaign is : {response}")
             query = f"INSERT INTO `campaign_target_base` (`campaign_id`, `status`, `created_time`, `modified_time`, `created_by`, `modified_by`, `lock_id`, `org_code`, `control_type`) VALUES ('{campaign_id}', 'IN_PROGRESS', NOW(), NOW(), 'EZETAP', 'EZETAP', '1', '{org_code}', 'NORMAL');"
             result = DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"result for updated insert query : {result}")
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
-            response_create_coupon = APIProcessor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
-                                                                reward_name)
+            response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
+                                                                     reward_name)
             logger.debug(f"Flipkart coupon Created : {response_create_coupon}")
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                                   "password": portal_password})
@@ -127,8 +128,8 @@ def test_mpos_600_602_020():
                 rewards_page.click_on_cancel_btn()
                 query = f"select * from coupon where org_code = '{org_code}' Order By created_time DESC limit 1;"
                 result = DBProcessor.getValueFromDB(query, 'rewards')
-                coupon_code_from_wins_tab = result["coupon_code"].values[0]
-                logger.debug(f"fetched coupon code from the wins tab of campaign : {coupon_code_from_wins_tab}")
+                coupon_code_from_wins_db = result["coupon_code"].values[0]
+                logger.debug(f"fetched coupon code from the wins tab of campaign : {coupon_code_from_wins_db}")
                 rewards_page.click_on_back_btn()
                 rewards_page.click_on_recent_claimed_rewards()
                 coupon_code_rewards_tab = rewards_page.fetch_txt_coupon_code_from_rewards_tab()
@@ -155,9 +156,9 @@ def test_mpos_600_602_020():
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {
-                    "coupon_code": coupon_code_from_wins_tab,}
+                    "coupon_code": coupon_code_from_wins_db }
                 actual_app_values = {
-                    "coupon_code": coupon_code_rewards_tab,}
+                    "coupon_code": coupon_code_rewards_tab, }
                 # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:

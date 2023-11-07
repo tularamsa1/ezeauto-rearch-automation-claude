@@ -5,7 +5,7 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
-from PageFactory.mpos.app_rewards import Rewards, collect_all_the_campaign_id_from_db, revert_back_to_original_status
+from PageFactory.mpos.app_rewards import Rewards, collect_all_campaign_ids_for_org, revert_back_to_original_status
 from Utilities import ResourceAssigner, DBProcessor, ConfigReader, Validator, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -45,7 +45,7 @@ def test_mpos_600_602_007():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_the_campaign_id_from_db(org_code)
+        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_campaign_ids_for_org(org_code)
         logger.debug(f"Collected campaign ids with status IN_PROGRESS, WON and CLAIMED")
         try:
             yesterday_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')

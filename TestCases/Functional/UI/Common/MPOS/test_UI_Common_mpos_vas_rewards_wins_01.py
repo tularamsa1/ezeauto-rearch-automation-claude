@@ -7,8 +7,8 @@ from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
-from PageFactory.mpos.app_rewards import Rewards, collect_all_the_campaign_id_from_db, revert_back_to_original_status
-from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
+from PageFactory.mpos.app_rewards import Rewards, collect_all_campaign_ids_for_org, revert_back_to_original_status
+from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor, rewards_processor
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -48,7 +48,7 @@ def test_mpos_600_602_014():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_the_campaign_id_from_db(org_code)
+        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_campaign_ids_for_org(org_code)
         logger.debug(f"Collected campaign ids with status IN_PROGRESS, WON and CLAIMED")
         try:
             yesterday_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -64,7 +64,7 @@ def test_mpos_600_602_014():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = APIProcessor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -74,14 +74,14 @@ def test_mpos_600_602_014():
             query = "update campaign SET campaign_status = 'LIVE' where campaign_id = '" + str(campaign_id) + "';"
             DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"Updated campaign status into Live for campaign_id = {campaign_id}")
-            response = APIProcessor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
+            response = rewards_processor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
             logger.debug(f"Response received for updated campaign is : {response}")
             query = f"INSERT INTO `campaign_target_base` (`campaign_id`, `status`, `created_time`, `modified_time`, `created_by`, `modified_by`, `lock_id`, `org_code`, `control_type`) VALUES ('{campaign_id}', 'IN_PROGRESS', NOW(), NOW(), 'EZETAP', 'EZETAP', '1', '{org_code}', 'NORMAL');"
             result = DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"result for updated insert query : {result}")
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
-            response_create_coupon = APIProcessor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
+            response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
                                                                 reward_name)
             logger.debug(f"Flipkart coupan Created : {response_create_coupon}")
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
@@ -207,7 +207,7 @@ def test_mpos_600_602_015():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_the_campaign_id_from_db(org_code)
+        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_campaign_ids_for_org(org_code)
         logger.debug(f"Collected campaign ids with status IN_PROGRESS, WON and CLAIMED")
         try:
             yesterday_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -223,7 +223,7 @@ def test_mpos_600_602_015():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = APIProcessor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -231,14 +231,14 @@ def test_mpos_600_602_015():
             query = "update campaign SET campaign_status = 'LIVE' where campaign_id = '" + str(campaign_id) + "';"
             DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"Updated campaign status into Live for campaign_id = {campaign_id}")
-            response = APIProcessor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
+            response = rewards_processor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
             logger.debug(f"Response received for updated campaign is : {response}")
             query = f"INSERT INTO `campaign_target_base` (`campaign_id`, `status`, `created_time`, `modified_time`, `created_by`, `modified_by`, `lock_id`, `org_code`, `control_type`) VALUES ('{campaign_id}', 'IN_PROGRESS', NOW(), NOW(), 'EZETAP', 'EZETAP', '1', '{org_code}', 'NORMAL');"
             result = DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"result for updated insert query : {result}")
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
-            response_create_coupon = APIProcessor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
+            response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
                                                                 reward_name)
             logger.debug(f"Flipkart coupon Created : {response_create_coupon}")
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
@@ -376,7 +376,7 @@ def test_mpos_600_602_018():
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_the_campaign_id_from_db(org_code)
+        in_progress_list_ids, won_list_ids, claimed_list_ids = collect_all_campaign_ids_for_org(org_code)
         logger.debug(f"Collected campaign ids with status IN_PROGRESS, WON and CLAIMED")
         try:
             yesterday_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -392,20 +392,20 @@ def test_mpos_600_602_018():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = APIProcessor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
             logger.debug(f"coupon_code : {coupon_code} and pin : {pin}")
-            response_create_coupon = APIProcessor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
+            response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
                                                                 reward_name)
             logger.debug(f"Flipkart coupon Created : {response_create_coupon}")
             query = "update campaign SET campaign_status = 'LIVE' where campaign_id = '" + str(campaign_id) + "';"
             DBProcessor.setValueToDB(query, 'rewards')
             logger.debug(f"Updated campaign status into Live for campaign_id = {campaign_id}")
-            response = APIProcessor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
+            response = rewards_processor.update_campaign('MER190211001', 'Ezetap@1234', campaign_id)
             logger.debug(f"Response received for updated campaign is : {response}")
             query = f"INSERT INTO `campaign_target_base` (`campaign_id`, `status`, `created_time`, `modified_time`, `created_by`, `modified_by`, `lock_id`, `org_code`, `control_type`) VALUES ('{campaign_id}', 'IN_PROGRESS', NOW(), NOW(), 'EZETAP', 'EZETAP', '1', '{org_code}', 'NORMAL');"
             result = DBProcessor.setValueToDB(query, 'rewards')

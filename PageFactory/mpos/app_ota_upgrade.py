@@ -41,7 +41,7 @@ class OTA_upgrade(BasePage):
     def fetch_update_tap_tittle(self):
         """
         fetches tittle text from the update tab
-        return: txt_update_tap_tittle: str
+        return: str
         """
         self.wait_for_element(self.txt_update_tap_tittle)
         return self.fetch_text(self.txt_update_tap_tittle)
@@ -49,7 +49,7 @@ class OTA_upgrade(BasePage):
     def fetch_skip_txt_from_skip_button(self):
         """
         fetches text from skip button
-        return: btn_skip : str
+        return: str
         """
         self.wait_for_element(self.btn_skip)
         return self.fetch_text(self.btn_skip)

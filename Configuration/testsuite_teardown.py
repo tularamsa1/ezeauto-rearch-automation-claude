@@ -220,7 +220,7 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     orgsettings_apidetails["RequestBody"]["settings"]["appMaxRows"] = "20"
     orgsettings_apidetails["RequestBody"]["settings"]["serviceRequestEnabled"] = "false"
     orgsettings_apidetails["RequestBody"]["settings"]["eSignatureForNonCardEnabled"] = "false"
-
+    orgsettings_apidetails["RequestBody"]["settings"]["emiEnabledForClient"] = "false"
     logger.debug(f"API details  : {orgsettings_apidetails} ")
     response = APIProcessor.send_request(orgsettings_apidetails)
     logger.debug(f"Response received for setting sessionExpiry as default is : {response}")

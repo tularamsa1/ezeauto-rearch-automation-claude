@@ -177,13 +177,13 @@ class Rewards(BasePage):
 
     def click_on_proceed_btn_1(self):
         """
-        performs click on the 1St coupon's(coupon_enabled) 'proceed' button
+        performs click on the 1st coupon's(coupon_enabled) 'proceed' button
         """
         self.perform_click(self.btn_process_1)
 
     def click_on_proceed_btn_2(self):
         """
-        performs click on the 2St coupon's(monthly fee) 'proceed' button
+        performs click on the 2nd coupon's(monthly fee) 'proceed' button
         """
         self.perform_click(self.btn_process_2)
 
@@ -411,7 +411,7 @@ class Rewards(BasePage):
             logger.info("No amount found in the text.")
             return None
 
-def collect_all_the_campaign_id_from_db(org_code: str):
+def collect_all_campaign_ids_for_org(org_code: str):
     """
     This method retrieves and returns campaign IDs for "IN_PROGRESS," "WON," and "CLAIMED" status from database
     param: org_code: str
