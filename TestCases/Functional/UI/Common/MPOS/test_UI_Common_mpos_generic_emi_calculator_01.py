@@ -56,6 +56,7 @@ def test_mpos_400_416_001():
                                                                                        "settingForOrgCode": org_code})
         api_details["RequestBody"]["settings"]["emiEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
@@ -163,6 +164,7 @@ def test_mpos_400_416_002():
                                                                                        "settingForOrgCode": org_code})
         api_details["RequestBody"]["settings"]["emiEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
         logger.debug(f"Request body for org_settings_update api  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
@@ -278,6 +280,7 @@ def test_mpos_400_416_003():
                                                                                        "settingForOrgCode": org_code})
         api_details["RequestBody"]["settings"]["emiEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
@@ -396,6 +399,7 @@ def test_mpos_400_416_004():
         api_details["RequestBody"]["settings"]["emiEnabled"] = "true"
         api_details["RequestBody"]["settings"]["paylaterEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
@@ -517,6 +521,7 @@ def test_mpos_400_416_005():
         api_details["RequestBody"]["settings"]["emiEnabled"] = "true"
         api_details["RequestBody"]["settings"]["paylaterEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")

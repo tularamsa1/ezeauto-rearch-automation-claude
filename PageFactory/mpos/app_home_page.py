@@ -60,7 +60,7 @@ class HomePage(BasePage):
     scrollable_it = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_goToHistory2')
     txt_todays_sales = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTodaySale')
     mnu_account_hindi = (AppiumBy.XPATH, '//android.widget.FrameLayout[@content-desc="अकाउंट"]')
-    today_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
+    txt_yesterday_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -328,7 +328,7 @@ class HomePage(BasePage):
         """
         gives the relative co_ordinates of an element based on bounds attribute
         """
-        bounds_str = self.wait_for_element(self.today_sales).get_attribute("bounds")
+        bounds_str = self.wait_for_element(self.txt_yesterday_sales).get_attribute("bounds")
         print(bounds_str)
         matches = re.findall(r'\d+', bounds_str)
         if len(matches) >= 2:
