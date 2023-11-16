@@ -225,7 +225,6 @@ def test_common_400_409_001():
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -241,7 +240,7 @@ def test_common_400_409_001():
                     "amt": str(top_amount_1).rstrip("0").rstrip("."),
                     "amt_2": str(top_amount_2).rstrip("0").rstrip("."),
                     "amt_3": str(top_amount_3).rstrip("0").rstrip("."),
-                    "other_amount": str(0) if cumulative_amount_others == 0 else str(cumulative_amount_others)
+                    "other_amount": str(0) if cumulative_amount_others == 0 else str(cumulative_amount_others).rstrip("0").rstrip(".")
                 }
                 logger.debug(f"expected values : {expected_app_values}")
                 home_page.click_on_history()
@@ -261,7 +260,7 @@ def test_common_400_409_001():
                     others_mode, others_amount = trans_summary.extract_data(input_str=others_entity)
                 except:
                     others_mode = None
-                    others_amount = 0
+                    others_amount = "0"
 
                 actual_app_values = {
                     "sales_volume": str(total_volume_amount).replace(",", "").rstrip("0").rstrip("."),
@@ -273,7 +272,7 @@ def test_common_400_409_001():
                     "amt": primary_amount_1.replace(",", "").rstrip("0").rstrip("."),
                     "amt_2": amount_2.replace(",", "").rstrip("0").rstrip("."),
                     "amt_3": amount_3.replace(",", "").rstrip("0").rstrip("."),
-                    "other_amount": others_amount.replace(",", "").rstrip("0").rstrip(".")
+                    "other_amount": "0" if others_amount == "0" else others_amount.replace(",", "").rstrip("0").rstrip(".")
                 }
                 logger.debug(f"actual app values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------
@@ -507,6 +506,9 @@ def test_common_400_409_002():
 
                 logger.debug("API DETAILS:", api_details)
                 response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
                 amount_api = int(response["amount"])
                 payment_mode_api = response["paymentMode"]

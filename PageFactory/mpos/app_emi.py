@@ -20,22 +20,29 @@ class EmiCalc(BasePage):
     btn_select_tenure = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTenure')
     lbl_selected_period = (AppiumBy.XPATH, '//*[@resource-id = "com.ezetap.basicapp:id/tvTenure"]')
     lbl_plan = (AppiumBy.XPATH, '//*[@resource-id ="com.ezetap.basicapp:id/tvEmiTenure"]')
-    # element = (AppiumBy.XPATH,'//*[@resource-id = "com.ezetap.basicapp:id/tvEmiTenure"][{}]')
+    btn_side_menu = (AppiumBy.ACCESSIBILITY_ID, 'Open navigation drawer')
+    btn_emi_from_side_menu = (AppiumBy.ID, 'com.ezetap.basicapp:id/nav_emi_cal')
 
     def __init__(self, driver):
         super().__init__(driver)
 
     def emi_calc_is_available(self):
         """
-        Fetches text for emi calculator button present on homepage
+        Fetches and retrieve text for emi calculator button
         """
-        return self.fetch_text(self.lbl_emi_calculator)
+        self.wait_for_element(self.btn_side_menu)
+        self.perform_click(self.btn_side_menu)
+        self.wait_for_element(self.btn_emi_from_side_menu)
+        return self.fetch_text(self.btn_emi_from_side_menu)
 
     def click_on_emi_calculator(self):
         """
-          Clicks on EMI calculator button present on home screen
+          Clicks on EMI calculator button from side menu
         """
-        self.perform_click(self.lbl_emi_calculator)
+        self.wait_for_element(self.btn_side_menu)
+        self.perform_click(self.btn_side_menu)
+        self.wait_for_element(self.btn_emi_from_side_menu)
+        self.perform_click(self.btn_emi_from_side_menu)
 
     def click_on_buy_now_pay_later(self):
         """

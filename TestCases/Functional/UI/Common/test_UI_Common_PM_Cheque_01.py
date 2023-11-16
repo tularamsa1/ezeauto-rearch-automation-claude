@@ -329,11 +329,13 @@ def test_common_100_114_001():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
+                logger.debug(f"txn date: {txn_date}")
+                cheque_date = (datetime.strptime(txn_date, "%Y-%m-%d")).strftime("%d/%m/%y")
                 expected_values = {
                                    'PAID BY:': 'CHEQUE', 'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
                                    'Bank Code:': 'ALLA0210329', 'Bank Name:': 'Allahabad Bank', 'Cheque Number:': '123456',
-                                   'Cheque Date:': '25/10/23'
+                                   'Cheque Date:': cheque_date
                                    }
                 receipt_validator.perform_charge_slip_validations(txn_id,
                                                                   {"username": app_username, "password": app_password},
