@@ -6,6 +6,7 @@ import random
 from Configuration.TestSuiteSetup import logger
 from DataProvider import GlobalConstants
 from Utilities import DBProcessor, APIProcessor, ConfigReader
+from Utilities.merchant_configurer import refresh_db
 
 
 def revert_payment_settings_default(org_code, bank_code, portal_un, portal_pw, payment_mode=None, bank_code_bqr=None):
@@ -184,10 +185,26 @@ def revert_card_payment_settings_default(org_code: str, portal_un: str, portal_p
     api_details["RequestBody"]["settings"]["mqttEnabled"] = "false"
     api_details["RequestBody"]["settings"]["mqttRetryPeriod"] = "30"
     api_details["RequestBody"]["settings"]["refundEnabled"] = "true"
+    api_details["RequestBody"]["settings"]["emiEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["instantEmiEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "false"
+    api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["boCashbackEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["businessDiscountEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["boInstantDiscountEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["ezeEmiWalletEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["onlineEmiEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["fraudRulesEnabled"] = "false"
+    api_details["RequestBody"]["settings"]["EMI_ON_CC_ENABLED_IN_CNP"] = "false"
+    api_details["RequestBody"]["settings"]["offeringEmiCashback"] = "YES"
+    api_details["RequestBody"]["settings"]["enabledEmiIssuerBanks"] = "{\"HDFC\":\"DEBIT\",\"AXIS\":\"DEBIT\"," \
+                                                                      "\"KOTAK\":\"DEBIT\",\"ICICI\":\"DEBIT\"}"
 
     logger.debug(f"API details  : {api_details} ")
     response = APIProcessor.send_request(api_details)
     logger.debug(f"Response received for setting preconditions is : {response}")
+
+    revert_bin_info()
 
 
 def revert_org_settings_default(org_code, portal_un, portal_pw):
@@ -393,11 +410,9 @@ def get_normal_p2p_user(portal_un, portal_pw, app_un, app_pw, org_code):
     :param org_code str
     :return: string
     """
-    query_all_users = "select username from org_employee where org_code ='" + str(
-        org_code) + "' and roles = 'ROLE_CLAGENT' and username!='" + str(app_un) + "';"
+    query_all_users = "select username from org_employee where org_code ='" + str(org_code) + "' and roles = 'ROLE_CLAGENT' and username!='" + str(app_un) + "';"
     result_all_users = DBProcessor.getValueFromDB(query_all_users)
-    logger.info(
-        f"Query to select all users under the org {org_code} with only Agent role except the current user {app_un}")
+    logger.info(f"Query to select all users under the org {org_code} with only Agent role except the current user {app_un}")
     logger.debug(f"Result of fetching all users with agent role except the current user: {result_all_users}")
     logger.debug(f"Count of users selected except the current user {app_un} : {len(result_all_users)}")
     if len(result_all_users) >= 1:
@@ -515,3 +530,109 @@ def p2p_change_password(portal_un, portal_pw, app_user, org_code):
     else:
         logger.error(f"Change password for {app_user} using create_user API failed : {response_change_pwd}")
         raise Exception(f"Could not change password of the existing user {app_user}")
+
+
+def update_emi_status_for_org(org_code: str, card_type: str, status: str):
+    """
+    This method is used to update emi status (emi setting tenure) for particular org (not ezetap)
+    param: org_code str
+    param: card_type str
+    param: status str
+    """
+    try:
+        if org_code is None or card_type is None or status is None or org_code.lower() == "ezetap":
+            logger.error(f"please provide proper data to update the status in emi table.")
+        else:
+            query = f"update emi set status='{status.upper()}' where org_code='{org_code}' and card_type='{card_type.upper()}';"
+            logger.debug(f"Query to update emi status in the emi table for the {org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            logger.debug(f"Refreshing database")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+    except Exception as e:
+        logger.exception(f"update emi status query execution failed due to {e}")
+
+
+def update_subvention_plan_details(subvention_plan_id: str):
+    """
+    This method is used to update the status as inactive in subvention_plan_details table
+    param: subvention_plan_id str
+    """
+    query = f"update subvention_plan_details set status = 0 where subvention_plan_id ='{subvention_plan_id}'"
+    logger.debug(f"Query to update subvention_plan_details with status as INACTIVE : {query}")
+    result = DBProcessor.setValueToDB(query)
+    logger.debug(f"Query to fetch result from subvention_plan_details for status as INACTIVE : {result}")
+
+    refresh_db()
+    logger.debug(f"Using DB refresh method after updating the status as inactive in subvention_plan_details table")
+
+
+def revert_bin_info():
+    query = f"update bin_info set bank_code='HDFC', bank='HDFC' where bin in ('417666','428090','400000');"
+    result = DBProcessor.setValueToDB(query)
+    if len(result) > 0:
+        logger.debug(f"{len(result)} rows are affected")
+        refresh_db()
+    else:
+        logger.debug(f"0 rows are affected")
+
+
+def update_bin_info(bin_number: str, bank_code: str, bank: str):
+    query = f"update bin_info set bank_code='{bank_code}', bank='{bank}' where bin = '{bin_number}';"
+    try:
+        if bank in ['HDFC', 'KOTAK', 'ICICI', 'AU', 'FEDERAL', 'AXIS', 'CANARA', 'ONECARD'] and bank_code in \
+                ['HDFC', 'KOTAK', 'ICICI', 'AU', 'FEDERAL', 'AXIS', 'CANARA', 'ONECARD']:
+            if bank == bank_code:
+                query = f"update bin_info set bank_code='{bank_code}', bank='{bank}' where bin = '{bin_number}';"
+                result = DBProcessor.setValueToDB(query)
+                if len(result) > 0:
+                    logger.debug(f"{len(result)} rows are affected")
+                    refresh_db()
+                else:
+                    logger.debug(f"0 rows are affected")
+            else:
+                logger.debug(f"bank and bank_code are not same, bank:{bank} and bank_code:{bank_code}")
+        else:
+            logger.debug(f"Invalid bank_code:{bank_code} or bank:{bank} passed")
+    except Exception as e:
+        logger.debug(f"exception occurred while executing the query:{query}, {e}")
+
+
+def update_emi_status_for_root_org(root_org_code: str, card_type: str, status: str, issuer_code: str, emi_type: str):
+    """
+       This method is used to update the emi status for root org in emi table
+       param: root_org_code str
+       param: card_type str
+       param: status str
+       param: issuer_code str
+       param: emi_type str
+    """
+    try:
+        if root_org_code is None or card_type is None or status is None or status.lower() not in ['active', 'inactive']:
+            logger.error(f"please provide proper data to update the status in emi table.")
+        else:
+            query = f"update emi set status='{status.upper()}' where org_code='{root_org_code}' and card_type='{card_type.upper()}' and issuer_code='{issuer_code}' and emi_type='{emi_type}';"
+            logger.debug(f"Query to update emi status in the emi table for the {root_org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            logger.debug(f"Refreshing database")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+    except Exception as e:
+        logger.exception(f"update emi status query execution failed due to {e}")
+
+
+def update_brand_for_emi_plus(eze_emi_enabled: str, brand_id: str):
+    """
+    This method is used to enable or disable emi plus for a brand
+    param: brand_id :str
+    param: eze_emi_enabled :str
+    """
+    query = f"update brand set eze_emi_enabled=b'{eze_emi_enabled}' where id ='{brand_id}'"
+    logger.debug(f"Query to update brand to enable or disable for emi plus : {query}")
+    result = DBProcessor.setValueToDB(query)
+    logger.debug(f"Query to fetch result from brand to enable or disable for emi plus: {result}")
+
+    refresh_db()
+    logger.debug(f"Using DB refresh method after enable or disable for emi plus in brand table")

@@ -82,12 +82,15 @@ mapped_identifier_keys_for_receipt_fields = dict(
     merchant_ref_no_text="Ref #",
     pin_verified_section_text="PIN VERIFIED",
     agreement_text="""I agree to pay as per the card issuer agreement and receive chargeslip by electronic means.""",
-
+    customer_consent_for_emi_text_id="CUSTOMER CONSENT FOR EMI",  # -------------------------------------------------------?????? NEW ADDITION .......................... here
 )
 
-present_receipt_info = {}
+present_receipt_info = None
 index_locations = {}
-transaction_type = ['SALE', 'REVERSED', 'REFUND']
+transaction_type = [
+    'SALE', 'REVERSED', 'REFUND', 'EMI SALE',
+    'DEBIT SALE', 'VOID SALE', 'NBFC EMI Sale'
+]
 
 
 # -------------------------------------------------------
@@ -129,10 +132,12 @@ def _find_datetime_from_rows(rows_with_fields):
 
 def _get_key_values_from_table_rows(section_rows):
     global present_receipt_info
+    global mapped_identifier_keys_for_receipt_fields
     for tr in section_rows:
         tds = tr.find_all('td')
         if len(tds) == 2:
-            if ":" not in tds[1].text:
+            if ":" not in tds[1].text:  # checking if second td is not a key value pair
+                # below line of code modified. old: key = tr.find_all('td')[0].text.strip().rstrip(":").rstrip()
                 key = tr.find_all('td')[0].text.strip()
                 value = tr.find_all('td')[1].text.strip()
                 present_receipt_info[key] = value
@@ -145,12 +150,60 @@ def _get_key_values_from_table_rows(section_rows):
         elif len(tds) == 1:
             for td in tds:
                 if td.text.strip():
-                    key_value_pair = td.text.strip().split(':')
-                    # print(key_value_pair)
-                    key = key_value_pair[0].strip()
-                    value = key_value_pair[1].strip()
+                    text_lines_found = [text.strip() for text in td.stripped_strings if ("------" not in text)]
+                    text_lines_found = [i for i in text_lines_found if i]  # removing empty lines
 
-                    present_receipt_info[key] = value
+                    if not text_lines_found:
+                        continue
+
+                    # checking if emi consent text is found
+                    if (text_lines_found[0] == mapped_identifier_keys_for_receipt_fields[
+                        "customer_consent_for_emi_text_id"]):
+                        # customer consent for emi text is found
+                        present_receipt_info["customer_consent_for_emi_text"] = "\n".join(text_lines_found)
+                    else:
+                        # new changes --starts here
+                        colon_splits = td.text.strip().split(':')
+                        if not colon_splits:
+                            logger.info("No colon splits found")
+                            logger.info(td.text.strip())
+                            # pass
+                        elif len(colon_splits) == 2:
+                            key_value_pair = colon_splits
+                            key = key_value_pair[0].strip()
+                            value = key_value_pair[1].strip()
+                            present_receipt_info[key] = value
+                        else:
+                            text_lines_with_colon = []
+                            text_lines_without_colon = []
+                            for l in text_lines_found:
+                                if ":" in l:
+                                    text_lines_with_colon.append(l)
+                                else:
+                                    text_lines_without_colon.append(l)
+
+                            # without colon
+                            if text_lines_without_colon:
+                                combined_lines_without_colon = '\n'.join(text_lines_without_colon)
+                                present_receipt_info["unidentified_sections"].append(
+                                    combined_lines_without_colon.strip())
+
+                            # with colon
+                            for line in text_lines_with_colon:
+                                splits_from_line = line.split(":")
+                                if len(splits_from_line) == 2:
+                                    key, value = splits_from_line[0].strip(), splits_from_line[1].strip()
+                                    present_receipt_info[key] = value
+                                else:
+                                    present_receipt_info["unidentified_sections"].append(line.strip())
+
+    # removing already known texts
+    known_texts = [
+        "PRODUCT INFORMATION",
+    ]
+    for kt in known_texts:
+        if kt in present_receipt_info["unidentified_sections"]:
+            present_receipt_info["unidentified_sections"].remove(kt)
 
 
 def _switch_handles(driver) -> None:
@@ -234,20 +287,16 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
     global present_receipt_info
     global index_locations
     global transaction_type  # transaction type
-    # global mapped_identifier_keys_for_receipt_fields
+    global mapped_identifier_keys_for_receipt_fields
 
     present_receipt_info = {}
+    present_receipt_info["unidentified_sections"] = []              # ?????? NEW ADDITION .......................... here
 
     rows = receipt_table.find_all('tr')
 
     rows_with_fields = []
     for row in rows:
-        # print(f"{i}".center(50, "-"))
-        # print(row)
         tds = row.find_all('td')
-        # if not tds:
-        #     print_row = rows.pop(0) # here bank logo is also can be printed
-        #     # pass
         if len(tds) == 1 and tds[0].find_all('img'):
             images = tds[0].find_all('img')
 
@@ -374,22 +423,27 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
                 present_receipt_info['version'] = line.strip()
 
     # finding pin verified text
-    for para in post_table_elements[:indices['signature_section']]:
-        if mapped_identifier_keys_for_receipt_fields['pin_verified_section_text'] in para.text:
-            present_receipt_info['pin_verified_section_text'] = para.text.strip()
-            break
+    if 'signature_section' in indices.keys():
+        for para in post_table_elements[:indices['signature_section']]:
+            if "pin_verified_section_text" in mapped_identifier_keys_for_receipt_fields.keys():
+                if mapped_identifier_keys_for_receipt_fields['pin_verified_section_text'] in para.text:
+                    present_receipt_info['pin_verified_section_text'] = para.text.strip()
+                    break
+            # else:
+            #     break
 
     # getting unnamed_section extracted
     if ("agreement_section" in indices.keys()) and ("customer_copy" in indices.keys()):
-        unnamed_sec_elements = post_table_elements[indices['signature_section'] + 1:indices['agreement_section']]
-        unnamed_sec_elements_texts = [elem.text.strip() for elem in unnamed_sec_elements if elem.text.strip()]
-        unnamed_section_text = [" ".join([i.strip() for i in w.split("  ") if i.strip()]) for w in
-                                unnamed_sec_elements_texts]
+        if 'signature_section' in indices.keys():
+            unnamed_sec_elements = post_table_elements[indices['signature_section'] + 1:indices['agreement_section']]
+            unnamed_sec_elements_texts = [elem.text.strip() for elem in unnamed_sec_elements if elem.text.strip()]
+            unnamed_section_text = [" ".join([i.strip() for i in w.split("  ") if i.strip()]) for w in
+                                    unnamed_sec_elements_texts]
 
-        unnamed_section_text = " ".join(unnamed_section_text)
+            unnamed_section_text = " ".join(unnamed_section_text)
 
-        if unnamed_section_text.strip():
-            present_receipt_info['unnamed_section_text'] = unnamed_section_text.strip()
+            if unnamed_section_text.strip():
+                present_receipt_info['unnamed_section_text'] = unnamed_section_text.strip()
 
     elif ("signature_section" in indices.keys()) and ("customer_copy" in indices.keys()):
         unnamed_sec_elements = post_table_elements[indices['signature_section'] + 1:indices['customer_copy']]
@@ -404,12 +458,8 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
 
 
     else:
-        print(
-            "The customer copy or agreement section is not found! Therefore Unable to extract '[[ unnamed_section ]]'")
         logger.warning(
             "The customer copy or agreement section is not found! Therefore Unable to extract '[[ unnamed_section ]]'")
-
-    # global present_receipt_info
 
     logger.info("DETAILS THAT ARE FOUND IN CURRENT RECEIPT")
     logger.info(present_receipt_info)
@@ -457,12 +507,12 @@ def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:
             _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_table)
 
         else:
-            print("No receipt table [-----] inside charge slip found")  # go to logger
-            print("Some part of the charge slip is not loaded")
+            logger.info("No receipt table [-----] inside charge slip found")  # go to logger
+            logger.info("Some part of the charge slip is not loaded")
 
     else:
-        print("No receipt found")  # goes to loggger
-        print("Charge Slip was not loaded!")
+        logger.info("No receipt found")  # goes to loggger
+        logger.info("Charge Slip was not loaded!")
 
     return present_receipt_info
 

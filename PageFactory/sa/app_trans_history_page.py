@@ -58,6 +58,23 @@ class TransHistoryPage(BasePage):
     btn_conf_pre_auth_popup = (By.ID, "com.ezetap.service.demo:id/rightButton")
     btn_confirmation = (By.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.EditText")
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
+    txt_payment_by = (By.XPATH, "//*[@text='PAYMENT BY']/following-sibling::android.widget.TextView")
+    txt_card_type = (By.XPATH, "//*[@text='CARD TYPE']/following-sibling::android.widget.TextView")
+    txt_customer = (By.XPATH, "//*[@text='CUSTOMER']/following-sibling::android.widget.TextView")
+    txt_emi_status = (By.XPATH, "//*[@text='EMI STATUS']/following-sibling::android.widget.TextView")
+    txt_lender = (By.XPATH, "//*[@text='LENDER']/following-sibling::android.widget.TextView")
+    txt_monthly_emi = (By.XPATH, "//*[@text='MONTHLY EMI']/following-sibling::android.widget.TextView")
+    txt_total_emi_amount = (By.XPATH, "//*[@text='TOTAL EMI AMOUNT']/following-sibling::android.widget.TextView")
+    txt_total_interest = (By.XPATH, "//*[@text='TOTAL INTEREST']/following-sibling::android.widget.TextView")
+    txt_loan_amount = (By.XPATH, "//*[@text='LOAN AMOUNT']/following-sibling::android.widget.TextView")
+    txt_interest_amount = (By.XPATH, "//*[contains(@text,'INTEREST AMT')]/following-sibling::android.widget.TextView")
+    txt_net_effective_price = (By.XPATH, "//*[@text='NET EFFECTIVE PRICE:']/following-sibling::android.widget.TextView")
+    txt_tenure = (By.XPATH, "//*[@text='TENURE']/following-sibling::android.widget.TextView")
+    add_loan_amt = (By.XPATH, "//*[@text='ADDITIONAL PAYBACK']/following-sibling::android.widget.TextView")
+    txt_brand_name = (By.XPATH, "//*[@text='BRAND']/following-sibling::android.widget.TextView")
+    txt_imei = (By.XPATH, "//*[@text='SERIAL/IMEI']/following-sibling::android.widget.TextView")
+    txt_scheme = (By.XPATH, "//*[@text='SCHEME']/following-sibling::android.widget.TextView")
+    txt_product_name = (By.XPATH, "//*[@text='PRODUCT']/following-sibling::android.widget.TextView")
     txt_history = (By.XPATH, '//*[@text="Transactions"]')
     txt_e_order_id = (By.XPATH, '(//*[@class="android.view.View"])[9]')
     txt_e_receipt_created_date = (By.XPATH, '(//*[@class="android.view.View"])[10]')
@@ -65,6 +82,12 @@ class TransHistoryPage(BasePage):
     txt_e_receipt_payment_mode = (By.XPATH, '(//*[@class="android.view.View"])[16]')
     txt_e_receipt_amount = (By.XPATH, '(//*[@class="android.view.View"])[19]')
     lbl_logo = (By.XPATH, '//*[@text = "Ezetap"]')
+    cashback_amt = (By.XPATH, "//*[@text='CASHBACK']/following-sibling::android.widget.TextView")
+    additional_cashback_amt = (By.XPATH, "//*[@text='ADDITIONAL CASHBACK']/following-sibling::android.widget.TextView")
+    additional_payback_amt = (By.XPATH, "//*[@text='ADDITIONAL PAYBACK']/following-sibling::android.widget.TextView")
+    txt_ref_num_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView")
+    txt_card = (By.XPATH, "//*[@text='CARD']/following-sibling::android.widget.TextView")
+    txt_mobile = (By.XPATH, "//*[@text='CUSTOMER MOBILE']/following-sibling::android.widget.TextView")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -73,9 +96,11 @@ class TransHistoryPage(BasePage):
         return self.fetch_text(self.lbl_summary)
 
     def click_back_Btn(self):
+        self.wait_for_visibility_of_elements(self.btn_backHome)
         self.perform_click(self.btn_backHome)
 
     def click_back_Btn_transaction_details(self):
+        self.wait_for_visibility_of_elements(self.btn_backTransactionDetails)
         self.perform_click(self.btn_backTransactionDetails)
 
     def click_first_amount_field(self):
@@ -187,7 +212,9 @@ class TransHistoryPage(BasePage):
         return self.fetch_text(self.txt_settlement_status)
 
     def fetch_txn_status_text(self):
-        return str(self.fetch_text(self.txa_finalStatusField))
+        txn_status = str(self.fetch_text(self.txa_finalStatusField))
+        self.scroll_to_text("STATUS")
+        return txn_status
 
     def fetch_txn_payment_message_text(self):
         return str(self.fetch_text(self.txa_payment_status_message))
@@ -266,6 +293,133 @@ class TransHistoryPage(BasePage):
         """
         return self.fetch_text(self.txt_ref_num_2)
 
+    def fetch_payment_by_text(self) -> str:
+        """
+        This method is used to fetch payment by on transaction history page.
+        return: payment_by: str
+        """
+        return self.fetch_text(self.txt_payment_by)
+
+    def fetch_card_type_text(self) -> str:
+        """
+        This method is used to fetch card type on transaction history page.
+        return: card_type: str
+        """
+        return self.fetch_text(self.txt_card_type)
+
+    def fetch_customer_text(self) -> str:
+        """
+        This method is used to fetch customer on transaction history page.
+        return: customer: str
+        """
+        return self.fetch_text(self.txt_customer)
+
+    def fetch_emi_status_text(self) -> str:
+        """
+        This method is used to fetch emi status on transaction history page.
+        return: emi_status: str
+        """
+        return self.fetch_text(self.txt_emi_status)
+
+    def fetch_lender_text(self) -> str:
+        """
+        This method is used to fetch lender on transaction history page.
+        return: lender: str
+        """
+        return self.fetch_text(self.txt_lender)
+
+    def fetch_monthly_emi_text(self):
+        """
+        This method is used to fetch monthly emi on transaction history page.
+        return: monthly_emi: str
+        """
+        return self.fetch_text(self.txt_monthly_emi)
+
+    def fetch_total_emi_amount_text(self) -> str:
+        """
+        This method is used to fetch total emi amount on transaction history page.
+        return: total_emi_amount: str
+        """
+        return self.fetch_text(self.txt_total_emi_amount)
+
+    def fetch_total_interest_text(self) -> str:
+        """
+        This method is used to fetch total interest on transaction history page.
+        return: total_interest: str
+        """
+        return self.fetch_text(self.txt_total_interest)
+
+    def fetch_loan_amount_text(self) -> str:
+        """
+        This method is used to fetch loan amount on transaction history page.
+        return: loan_amount: str
+        """
+        return self.fetch_text(self.txt_loan_amount)
+
+    def fetch_interest_amount_text(self) -> str:
+        """
+        This method is used to fetch interest amount on transaction history page.
+        return: interest_amount: str
+        """
+        return self.fetch_text(self.txt_interest_amount)
+
+    def fetch_net_effective_price_text(self) -> str:
+        """
+        This method is used to fetch net effective price on transaction history page.
+        return: net_effective_price: str
+        """
+        return self.fetch_text(self.txt_net_effective_price)
+
+    def fetch_tenure_text(self) -> str:
+        """
+        This method is used to fetch emi tenure on transaction history page.
+        return: device_serial: str
+        """
+        return self.fetch_text(self.txt_tenure)
+
+    def fetch_additional_payback(self) -> str:
+        """
+        This method is used to fetch additional payback amount on transaction history page.
+        return: loan_amount: str
+        """
+        return self.fetch_text(self.add_loan_amt)
+
+    def fetch_brand_text(self) -> str:
+        """
+        This method is used to fetch brand name from transaction history page.
+        return: fetch_brand_text: str
+        """
+        self.scroll_to_text("BRAND")
+        return self.fetch_text(self.txt_brand_name)
+
+    def fetch_imei_text(self) -> str:
+        """
+        This method is used to fetch imei no from transaction history page.
+        return: fetch_brand_text: str
+        """
+        self.scroll_to_text("SERIAL/IMEI")
+        return self.fetch_text(self.txt_imei)
+
+    def fetch_scheme_text(self) -> str:
+        """
+        This method is used to fetch scheme from transaction history page.
+        return: fetch_brand_text: str
+        """
+        return self.fetch_text(self.txt_scheme)
+
+    def fetch_product_text(self) -> str:
+        """
+        This method is used to fetch product name from transaction history page.
+        return: fetch_product_text: str
+        """
+        return self.fetch_text(self.txt_product_name)
+
+    def scroll_to_card_element(self):
+        """
+        This method is used to scroll to card txn type desc element
+        """
+        self.scroll_to_text("CARD TXN TYPE DESC")
+
     def fetch_history_txt(self):
         """
         fetches the title text from transaction history page
@@ -328,3 +482,53 @@ class TransHistoryPage(BasePage):
         Waits for the filter button to become clickable before using it.
         """
         self.wait_for_element_to_be_clickable(self.btn_filters)
+
+    def fetch_cashback_text(self) -> str:
+        """
+        This method is used to fetch cashback amt on transaction history page.
+        return: cashback_amt: str
+        """
+        return self.fetch_text(self.cashback_amt)
+
+    def fetch_additinal_cashback_text(self) -> str:
+        """
+        This method is used to fetch additinal cashback amt on transaction history page in case of bo cashback txn.
+        return: cashback_amt: str
+        """
+        return self.fetch_text(self.additional_cashback_amt)
+
+    def click_on_void_emi_txn(self):
+        """
+        This method is used to click on void button for emi txn on transaction history page.
+        """
+        self.scroll_to_text("STATUS")
+        self.perform_click(self.btn_void_txn)
+        self.perform_click(self.btn_void_yes)
+
+    def fetch_additional_payback_text(self) -> str:
+        """
+           This method is used to fetch additinal payback amt on transaction history page in case of bo cashback txn.
+           return: cashback_amt: str
+           """
+        return self.fetch_text(self.additional_payback_amt)
+
+    def fetch_device_serial_for_cnp_emi_text(self) -> str:
+        """
+        This method is used to fetch device serial number for emi on cnp flow on transaction history page.
+        return: device_serial: str
+        """
+        return self.fetch_text(self.txt_ref_num_3)
+
+    def fetch_card_text(self) -> str:
+        """
+         This method is used to fetch card for emi on cnp flow on transaction history page.
+         return: device_serial: str
+        """
+        return self.fetch_text(self.txt_card)
+
+    def fetch_customer_mobile_text(self) -> str:
+        """
+         This method is used to fetch customer mobile number for emi on cnp flow on transaction history page.
+         return: device_serial: str
+        """
+        return self.fetch_text(self.txt_mobile)
