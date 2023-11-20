@@ -533,12 +533,6 @@ def p2p_change_password(portal_un, portal_pw, app_user, org_code):
 
 
 def update_emi_status_for_org(org_code: str, card_type: str, status: str):
-    """
-    This method is used to update emi status (emi setting tenure) for particular org (not ezetap)
-    param: org_code str
-    param: card_type str
-    param: status str
-    """
     try:
         if org_code is None or card_type is None or status is None or org_code.lower() == "ezetap":
             logger.error(f"please provide proper data to update the status in emi table.")
@@ -563,19 +557,24 @@ def update_subvention_plan_details(subvention_plan_id: str):
     logger.debug(f"Query to update subvention_plan_details with status as INACTIVE : {query}")
     result = DBProcessor.setValueToDB(query)
     logger.debug(f"Query to fetch result from subvention_plan_details for status as INACTIVE : {result}")
-
     refresh_db()
     logger.debug(f"Using DB refresh method after updating the status as inactive in subvention_plan_details table")
 
 
-def revert_bin_info():
-    query = f"update bin_info set bank_code='HDFC', bank='HDFC' where bin in ('417666','428090','400000');"
-    result = DBProcessor.setValueToDB(query)
-    if len(result) > 0:
-        logger.debug(f"{len(result)} rows are affected")
-        refresh_db()
-    else:
-        logger.debug(f"0 rows are affected")
+def update_emi_status_for_root_org(root_org_code: str, card_type: str, status: str, issuer_code: str, emi_type: str):
+    try:
+        if root_org_code is None or card_type is None or status is None or status.lower() not in ['active', 'inactive']:
+            logger.error(f"please provide proper data to update the status in emi table.")
+        else:
+            query = f"update emi set status='{status.upper()}' where org_code='{root_org_code}' and card_type='{card_type.upper()}' and issuer_code='{issuer_code}' and emi_type='{emi_type}';"
+            logger.debug(f"Query to update emi status in the emi table for the {root_org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            logger.debug(f"Refreshing database")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+    except Exception as e:
+        logger.exception(f"update emi status query execution failed due to {e}")
 
 
 def update_bin_info(bin_number: str, bank_code: str, bank: str):
@@ -599,28 +598,14 @@ def update_bin_info(bin_number: str, bank_code: str, bank: str):
         logger.debug(f"exception occurred while executing the query:{query}, {e}")
 
 
-def update_emi_status_for_root_org(root_org_code: str, card_type: str, status: str, issuer_code: str, emi_type: str):
-    """
-       This method is used to update the emi status for root org in emi table
-       param: root_org_code str
-       param: card_type str
-       param: status str
-       param: issuer_code str
-       param: emi_type str
-    """
-    try:
-        if root_org_code is None or card_type is None or status is None or status.lower() not in ['active', 'inactive']:
-            logger.error(f"please provide proper data to update the status in emi table.")
-        else:
-            query = f"update emi set status='{status.upper()}' where org_code='{root_org_code}' and card_type='{card_type.upper()}' and issuer_code='{issuer_code}' and emi_type='{emi_type}';"
-            logger.debug(f"Query to update emi status in the emi table for the {root_org_code} : {query}")
-            result = DBProcessor.setValueToDB(query=query)
-            logger.debug(f"query result : {result}")
-            logger.debug(f"Refreshing database")
-            refresh_db()
-            logger.debug(f"Database refreshed")
-    except Exception as e:
-        logger.exception(f"update emi status query execution failed due to {e}")
+def revert_bin_info():
+    query = f"update bin_info set bank_code='HDFC', bank='HDFC' where bin in ('417666','428090');"
+    result = DBProcessor.setValueToDB(query)
+    if len(result) > 0:
+        logger.debug(f"{len(result)} rows are affected")
+        refresh_db()
+    else:
+        logger.debug(f"0 rows are affected")
 
 
 def update_brand_for_emi_plus(eze_emi_enabled: int, brand_id: str):

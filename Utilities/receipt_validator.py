@@ -89,7 +89,7 @@ present_receipt_info = None
 index_locations = {}
 transaction_type = [
     'SALE', 'REVERSED', 'REFUND', 'EMI SALE',
-    'DEBIT SALE', 'VOID SALE', 'NBFC EMI Sale'
+    'DEBIT SALE', 'VOID SALE', 'NBFC EMI Sale', 'Sale Cash Back'
 ]
 
 
