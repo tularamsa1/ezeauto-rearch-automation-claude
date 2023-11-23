@@ -208,6 +208,8 @@ def test_common_100_115_03_009():
             logger.debug(f"Fetching org_code value from the txn table after confirm pre_auth for first txn : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref value from the txn table after confirm pre_auth for first txn : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching external_ref value from the txn table after confirm pre_auth for first txn : {posting_date}")
 
             payment_status = txn_history_page.fetch_txn_status_text()
             logger.info(f"Fetching payment status value from txn history for the txn : {original_txn_id}, {payment_status}")
@@ -296,6 +298,8 @@ def test_common_100_115_03_009():
             logger.debug(f"Fetching org_code value from the txn table after confirm pre_auth for second txn : {org_code_db_2}")
             order_id_db_2 = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref value from the txn table after confirm pre_auth for second txn : {order_id_db_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table after confirm pre_auth for second txn : {posting_date_2}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -315,8 +319,8 @@ def test_common_100_115_03_009():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
-                date_and_time_2 = date_time_converter.to_app_format(txn_created_time_2)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                date_and_time_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -842,9 +846,8 @@ def test_common_100_115_03_009():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
-                txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
+                txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
 
                 expected_charge_slip_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),

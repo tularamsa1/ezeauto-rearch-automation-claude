@@ -110,7 +110,7 @@ def test_common_100_115_07_050():
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -121,7 +121,7 @@ def test_common_100_115_07_050():
 
         query = f"select * from emi where org_code='EZETAP' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
-                f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
+                f"and tid_type='SUBVENTION' and brand='{brand_id}'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Fetching result from emi table :{result}")
@@ -175,7 +175,8 @@ def test_common_100_115_07_050():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -972,6 +973,8 @@ def test_common_100_115_07_050():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1068,7 +1071,7 @@ def test_common_100_115_07_052():
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1079,7 +1082,7 @@ def test_common_100_115_07_052():
 
         query = f"select * from emi where org_code='EZETAP' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
-                f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
+                f"and tid_type='SUBVENTION' and brand='{brand_id}'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Fetching result from emi table :{result}")
@@ -1135,7 +1138,8 @@ def test_common_100_115_07_052():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1953,6 +1957,8 @@ def test_common_100_115_07_052():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2049,7 +2055,7 @@ def test_common_100_115_07_054():
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -2061,7 +2067,7 @@ def test_common_100_115_07_054():
 
         query = f"select * from emi where org_code='EZETAP' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
-                f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
+                f"and tid_type='SUBVENTION' and brand='{brand_id}'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Fetching result from emi table :{result}")
@@ -2117,7 +2123,8 @@ def test_common_100_115_07_054():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2935,4 +2942,6 @@ def test_common_100_115_07_054():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         Configuration.executeFinallyBlock(testcase_id)

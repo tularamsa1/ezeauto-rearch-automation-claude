@@ -105,7 +105,7 @@ def test_common_100_115_07_109():
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
-                f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -120,7 +120,7 @@ def test_common_100_115_07_109():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -412,7 +412,7 @@ def test_common_100_115_07_109():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(final_amount),
                     "pmt_mode": "CARD",
@@ -1110,7 +1110,7 @@ def test_common_100_115_07_110():
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
-                f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1125,7 +1125,7 @@ def test_common_100_115_07_110():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1417,7 +1417,7 @@ def test_common_100_115_07_110():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",

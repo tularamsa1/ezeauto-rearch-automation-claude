@@ -20,7 +20,9 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_115_11_006():
     """
         Sub Feature Code: UI_Common_Card_EZE_EMI_Payback_by_Brand_Percentage_Disable_IMEI_Validation_For_Both_Brand_And_EzeEMI_Flow
+        _For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_3_Months_Tenure
         Sub Feature Description: Performing the EZE EMI payback by brand percentage and verify IMEI validation is disabled for both brand emi and eze emi flow
+        for an org via HDFC Dummy PG using EMV VISA Credit card with pin for 3 months tenure (bin: 417666)
         TC naming code description: 100: Payment Method, 115: CARD_UI, 11: EZE EMI, 006: TC006
     """
     try:
@@ -79,12 +81,25 @@ def test_common_100_115_11_006():
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received when emi, emi for client, offering_emi cashback, brand_emi, bocashback and EZEEMI is enabled in preconditions settings : {response}")
 
-        query = f"select * from brand where brand_name = 'EZEMI_DOBRAND'"
+        emi_plan_in_months = 3
+        logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
+
+        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='EZEEMI'" \
+                f"and tid_type='SUBVENTION';"
+        logger.debug(f"Query to fetch data from the emi table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Fetching result from emi table :{result}")
+        brand_id = result['brand'].values[0]
+        logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
+
+        # enabling eze emi
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=1, brand_id=brand_id)
+
+        query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
-        brand_id = result['id'].values[0]
-        logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
@@ -96,13 +111,13 @@ def test_common_100_115_11_006():
         refresh_db()
         logger.debug(f"Refreshing the DB after updating the config_data table with param_value as OFFLINE for Brand emi and Eze emi : {result}")
 
-        #From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
+        # From brand_sku_Details picking the first product_name
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'1';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
-        brand_sku_name = result['sku_name'].values[0]
-        logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
+        eze_emi_brand_sku_name = result['sku_name'].values[0]
+        logger.debug(f"Fetching sku_name value from the brand_sku_details table : {eze_emi_brand_sku_name}")
 
         testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
@@ -138,8 +153,8 @@ def test_common_100_115_11_006():
             payment_page = PaymentPage(app_driver)
             payment_page.click_on_eze_emi_pmt_mode()
             logger.debug(f"Selected payment mode is EZE EMI")
-            payment_page.click_and_enter_search_products_or_brands(brand_name)
-            logger.debug(f"Clicked on EzeEMI brand is : {brand_name}")
+            payment_page.click_and_enter_search_products_or_brands(eze_emi_brand_sku_name)
+            logger.debug(f"Clicked on EzeEMI brand is : {eze_emi_brand_sku_name}")
             customer_no = '6666666666'
             payment_page.click_and_enter_customer_number(customer_no)
             logger.debug(f"Entered customer mobile number is : {customer_no}")
@@ -148,6 +163,29 @@ def test_common_100_115_11_006():
                 payment_page.check_for_imei_no_validation()
                 logger.debug(f"IMEI number is invisible for Eze EMI ")
                 payment_page.click_on_back_btn()
+
+                query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+                        f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                        f"and tid_type='SUBVENTION';"
+                logger.debug(f"Query to fetch data from the emi table for brand emi : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Fetching result from emi table for brand emi :{result}")
+                brand_id = result['brand'].values[0]
+                logger.debug(f"Fetching brand_id from the emi table for brand emi : {brand_id}")
+
+                query = f"select * from brand where id='{brand_id}'"
+                logger.debug(f"Query to fetch data from the brand table : {query}")
+                result = DBProcessor.getValueFromDB(query=query)
+                logger.debug(f"Query result for brand table : {result}")
+                brand_name = result['brand_name'].values[0]
+                logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
+
+                query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
+                logger.debug(f"Query to fetch data from the brand_sku_details table for brand emi : {query}")
+                result = DBProcessor.getValueFromDB(query=query)
+                logger.debug(f"Query result for brand table for brand emi : {result}")
+                brand_sku_name = result['sku_name'].values[0]
+                logger.debug(f"Fetching sku_name value from the brand_sku_details table for brand emi : {brand_sku_name}")
 
                 # selecting the brand emi pmt mode
                 payment_page.click_on_brand_emi_pmt_mode()
@@ -218,7 +256,9 @@ def test_common_100_115_11_006():
 def test_common_100_115_11_007():
     """
         Sub Feature Code: UI_Common_Card_EZE_EMI_Payback_by_Brand_Percentage_Validate_Brand_Ezetap_Co_Subvented_wallet_Present_On_App_For_Brand_EMI
-        Sub Feature Description: Performing the EZE EMI payback by brand percentage and validate Brand-Ezetap co-subvented wallet is reflected in the Brand Emi for specific brand
+        _For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
+        Sub Feature Description: Performing the EZE EMI payback by brand percentage and validate Brand-Ezetap co-subvented wallet is reflected in the
+        Brand Emi for specific brand for an org via HDFC Dummy PG using EMV VISA Credit card with pin for 6 months tenure (bin: 417666)
         TC naming code description: 100: Payment Method, 115: CARD_UI, 11: EZE EMI, 007s: TC007
     """
     try:

@@ -95,7 +95,7 @@ def test_common_100_115_07_086():
         logger.debug(f"Fetching max amount from the emi table : {brand_max_amount}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -300,7 +300,7 @@ def test_common_100_115_07_087():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -341,7 +341,9 @@ def test_common_100_115_07_087():
         # updating the status as inactive in subvention_plan_details table
         testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
 
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_type='PAYBACK' and subvention_value_type='PERCENTAGE' and tenure='{emi_plan_in_months} month'"
+        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and" \
+                f" subventing_entity='BRAND' and subvention_type='PAYBACK' and subvention_value_type='PERCENTAGE'" \
+                f" and tenure='{emi_plan_in_months} month'"
         logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
@@ -558,7 +560,7 @@ def test_common_100_115_07_087():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1211,7 +1213,7 @@ def test_common_100_115_07_088():
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
-                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1230,7 +1232,7 @@ def test_common_100_115_07_088():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1475,7 +1477,7 @@ def test_common_100_115_07_088():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2168,7 +2170,7 @@ def test_common_100_115_07_089():
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
-                f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -2183,7 +2185,7 @@ def test_common_100_115_07_089():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -2206,7 +2208,8 @@ def test_common_100_115_07_089():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'CREDIT' and bank='HDFC' order by created_time desc limit 1;"
+        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}'" \
+                f" and card_type= 'CREDIT' and bank='HDFC';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -2221,7 +2224,9 @@ def test_common_100_115_07_089():
         subvention_scheme_name = result['scheme_name'].values[0]
         logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
 
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='BRAND' and subvention_value_type= 'FIXED' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and " \
+                f"subventing_entity ='BRAND' and subvention_value_type= 'FIXED' and subvention_type='CASHBACK' " \
+                f"and tenure='{emi_plan_in_months} month' ;"
         logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan_details table : {result}")
@@ -2474,7 +2479,7 @@ def test_common_100_115_07_089():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(final_amount),
                     "pmt_mode": "CARD",
@@ -3167,7 +3172,7 @@ def test_common_100_115_07_090():
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
-                f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -3182,7 +3187,7 @@ def test_common_100_115_07_090():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -3475,7 +3480,7 @@ def test_common_100_115_07_090():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -3536,7 +3541,7 @@ def test_common_100_115_07_090():
                 logger.debug(f"Fetching tenure from txn history for the txn : {txn_id}, {app_tenure}")
                 app_lender = txn_history_page.fetch_lender_text()
                 logger.debug(f"Fetching lender from txn history for the txn : {txn_id}, {app_lender}")
-                additional_cashback = txn_history_page.fetch_additinal_cashback_text()
+                additional_cashback = txn_history_page.fetch_additional_cashback()
                 logger.debug(f"Fetching additional_cashback from txn history for the txn : {txn_id}, {additional_cashback}")
                 app_monthly_emi = txn_history_page.fetch_monthly_emi_text()
                 logger.debug(f"Fetching monthly emi from txn history for the txn : {txn_id}, {app_monthly_emi}")
@@ -4059,20 +4064,13 @@ def test_common_100_115_07_090():
                     "RRN": rrn,
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
-                    "Card Issuer": "HDFC Bank",
-                    "Cashback": "Rs " + "{:.2f}".format(emi_cashback_fixed),
-                    "Total Cashback Amt": "Rs. " + "{:.2f}".format(emi_cashback_amount),
-                    "Rate of Interest(P.A.)": f"{interest_rate}%",
-                    "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
-                    "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
-                    "Total Amt with Interest": "Rs." + "{:.2f}".format(total_emi),
+                    "Card Issuer": f"{issuer_code} Bank",
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
                     "Manufacturer Name": brand_name,
                     "Product Name": brand_sku_name,
                     "Product Desc": brand_sku_code,
                     "Sr. No.": str(imei_no),
                     "unnamed_section_text": f"{customer_name_db} I agree to pay as per the card issuer agreement.",
-                    "Net cost": "Rs." + "{:,.2f}".format(total_emi - emi_cashback_amount)
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
 

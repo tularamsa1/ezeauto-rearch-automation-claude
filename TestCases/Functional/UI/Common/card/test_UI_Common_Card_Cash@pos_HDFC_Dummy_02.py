@@ -203,6 +203,8 @@ def test_common_100_115_02_009():
             logger.debug(f"Fetching org_code value from the txn table : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref value from the txn table : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -222,7 +224,7 @@ def test_common_100_115_02_009():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(cash_amount),
                     "pmt_mode": "CARD",
@@ -566,7 +568,7 @@ def test_common_100_115_02_009():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 logger.info(f"Date and time value for chargeslip validation is: {txn_date},{txn_time}")
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
@@ -795,6 +797,8 @@ def test_common_100_115_02_010():
             logger.debug(f"Fetching org_code value from the txn table : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref value from the txn table : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -814,7 +818,7 @@ def test_common_100_115_02_010():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(cash_amount),
                     "pmt_mode": "CARD",
@@ -1154,7 +1158,7 @@ def test_common_100_115_02_010():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 logger.info(f"Date and time value for chargeslip validation is: {txn_date},{txn_time}")
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),

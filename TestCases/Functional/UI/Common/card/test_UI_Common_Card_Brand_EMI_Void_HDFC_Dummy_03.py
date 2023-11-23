@@ -120,7 +120,7 @@ def test_common_100_115_07_022():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1078,7 +1078,7 @@ def test_common_100_115_07_024():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")

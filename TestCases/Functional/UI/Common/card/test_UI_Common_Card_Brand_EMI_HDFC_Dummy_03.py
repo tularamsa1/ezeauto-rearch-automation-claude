@@ -120,7 +120,7 @@ def test_common_100_115_07_021():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -356,7 +356,7 @@ def test_common_100_115_07_021():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1076,7 +1076,7 @@ def test_common_100_115_07_023():
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
         # disabling the eze emi plus
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand=brand)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
 
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1312,7 +1312,7 @@ def test_common_100_115_07_023():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
