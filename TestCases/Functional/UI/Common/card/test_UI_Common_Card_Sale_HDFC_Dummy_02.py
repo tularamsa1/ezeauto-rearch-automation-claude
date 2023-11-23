@@ -1822,7 +1822,7 @@ def test_common_100_115_135():
             card_page.select_cardtype(text="CTLS_WITH_PIN_VISA_DEBIT_476173")
             logger.debug(f"selected the card type as : CTLS_WITH_PIN_VISA_DEBIT_476173")
             payment_page.click_on_proceed_to_home_page_for_failed_txn()
-            app_driver.back()
+            payment_page.click_on_back_btn_in_enter_amt_window()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -2371,7 +2371,7 @@ def test_common_100_115_136():
             card_page.select_cardtype(text="CTLS_WITH_PIN_MASTER_CREDIT_541333")
             logger.debug(f"selected the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
             payment_page.click_on_proceed_to_home_page_for_failed_txn()
-            app_driver.back()
+            payment_page.click_on_back_btn_in_enter_amt_window()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "

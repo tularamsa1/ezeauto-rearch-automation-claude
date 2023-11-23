@@ -25,7 +25,7 @@ def test_common_100_115_07_062():
     Sub Feature Code: UI_Common_Card_Brand_EMI_Invalid_Amount_Greater_Than_EMI_Range_Txn_For_An_Org_HDFC_Dummy_Canara_EMV_VISA_CreditCard_With_Pin_417666
     Sub Feature Description: Performing the brand EMI invalid amount greater than EMI amount transaction for an org
     (not ezetap) via HDFC Dummy PG for Canara issuer using EMV VISA Credit card with pin (bin: 417666)
-    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 064: TC064
+    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 062: TC062
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

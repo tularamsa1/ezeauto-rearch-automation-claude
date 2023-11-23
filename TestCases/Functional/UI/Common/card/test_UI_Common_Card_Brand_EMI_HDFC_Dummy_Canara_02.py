@@ -1228,7 +1228,7 @@ def test_common_100_115_07_093():
     Sub Feature Code: UI_Common_Card_Brand_EMI_Payback_by_Brand_Fixed_Txn_Txn_With_CardType_PREPAID_For_An_Org_HDFC_Dummy_Canara_EMV_VISA_CreditCard_With_Pin_417666_For_3_Months_Tenture
     Sub Feature Description: Performing the brand EMI payback by brand fixed transaction with card type PREPAID for
     an org via HDFC Dummy PG for canara issuer using EMV VISA Credit card with pin for 3 months tenure (bin: 417666)
-    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 075: TC075
+    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 093: TC093
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

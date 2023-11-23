@@ -1917,7 +1917,7 @@ def test_common_100_115_07_060():
     Sub Feature Code: UI_Common_Card_Brand_EMI_Payback_by_Brand_Fixed_Success_Txn_For_An_Org_HDFC_Dummy_OneCard_EMV_VISA_CreditCard_With_Pin_417666_For_9_Months_Tenure
     Sub Feature Description: Performing the brand EMI payback by Brand fixed success transaction for an org (not ezetap)
     via HDFC Dummy PG for OneCard issuer using EMV VISA Credit card with pin for 9 months tenure (bin: 417666)
-    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 059: TC059
+    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 060: TC060
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2857,7 +2857,7 @@ def test_common_100_115_07_061():
     Sub Feature Code: UI_Common_Card_Brand_EMI_Invalid_Amount_Lesser_Than_EMI_Range_Txn_For_An_Org_HDFC_Dummy_OneCard_EMV_VISA_CreditCard_With_Pin_417666
     Sub Feature Description: Performing the brand EMI invalid amount lesser than EMI amount transaction for an org
     (not ezetap) via HDFC Dummy PG for OneCard issuer using EMV VISA Credit card with pin (bin: 417666)
-    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 060: TC060
+    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 061: TC061
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
