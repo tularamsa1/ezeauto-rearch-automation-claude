@@ -105,15 +105,6 @@ def test_common_100_115_07_106():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
-        query = f"select * from brand where brand_name='NUPURSBRAND'"
-        logger.debug(f"Query to fetch data from the brand table : {query}")
-        result = DBProcessor.getValueFromDB(query=query)
-        logger.debug(f"Query result for brand table : {result}")
-        brand_id = result['id'].values[0]
-        logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
-        brand_name = result['brand_name'].values[0]
-        logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
-
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='FEDERAL' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -129,7 +120,7 @@ def test_common_100_115_07_106():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -581,7 +572,7 @@ def test_common_100_115_07_106():
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
                 txn_history_page.scroll_to_card_element()
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -620,7 +611,7 @@ def test_common_100_115_07_106():
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the refund txn : {refund_txn_id}, {app_payment_mode_refund}")
-                app_payment_status_refund = txn_history_page.fetch_txn_status_text()
+                app_payment_status_refund = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the refund txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()

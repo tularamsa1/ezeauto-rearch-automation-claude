@@ -125,7 +125,7 @@ def test_common_100_115_07_139():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -393,7 +393,7 @@ def test_common_100_115_07_140():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -654,7 +654,7 @@ def test_common_100_115_07_141():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand_id from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")

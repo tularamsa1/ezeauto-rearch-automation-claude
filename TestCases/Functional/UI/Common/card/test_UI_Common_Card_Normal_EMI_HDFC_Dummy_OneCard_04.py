@@ -541,7 +541,7 @@ def test_common_100_115_05_067():
                 logger.info(f"Fetching payment_msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment_mode from txn history for the txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -957,11 +957,7 @@ def test_common_100_115_05_067():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "OneCard",
-                    # "Txn Amt": "Rs." + "{:.2f}".format(amount),
-                    # "Loan Amt": "Rs." + "{:.2f}".format(amount),
-                    # "Easy EMI Fin Charge(p.a.)": f"{interest_rate}%",
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
-                    # "Total Amt (With Intt)": "Rs." + "{:.2f}".format(total_emi),
                     "INVOICE NO": invoice_number,
                     "APP": "Visa Credit",
                     "CARD": f"XXXX-XXXX-XXXX-0102 EMV with PIN",
