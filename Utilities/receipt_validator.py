@@ -554,6 +554,10 @@ def compare_present_receipt_info_with_expected_receipt_info(present_details: dic
                 if key in present_details:
                     GlobalVariables.tot_chargeslip_val = GlobalVariables.tot_chargeslip_val + 1
                     logger.debug(f"{key} found")
+                    # below if block is to handle the net cost value for brand emi axis issuer root org
+                    if key == 'Net cost':
+                        pattern = re.compile(r'Rs\.\d{1,3}(,\d{3})*\.\d{2}')
+                        present_details[key] = pattern.search(present_details[key].strip()).group()
                     if expected_details[key] == present_details[key]:
                         matching_fields.add(key)
                         logger.debug(f"'{key}' is matching")

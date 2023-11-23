@@ -104,16 +104,34 @@ def test_common_100_103_07_003():
         testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='CREDIT', status='ACTIVE')
         logger.debug(f"updated emi settings for {org_code} as active for credit card")
 
-        query = f"select * from brand where brand_name='BRANDOCTA'"
+        emi_plan_in_months = 3
+        logger.debug(f"emi_plan_in_months : {emi_plan_in_months}")
+
+        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+                f"issuer_code='CANARA' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Query to fetch data from the emi table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Fetching result from emi table :{result}")
+        interest_rate = result['interest_rate'].values[0]
+        logger.debug(f"Fetching interest_rate from the emi table : {interest_rate}")
+        term = result['term'].values[0]
+        logger.debug(f"Fetching term from the emi table : {term}")
+        scheme_code = result['scheme_code'].values[0]
+        logger.debug(f"Fetching scheme_code from the emi table : {scheme_code}")
+        brand_id = result['brand'].values[0]
+        logger.debug(f"Fetching brand from the emi table : {brand_id}")
+
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
+
+        query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
-        brand_id = result['id'].values[0]
-        logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -128,7 +146,8 @@ def test_common_100_103_07_003():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True, cnpwareLog=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True,
+                                                   cnpwareLog=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -139,12 +158,10 @@ def test_common_100_103_07_003():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
             amount = random.randint(3001, 4000)
-            emi_plan_in_months = 3
-            logger.debug(f"emi_plan_in_months : {emi_plan_in_months}")
             order_id = datetime.now().strftime('%m%d%H%M%S')
             customer_name = 'John doe'
             logger.debug(f"customer_name : {customer_name}")
-            customer_mobile = '9876543210'
+            customer_mobile = '1234567890'
             logger.debug(f"customer_mobile : {customer_mobile}")
             imei_no = random.randint(1, 500)
             logger.debug(f"Randomly generated imei number is, {imei_no}")
@@ -166,7 +183,8 @@ def test_common_100_103_07_003():
                 page = TestSuiteSetup.initialize_ui_browser()
                 page.goto(payment_link_url)
                 remote_pay_txn = RemotePayTxnPage(page)
-                remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 0119', expiry_month='12', expiry_year='24', cvv='123', name_on_card=customer_name)
+                remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 0119', expiry_month='12',
+                                                      expiry_year='24', cvv='123', name_on_card=customer_name)
                 remote_pay_txn.click_on_proceed()
                 remote_pay_txn.select_emi_plan(emi_plan_in_months)
                 remote_pay_txn.click_on_proceed()
@@ -177,19 +195,6 @@ def test_common_100_103_07_003():
                     pass
                 else:
                     raise Exception("Success Message is not matching.")
-
-            query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
-                    f"issuer_code='CANARA' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
-                    f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
-            logger.debug(f"Query to fetch data from the emi table : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Fetching result from emi table :{result}")
-            interest_rate = result['interest_rate'].values[0]
-            logger.debug(f"Fetching interest_rate from the emi table : {interest_rate}")
-            term = result['term'].values[0]
-            logger.debug(f"Fetching term from the emi table : {term}")
-            scheme_code = result['scheme_code'].values[0]
-            logger.debug(f"Fetching scheme_code from the emi table : {scheme_code}")
 
             logger.debug(f"Started calculating emi part")
             monthly_interest_rate = interest_rate / (12 * 100)
@@ -337,7 +342,7 @@ def test_common_100_103_07_003():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "PAY LINK",
@@ -405,20 +410,22 @@ def test_common_100_103_07_003():
                 app_total_interest = txn_history_page.fetch_total_interest_text()
                 logger.debug(f"Fetching total interest from txn history for the txn : {txn_id}, {app_total_interest}")
                 app_total_emi_amount = txn_history_page.fetch_total_emi_amount_text()
-                logger.debug(f"Fetching total emi amount from txn history for the txn : {txn_id}, {app_total_emi_amount}")
+                logger.debug(
+                    f"Fetching total emi amount from txn history for the txn : {txn_id}, {app_total_emi_amount}")
                 app_loan_amount = txn_history_page.fetch_loan_amount_text()
                 logger.debug(f"Fetching loan amount from txn history for the txn : {txn_id}, {app_loan_amount}")
                 app_interest_amount = txn_history_page.fetch_interest_amount_text()
                 logger.debug(f"Fetching interest amount from txn history for the txn : {txn_id}, {app_interest_amount}")
                 app_net_effective_price = txn_history_page.fetch_net_effective_price_text()
-                logger.debug(f"Fetching net effective price from txn history for the txn : {txn_id}, {app_net_effective_price}")
+                logger.debug(
+                    f"Fetching net effective price from txn history for the txn : {txn_id}, {app_net_effective_price}")
                 app_brand_name = txn_history_page.fetch_brand_text()
                 logger.debug(f"Fetching brand name from txn history for the txn : {txn_id}, {app_brand_name}")
                 app_imei_no = txn_history_page.fetch_imei_text()
                 logger.debug(f"Fetching imei or serial no from txn history for the txn : {txn_id}, {app_imei_no}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")

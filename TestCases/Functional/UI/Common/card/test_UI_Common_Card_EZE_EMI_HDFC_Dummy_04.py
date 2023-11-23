@@ -120,7 +120,7 @@ def test_common_100_115_11_025():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='1', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=1, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -430,7 +430,7 @@ def test_common_100_115_11_025():
                 logger.debug(f"Fetching imei or serial no from txn history for the txn : {txn_id}, {app_imei_no}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -984,7 +984,7 @@ def test_common_100_115_11_026():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='1', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=1, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1291,7 +1291,7 @@ def test_common_100_115_11_026():
                 logger.debug(f"Fetching imei or serial no from txn history for the txn : {txn_id}, {app_imei_no}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -1842,7 +1842,7 @@ def test_common_100_115_11_027():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='1', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=1, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1901,7 +1901,7 @@ def test_common_100_115_11_027():
             logger.debug(f"Selected payment mode is EZE EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
             logger.debug(f"Entered the products")
-            customer_no = '9988776655'
+            customer_no = '1234567890'
             payment_page.click_and_enter_customer_number(customer_no=customer_no)
             logger.debug(f"entered customer number : {customer_no}")
             imei_no = random.randint(1, 500)
@@ -2055,7 +2055,7 @@ def test_common_100_115_11_028():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='1', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=1, brand_id=brand_id)
 
         query = f"select * from brand where id='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -2114,7 +2114,7 @@ def test_common_100_115_11_028():
             logger.debug(f"Selected payment mode is EZE EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
             logger.debug(f"Entered the products")
-            customer_no = '9988776655'
+            customer_no = '1234567890'
             payment_page.click_and_enter_customer_number(customer_no=customer_no)
             logger.debug(f"entered customer number : {customer_no}")
             imei_no = random.randint(1, 500)

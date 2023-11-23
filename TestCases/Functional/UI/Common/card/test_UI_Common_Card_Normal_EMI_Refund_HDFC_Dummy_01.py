@@ -258,6 +258,8 @@ def test_common_100_115_05_009():
             logger.debug(f"Fetching org_code from the txn table for original txn : {org_code_txn}")
             emi_type = result['external_ref7'].values[0]
             logger.debug(f"Fetching emi_type from the txn table for original txn : {emi_type}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for original txn: {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -364,8 +366,8 @@ def test_common_100_115_05_009():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -464,7 +466,7 @@ def test_common_100_115_05_009():
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the original txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the original txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -509,7 +511,7 @@ def test_common_100_115_05_009():
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the refund txn : {refund_txn_id}, {app_payment_mode_refund}")
-                app_payment_status_refund = txn_history_page.fetch_txn_status_text()
+                app_payment_status_refund = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the refund txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()
@@ -1378,6 +1380,8 @@ def test_common_100_115_05_010():
             logger.debug(f"Fetching org_code from the txn table for original txn : {org_code_txn}")
             emi_type = result['external_ref7'].values[0]
             logger.debug(f"Fetching emi_type from the txn table for original txn : {emi_type}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for original txn: {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -1484,8 +1488,8 @@ def test_common_100_115_05_010():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1584,7 +1588,7 @@ def test_common_100_115_05_010():
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the original txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the original txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -1629,7 +1633,7 @@ def test_common_100_115_05_010():
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the refund txn : {refund_txn_id}, {app_payment_mode_refund}")
-                app_payment_status_refund = txn_history_page.fetch_txn_status_text()
+                app_payment_status_refund = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the refund txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()
@@ -2498,6 +2502,8 @@ def test_common_100_115_05_011():
             logger.debug(f"Fetching org_code from the txn table for original txn : {org_code_txn}")
             emi_type = result['external_ref7'].values[0]
             logger.debug(f"Fetching emi_type from the txn table for original txn : {emi_type}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for original txn: {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -2604,8 +2610,8 @@ def test_common_100_115_05_011():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2704,7 +2710,7 @@ def test_common_100_115_05_011():
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the original txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the original txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -2749,7 +2755,7 @@ def test_common_100_115_05_011():
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the refund txn : {refund_txn_id}, {app_payment_mode_refund}")
-                app_payment_status_refund = txn_history_page.fetch_txn_status_text()
+                app_payment_status_refund = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the refund txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()
@@ -3618,6 +3624,8 @@ def test_common_100_115_05_012():
             logger.debug(f"Fetching org_code from the txn table for original txn : {org_code_txn}")
             emi_type = result['external_ref7'].values[0]
             logger.debug(f"Fetching emi_type from the txn table for original txn : {emi_type}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for original txn: {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -3725,8 +3733,8 @@ def test_common_100_115_05_012():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -3825,7 +3833,7 @@ def test_common_100_115_05_012():
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the original txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the original txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -3870,7 +3878,7 @@ def test_common_100_115_05_012():
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the refund txn : {refund_txn_id}, {app_payment_mode_refund}")
-                app_payment_status_refund = txn_history_page.fetch_txn_status_text()
+                app_payment_status_refund = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the refund txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()
@@ -4741,6 +4749,8 @@ def test_common_100_115_05_021():
             logger.debug(f"Fetching emi_type from the txn table for original txn : {emi_type}")
             amount_original = result['amount_original'].values[0]
             logger.debug(f"Fetching amount original from the txn table for original txn : {amount_original}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for original txn: {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -4847,8 +4857,8 @@ def test_common_100_115_05_021():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -4947,7 +4957,7 @@ def test_common_100_115_05_021():
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the original txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the original txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -4992,7 +5002,7 @@ def test_common_100_115_05_021():
                 app_payment_mode_refund = txn_history_page.fetch_txn_type_text()
                 logger.info(
                     f"Fetching payment_mode from txn history for the refund txn : {refund_txn_id}, {app_payment_mode_refund}")
-                app_payment_status_refund = txn_history_page.fetch_txn_status_text()
+                app_payment_status_refund = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(
                     f"Fetching payment_status from txn history for the refund txn : {refund_txn_id}, {app_payment_status_refund}")
                 app_txn_id_refund = txn_history_page.fetch_txn_id_text()

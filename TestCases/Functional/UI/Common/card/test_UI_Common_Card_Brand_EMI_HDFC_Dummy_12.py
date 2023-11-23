@@ -124,7 +124,7 @@ def test_common_100_115_07_076():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id ='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -391,7 +391,7 @@ def test_common_100_115_07_076():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -473,7 +473,7 @@ def test_common_100_115_07_076():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -1085,7 +1085,7 @@ def test_common_100_115_07_077():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id ='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -1353,7 +1353,7 @@ def test_common_100_115_07_077():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1435,7 +1435,7 @@ def test_common_100_115_07_077():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -2046,7 +2046,7 @@ def test_common_100_115_07_078():
         brand_id = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand_id}")
 
-        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled='0', brand_id=brand_id)
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand_id)
 
         query = f"select * from brand where id ='{brand_id}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
@@ -2313,7 +2313,7 @@ def test_common_100_115_07_078():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(posting_date_db=txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2395,7 +2395,7 @@ def test_common_100_115_07_078():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
