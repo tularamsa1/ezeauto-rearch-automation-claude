@@ -291,7 +291,7 @@ def test_common_100_115_05_090():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -360,7 +360,7 @@ def test_common_100_115_05_090():
                 logger.info(f"Fetching payment_msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment_mode from txn history for the txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -1151,7 +1151,7 @@ def test_common_100_115_05_091():
                 logger.info(f"Fetching payment_msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment_mode from txn history for the txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -1944,7 +1944,7 @@ def test_common_100_115_05_092():
                 logger.info(f"Fetching payment_msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment_mode from txn history for the txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -2737,7 +2737,7 @@ def test_common_100_115_05_093():
                 logger.info(f"Fetching payment_msg from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment_mode from txn history for the txn : {txn_id}, {app_payment_mode}")
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -3186,7 +3186,7 @@ def test_common_100_115_05_093():
 @pytest.mark.dbVal
 def test_common_100_115_05_094():
     """
-    Sub Feature Code: UI_Common_Card_Normal_EMI_Check_Eligibility_For_An_Org_HDFC_Dummy_AU_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
+    Sub Feature Code: UI_Common_Card_Normal_EMI_Check_Eligibility_For_An_Org_HDFC_Dummy_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
     Sub Feature Description: Performing the normal EMI check eligibility success transaction for an org (not ezetap)
     via HDFC Dummy PG using EMV VISA Debit card with pin for 3 months tenure (bin: 428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 05: NORMAL_EMI, 094: TC094

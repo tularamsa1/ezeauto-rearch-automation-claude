@@ -240,6 +240,8 @@ def test_common_100_115_06_001():
             logger.debug(f"Fetching customer name from the txn table : {customer_name_db}")
             payer_name_db = result["payer_name"].values[0]
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -283,7 +285,7 @@ def test_common_100_115_06_001():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -348,7 +350,7 @@ def test_common_100_115_06_001():
                 logger.debug(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -739,7 +741,7 @@ def test_common_100_115_06_001():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -1005,6 +1007,8 @@ def test_common_100_115_06_002():
             logger.debug(f"Fetching customer name from the txn table : {customer_name_db}")
             payer_name_db = result["payer_name"].values[0]
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -1048,7 +1052,7 @@ def test_common_100_115_06_002():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1114,7 +1118,7 @@ def test_common_100_115_06_002():
                 logger.debug(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -1507,7 +1511,7 @@ def test_common_100_115_06_002():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -1773,6 +1777,8 @@ def test_common_100_115_06_003():
             logger.debug(f"Fetching customer name from the txn table : {customer_name_db}")
             payer_name_db = result["payer_name"].values[0]
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -1816,7 +1822,7 @@ def test_common_100_115_06_003():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1882,7 +1888,7 @@ def test_common_100_115_06_003():
                 logger.debug(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -2275,7 +2281,7 @@ def test_common_100_115_06_003():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -2541,6 +2547,8 @@ def test_common_100_115_06_005():
             logger.debug(f"Fetching customer name from the txn table : {customer_name_db}")
             payer_name_db = result["payer_name"].values[0]
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -2584,7 +2592,7 @@ def test_common_100_115_06_005():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2650,7 +2658,7 @@ def test_common_100_115_06_005():
                 logger.debug(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -3043,7 +3051,7 @@ def test_common_100_115_06_005():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -3311,6 +3319,8 @@ def test_common_100_115_06_013():
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
             amount_original_db = result['amount_original'].values[0]
             logger.debug(f"Fetching amount original from txn table : {amount_original_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table : {posting_date}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -3354,7 +3364,7 @@ def test_common_100_115_06_013():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -3420,7 +3430,7 @@ def test_common_100_115_06_013():
                 logger.debug(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -3815,7 +3825,7 @@ def test_common_100_115_06_013():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),

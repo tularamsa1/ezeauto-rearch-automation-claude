@@ -212,9 +212,7 @@ class TransHistoryPage(BasePage):
         return self.fetch_text(self.txt_settlement_status)
 
     def fetch_txn_status_text(self):
-        txn_status = str(self.fetch_text(self.txa_finalStatusField))
-        self.scroll_to_text("STATUS")
-        return txn_status
+        return str(self.fetch_text(self.txa_finalStatusField))
 
     def fetch_txn_payment_message_text(self):
         return str(self.fetch_text(self.txa_payment_status_message))
@@ -490,9 +488,9 @@ class TransHistoryPage(BasePage):
         """
         return self.fetch_text(self.cashback_amt)
 
-    def fetch_additinal_cashback_text(self) -> str:
+    def fetch_additional_cashback_text(self) -> str:
         """
-        This method is used to fetch additinal cashback amt on transaction history page in case of bo cashback txn.
+        This method is used to fetch additional cashback amt on transaction history page in case of bo cashback txn.
         return: cashback_amt: str
         """
         return self.fetch_text(self.additional_cashback_amt)
@@ -532,3 +530,11 @@ class TransHistoryPage(BasePage):
          return: device_serial: str
         """
         return self.fetch_text(self.txt_mobile)
+
+    def fetch_emi_txn_status_text(self):
+        """
+        This method is used to fetch txn status for emi
+        return: txn_status: str
+        """
+        self.scroll_to_text("STATUS")
+        return str(self.fetch_text(self.txa_finalStatusField))

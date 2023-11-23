@@ -623,11 +623,11 @@ def update_emi_status_for_root_org(root_org_code: str, card_type: str, status: s
         logger.exception(f"update emi status query execution failed due to {e}")
 
 
-def update_brand_for_emi_plus(eze_emi_enabled: str, brand_id: str):
+def update_brand_for_emi_plus(eze_emi_enabled: int, brand_id: str):
     """
     This method is used to enable or disable emi plus for a brand
     param: brand_id :str
-    param: eze_emi_enabled :str
+    param: eze_emi_enabled :int
     """
     query = f"update brand set eze_emi_enabled=b'{eze_emi_enabled}' where id ='{brand_id}'"
     logger.debug(f"Query to update brand to enable or disable for emi plus : {query}")

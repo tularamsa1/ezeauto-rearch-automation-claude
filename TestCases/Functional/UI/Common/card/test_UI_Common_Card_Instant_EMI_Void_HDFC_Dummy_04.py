@@ -368,7 +368,7 @@ def test_common_100_115_06_045():
                 logger.debug(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")

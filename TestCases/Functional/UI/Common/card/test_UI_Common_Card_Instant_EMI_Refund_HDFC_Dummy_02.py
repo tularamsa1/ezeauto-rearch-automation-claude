@@ -208,8 +208,8 @@ def test_common_100_115_06_022():
             logger.debug(f"result for query : {result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for original txn : {auth_code}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for original txn : {created_time}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for original txn : {posting_date}")
             amount_db = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for original txn : {amount_db}")
             payment_mode_db = result["payment_mode"].iloc[0]
@@ -266,6 +266,8 @@ def test_common_100_115_06_022():
             logger.debug(f"Fetching payer name from txn table for original txn : {payer_name_db}")
             amount_original_db = result['amount_original'].values[0]
             logger.debug(f"Fetching amount original from txn table for original txn : {amount_original_db}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table original txn : {created_time}")
 
             query = f"select * from txn where id='{txn_id_2}'"
             logger.debug(f"Query to fetch data from txn table, for refunded txn {txn_id_2} : {query}")
@@ -273,8 +275,8 @@ def test_common_100_115_06_022():
             logger.debug(f"result for query : {result}")
             auth_code_2 = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for refunded txn : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for refunded txn : {created_time_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for refunded txn : {posting_date_2}")
             amount_db_2 = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for refunded txn : {amount_db_2}")
             payment_mode_db_2 = result["payment_mode"].iloc[0]
@@ -329,6 +331,8 @@ def test_common_100_115_06_022():
             logger.debug(f"Fetching emi type from the txn table for refunded txn : {emi_type_db_2}")
             orig_txn_id = result['orig_txn_id'].values[0]
             logger.debug(f"Fetching orig_txn_id from the txn table for refunded txn : {orig_txn_id}")
+            created_time_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for refunded txn : {created_time_2}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -372,8 +376,8 @@ def test_common_100_115_06_022():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
-                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=created_time_2)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
+                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -457,7 +461,7 @@ def test_common_100_115_06_022():
                 logger.debug(f"Fetching txn amount from txn history for the original txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the original txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the original txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the original txn : {txn_id}, {app_txn_id}")
@@ -494,7 +498,7 @@ def test_common_100_115_06_022():
                 logger.debug(f"Fetching payment mode from txn history for the refunded txn : {txn_id_2}, {payment_mode_2}")
                 app_txn_id_2 = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the refunded txn : {txn_id_2}, {app_txn_id_2}")
-                payment_status_2 = txn_history_page.fetch_txn_status_text()
+                payment_status_2 = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the refunded txn : {txn_id_2}, {payment_status_2}")
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn_number from txn history for the refunded txn : {txn_id_2}, {app_rrn_2}")
@@ -1081,7 +1085,7 @@ def test_common_100_115_06_022():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -1306,8 +1310,8 @@ def test_common_100_115_06_023():
             logger.debug(f"result for query : {result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for original txn : {auth_code}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for original txn : {created_time}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for original txn : {posting_date}")
             amount_db = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for original txn : {amount_db}")
             payment_mode_db = result["payment_mode"].iloc[0]
@@ -1364,6 +1368,8 @@ def test_common_100_115_06_023():
             logger.debug(f"Fetching payer name from txn table for original txn : {payer_name_db}")
             amount_original_db = result['amount_original'].values[0]
             logger.debug(f"Fetching amount original from txn table for original txn : {amount_original_db}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for original txn : {created_time}")
 
             query = f"select * from txn where id='{txn_id_2}'"
             logger.debug(f"Query to fetch data from txn table, for refunded txn {txn_id_2} : {query}")
@@ -1371,8 +1377,8 @@ def test_common_100_115_06_023():
             logger.debug(f"result for query : {result}")
             auth_code_2 = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for refunded txn : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for refunded txn : {created_time_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for refunded txn : {posting_date_2}")
             amount_db_2 = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for refunded txn : {amount_db_2}")
             payment_mode_db_2 = result["payment_mode"].iloc[0]
@@ -1427,6 +1433,8 @@ def test_common_100_115_06_023():
             logger.debug(f"Fetching emi type from the txn table for refunded txn : {emi_type_db_2}")
             orig_txn_id = result['orig_txn_id'].values[0]
             logger.debug(f"Fetching orig_txn_id from the txn table for refunded txn : {orig_txn_id}")
+            created_time_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for refunded txn : {created_time_2}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -1470,8 +1478,8 @@ def test_common_100_115_06_023():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
-                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=created_time_2)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
+                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1555,7 +1563,7 @@ def test_common_100_115_06_023():
                 logger.debug(f"Fetching txn amount from txn history for the original txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the original txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the original txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the original txn : {txn_id}, {app_txn_id}")
@@ -1592,7 +1600,7 @@ def test_common_100_115_06_023():
                 logger.debug(f"Fetching payment mode from txn history for the refunded txn : {txn_id_2}, {payment_mode_2}")
                 app_txn_id_2 = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the refunded txn : {txn_id_2}, {app_txn_id_2}")
-                payment_status_2 = txn_history_page.fetch_txn_status_text()
+                payment_status_2 = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the refunded txn : {txn_id_2}, {payment_status_2}")
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn_number from txn history for the refunded txn : {txn_id_2}, {app_rrn_2}")
@@ -2179,7 +2187,7 @@ def test_common_100_115_06_023():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -2404,8 +2412,8 @@ def test_common_100_115_06_024():
             logger.debug(f"result for query : {result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for original txn : {auth_code}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for original txn : {created_time}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for original txn : {posting_date}")
             amount_db = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for original txn : {amount_db}")
             payment_mode_db = result["payment_mode"].iloc[0]
@@ -2462,6 +2470,8 @@ def test_common_100_115_06_024():
             logger.debug(f"Fetching payer name from txn table for original txn : {payer_name_db}")
             amount_original_db = result['amount_original'].values[0]
             logger.debug(f"Fetching amount original from txn table for original txn : {amount_original_db}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for original txn : {created_time}")
 
             query = f"select * from txn where id='{txn_id_2}'"
             logger.debug(f"Query to fetch data from txn table, for refunded txn {txn_id_2} : {query}")
@@ -2469,8 +2479,8 @@ def test_common_100_115_06_024():
             logger.debug(f"result for query : {result}")
             auth_code_2 = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for refunded txn : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for refunded txn : {created_time_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for refunded txn : {posting_date_2}")
             amount_db_2 = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for refunded txn : {amount_db_2}")
             payment_mode_db_2 = result["payment_mode"].iloc[0]
@@ -2525,6 +2535,8 @@ def test_common_100_115_06_024():
             logger.debug(f"Fetching emi type from the txn table for refunded txn : {emi_type_db_2}")
             orig_txn_id = result['orig_txn_id'].values[0]
             logger.debug(f"Fetching orig_txn_id from the txn table for refunded txn : {orig_txn_id}")
+            created_time_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for refunded txn : {created_time_2}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -2568,8 +2580,8 @@ def test_common_100_115_06_024():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
-                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=created_time_2)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
+                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2653,7 +2665,7 @@ def test_common_100_115_06_024():
                 logger.debug(f"Fetching txn amount from txn history for the original txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the original txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the original txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the original txn : {txn_id}, {app_txn_id}")
@@ -2690,7 +2702,7 @@ def test_common_100_115_06_024():
                 logger.debug(f"Fetching payment mode from txn history for the refunded txn : {txn_id_2}, {payment_mode_2}")
                 app_txn_id_2 = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the refunded txn : {txn_id_2}, {app_txn_id_2}")
-                payment_status_2 = txn_history_page.fetch_txn_status_text()
+                payment_status_2 = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the refunded txn : {txn_id_2}, {payment_status_2}")
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn_number from txn history for the refunded txn : {txn_id_2}, {app_rrn_2}")
@@ -3277,7 +3289,7 @@ def test_common_100_115_06_024():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -3509,8 +3521,8 @@ def test_common_100_115_06_034():
             logger.debug(f"result for query : {result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for original txn : {auth_code}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for original txn : {created_time}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for original txn : {posting_date}")
             amount_db = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for original txn : {amount_db}")
             payment_mode_db = result["payment_mode"].iloc[0]
@@ -3565,6 +3577,8 @@ def test_common_100_115_06_034():
             logger.debug(f"Fetching customer name from the txn table for original txn : {customer_name_db}")
             payer_name_db = result["payer_name"].values[0]
             logger.debug(f"Fetching payer name from txn table for original txn : {payer_name_db}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for original txn : {created_time}")
 
             query = f"select * from txn where id='{txn_id_2}'"
             logger.debug(f"Query to fetch data from txn table, for refunded txn {txn_id_2} : {query}")
@@ -3572,8 +3586,8 @@ def test_common_100_115_06_034():
             logger.debug(f"result for query : {result}")
             auth_code_2 = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for refunded txn : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for refunded txn : {created_time_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for refunded txn : {posting_date_2}")
             amount_db_2 = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for refunded txn : {amount_db_2}")
             payment_mode_db_2 = result["payment_mode"].iloc[0]
@@ -3628,6 +3642,8 @@ def test_common_100_115_06_034():
             logger.debug(f"Fetching emi type from the txn table for refunded txn : {emi_type_db_2}")
             orig_txn_id = result['orig_txn_id'].values[0]
             logger.debug(f"Fetching orig_txn_id from the txn table for refunded txn : {orig_txn_id}")
+            created_time_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for refunded txn : {created_time_2}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -3671,8 +3687,8 @@ def test_common_100_115_06_034():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
-                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=created_time_2)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
+                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -3756,7 +3772,7 @@ def test_common_100_115_06_034():
                 logger.debug(f"Fetching txn amount from txn history for the original txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the original txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the original txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the original txn : {txn_id}, {app_txn_id}")
@@ -3793,7 +3809,7 @@ def test_common_100_115_06_034():
                 logger.debug(f"Fetching payment mode from txn history for the refunded txn : {txn_id_2}, {payment_mode_2}")
                 app_txn_id_2 = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the refunded txn : {txn_id_2}, {app_txn_id_2}")
-                payment_status_2 = txn_history_page.fetch_txn_status_text()
+                payment_status_2 = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the refunded txn : {txn_id_2}, {payment_status_2}")
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn_number from txn history for the refunded txn : {txn_id_2}, {app_rrn_2}")
@@ -4378,7 +4394,7 @@ def test_common_100_115_06_034():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
@@ -4610,8 +4626,8 @@ def test_common_100_115_06_035():
             logger.debug(f"result for query : {result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for original txn : {auth_code}")
-            created_time = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for original txn : {created_time}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for original txn : {posting_date}")
             amount_db = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for original txn : {amount_db}")
             payment_mode_db = result["payment_mode"].iloc[0]
@@ -4666,6 +4682,8 @@ def test_common_100_115_06_035():
             logger.debug(f"Fetching customer name from the txn table for original txn : {customer_name_db}")
             payer_name_db = result["payer_name"].values[0]
             logger.debug(f"Fetching payer name from txn table for original txn : {payer_name_db}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for original txn : {created_time}")
 
             query = f"select * from txn where id='{txn_id_2}'"
             logger.debug(f"Query to fetch data from txn table, for refunded txn {txn_id_2} : {query}")
@@ -4673,8 +4691,8 @@ def test_common_100_115_06_035():
             logger.debug(f"result for query : {result}")
             auth_code_2 = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table for refunded txn : {auth_code_2}")
-            created_time_2 = result['created_time'].values[0]
-            logger.debug(f"Fetching created_time from txn table for refunded txn : {created_time_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for refunded txn : {posting_date_2}")
             amount_db_2 = int(result["amount"].iloc[0])
             logger.debug(f"Fetching amount from txn table for refunded txn : {amount_db_2}")
             payment_mode_db_2 = result["payment_mode"].iloc[0]
@@ -4729,6 +4747,8 @@ def test_common_100_115_06_035():
             logger.debug(f"Fetching emi type from the txn table for refunded txn : {emi_type_db_2}")
             orig_txn_id = result['orig_txn_id'].values[0]
             logger.debug(f"Fetching orig_txn_id from the txn table for refunded txn : {orig_txn_id}")
+            created_time_2 = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from the txn table for refunded txn : {created_time_2}")
 
             query = f"select * from txn_emi where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn_emi table : {query}")
@@ -4772,8 +4792,8 @@ def test_common_100_115_06_035():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
-                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=created_time_2)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
+                date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -4857,7 +4877,7 @@ def test_common_100_115_06_035():
                 logger.debug(f"Fetching txn amount from txn history for the original txn : {txn_id}, {app_amount}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.debug(f"Fetching payment mode from txn history for the original txn : {txn_id}, {payment_mode}")
-                payment_status = txn_history_page.fetch_txn_status_text()
+                payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the original txn : {txn_id}, {payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the original txn : {txn_id}, {app_txn_id}")
@@ -4894,7 +4914,7 @@ def test_common_100_115_06_035():
                 logger.debug(f"Fetching payment mode from txn history for the refunded txn : {txn_id_2}, {payment_mode_2}")
                 app_txn_id_2 = txn_history_page.fetch_txn_id_text()
                 logger.debug(f"Fetching txn_id from txn history for the refunded txn : {txn_id_2}, {app_txn_id_2}")
-                payment_status_2 = txn_history_page.fetch_txn_status_text()
+                payment_status_2 = txn_history_page.fetch_emi_txn_status_text()
                 logger.debug(f"Fetching status from txn history for the refunded txn : {txn_id_2}, {payment_status_2}")
                 app_rrn_2 = txn_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching rrn_number from txn history for the refunded txn : {txn_id_2}, {app_rrn_2}")
@@ -5479,7 +5499,7 @@ def test_common_100_115_06_035():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     "CARD TYPE": "VISA",
                     "merchant_ref_no": "Ref # " + str(order_id),
