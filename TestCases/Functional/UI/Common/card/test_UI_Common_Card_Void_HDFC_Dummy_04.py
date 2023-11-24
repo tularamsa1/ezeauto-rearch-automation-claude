@@ -1722,7 +1722,7 @@ def test_common_100_115_144():
                     "CARD TYPE": "RUPAY",
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "RRN": str(rrn),
-                    "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
+                    "SALE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
                     "AUTH CODE": auth_code,
                     "date": txn_date,
                     "time": txn_time,

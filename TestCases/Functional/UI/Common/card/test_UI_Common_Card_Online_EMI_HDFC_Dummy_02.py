@@ -100,6 +100,7 @@ def test_common_100_115_08_006():
         api_details["RequestBody"]["settings"]["onlineEmiEnabled"] = "true"
         api_details["RequestBody"]["settings"]["fraudRulesEnabled"] = "true"
         api_details["RequestBody"]["settings"]["DEFAULT_BANK"] = "HDFC"
+        api_details["RequestBody"]["settings"]["offeringEmiCashback"] = "NO"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for online emi setup to be enabled:  {response}")

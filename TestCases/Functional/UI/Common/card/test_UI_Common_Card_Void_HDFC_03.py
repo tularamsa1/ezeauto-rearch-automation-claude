@@ -1531,7 +1531,7 @@ def test_common_100_115_186():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        query = f"select bank_code from bin_info where bin='222360'"
+        query = f"select bank_code from bin_info where bin='417666'"
         logger.debug(f"Query to fetch bank_code from the bin_info table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         issuer_code = result["bank_code"].values[0]
@@ -1659,11 +1659,11 @@ def test_common_100_115_186():
                     "date": date_and_time,
                     "rr_number": rrn,
                     "auth_code": auth_code,
-                    # "customer_name": "L3TEST",
+                    "customer_name": "L3TEST",
                     "batch_number": batch_number,
                     "mid": mid,
                     "tid": tid,
-                    "card_type_desc": "*0011 CTLS",
+                    "card_type_desc": "*0102 EMV with PIN",
                     "order_id": order_id,
                     "device_serial": device_serial
                 }
@@ -1679,7 +1679,7 @@ def test_common_100_115_186():
                 app_rrn = txn_history_page.fetch_RRN_text()
                 app_auth_code = txn_history_page.fetch_auth_code_text()
                 app_batch_no = txn_history_page.fetch_batch_number_text()
-                # app_customer_name = txn_history_page.fetch_customer_name_text()
+                app_customer_name = txn_history_page.fetch_customer_name_text()
                 app_mid = txn_history_page.fetch_mid_text()
                 app_tid = txn_history_page.fetch_tid_text()
                 app_card_type_desc = txn_history_page.fetch_card_type_desc_text()
@@ -1696,7 +1696,7 @@ def test_common_100_115_186():
                     "date": app_date_and_time,
                     "rr_number": app_rrn,
                     "auth_code": app_auth_code,
-                    # "customer_name": app_customer_name,
+                    "customer_name": app_customer_name,
                     "batch_number": app_batch_no,
                     "mid": app_mid,
                     "tid": app_tid,
@@ -1732,18 +1732,18 @@ def test_common_100_115_186():
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "batch_number": batch_number,
-                    "card_last_four_digit": "0011",
-                    # "customer_name": "L3TEST/CARD1045",
+                    "card_last_four_digit": "0102",
+                    "customer_name": "L3TEST/CARD0010",
                     "device_serial": device_serial,
                     "ext_ref_number": order_id,
                     "merchant_name": merchant_name,
-                    # "payer_name": "L3TEST/CARD1045",
-                    "pmt_card_bin": "222360",
-                    "pmt_card_brand": "MASTER_CARD",
-                    "pmt_card_type": "DEBIT",
-                    "card_type": "MasterCard",
-                    "display_pan": "0011",
-                    # "name_on_card": "L3TEST/CARD1045"
+                    "payer_name": "L3TEST/CARD0010",
+                    "pmt_card_bin": "417666",
+                    "pmt_card_brand": "VISA",
+                    "pmt_card_type": "CREDIT",
+                    "card_type": "VISA",
+                    "display_pan": "0102",
+                    "name_on_card": "L3TEST/CARD0010"
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -1770,17 +1770,17 @@ def test_common_100_115_186():
                 date_time_api = response["createdTime"]
                 batch_number_api = response["batchNumber"]
                 card_last_four_digit_api = response["cardLastFourDigit"]
-                # customer_name_api = response["customerName"]
+                customer_name_api = response["customerName"]
                 device_serial_api = response["deviceSerial"]
                 external_ref_number_api = response["externalRefNumber"]
                 merchant_name_api = response["merchantName"]
-                # payer_name_api = response["payerName"]
+                payer_name_api = response["payerName"]
                 payment_card_bin_api = response["paymentCardBin"]
                 payment_card_brand_api = response["paymentCardBrand"]
                 payment_card_type_api = response["paymentCardType"]
                 card_type_api = response["cardType"]
                 display_pan_api = response["displayPAN"]
-                # name_on_card_api = response["nameOnCard"]
+                name_on_card_api = response["nameOnCard"]
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -1799,17 +1799,17 @@ def test_common_100_115_186():
                     "date": date_time_converter.from_api_to_datetime_format(date_time_api),
                     "batch_number": batch_number_api,
                     "card_last_four_digit": card_last_four_digit_api,
-                    # "customer_name": customer_name_api,
+                    "customer_name": customer_name_api,
                     "device_serial": device_serial_api,
                     "ext_ref_number": external_ref_number_api,
                     "merchant_name": merchant_name_api,
-                    # "payer_name": payer_name_api,
+                    "payer_name": payer_name_api,
                     "pmt_card_bin": payment_card_bin_api,
                     "pmt_card_brand": payment_card_brand_api,
                     "pmt_card_type": payment_card_type_api,
                     "card_type": card_type_api,
                     "display_pan": display_pan_api,
-                    # "name_on_card": name_on_card_api
+                    "name_on_card": name_on_card_api
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1835,15 +1835,15 @@ def test_common_100_115_186():
                     "device_serial": device_serial,
                     "issuer_code": issuer_code,
                     "org_code": org_code,
-                    "pmt_card_bin": "222360",
-                    "pmt_card_brand": "MASTER_CARD",
-                    "pmt_card_type": "DEBIT",
+                    "pmt_card_bin": "417666",
+                    "pmt_card_brand": "VISA",
+                    "pmt_card_type": "CREDIT",
                     "terminal_info_id": terminal_info_id,
                     "txn_type": "CHARGE",
-                    "card_txn_type": "91",
-                    # "customer_name": "L3TEST/CARD1045",
-                    # "payer_name": "L3TEST/CARD1045",
-                    "card_last_four_digit": "0011"
+                    "card_txn_type": "03",
+                    "customer_name": "L3TEST/CARD0010",
+                    "payer_name": "L3TEST/CARD0010",
+                    "card_last_four_digit": "0102"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -1930,7 +1930,7 @@ def test_common_100_115_186():
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
-                    'AUTH CODE': str(auth_code).strip(), 'BATCH NO': str(batch_number), 'CARD TYPE': 'MasterCard',
+                    'AUTH CODE': str(auth_code).strip(), 'BATCH NO': str(batch_number), 'CARD TYPE': 'VISA',
                     'payment_option': 'VOID SALE', 'TID': tid_db
                 }
                 receipt_validator.perform_charge_slip_validations(

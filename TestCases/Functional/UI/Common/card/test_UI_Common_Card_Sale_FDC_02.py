@@ -269,7 +269,7 @@ def test_common_100_115_024():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.db_datetime(posting_date)
+                date_and_time = date_time_converter.db_datetime(txn_created_time)
                 expected_api_values = {
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": float(amount),
