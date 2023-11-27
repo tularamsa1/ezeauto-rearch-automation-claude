@@ -160,7 +160,7 @@ def test_common_100_115_11_006():
             logger.debug(f"Entered customer mobile number is : {customer_no}")
 
             try:
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is invisible for Eze EMI ")
                 payment_page.click_on_back_btn()
 
@@ -192,7 +192,7 @@ def test_common_100_115_11_006():
                 logger.debug("Selected payment mode is Brand EMI")
                 payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
                 logger.debug(f"Entered the product for Brand EMI: {brand_sku_name}")
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is invisible for Brand EMI")
 
                 imei_no = "IMEI number is invisible for Eze EMI and Brand EMI"
@@ -432,11 +432,11 @@ def test_common_100_115_11_007():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype("EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_wallet(emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
 
             try:
-                payment_page.check_for_use_wallet()
+                payment_page.is_use_wallet_btn_visible()
                 logger.debug(f"For Brand EMI wallet is visible")
                 payment_page.click_on_back_btn()
 
@@ -684,17 +684,17 @@ def test_common_100_115_11_008():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_wallet(emi_plan_in_months=emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             subvention_val = (brand_subvention_value + ezetap_subvention_value)
             logger.debug(f"Subvention value is : {subvention_val}")
-            razorpay_emi_discount = payment_page.click_on_razorpay_emi_discount("{:.2f}".format(subvention_val))
+            razorpay_emi_discount = payment_page.fetch_text_razorpay_emi_discount("{:.2f}".format(subvention_val))
             logger.debug(f"Check the value for razorpay emi discount : {razorpay_emi_discount}")
 
             try:
                 razorpay_emi_discount_sub_value = str(razorpay_emi_discount).split("@")[1].split("%")[0]
                 logger.debug(f"Subvention value for razorpay_emi_discount is : {razorpay_emi_discount_sub_value}")
-                wallet_is_displayed = payment_page.check_for_use_wallet()
+                wallet_is_displayed = payment_page.is_use_wallet_btn_visible()
                 logger.debug(f"Clicked on use wallet : {wallet_is_displayed}")
 
                 if razorpay_emi_discount_sub_value == "{:,.2f}".format(subvention_val) and wallet_is_displayed == 1:
@@ -936,19 +936,19 @@ def test_common_100_115_11_009():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_wallet(emi_plan_in_months=emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
 
             try:
-                payment_page.click_on_emi_discount("{:.2f}".format(brand_subvention_value))
+                payment_page.is_emi_discount_applied("{:.2f}".format(brand_subvention_value))
                 logger.debug(f"Check for razorpay emi discount value")
-                payment_page.check_for_use_wallet()
+                payment_page.is_use_wallet_btn_visible()
                 logger.debug(f"Clicked on use wallet")
 
                 wallet_displayed = "Subvention is displayed for specific brand and custom wallet is not displayed"
 
             except Exception as e:
-                logger.debug(f"An exception occurred: {e}")
+                logger.exception(f"An exception occurred: {e}")
                 wallet_displayed = "Subvention and Specific brand custom wallet is displayed"
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"

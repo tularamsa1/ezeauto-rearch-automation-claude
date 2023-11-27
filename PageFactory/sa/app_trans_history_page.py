@@ -286,129 +286,129 @@ class TransHistoryPage(BasePage):
 
     def fetch_device_serial_text(self) -> str:
         """
-        This method is used to fetch device serial number on transaction history page.
-        return: str
+        This method is used to fetch device_serial_number text from transaction history page.
+        return: device_serial: str
         """
         return self.fetch_text(self.txt_ref_num_2)
 
     def fetch_payment_by_text(self) -> str:
         """
-        This method is used to fetch payment by on transaction history page.
+        This method is used to fetch payment_by text from transaction history page.
         return: payment_by: str
         """
         return self.fetch_text(self.txt_payment_by)
 
     def fetch_card_type_text(self) -> str:
         """
-        This method is used to fetch card type on transaction history page.
+        This method is used to fetch card_type text from transaction history page.
         return: card_type: str
         """
         return self.fetch_text(self.txt_card_type)
 
     def fetch_customer_text(self) -> str:
         """
-        This method is used to fetch customer on transaction history page.
+        This method is used to fetch customer text from transaction history page.
         return: customer: str
         """
         return self.fetch_text(self.txt_customer)
 
     def fetch_emi_status_text(self) -> str:
         """
-        This method is used to fetch emi status on transaction history page.
+        This method is used to fetch emi_status text from transaction history page.
         return: emi_status: str
         """
         return self.fetch_text(self.txt_emi_status)
 
     def fetch_lender_text(self) -> str:
         """
-        This method is used to fetch lender on transaction history page.
+        This method is used to fetch lender text from transaction history page.
         return: lender: str
         """
         return self.fetch_text(self.txt_lender)
 
     def fetch_monthly_emi_text(self):
         """
-        This method is used to fetch monthly emi on transaction history page.
+        This method is used to fetch monthly_emi text from transaction history page.
         return: monthly_emi: str
         """
         return self.fetch_text(self.txt_monthly_emi)
 
     def fetch_total_emi_amount_text(self) -> str:
         """
-        This method is used to fetch total emi amount on transaction history page.
+        This method is used to fetch total_emi_amount text from transaction history page.
         return: total_emi_amount: str
         """
         return self.fetch_text(self.txt_total_emi_amount)
 
     def fetch_total_interest_text(self) -> str:
         """
-        This method is used to fetch total interest on transaction history page.
+        This method is used to fetch total_interest text from transaction history page.
         return: total_interest: str
         """
         return self.fetch_text(self.txt_total_interest)
 
     def fetch_loan_amount_text(self) -> str:
         """
-        This method is used to fetch loan amount on transaction history page.
+        This method is used to fetch loan_amount text from transaction history page.
         return: loan_amount: str
         """
         return self.fetch_text(self.txt_loan_amount)
 
     def fetch_interest_amount_text(self) -> str:
         """
-        This method is used to fetch interest amount on transaction history page.
+        This method is used to fetch interest_amount text from transaction history page.
         return: interest_amount: str
         """
         return self.fetch_text(self.txt_interest_amount)
 
     def fetch_net_effective_price_text(self) -> str:
         """
-        This method is used to fetch net effective price on transaction history page.
+        This method is used to fetch net_effective_price text from transaction history page.
         return: net_effective_price: str
         """
         return self.fetch_text(self.txt_net_effective_price)
 
     def fetch_tenure_text(self) -> str:
         """
-        This method is used to fetch emi tenure on transaction history page.
-        return: device_serial: str
+        This method is used to fetch emi tenure text from transaction history page.
+        return: tenure: str
         """
         return self.fetch_text(self.txt_tenure)
 
     def fetch_additional_payback(self) -> str:
         """
-        This method is used to fetch additional payback amount on transaction history page.
-        return: loan_amount: str
+        This method is used to fetch additional_payback_amount text from transaction history page.
+        return: additional_payback: str
         """
         return self.fetch_text(self.add_loan_amt)
 
     def fetch_brand_text(self) -> str:
         """
-        This method is used to fetch brand name from transaction history page.
-        return: fetch_brand_text: str
+        This method is used to fetch brand_name text from transaction history page.
+        return: brand: str
         """
         self.scroll_to_text("BRAND")
         return self.fetch_text(self.txt_brand_name)
 
     def fetch_imei_text(self) -> str:
         """
-        This method is used to fetch imei no from transaction history page.
-        return: fetch_brand_text: str
+        This method is used to fetch imei_no text from transaction history page.
+        return: imei: str
         """
         self.scroll_to_text("SERIAL/IMEI")
         return self.fetch_text(self.txt_imei)
 
     def fetch_scheme_text(self) -> str:
         """
-        This method is used to fetch scheme from transaction history page.
-        return: fetch_brand_text: str
+        This method is used to fetch scheme text from transaction history page.
+        return: scheme: str
         """
         return self.fetch_text(self.txt_scheme)
 
     def fetch_product_text(self) -> str:
         """
-        This method is used to fetch product name from transaction history page.
-        return: fetch_product_text: str
+        This method is used to fetch product_name text from from transaction history page.
+        return: product: str
         """
         return self.fetch_text(self.txt_product_name)
 
@@ -512,28 +512,28 @@ class TransHistoryPage(BasePage):
 
     def fetch_device_serial_for_cnp_emi_text(self) -> str:
         """
-        This method is used to fetch device serial number for emi on cnp flow on transaction history page.
+        This method is used to fetch device_serial_number text from transaction history page for EMI CNP flow.
         return: device_serial: str
         """
         return self.fetch_text(self.txt_ref_num_3)
 
     def fetch_card_text(self) -> str:
         """
-         This method is used to fetch card for emi on cnp flow on transaction history page.
-         return: device_serial: str
+         This method is used to fetch card text from transaction history page for EMI CNP flow.
+         return: card: str
         """
         return self.fetch_text(self.txt_card)
 
     def fetch_customer_mobile_text(self) -> str:
         """
-         This method is used to fetch customer mobile number for emi on cnp flow on transaction history page.
-         return: device_serial: str
+         This method is used to fetch customer_mobile_number from transaction history page for EMI CNP flow.
+         return: customer_mobile: str
         """
         return self.fetch_text(self.txt_mobile)
 
     def fetch_emi_txn_status_text(self):
         """
-        This method is used to fetch txn status for emi
+        This method is used to fetch txn_status text from txn history page for EMI flow.
         return: txn_status: str
         """
         self.scroll_to_text("STATUS")

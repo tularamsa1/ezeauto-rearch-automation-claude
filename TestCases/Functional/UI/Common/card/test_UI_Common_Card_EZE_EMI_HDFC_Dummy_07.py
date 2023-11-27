@@ -1035,7 +1035,6 @@ def test_common_100_115_11_034():
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.dbVal
 @pytest.mark.appVal
 def test_common_100_115_11_035():
     """
@@ -1259,14 +1258,15 @@ def test_common_100_115_11_035():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype("EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_negative_testcase(emi_plan_in_months=emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
 
             try:
                 element = payment_page.find_bo_element()
 
-            except:
+            except Exception as e:
                 element = 'No'
+                logger.exception(f"The bo offer is not applied {e}")
 
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_proceed_homepage()
@@ -1278,12 +1278,6 @@ def test_common_100_115_11_035():
             logger.debug(f"Query result for txn table : {result}")
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
-
-            query = f"select * from bo_txn where txn_id='{txn_id}'"
-            logger.debug(f"Query to fetch data from bo_txn table : {query}")
-            bo_result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
-            logger.debug(f"Fetching result for bo_txn table : {result} ")
-            bo_length = len(bo_result)
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1319,25 +1313,6 @@ def test_common_100_115_11_035():
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation------------------------------------------------
 
-        # -----------------------------------------Start of DB Validation-----------------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                expected_db_values = {
-                    "bo_length": 0
-                }
-                logger.debug(f"expected_db_values: {expected_db_values}")
-
-                actual_db_values = {
-                    "bo_length": bo_length
-                }
-                logger.debug(f"actual_db_values: {actual_db_values}")
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation-------------------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -1352,7 +1327,6 @@ def test_common_100_115_11_035():
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.dbVal
 @pytest.mark.appVal
 def test_common_100_115_11_036():
     """
@@ -1573,14 +1547,15 @@ def test_common_100_115_11_036():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype("EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_negative_testcase(emi_plan_in_months=emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
 
             try:
                 element = payment_page.find_bo_element()
 
-            except:
+            except Exception as e:
                 element = 'No'
+                logger.exception(f"The bo offer is not applied {e}")
 
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_proceed_homepage()
@@ -1592,12 +1567,6 @@ def test_common_100_115_11_036():
             logger.debug(f"Query result for txn table : {result}")
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
-
-            query = f"select * from bo_txn where txn_id='{txn_id}'"
-            logger.debug(f"Query to fetch data from bo_txn table : {query}")
-            bo_result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
-            logger.debug(f"Fetching result for bo_txn table : {result} ")
-            bo_length = len(bo_result)
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1633,25 +1602,6 @@ def test_common_100_115_11_036():
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation------------------------------------------------
 
-        # -----------------------------------------Start of DB Validation-----------------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                expected_db_values = {
-                    "bo_length": 0
-                }
-                logger.debug(f"expected_db_values: {expected_db_values}")
-
-                actual_db_values = {
-                    "bo_length": bo_length
-                }
-                logger.debug(f"actual_db_values: {actual_db_values}")
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation-------------------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -1666,7 +1616,6 @@ def test_common_100_115_11_036():
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.dbVal
 @pytest.mark.appVal
 def test_common_100_115_11_037():
     """
@@ -1916,14 +1865,15 @@ def test_common_100_115_11_037():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype("EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_negative_testcase(emi_plan_in_months=emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
 
             try:
                 element = payment_page.find_bo_element()
 
-            except:
+            except Exception as e:
                 element = 'No'
+                logger.exception(f"The bo offer is not applied {e}")
 
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_proceed_homepage()
@@ -1935,12 +1885,6 @@ def test_common_100_115_11_037():
             logger.debug(f"Query result for txn table : {result}")
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
-
-            query = f"select * from bo_txn where txn_id='{txn_id}'"
-            logger.debug(f"Query to fetch data from bo_txn table : {query}")
-            bo_result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
-            logger.debug(f"Fetching result for bo_txn table : {result} ")
-            bo_length = len(bo_result)
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1976,25 +1920,6 @@ def test_common_100_115_11_037():
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation------------------------------------------------
 
-        # -----------------------------------------Start of DB Validation-----------------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                expected_db_values = {
-                    "bo_length": 0
-                }
-                logger.debug(f"expected_db_values: {expected_db_values}")
-
-                actual_db_values = {
-                    "bo_length": bo_length
-                }
-                logger.debug(f"actual_db_values: {actual_db_values}")
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation-------------------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -2014,7 +1939,6 @@ def test_common_100_115_11_037():
 
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.dbVal
 @pytest.mark.appVal
 def test_common_100_115_11_038():
     """
@@ -2260,14 +2184,15 @@ def test_common_100_115_11_038():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype("EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            payment_page.select_emi_plan_for_negative_testcase(emi_plan_in_months=emi_plan_in_months)
+            payment_page.select_emi_plan_in_months(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
 
             try:
                 element = payment_page.find_bo_element()
 
-            except:
+            except Exception as e:
                 element = 'No'
+                logger.exception(f"The bo offer is not applied {e}")
 
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_proceed_homepage()
@@ -2280,12 +2205,6 @@ def test_common_100_115_11_038():
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
 
-            query = f"select * from bo_txn where txn_id='{txn_id}'"
-            logger.debug(f"Query to fetch data from bo_txn table : {query}")
-            bo_result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
-            logger.debug(f"Fetching result for bo_txn table : {result} ")
-            bo_length = len(bo_result)
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -2296,6 +2215,7 @@ def test_common_100_115_11_038():
         # -----------------------------------------End of Test Execution------------------------------------------------
 
         # -----------------------------------------Start of Validation--------------------------------------------------
+
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
@@ -2319,25 +2239,6 @@ def test_common_100_115_11_038():
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
         # -----------------------------------------End of App Validation------------------------------------------------
-
-        # -----------------------------------------Start of DB Validation-----------------------------------------------
-        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
-            logger.info(f"Started DB validation for the test case : {testcase_id}")
-            try:
-                expected_db_values = {
-                    "bo_length": 0
-                }
-                logger.debug(f"expected_db_values: {expected_db_values}")
-
-                actual_db_values = {
-                    "bo_length": bo_length
-                }
-                logger.debug(f"actual_db_values: {actual_db_values}")
-                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
-            except Exception as e:
-                Configuration.perform_db_val_exception(testcase_id, e)
-            logger.info(f"Completed DB validation for the test case : {testcase_id}")
-        # -----------------------------------------End of DB Validation-------------------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")

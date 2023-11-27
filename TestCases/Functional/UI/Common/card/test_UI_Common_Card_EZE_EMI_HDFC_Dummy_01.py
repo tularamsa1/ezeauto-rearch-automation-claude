@@ -536,7 +536,7 @@ def test_common_100_115_11_003():
             logger.debug(f"Entered customer mobile number is : {customer_no}")
 
             try:
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is visible for Eze EMI")
                 payment_page.click_on_back_btn()
 
@@ -568,7 +568,7 @@ def test_common_100_115_11_003():
                 logger.debug("Selected payment mode is Brand EMI")
                 payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
                 logger.debug(f"Entered the product for Brand EMI: {brand_sku_name}")
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is visible for Brand EMI")
 
                 imei_no = "IMEI number is visible for both Brand EMI and Eze EMI"
@@ -771,7 +771,7 @@ def test_common_100_115_11_004():
             logger.debug(f"Entered customer mobile number is : {customer_no}")
 
             try:
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is invisible for Eze EMI ")
                 payment_page.click_on_back_btn()
 
@@ -803,7 +803,7 @@ def test_common_100_115_11_004():
                 logger.debug("Selected payment mode is Brand EMI")
                 payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
                 logger.debug(f"Entered the product for Brand EMI: {brand_sku_name}")
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is visible for Brand EMI")
 
                 imei_no = "IMEI number is visible for Brand EMI"
@@ -1012,7 +1012,7 @@ def test_common_100_115_11_005():
             logger.debug(f"Entered customer mobile number is : {customer_no}")
 
             try:
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is invisible for Eze EMI ")
                 payment_page.click_on_back_btn()
 
@@ -1044,7 +1044,7 @@ def test_common_100_115_11_005():
                 logger.debug("Selected payment mode is Brand EMI")
                 payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
                 logger.debug(f"Entered the product for Brand EMI: {brand_sku_name}")
-                payment_page.check_for_imei_no_validation()
+                payment_page.is_imei_no_present()
                 logger.debug(f"IMEI number is visible for Brand EMI")
 
                 imei_no = "IMEI number is visible for Eze EMI"

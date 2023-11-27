@@ -476,7 +476,11 @@ def test_common_100_115_05_088():
             logger.debug(f"Entered device_serial is : {device_serial}")
             payment_page = PaymentPage(driver=app_driver)
             payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
-            error_msg = payment_page.check_bank_emi_pmt_mode_present()
+            check_bank_emi_pmt_mode = payment_page.check_bank_emi_pmt_mode_present()
+            if check_bank_emi_pmt_mode:
+                msg = "bank emi payment mode is present"
+            else:
+                msg = "bank emi payment mode is not present"
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -503,7 +507,7 @@ def test_common_100_115_05_088():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 actual_app_values = {
-                    "err_msg": error_msg
+                    "err_msg": msg
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------

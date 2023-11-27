@@ -1053,7 +1053,8 @@ def test_common_100_115_11_015():
         api_details["RequestBody"]["settings"]["ezeEmiWalletEnabled"] = "true"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details=api_details)
-        logger.debug(f"Response received when emi, emi for client, offering_emi cashback, brand_emi, bocashback, ezeEmiWalletEnabled is enabled in preconditions settings : {response}")
+        logger.debug(
+            f"Response received when emi, emi for client, offering_emi cashback, brand_emi, bocashback, ezeEmiWalletEnabled is enabled in preconditions settings : {response}")
 
         query = f"select bank_code from bin_info where bin='417666'"
         logger.debug(f"Query to fetch bank_code from the bin_info table : {query}")
@@ -1152,8 +1153,13 @@ def test_common_100_115_11_015():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(emi_plan_in_months=emi_plan_in_months)
-            logger.debug(f"razorpay_emi_discount : {razorpay_emi_discount}")
+            razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(
+                emi_plan_in_months=emi_plan_in_months)
+
+            if razorpay_emi_discount:
+                msg = "razorpay emi discount is visible"
+            else:
+                msg = "razorpay emi discount is not visible"
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1178,9 +1184,8 @@ def test_common_100_115_11_015():
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-
                 actual_app_values = {
-                    "visibility_of_razorpay_emi_discount": razorpay_emi_discount
+                    "visibility_of_razorpay_emi_discount": msg
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -2230,7 +2235,8 @@ def test_common_100_115_11_017():
         api_details["RequestBody"]["settings"]["ezeEmiWalletEnabled"] = "true"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details=api_details)
-        logger.debug(f"Response received when emi, emi for client, offering_emi cashback, brand_emi, bocashback, ezeEmiWalletEnabled is enabled in preconditions settings : {response}")
+        logger.debug(
+            f"Response received when emi, emi for client, offering_emi cashback, brand_emi, bocashback, ezeEmiWalletEnabled is enabled in preconditions settings : {response}")
 
         query = f"select bank_code from bin_info where bin='417666'"
         logger.debug(f"Query to fetch bank_code from the bin_info table : {query}")
@@ -2329,9 +2335,13 @@ def test_common_100_115_11_017():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(emi_plan_in_months=emi_plan_in_months)
-            logger.debug(f"razorpay_emi_discount, {razorpay_emi_discount}")
+            razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(
+                emi_plan_in_months=emi_plan_in_months)
 
+            if razorpay_emi_discount:
+                msg = "razorpay emi discount is visible"
+            else:
+                msg = "razorpay emi discount is not visible"
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2356,9 +2366,8 @@ def test_common_100_115_11_017():
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-
                 actual_app_values = {
-                    "visibility_of_razorpay_emi_discount": razorpay_emi_discount
+                    "visibility_of_razorpay_emi_discount": msg
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -2373,4 +2382,3 @@ def test_common_100_115_11_017():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-

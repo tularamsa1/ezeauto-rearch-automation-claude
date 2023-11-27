@@ -557,10 +557,10 @@ class PaymentPage(BasePage):
         self.perform_sendkeys(self.search_prod_or_brand, prod)
         self.perform_click(self.select_brand)
 
-    def click_and_enter_imei_no(self, imei: str):
+    def click_and_enter_imei_no(self, imei: int):
         """
         This method is used to enter imei no or serial no for brand EMI payment mode and click on proceed button
-        :param imei: str
+        :param imei: int
         """
         self.scroll_to_text("IMEI No/ Serial No")
         self.perform_click(self.serial_no)
@@ -569,7 +569,8 @@ class PaymentPage(BasePage):
 
     def fetch_error_msg_brand_emi(self):
         """
-        This method is used to fetch error msg after doing txn by entering amount less than emi amount
+        This method is used to fetch error msg for brand emi
+        return: str
         """
         return self.fetch_text(self.err_msg_brand_emi)
 
@@ -582,7 +583,8 @@ class PaymentPage(BasePage):
 
     def fetch_error_msg_normal_emi(self):
         """
-        This method is used to fetch error msg after selecting card for invalid txn for normal emi
+        This method is used to fetch error msg for normal emi
+        return: str
         """
         return self.fetch_text(self.err_msg_normal_emi)
 
@@ -595,15 +597,17 @@ class PaymentPage(BasePage):
 
     def click_and_enter_customer_number(self, customer_no: str):
         """
-        This method is used to enter customer number in eze emi flow
+        This method is used to enter customer number and click on proceed btn for eze emi flow
+        param customer_no: str
         """
         self.perform_click(self.customer_no)
         self.perform_sendkeys(self.customer_no, customer_no)
         self.perform_click(self.btn_submit)
 
-    def click_and_enter_imei_number_for_eze_emi(self, imei: str):
+    def click_and_enter_imei_number_for_eze_emi(self, imei: int):
         """
-        This method is used to enter imei number, click on use wallet and proceed
+        This method is used to enter imei number, click on use wallet and proceed btn for eze emi flow
+        param imei: int
         """
         self.perform_click(self.serial_no)
         self.perform_sendkeys(self.serial_no, imei)
@@ -613,7 +617,7 @@ class PaymentPage(BasePage):
 
     def select_emi_plan_for_eze_emi_brand_flow(self, emi_plan_in_months: int):
         """
-        This method is used to select emi plan, click on use wallet and proceed for eze emi brand flow
+        This method is used to select emi plan, click on use wallet and proceed btn for eze emi brand flow
         param: emi_plan_in_months int
         """
         locator = (By.XPATH, f"//*[contains(@text,'{emi_plan_in_months}m')]")
@@ -623,37 +627,47 @@ class PaymentPage(BasePage):
 
     def click_on_ok_error_btn_for_brand_emi(self):
         """
-        This method is used to click on ok button for error for brand emi
+        This method is used to click on ok button for brand emi
         """
         self.wait_for_visibility_of_elements(self.ok_error_btn)
         self.perform_click(self.ok_error_btn)
 
     def click_on_ok_error_btn_for_normal_Eze_emi(self):
         """
-        This method is used to click on ok button for error for normal and eze emi
+        This method is used to click on ok button for normal and eze emi
         """
         self.wait_for_visibility_of_elements(self.btn_proceedToHomepage)
         self.perform_click(self.btn_proceedToHomepage)
 
-    def check_visibility_of_razorpay_emi_discount(self, emi_plan_in_months):
+    def check_visibility_of_razorpay_emi_discount(self, emi_plan_in_months: int):
         """
         This method is used to check visibility of razorpay emi discount
+        param: emi_plan_in_months int
+        return: bool
         """
         locator = (By.XPATH, f"//*[contains(@text,'{emi_plan_in_months}m')]")
         self.perform_click(locator)
         try:
             self.visibility_of_elements(self.razorpay_emi_discount)
-            return " razorpay emi discount is visible"
-        except:
-            return "razorpay emi discount is not visible"
+            return True
+        except Exception as e:
+            logger.exception(f"razorpay emi discount is not visible due to: {e}")
+            return False
 
     def fetch_emi_cost_text(self, emi_plan: int):
-        """ This method is used to capture No cost EMI or Low cost EMI text"""
+        """
+            This method is used to capture No cost EMI or Low cost EMI text
+            param: emi_plan_in_months int
+            return: str
+        """
         locator = (By.XPATH, f"//*[@text='{emi_plan}m']/..//*[@resource-id='com.ezetap.service.demo:id/tvEMICost']")
         return self.fetch_text(locator)
 
     def list_of_brands(self):
-        """This method returns lists of brand elements"""
+        """
+            This method returns lists of brand elements
+            return: str
+        """
         elements = self.wait_for_visibility_of_elements(self.brand_list)
         return [brand.text for brand in elements]
 
@@ -661,6 +675,7 @@ class PaymentPage(BasePage):
         """
             This method is used to check proceed button is disabled or not
             :param imei: str
+            return bool
         """
         self.perform_click(self.serial_no)
         self.perform_sendkeys(self.serial_no, imei)
@@ -671,30 +686,36 @@ class PaymentPage(BasePage):
             logger.debug(f"Proceed button is clickable")
             return True
         except Exception as e:
-            logger.debug(f"Proceed button is not clickable within 15 seconds: {e}")
+            logger.exception(f"Proceed button is not clickable within 15 seconds due to : {e}")
             return False
 
-    def check_for_imei_no_validation(self):
-        """ This method is used to check the visibility of imei no"""
+    def is_imei_no_present(self):
+        """
+            This method is used to check the visibility of imei no
+            return bool
+        """
         try:
             self.wait_for_visibility_of_elements(self.imei_no)
-            logger.debug(f"IMEI number is visibile")
+            logger.debug(f"IMEI number is visible")
             return True
         except Exception as e:
-            logger.debug(f"IMEI number is not visibile : {e}")
+            logger.exception(f"IMEI number is not visible due to : {e}")
             return False
 
-    def check_for_use_wallet(self):
-        """ This method is used to check visibility of wallet button"""
+    def is_use_wallet_btn_visible(self):
+        """
+            This method is used to check visibility of wallet button
+            return bool
+        """
         try:
             self.wait_for_visibility_of_elements(self.btn_use_wallet)
-            logger.debug(f"Use wallet is visibile")
+            logger.debug(f"Use wallet is visible")
             return True
         except Exception as e:
-            logger.debug(f"Use wallet is not visibile : {e}")
+            logger.exception(f"Use wallet is not visible due to : {e}")
             return False
 
-    def select_emi_plan_for_wallet(self, emi_plan_in_months: int):
+    def select_emi_plan_in_months(self, emi_plan_in_months: int):
         """
         This method is used to select emi plan and check for the wallet
         param: emi_plan_in_months int
@@ -702,43 +723,49 @@ class PaymentPage(BasePage):
         locator = (By.XPATH, f"//*[contains(@text,'{emi_plan_in_months}m')]")
         self.perform_click(locator)
 
-    def click_on_razorpay_emi_discount(self, sub_value: str):
-        """This method is used to collect the razorpay emi discount"""
+    def fetch_text_razorpay_emi_discount(self, sub_value: str):
+        """
+            This method is used to collect the razorpay emi discount subvention value
+            param: sub_value str
+            return str
+        """
         razorpay_emi_dis = (By.XPATH, f"//*[@text= 'Razorpay EMI Discount(@{sub_value}%)']")
         return self.fetch_text(razorpay_emi_dis)
 
-    def click_on_emi_discount(self, sub_value: str):
-        """This method is used to collect the emi discount"""
+    def is_emi_discount_applied(self, sub_value: str):
+        """
+            This method is used to collect the emi discount
+            param: sub_value str
+        """
         try:
             emi_discount = (By.XPATH, f"//*[@text= 'EMI Discount(@{sub_value}%)']")
-            logger.debug(f"EMI discount is visibile")
-            return self.fetch_text(emi_discount)
+            self.wait_for_visibility_of_elements(emi_discount)
+            logger.debug(f"EMI discount is visible")
         except Exception as e:
-            logger.debug(f"EMI discount not visibile : {e}")
-            return False
+            logger.exception(f"EMI discount not visible : {e}")
 
-    def find_bo_element(self):
+    def check_for_bo_offer(self):
         """
-            This method is used to bo cashback amt in tenure selection page
+            This method is used to check bo offer is present or not for eze emi
+            return str
         """
         element = self.fetch_text(self.bo_element)
-        self.perform_click(self.btn_proceedToHomepage)
         return element
-
-    def select_emi_plan_for_negative_testcase(self, emi_plan_in_months: int):
-        """
-        This method is used to select emi plan
-        param: emi_plan_in_months int
-        """
-        locator = (By.XPATH, f"//*[contains(@text,'{emi_plan_in_months}m')]")
-        self.perform_click(locator)
 
     def check_bank_emi_pmt_mode_present(self):
         """
         This method is used to check whether bank emi pmt mode is present or not
+        return: bool
         """
         try:
             self.visibility_of_elements(self.btn_emi)
-        except:
-            return "bank emi payment mode is not present"
+            return True
+        except Exception as e:
+            logger.exception(f"bank emi payment mode is not visible due to : {e}")
+            return False
 
+    def is_brand_emi_pmt_mode_visible(self):
+        """
+        This method is used to check the visibility of brand EMI payment option
+        """
+        self.wait_for_invisibility_of_elements(self.btn_brand_emi)

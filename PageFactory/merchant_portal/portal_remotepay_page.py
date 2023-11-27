@@ -200,6 +200,9 @@ class RemotePayTxnPage(BasePage):
         self.perform_fill(self.lbl_name_on_card, name_on_card)
 
     def click_on_proceed(self):
+        """
+        This method is used to click on proceed button
+        """
         self.wait_for_element(self.btn_proceed)
         self.perform_click(self.btn_proceed)
 

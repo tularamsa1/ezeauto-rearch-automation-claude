@@ -1914,7 +1914,11 @@ def test_common_100_115_11_027():
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(
                 emi_plan_in_months=emi_plan_in_months)
-            logger.debug(f"razorpay_emi_discount : {razorpay_emi_discount}")
+
+            if razorpay_emi_discount:
+                msg = "razorpay emi discount is visible"
+            else:
+                msg = "razorpay emi discount is not visible"
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1940,7 +1944,7 @@ def test_common_100_115_11_027():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 actual_app_values = {
-                    "visibility_of_razorpay_emi_discount": razorpay_emi_discount
+                    "visibility_of_razorpay_emi_discount": msg
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -2125,8 +2129,13 @@ def test_common_100_115_11_028():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             card_page.select_cardtype("EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
-            razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(emi_plan_in_months=emi_plan_in_months)
-            logger.debug(f"razorpay_emi_discount : {razorpay_emi_discount}")
+            razorpay_emi_discount = payment_page.check_visibility_of_razorpay_emi_discount(
+                emi_plan_in_months=emi_plan_in_months)
+
+            if razorpay_emi_discount:
+                msg = "razorpay emi discount is visible"
+            else:
+                msg = "razorpay emi discount is not visible"
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2152,7 +2161,7 @@ def test_common_100_115_11_028():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 actual_app_values = {
-                    "visibility_of_razorpay_emi_discount": razorpay_emi_discount
+                    "visibility_of_razorpay_emi_discount": msg
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)

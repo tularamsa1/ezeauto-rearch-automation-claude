@@ -40,12 +40,6 @@ class BasePage:
     def wait_for_invisibility_of_elements(self, locator, time=45):
         return WebDriverWait(self.driver, time).until(EC.invisibility_of_element_located(locator))
 
-    def wait_for_element_to_be_clickable(self, locator, time=45):
-        return WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator))
-
-    def wait_for_element_to_be_clickable(self, locator, time=45):
-        return WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator))
-
     def wait_for_all_elements(self, locator, time=45):
         return WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))
 
