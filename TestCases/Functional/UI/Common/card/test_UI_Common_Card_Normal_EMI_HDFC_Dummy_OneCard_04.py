@@ -255,6 +255,12 @@ def test_common_100_115_05_067():
         # Below function to update bank_code, bank for the bin: 417666
         testsuite_teardown.update_bin_info(bin_number='417666', bank_code='ONECARD', bank='ONECARD')
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
+        logger.debug(f"updated rule status activated INSTANT BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated CASHBACK BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='INSTANT' and name like 'NA_ONECARD_CREDIT%' and status='ACTIVE'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')

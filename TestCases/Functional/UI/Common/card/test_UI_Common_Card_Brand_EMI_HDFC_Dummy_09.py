@@ -105,6 +105,9 @@ def test_common_100_115_07_118():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -173,6 +176,12 @@ def test_common_100_115_07_118():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='ACTIVE')
+        logger.debug(f"updated rule status activated CASHBACK BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated INSTANT BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_HDFC_DEBIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -202,8 +211,6 @@ def test_common_100_115_07_118():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1113,6 +1120,9 @@ def test_common_100_115_07_119():
         emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -1181,6 +1191,12 @@ def test_common_100_115_07_119():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='ACTIVE')
+        logger.debug(f"updated rule status activated CASHBACK BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated INSTANT BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_HDFC_DEBIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -1210,8 +1226,6 @@ def test_common_100_115_07_119():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2120,6 +2134,9 @@ def test_common_100_115_07_120():
         emi_plan_in_months = 9
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -2188,6 +2205,12 @@ def test_common_100_115_07_120():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='ACTIVE')
+        logger.debug(f"updated rule status activated CASHBACK BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated INSTANT BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_HDFC_DEBIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -2217,8 +2240,6 @@ def test_common_100_115_07_120():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

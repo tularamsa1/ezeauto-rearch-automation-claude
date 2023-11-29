@@ -129,6 +129,9 @@ def test_common_100_115_07_073():
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code, 'CREDIT', 'ACTIVE', issuer_code, 'BRAND')
+        logger.debug(f"updated emi settings for {root_org_code} as active for credit card")
+
         query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='AXIS' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
@@ -153,6 +156,8 @@ def test_common_100_115_07_073():
         logger.debug(f"Fetching sku_category value from the brand_sku_details table : {brand_sku_category}")
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
+
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT', status=0)
 
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'CREDIT' and bank='AXIS' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
@@ -978,6 +983,7 @@ def test_common_100_115_07_073():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT', status=1)
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1093,6 +1099,9 @@ def test_common_100_115_07_074():
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code, 'CREDIT', 'ACTIVE', issuer_code, 'BRAND')
+        logger.debug(f"updated emi settings for {root_org_code} as active for credit card")
+
         query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='AXIS' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
@@ -1117,6 +1126,8 @@ def test_common_100_115_07_074():
         logger.debug(f"Fetching sku_category value from the brand_sku_details table : {brand_sku_category}")
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
+
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT', status=0)
 
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'CREDIT' and bank='AXIS' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
@@ -1942,6 +1953,7 @@ def test_common_100_115_07_074():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT', status=1)
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2057,6 +2069,9 @@ def test_common_100_115_07_075():
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code, 'CREDIT', 'ACTIVE', issuer_code, 'BRAND')
+        logger.debug(f"updated emi settings for {root_org_code} as active for credit card")
+
         query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='AXIS' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION' and brand='{brand_id}' order by created_time asc limit 1"
@@ -2081,6 +2096,8 @@ def test_common_100_115_07_075():
         logger.debug(f"Fetching sku_category value from the brand_sku_details table : {brand_sku_category}")
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
+
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT', status=0)
 
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'CREDIT' and bank='AXIS' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
@@ -2906,4 +2923,5 @@ def test_common_100_115_07_075():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT', status=1)
         Configuration.executeFinallyBlock(testcase_id)

@@ -919,8 +919,8 @@ def test_common_100_115_221():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_222():
     """
-    Sub Feature Code: UI_Common_Card_Void_ATOS_TLE_EMV_VISA_CreditCard_Without_Pin_417666
-    Sub Feature Description:  Performing the EMV Void transaction via ATOS_TLE PG using Visa Credit card having
+    Sub Feature Code: UI_Common_Card_Refund_ATOS_TLE_EMV_VISA_CreditCard_Without_Pin_417666
+    Sub Feature Description:  Performing the EMV Refund transaction via ATOS_TLE PG using Visa Credit card having
      16 digit PAN length without pin (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 222: TC222
     """
