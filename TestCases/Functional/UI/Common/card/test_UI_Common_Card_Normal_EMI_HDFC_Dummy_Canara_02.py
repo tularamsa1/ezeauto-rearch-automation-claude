@@ -102,6 +102,12 @@ def test_common_100_115_05_063():
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for normal emi setup to be enabled:  {response}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
+        logger.debug(f"updated rule status activated INSTANT BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated CASHBACK BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='INSTANT' and name LIKE 'NA_CANARA_CREDIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -928,6 +934,12 @@ def test_common_100_115_05_064():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for normal emi setup to be enabled:  {response}")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='ACTIVE')
+        logger.debug(f"updated rule status activated CASHBACK BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated INSTANT BO")
 
         query = f"select * from rule where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE 'NA_CANARA_CREDIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")

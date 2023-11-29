@@ -102,6 +102,9 @@ def test_common_100_115_07_113():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -173,6 +176,12 @@ def test_common_100_115_07_113():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
+        logger.debug(f"updated rule status activated INSTANT BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated CASHBACK BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='INSTANT' and name LIKE '{brand_name}_HDFC_DEBIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -202,8 +211,6 @@ def test_common_100_115_07_113():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1109,6 +1116,9 @@ def test_common_100_115_07_114():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -1191,8 +1201,6 @@ def test_common_100_115_07_114():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2074,6 +2082,9 @@ def test_common_100_115_07_115():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -2143,7 +2154,6 @@ def test_common_100_115_07_115():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -3017,6 +3027,9 @@ def test_common_100_115_07_116():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -3086,7 +3099,6 @@ def test_common_100_115_07_116():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -3982,6 +3994,9 @@ def test_common_100_115_07_117():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -4069,8 +4084,6 @@ def test_common_100_115_07_117():
         refresh_db()
         logger.debug(f"Database refreshed")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

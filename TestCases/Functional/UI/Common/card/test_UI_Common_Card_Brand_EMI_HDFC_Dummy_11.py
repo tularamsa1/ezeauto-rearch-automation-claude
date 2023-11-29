@@ -10,7 +10,6 @@ from PageFactory.sa.app_card_page import CardPage
 from PageFactory.sa.app_payment_page import PaymentPage
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
-from Utilities.merchant_configurer import refresh_db
 
 logger = EzeAutoLogger(__name__)
 
@@ -93,6 +92,9 @@ def test_common_100_115_07_122():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -115,8 +117,6 @@ def test_common_100_115_07_122():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

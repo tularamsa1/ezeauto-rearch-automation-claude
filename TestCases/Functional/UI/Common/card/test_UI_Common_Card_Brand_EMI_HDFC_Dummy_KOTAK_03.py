@@ -103,6 +103,9 @@ def test_common_100_115_07_144():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -181,8 +184,6 @@ def test_common_100_115_07_144():
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
         refresh_db()
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1065,6 +1066,9 @@ def test_common_100_115_07_145():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -1136,7 +1140,6 @@ def test_common_100_115_07_145():
         refresh_db()
         logger.debug(f"Database refreshed")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2015,6 +2018,9 @@ def test_common_100_115_07_146():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -2080,7 +2086,6 @@ def test_common_100_115_07_146():
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
         refresh_db()
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2960,6 +2965,9 @@ def test_common_100_115_07_147():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -3044,8 +3052,6 @@ def test_common_100_115_07_147():
         refresh_db()
         logger.debug(f"Database refreshed")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -3931,6 +3937,9 @@ def test_common_100_115_07_148():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -3953,8 +3962,6 @@ def test_common_100_115_07_148():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

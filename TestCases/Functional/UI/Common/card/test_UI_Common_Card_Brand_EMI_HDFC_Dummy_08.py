@@ -108,6 +108,12 @@ def test_common_100_115_07_055():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='CREDIT',
+                                                          status='ACTIVE', issuer_code='HDFC', emi_type='BRAND')
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -153,6 +159,9 @@ def test_common_100_115_07_055():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+                                                         status=0)
+
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -196,8 +205,6 @@ def test_common_100_115_07_055():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'INACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -972,6 +979,8 @@ def test_common_100_115_07_055():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',status=1)
+
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1065,6 +1074,12 @@ def test_common_100_115_07_056():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='CREDIT', status='ACTIVE',
+                                                          issuer_code='HDFC', emi_type='BRAND')
+
         emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -1110,6 +1125,9 @@ def test_common_100_115_07_056():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+                                                         status=0)
+
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1153,8 +1171,6 @@ def test_common_100_115_07_056():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'INACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1929,6 +1945,9 @@ def test_common_100_115_07_056():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+                                                         status=1)
+
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2022,6 +2041,12 @@ def test_common_100_115_07_057():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='CREDIT',
+                                                          status='ACTIVE', issuer_code='HDFC', emi_type='BRAND')
+
         emi_plan_in_months = 9
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -2067,6 +2092,9 @@ def test_common_100_115_07_057():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+                                                         status=0)
+
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -2110,8 +2138,6 @@ def test_common_100_115_07_057():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'INACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2886,6 +2912,9 @@ def test_common_100_115_07_057():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+                                                         status=1)
+
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2973,6 +3002,9 @@ def test_common_100_115_07_111():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -3044,6 +3076,12 @@ def test_common_100_115_07_111():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
+        logger.debug(f"updated rule status activated INSTANT BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated CASHBACK BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='INSTANT' and name LIKE '{brand_name}_HDFC_DEBIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -3073,8 +3111,6 @@ def test_common_100_115_07_111():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -3982,6 +4018,9 @@ def test_common_100_115_07_112():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+
         emi_plan_in_months = 9
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -4053,6 +4092,12 @@ def test_common_100_115_07_112():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
+        logger.debug(f"updated rule status activated INSTANT BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated CASHBACK BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='INSTANT' and name LIKE '{brand_name}_HDFC_DEBIT%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -4082,8 +4127,6 @@ def test_common_100_115_07_112():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

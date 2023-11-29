@@ -47,6 +47,13 @@ def test_common_100_115_05_049():
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching org_code from the org_employee table : {org_code}")
 
+        query = f"select org_code from org_employee where username = {portal_username}"
+        logger.debug(f"Query to fetch org_code from the org_employee table for root_org : {query}")
+        result = DBProcessor.getValueFromDB(query=query)
+        logger.debug(f"Fetching result for org_employee table : {result}")
+        root_org_code = result['org_code'].values[0]
+        logger.debug(f"Fetching org_code from the org_employee table : {root_org_code}")
+
         query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
                 "acquirer_code='HDFC' and payment_gateway='DUMMY'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
@@ -94,6 +101,9 @@ def test_common_100_115_05_049():
 
         testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='CREDIT', status='INACTIVE')
         logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='CREDIT',
+                                                          status='INACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -175,4 +185,7 @@ def test_common_100_115_05_049():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='CREDIT',
+                                                          status='ACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
+
         Configuration.executeFinallyBlock(testcase_id)
