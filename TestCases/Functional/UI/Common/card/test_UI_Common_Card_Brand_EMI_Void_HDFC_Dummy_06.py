@@ -54,6 +54,13 @@ def test_common_100_115_07_050():
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching orgcode value from the org_employee table {org_code}")
 
+        query = f"select org_code from org_employee where username='{str(portal_username)}';"
+        logger.debug(f"Query to fetch data from the org_employee table for portal username: {query}")
+        result = DBProcessor.getValueFromDB(query=query)
+        logger.debug(f"Query result for org_employee table : {result}")
+        root_org_code = result['org_code'].values[0]
+        logger.debug(f"Fetching orgcode value from the org_employee table {root_org_code}")
+
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='DUMMY' "
         logger.debug(f"Query to fetch data from the terminal_info table: {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -100,7 +107,14 @@ def test_common_100_115_07_050():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
-        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
+                                                          status='ACTIVE', issuer_code='HDFC', emi_type='BRAND')
+        logger.debug(f"updated emi settings for {root_org_code} as inactive for debit card")
+
+        query = f"select * from emi where org_code='{org_code}' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION';"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -119,7 +133,7 @@ def test_common_100_115_07_050():
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
-        query = f"select * from emi where org_code='EZETAP' and status = 'ACTIVE' and " \
+        query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION' and brand='{brand_id}'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -149,6 +163,9 @@ def test_common_100_115_07_050():
         logger.debug(f"Fetching sku_category value from the brand_sku_details table : {brand_sku_category}")
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
+
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=0)
+        logger.debug(f"updated subvention as inactive for debit card for org_code:  {org_code}")
 
         query = f"select * from subvention_plan where brand_id='{brand}' and org_code='ALL' and card_type= 'DEBIT' and bank='HDFC' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
@@ -208,6 +225,7 @@ def test_common_100_115_07_050():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -973,8 +991,8 @@ def test_common_100_115_07_050():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1014,6 +1032,13 @@ def test_common_100_115_07_052():
         logger.debug(f"Query result for org_employee table : {result}")
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching orgcode value from the org_employee table {org_code}")
+
+        query = f"select org_code from org_employee where username='{str(portal_username)}';"
+        logger.debug(f"Query to fetch data from the org_employee table for portal username: {query}")
+        result = DBProcessor.getValueFromDB(query=query)
+        logger.debug(f"Query result for org_employee table : {result}")
+        root_org_code = result['org_code'].values[0]
+        logger.debug(f"Fetching orgcode value from the org_employee table {root_org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='DUMMY' "
         logger.debug(f"Query to fetch data from the terminal_info table: {query}")
@@ -1061,7 +1086,14 @@ def test_common_100_115_07_052():
         emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
-        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
+                                                          status='ACTIVE', issuer_code='HDFC', emi_type='BRAND')
+        logger.debug(f"updated emi settings for {root_org_code} as inactive for debit card")
+
+        query = f"select * from emi where org_code='{org_code}' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION';"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -1080,7 +1112,7 @@ def test_common_100_115_07_052():
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
-        query = f"select * from emi where org_code='EZETAP' and status = 'ACTIVE' and " \
+        query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION' and brand='{brand_id}'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -1110,6 +1142,9 @@ def test_common_100_115_07_052():
         logger.debug(f"Fetching sku_category value from the brand_sku_details table : {brand_sku_category}")
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
+
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=0)
+        logger.debug(f"updated subvention as inactive for debit card for org_code:  {org_code}")
 
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'DEBIT' and bank='HDFC' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
@@ -1171,6 +1206,7 @@ def test_common_100_115_07_052():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -1957,8 +1993,8 @@ def test_common_100_115_07_052():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT',status=1)
+        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1998,6 +2034,13 @@ def test_common_100_115_07_054():
         logger.debug(f"Query result for org_employee table : {result}")
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching orgcode value from the org_employee table {org_code}")
+
+        query = f"select org_code from org_employee where username='{str(portal_username)}';"
+        logger.debug(f"Query to fetch data from the org_employee table for portal username: {query}")
+        result = DBProcessor.getValueFromDB(query=query)
+        logger.debug(f"Query result for org_employee table : {result}")
+        root_org_code = result['org_code'].values[0]
+        logger.debug(f"Fetching orgcode value from the org_employee table {root_org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='DUMMY' "
         logger.debug(f"Query to fetch data from the terminal_info table: {query}")
@@ -2045,7 +2088,14 @@ def test_common_100_115_07_054():
         emi_plan_in_months = 9
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
-        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'INACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
+                                                          status='ACTIVE', issuer_code='HDFC', emi_type='BRAND')
+        logger.debug(f"updated emi settings for {root_org_code} as inactive for debit card")
+
+        query = f"select * from emi where org_code='{org_code}' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION';"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -2064,8 +2114,7 @@ def test_common_100_115_07_054():
         brand_name = result['brand_name'].values[0]
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
-
-        query = f"select * from emi where org_code='EZETAP' and status = 'ACTIVE' and " \
+        query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION' and brand='{brand_id}'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -2095,6 +2144,9 @@ def test_common_100_115_07_054():
         logger.debug(f"Fetching sku_category value from the brand_sku_details table : {brand_sku_category}")
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
+
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=0)
+        logger.debug(f"updated subvention as inactive for debit card for org_code:  {org_code}")
 
         query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='ALL' and card_type= 'DEBIT' and bank='HDFC' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
@@ -2156,6 +2208,7 @@ def test_common_100_115_07_054():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -2942,6 +2995,6 @@ def test_common_100_115_07_054():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
+        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
         Configuration.executeFinallyBlock(testcase_id)

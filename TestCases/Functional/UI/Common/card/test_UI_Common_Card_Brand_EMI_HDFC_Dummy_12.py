@@ -83,6 +83,9 @@ def test_common_100_115_07_086():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -112,7 +115,6 @@ def test_common_100_115_07_086():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -145,6 +147,7 @@ def test_common_100_115_07_086():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is  : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -284,6 +287,9 @@ def test_common_100_115_07_087():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -348,10 +354,33 @@ def test_common_100_115_07_087():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
+        query = f"update emi set interest_rate='15' where org_code='{org_code}' and " \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Updating the emi setting with interest_rate : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Fetching result after updating emi table with interest_rate :{result}")
+
+        refresh_db()
+        logger.debug(f"Using DB refresh method after updating the emi interest_rate and subvention_plan_details")
+
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
+                f"and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for subvention_plan_details table : {result}")
+        sub_value = result['subvention_value'].values[0]
+        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {sub_value}")
+
+        query = f"update subvention_plan_details set subvention_value='2.45' where subvention_plan_id='{subvention_plan_id}' and " \
+                f"subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Updating the subvention_value from subvention_plan_details table : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Query result after updating subvention_value in subvention_plan_details table : {result}")
+
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -383,6 +412,7 @@ def test_common_100_115_07_087():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is  : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -540,7 +570,7 @@ def test_common_100_115_07_087():
                 logger.debug(f"Fetching processer value from the txn_emi table : {processer_db}")
 
             else:
-                raise Exception("There is no configuration obtained for selected tenure")
+                logger.error("There is no configuration obtained for selected tenure")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1123,6 +1153,21 @@ def test_common_100_115_07_087():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
+                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Fetching result after reverting back the  updated interest_rate in emi table :{result}")
+
+        query = f"update subvention_plan_details set subvention_value='{sub_value}' where subvention_plan_id='{subvention_plan_id}' and " \
+                f"subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Reverting back the  updated subvention_value in subvention_plan_details table : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Fetching result after reverting back the updated subvention_value in subvention_plan_details table : {result}")
+
+        refresh_db()
+        logger.debug(f"Refreshing the DB after reverting interest_rate and subvention_value : {result}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1134,8 +1179,8 @@ def test_common_100_115_07_087():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_07_088():
     """
-        Sub Feature Code: UI_Common_Card_Brand_EMI_Cashback_by_Brand_Percentage_With_No_Cost_EMI_Success_Txn_For_An_Org_HDFC_Dummy_EMV_MASTER_CREDIT_Without_Pin_541333_For_3_Months_Tenure
-        Sub Feature Description: Performing the brand EMI cashback by brand percentage with no cost emi success transaction for an org via HDFC Dummy PG using EMV MASTER Credit card without pin for 3 months tenure (bin: 541333)
+        Sub Feature Code: UI_Common_Card_Brand_EMI_Cashback_by_Brand_Percentage_With_No_Cost_EMI_Success_Txn_For_An_Org_HDFC_Dummy_PG_ICICI_Issuer_EMV_MASTER_CREDIT_Without_Pin_541333_For_3_Months_Tenure
+        Sub Feature Description: Performing the brand EMI cashback by brand percentage with no cost emi success transaction for an org via HDFC Dummy PG ICICI isssuer using EMV MASTER Credit card without pin for 3 months tenure (bin: 541333)
         TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand EMI, 023: TC023
     """
     try:
@@ -1212,6 +1257,9 @@ def test_common_100_115_07_088():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -1279,8 +1327,52 @@ def test_common_100_115_07_088():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
+        query = f"update emi set interest_rate='15.99' where org_code='{org_code}' and " \
+                f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Updating the emi setting with interest_rate : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Fetching result after updating emi table with interest_rate :{result}")
+
+        refresh_db()
+        logger.debug(f"Using DB refresh method after updating the emi interest_rate and subvention_plan_details")
+
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
+                f"and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for subvention_plan_details table : {result}")
+        sub_value = result['subvention_value'].values[0]
+        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {sub_value}")
+
+        query = f"update subvention_plan_details set subvention_value='2.68' where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
+                f"and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Updating the subvention_value in subvention_plan_details table : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Query result after updating subvention_value in subvention_plan_details table : {result}")
+
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
+
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and" \
+                f" subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for subvention_plan_details table : {result}")
+        subvention_entity = result['subventing_entity'].values[0]
+        logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
+        subvention_type = result['subvention_type'].values[0]
+        logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
+        subvention_value_type = result['subvention_value_type'].values[0]
+        logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
+        subvention_value = result['subvention_value'].values[0]
+        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
+        subvention_tenure = result['tenure'].values[0]
+        logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
+        subvention_discount_type = result['discount_type'].values[0]
+        logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
+        subvention_subvention_limit = result['subvention_limit'].values[0]
+        logger.debug(f"Fetching subvention_limit from subvention_plan_details table : {subvention_subvention_limit}")
 
         testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
@@ -1314,6 +1406,7 @@ def test_common_100_115_07_088():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -1337,7 +1430,9 @@ def test_common_100_115_07_088():
                 # Calculating the emi's using formula
                 monthly_interest_rate = interest_rate / (12 * 100)
                 logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
-                cal_monthly_emi_amt = amount * monthly_interest_rate * ((1 + monthly_interest_rate) ** emi_plan_in_months) / ((1 + monthly_interest_rate) ** emi_plan_in_months - 1)
+                cal_monthly_emi_amt = amount * monthly_interest_rate * (
+                            (1 + monthly_interest_rate) ** emi_plan_in_months) / (
+                                              (1 + monthly_interest_rate) ** emi_plan_in_months - 1)
                 logger.debug(f"cal_monthly_emi_amt is : {cal_monthly_emi_amt}")
                 monthly_emi = round(cal_monthly_emi_amt, 2)
                 logger.debug(f"Calculated monthly_emi amount : {monthly_emi}")
@@ -1910,25 +2005,6 @@ def test_common_100_115_07_088():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
-                logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result for subvention_plan_details table : {result}")
-                subvention_entity = result['subventing_entity'].values[0]
-                logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
-                subvention_type = result['subvention_type'].values[0]
-                logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
-                subvention_value_type = result['subvention_value_type'].values[0]
-                logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
-                subvention_value = result['subvention_value'].values[0]
-                logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
-                subvention_tenure = result['tenure'].values[0]
-                logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
-                subvention_discount_type = result['discount_type'].values[0]
-                logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
-                subvention_subvention_limit = result['subvention_limit'].values[0]
-                logger.debug(f"Fetching subvention_limit from subvention_plan_details table : {subvention_subvention_limit}")
-
                 actual_db_values = {
                     "txn_amt": "{:.2f}".format(amount_db),
                     "pmt_mode": payment_mode_db,
@@ -2079,6 +2155,21 @@ def test_common_100_115_07_088():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
+        query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
+                f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Fetching result after reverting back the  updated interest_rate in emi table :{result}")
+
+        query = f"update subvention_plan_details set subvention_value='{sub_value}' where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
+                f"and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Reverting back the subvention_value in subvention_plan_details table : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Query result after reverting back subvention_value in subvention_plan_details table : {result}")
+        refresh_db()
+        logger.debug(f"DB refresh after reverting subvention_value and interest_rate : {result}")
+
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2169,6 +2260,9 @@ def test_common_100_115_07_089():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -2243,6 +2337,12 @@ def test_common_100_115_07_089():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
+        logger.debug(f"updated rule status activated INSTANT BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated CASHBACK BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='INSTANT' and name LIKE '{brand_name}%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -2272,7 +2372,6 @@ def test_common_100_115_07_089():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
@@ -3171,6 +3270,9 @@ def test_common_100_115_07_090():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -3242,6 +3344,12 @@ def test_common_100_115_07_090():
         subvention_discount_type = result['discount_type'].values[0]
         logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='CASHBACK', status='ACTIVE')
+        logger.debug(f"updated rule status activated CASHBACK BO")
+
+        testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='INACTIVE')
+        logger.debug(f"updated rule status inactivated INSTANT BO")
+
         query = f"select * from rule where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}%'"
         logger.debug(f"Query to fetch data from the rule table : {query}")
         result = DBProcessor.getValueFromDB(query=query, db_name='rule_engine')
@@ -3271,8 +3379,6 @@ def test_common_100_115_07_090():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

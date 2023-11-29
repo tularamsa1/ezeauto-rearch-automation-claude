@@ -546,6 +546,7 @@ class PaymentPage(BasePage):
         """
         This method is used to click on brand EMI payment mode
         """
+        self.scroll_to_text("Brand EMI")
         self.perform_click(self.btn_brand_emi)
 
     def click_and_enter_search_products_or_brands(self, prod: str):

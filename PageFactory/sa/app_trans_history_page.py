@@ -410,6 +410,7 @@ class TransHistoryPage(BasePage):
         This method is used to fetch product_name text from from transaction history page.
         return: product: str
         """
+        self.scroll_to_text("PRODUCT")
         return self.fetch_text(self.txt_product_name)
 
     def scroll_to_card_element(self):

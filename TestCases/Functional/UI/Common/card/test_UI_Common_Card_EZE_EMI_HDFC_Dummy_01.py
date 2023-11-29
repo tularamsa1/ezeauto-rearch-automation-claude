@@ -83,6 +83,9 @@ def test_common_100_115_11_001():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -116,7 +119,6 @@ def test_common_100_115_11_001():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -148,6 +150,7 @@ def test_common_100_115_11_001():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is  : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_brand_emi_pmt_mode()
             logger.debug(f"Selected payment mode is Brand EMI")
             payment_page.click_and_enter_search_products_or_brands(brand_sku_name)
@@ -270,6 +273,9 @@ def test_common_100_115_11_002():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
@@ -302,7 +308,6 @@ def test_common_100_115_11_002():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -335,6 +340,7 @@ def test_common_100_115_11_002():
                                                                                device_serial=device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
             logger.debug(f"Selected payment mode is EZE EMI")
             payment_page.click_and_enter_search_products_or_brands(prod=brand_sku_name)
@@ -460,6 +466,9 @@ def test_common_100_115_11_003():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='EZEEMI'" \
                 f"and tid_type='SUBVENTION';"
@@ -495,7 +504,6 @@ def test_common_100_115_11_003():
         eze_emi_brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {eze_emi_brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -527,6 +535,7 @@ def test_common_100_115_11_003():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is  : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
             logger.debug(f"Selected payment mode is EZE EMI")
             payment_page.click_and_enter_search_products_or_brands(prod=eze_emi_brand_sku_name)
@@ -689,6 +698,9 @@ def test_common_100_115_11_004():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='EZEEMI'" \
                 f"and tid_type='SUBVENTION';"
@@ -730,7 +742,6 @@ def test_common_100_115_11_004():
         eze_emi_brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {eze_emi_brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -762,6 +773,7 @@ def test_common_100_115_11_004():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is  : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
             logger.debug(f"Selected payment mode is EZE EMI")
             payment_page.click_and_enter_search_products_or_brands(eze_emi_brand_sku_name)
@@ -929,6 +941,9 @@ def test_common_100_115_11_005():
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"Active emi setting for credit card")
+
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                 f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='EZEEMI'" \
                 f"and tid_type='SUBVENTION';"
@@ -971,7 +986,6 @@ def test_common_100_115_11_005():
         eze_emi_brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {eze_emi_brand_sku_name}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1003,6 +1017,7 @@ def test_common_100_115_11_005():
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amount, order_id, device_serial)
             logger.debug(f"Entered amount, order_id and device_serial is  : {amount}, {order_id}, {device_serial}")
             payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
             logger.debug(f"Selected payment mode is EZE EMI")
             payment_page.click_and_enter_search_products_or_brands(eze_emi_brand_sku_name)

@@ -621,3 +621,36 @@ def update_brand_for_emi_plus(eze_emi_enabled: int, brand_id: str):
 
     refresh_db()
     logger.debug(f"Using DB refresh method after enable or disable for emi plus in brand table")
+
+
+def update_subvention_plan_status(org_code: str, brand_id: str, card_type: str, status: int):
+    """
+    This method is used to update subvention_plan table to inactivate scheme for org_code
+    param: org_code str
+    param: brand_id str
+    param: card_type str
+    param: status int
+    """
+    query = f"update subvention_plan set status={status} where brand_id='{brand_id}' and org_code='{org_code}' and " \
+            f"card_type= '{card_type}' and eze_emi_enabled=b'0';"
+    logger.debug(f"Query to update subvention_plan table to inactivate scheme for org_code: {org_code} : {query}")
+    result = DBProcessor.setValueToDB(query)
+    logger.debug(f"Result for subvention_plan table after inactivating scheme for org_code: {org_code} : {result}")
+    refresh_db()
+    logger.debug(f"Using DB refresh method after updating subvention_plan table to inactive scheme for org_code: {org_code}")
+
+
+def update_rule_status(org_code: str, credit_type: str, status: str):
+    """
+    This method is used to update rule table to activate or inactivate rule for org_code
+    param: org_code str
+    param: credit_type str
+    param: status str
+    """
+    query = f"update rule set status='{status}' where org_code='{org_code}' and credit_type='{credit_type}';"
+    logger.debug(f"Query to update rule table to activate or inactivate rule for org_code: {org_code} : {query}")
+    result = DBProcessor.setValueToDB(query=query, db_name='rule_engine')
+    logger.debug(f"Result for rule table after activating or inactivating rule for org_code: {org_code} : {result}")
+    refresh_db()
+    logger.debug(f"Using DB refresh method after updating rule table to active / inactive rule for org_code: {org_code}")
+
