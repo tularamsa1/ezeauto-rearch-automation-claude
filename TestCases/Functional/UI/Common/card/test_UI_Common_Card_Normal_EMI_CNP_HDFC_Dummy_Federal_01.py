@@ -147,7 +147,7 @@ def test_common_100_103_05_002():
                 remote_pay_txn.click_on_proceed()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {success_message}")
-                logger.info(f"Your expiryMessage is:  {expected_message}")
+                logger.info(f"Your expected message is:  {expected_message}")
                 if success_message == expected_message:
                     pass
                 else:

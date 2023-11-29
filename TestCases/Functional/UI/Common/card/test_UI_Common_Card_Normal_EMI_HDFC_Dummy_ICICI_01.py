@@ -883,6 +883,8 @@ def test_common_100_115_05_081():
 
         testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='DEBIT', status='INACTIVE')
         logger.debug(f"updated emi settings for {org_code} as inactive for debit card")
+        testsuite_teardown.update_emi_status_for_root_org(root_org_code, 'DEBIT', 'ACTIVE', issuer_code, 'NORMAL')
+        logger.debug(f"updated emi settings for {root_org_code} as active for debit card")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True

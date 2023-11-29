@@ -105,6 +105,9 @@ def test_common_100_115_11_023():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for credit card")
+
         emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -201,10 +204,8 @@ def test_common_100_115_11_023():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
-        GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
+        GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 

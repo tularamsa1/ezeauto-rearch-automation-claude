@@ -102,6 +102,9 @@ def test_common_100_115_11_025():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for credit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -149,8 +152,6 @@ def test_common_100_115_11_025():
         logger.debug(
             f"Fetching wallet_balance before the txn from ezeemi_club_wallet_account table : {mcew_wallet_balance_before_txn}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -966,6 +967,9 @@ def test_common_100_115_11_026():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for credit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -1024,8 +1028,6 @@ def test_common_100_115_11_026():
         refresh_db()
         logger.debug(f"Database refreshed")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1824,6 +1826,9 @@ def test_common_100_115_11_027():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for credit card")
+
         emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -1863,8 +1868,6 @@ def test_common_100_115_11_027():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -2041,6 +2044,9 @@ def test_common_100_115_11_028():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
+        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
+        logger.debug(f"updated emi settings for {org_code} as active for credit card")
+
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -2080,8 +2086,6 @@ def test_common_100_115_11_028():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'CREDIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
