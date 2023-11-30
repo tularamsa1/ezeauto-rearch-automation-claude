@@ -285,14 +285,17 @@ def test_common_100_115_07_129():
         # -------------------------------------------End of Validation--------------------------------------------------
 
     finally:
-        testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='DEBIT', status='ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for debit card")
-        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
-                                                          status='ACTIVE', issuer_code=issuer_code, emi_type='BRAND')
-        logger.debug(f"updated emi settings for {root_org_code} as active for debit card for {issuer_code}")
-        testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
-                                                          status='ACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
-        logger.debug(f"updated emi settings for {root_org_code} as active for debit card for {issuer_code}")
+        try:
+            testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='DEBIT', status='ACTIVE')
+            logger.debug(f"updated emi settings for {org_code} as active for debit card")
+            testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
+                                                              status='ACTIVE', issuer_code=issuer_code, emi_type='BRAND')
+            logger.debug(f"updated emi settings for {root_org_code} as active for debit card for {issuer_code}")
+            testsuite_teardown.update_emi_status_for_root_org(root_org_code=root_org_code, card_type='DEBIT',
+                                                              status='ACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
+            logger.debug(f"updated emi settings for {root_org_code} as active for debit card for {issuer_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -809,10 +812,13 @@ def test_common_100_115_07_131():
         # -------------------------------------------End of Validation--------------------------------------------------
 
     finally:
-        query = f"update bin_info set emi_enabled=b'1' where bin='428090';"
-        logger.debug(f"Query to update bin_info table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
+        try:
+            query = f"update bin_info set emi_enabled=b'1' where bin='428090';"
+            logger.debug(f"Query to update bin_info table: {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

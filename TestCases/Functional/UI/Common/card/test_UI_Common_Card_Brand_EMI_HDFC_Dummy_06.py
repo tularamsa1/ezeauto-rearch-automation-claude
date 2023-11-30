@@ -993,8 +993,11 @@ def test_common_100_115_07_049():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
-        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+            logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1975,8 +1978,11 @@ def test_common_100_115_07_051():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
-        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+            logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2957,8 +2963,11 @@ def test_common_100_115_07_053():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT',status=1)
-        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT',status=1)
+            logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

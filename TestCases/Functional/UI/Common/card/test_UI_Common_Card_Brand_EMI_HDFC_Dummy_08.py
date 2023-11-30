@@ -979,8 +979,10 @@ def test_common_100_115_07_055():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',status=1)
-
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',status=1)
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1945,9 +1947,10 @@ def test_common_100_115_07_056():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
-                                                         status=1)
-
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',status=1)
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2912,9 +2915,11 @@ def test_common_100_115_07_057():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
                                                          status=1)
-
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

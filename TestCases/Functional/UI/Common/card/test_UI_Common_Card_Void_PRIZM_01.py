@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -126,6 +127,9 @@ def test_common_100_115_072():
             txn_history_page = TransHistoryPage(driver=app_driver)
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -703,6 +707,9 @@ def test_common_100_115_073():
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
             logger.debug(f"Query to fetch' data from txn table : {query}")
@@ -1252,6 +1259,9 @@ def test_common_100_115_074():
             txn_history_page = TransHistoryPage(driver=app_driver)
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -1829,6 +1839,9 @@ def test_common_100_115_075():
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
             logger.debug(f"Query to fetch data from txn table : {query}")
@@ -2404,6 +2417,9 @@ def test_common_100_115_076():
             txn_history_page = TransHistoryPage(driver=app_driver)
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "

@@ -3041,11 +3041,14 @@ def test_common_100_115_07_097():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update bin_info set payment_card_type='CREDIT' where bin = '417666';"
-        logger.debug(f"query to update bin_info table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"fetching query result : {result}")
-        refresh_db()
+        try:
+            query = f"update bin_info set payment_card_type='CREDIT' where bin = '417666';"
+            logger.debug(f"query to update bin_info table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"fetching query result : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -3237,11 +3240,14 @@ def test_common_100_115_07_098():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update bin_info set payment_card_type='CREDIT' where bin = '417666';"
-        logger.debug(f"query to update bin_info table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"fetching query result : {result}")
-        refresh_db()
+        try:
+            query = f"update bin_info set payment_card_type='CREDIT' where bin = '417666';"
+            logger.debug(f"query to update bin_info table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"fetching query result : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

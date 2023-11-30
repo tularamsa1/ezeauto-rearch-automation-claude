@@ -1933,13 +1933,15 @@ def test_common_100_115_07_136():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
-        logger.debug(f"Query to update config_data table to revert set up : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
-
+        try:
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            logger.debug(f"Query to update config_data table to revert set up : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2912,13 +2914,15 @@ def test_common_100_115_07_137():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
-        logger.debug(f"Query to update config_data table to revert set up : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
-
+        try:
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            logger.debug(f"Query to update config_data table to revert set up : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -3124,9 +3128,12 @@ def test_common_100_115_07_143():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
     finally:
-        query = f"update config_data set param_value='10000' where id='386';"
-        logger.debug(f"Query to update config_data table to revert back setup : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
+        try:
+            query = f"update config_data set param_value='10000' where id='386';"
+            logger.debug(f"Query to update config_data table to revert back setup : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

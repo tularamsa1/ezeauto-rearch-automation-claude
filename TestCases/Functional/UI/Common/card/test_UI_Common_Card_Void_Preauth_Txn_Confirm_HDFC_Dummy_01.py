@@ -1,5 +1,7 @@
 import random
 import sys
+import time
+
 import pytest
 from datetime import datetime
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -221,6 +223,8 @@ def test_common_100_115_03_008():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
             logger.debug(f"Clicked on void button")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             # The below query is to fetch txn details after voiding the txn [confirm preauth and void txn will have same txn_id]
             query = f"select * from txn where id='{txn_id}';"
@@ -1104,6 +1108,8 @@ def test_common_100_115_03_010():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
             logger.debug(f"Clicked on void button")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             # The below query is to fetch txn details after voiding the txn [confirm preauth and void txn will have same txn_id]
             query = f"select * from txn where id='{txn_id}';"

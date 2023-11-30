@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -246,6 +247,8 @@ def test_common_100_115_07_050():
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -991,8 +994,11 @@ def test_common_100_115_07_050():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
-        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+            logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1227,6 +1233,8 @@ def test_common_100_115_07_052():
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -1993,8 +2001,11 @@ def test_common_100_115_07_052():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT',status=1)
-        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT',status=1)
+            logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2229,6 +2240,8 @@ def test_common_100_115_07_054():
             txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -2995,6 +3008,9 @@ def test_common_100_115_07_054():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
-        logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+            logger.debug(f"updated subvention as active for debit card for org_code:  {org_code}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

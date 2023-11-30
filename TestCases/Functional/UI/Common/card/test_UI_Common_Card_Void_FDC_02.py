@@ -149,6 +149,9 @@ def test_common_100_115_033():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -180,6 +183,7 @@ def test_common_100_115_033():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -190,7 +194,7 @@ def test_common_100_115_033():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -209,7 +213,7 @@ def test_common_100_115_033():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -488,7 +492,7 @@ def test_common_100_115_033():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'SALE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -623,7 +627,6 @@ def test_common_100_115_034():
             card_page = CardPage(app_driver)
             logger.debug(f"selecting the card type as : CTLS_VISA_CREDIT_417666")
             card_page.select_cardtype("CTLS_VISA_CREDIT_417666")
-            # sleep(2)
             payment_page.click_on_proceed_homepage()
             home_page.click_on_history()
 
@@ -639,6 +642,9 @@ def test_common_100_115_034():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
@@ -671,6 +677,7 @@ def test_common_100_115_034():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -681,7 +688,7 @@ def test_common_100_115_034():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -700,7 +707,7 @@ def test_common_100_115_034():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -979,7 +986,7 @@ def test_common_100_115_034():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -1113,7 +1120,6 @@ def test_common_100_115_035():
             card_page = CardPage(app_driver)
             logger.debug(f"selecting the card type as : CTLS_MASTER_CREDIT_541333")
             card_page.select_cardtype("CTLS_MASTER_CREDIT_541333")
-            # sleep(2)
             payment_page.click_on_proceed_homepage()
             home_page.click_on_history()
 
@@ -1129,6 +1135,9 @@ def test_common_100_115_035():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
@@ -1161,6 +1170,7 @@ def test_common_100_115_035():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -1171,7 +1181,7 @@ def test_common_100_115_035():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1190,7 +1200,7 @@ def test_common_100_115_035():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -1469,7 +1479,7 @@ def test_common_100_115_035():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -1603,7 +1613,6 @@ def test_common_100_115_036():
             card_page = CardPage(app_driver)
             logger.debug(f"selecting the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
             card_page.select_cardtype("CTLS_WITH_PIN_MASTER_CREDIT_541333")
-            # sleep(2)
             payment_page.click_on_proceed_homepage()
             home_page.click_on_history()
 
@@ -1619,6 +1628,9 @@ def test_common_100_115_036():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
@@ -1651,6 +1663,7 @@ def test_common_100_115_036():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -1661,7 +1674,7 @@ def test_common_100_115_036():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1680,7 +1693,7 @@ def test_common_100_115_036():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -1959,7 +1972,7 @@ def test_common_100_115_036():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -2093,24 +2106,7 @@ def test_common_100_115_036():
             card_page = CardPage(app_driver)
             logger.debug(f"selecting the card type as : CTLS_VISA_CREDIT_417666")
             card_page.select_cardtype("CTLS_VISA_CREDIT_417666")
-            # sleep(2)
             payment_page.click_on_proceed_homepage()
-
-            api_details = DBProcessor.get_api_details('Settlement', request_body={"username": portal_username,
-                                                                                  "password": portal_password})
-            api_details["EndPoint"] = api_details["EndPoint"] + "/" + str(
-                terminal_info_id)
-            settle_response = APIProcessor.send_request(api_details)
-            logger.debug(f"response received for the Settlement api is : {settle_response}")
-
-            home_page.check_home_page_logo()
-            home_page.wait_for_navigation_to_load()
-            home_page.wait_for_home_page_load()
-            logger.info(f"App homepage loaded successfully")
-            home_page.click_online_refund()
-            logger.debug(f"selecting the card type as : CTLS_VISA_CREDIT_417666")
-            card_page.select_cardtype("CTLS_VISA_CREDIT_417666")
-
             home_page.click_on_history()
 
             query = f"select * from txn where org_code ='{str(org_code)}' AND payment_mode = 'CARD' AND device_serial" \
@@ -2125,6 +2121,9 @@ def test_common_100_115_036():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
@@ -2157,6 +2156,7 @@ def test_common_100_115_036():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -2167,7 +2167,7 @@ def test_common_100_115_036():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -2186,7 +2186,7 @@ def test_common_100_115_036():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -2465,7 +2465,7 @@ def test_common_100_115_036():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,

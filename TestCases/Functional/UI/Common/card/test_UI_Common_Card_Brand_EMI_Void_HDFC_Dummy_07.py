@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -265,6 +266,8 @@ def test_common_100_115_07_066():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             logger.debug(f"Started calculating emi part")
@@ -980,9 +983,11 @@ def test_common_100_115_07_066():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
                                                          status=1)
-
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1233,6 +1238,8 @@ def test_common_100_115_07_067():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             logger.debug(f"Started calculating emi part")
@@ -1948,9 +1955,11 @@ def test_common_100_115_07_067():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',
                                                          status=1)
-
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2200,6 +2209,8 @@ def test_common_100_115_07_068():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             logger.debug(f"Started calculating emi part")
@@ -2915,6 +2926,8 @@ def test_common_100_115_07_068():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',status=1)
-
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='CREDIT',status=1)
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

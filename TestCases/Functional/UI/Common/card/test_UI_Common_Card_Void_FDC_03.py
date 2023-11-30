@@ -133,8 +133,8 @@ def test_common_100_115_231():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
-            time.sleep(2)
-            logger.debug(f"Sleep for 2 secs : {txn_id}")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")
@@ -696,8 +696,8 @@ def test_common_100_115_232():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
-            time.sleep(2)
-            logger.debug(f"Sleep for 2 secs : {txn_id}")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")
@@ -1259,8 +1259,8 @@ def test_common_100_115_233():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
-            time.sleep(2)
-            logger.debug(f"Sleep for 2 secs : {txn_id}")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")
@@ -1822,8 +1822,8 @@ def test_common_100_115_234():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
-            time.sleep(2)
-            logger.debug(f"Sleep for 2 secs : {txn_id}")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")
@@ -2385,8 +2385,8 @@ def test_common_100_115_235():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
-            time.sleep(2)
-            logger.debug(f"Sleep for 2 secs : {txn_id}")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")

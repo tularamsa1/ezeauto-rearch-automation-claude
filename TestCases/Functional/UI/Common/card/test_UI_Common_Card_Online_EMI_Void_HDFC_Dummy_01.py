@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -159,6 +160,8 @@ def test_common_100_115_08_007():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
@@ -943,6 +946,8 @@ def test_common_100_115_08_008():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
@@ -1727,6 +1732,8 @@ def test_common_100_115_08_009():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
@@ -2518,6 +2525,8 @@ def test_common_100_115_08_010():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \
@@ -3311,6 +3320,8 @@ def test_common_100_115_08_011():
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{root_org_code}' and status = 'ACTIVE' and " \

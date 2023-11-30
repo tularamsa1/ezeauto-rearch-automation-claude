@@ -211,11 +211,14 @@ def test_common_100_115_07_081():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='CREDIT', status='ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
-        testsuite_teardown.update_emi_status_for_root_org(root_org_code='EZETAP', card_type='CREDIT', status='ACTIVE', issuer_code=issuer_code, emi_type='BRAND')
-        logger.debug(f"updated emi settings for EZETAP as inactive for credit card for {issuer_code}")
-        testsuite_teardown.update_emi_status_for_root_org(root_org_code='EZETAP', card_type='CREDIT', status='ACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
+        try:
+            testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='CREDIT', status='ACTIVE')
+            logger.debug(f"updated emi settings for {org_code} as inactive for credit card")
+            testsuite_teardown.update_emi_status_for_root_org(root_org_code='EZETAP', card_type='CREDIT', status='ACTIVE', issuer_code=issuer_code, emi_type='BRAND')
+            logger.debug(f"updated emi settings for EZETAP as inactive for credit card for {issuer_code}")
+            testsuite_teardown.update_emi_status_for_root_org(root_org_code='EZETAP', card_type='CREDIT', status='ACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -407,13 +410,15 @@ def test_common_100_115_07_082():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update bin_info set emi_enabled= 1 where bin='417666' and bank_code='HDFC' and bank='HDFC' and payment_card_type= 'CREDIT' "
-        logger.debug(f"Query to update bin_info for emi_enabled to ACTIVE : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from bin_info for emi_enabled to ACTIVE : {result}")
-        refresh_db()
-        logger.debug(f"Refreshing the DB after reverting the bin_info table: {result}")
-
+        try:
+            query = f"update bin_info set emi_enabled= 1 where bin='417666' and bank_code='HDFC' and bank='HDFC' and payment_card_type= 'CREDIT' "
+            logger.debug(f"Query to update bin_info for emi_enabled to ACTIVE : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from bin_info for emi_enabled to ACTIVE : {result}")
+            refresh_db()
+            logger.debug(f"Refreshing the DB after reverting the bin_info table: {result}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -605,14 +610,15 @@ def test_common_100_115_07_083():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-
-        query = f"update bin_info set payment_card_type= 'CREDIT' where bin = '417666' and bank_code = 'HDFC' and bank = 'HDFC'"
-        logger.debug(f"Query to update bin_info for payment_card_type as CREDIT : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from bin_info for payment_card_type as CREDIT : {result}")
-        refresh_db()
-        logger.debug(f"Refreshing the DB after reverting the bin_info table: {result}")
-
+        try:
+            query = f"update bin_info set payment_card_type= 'CREDIT' where bin = '417666' and bank_code = 'HDFC' and bank = 'HDFC'"
+            logger.debug(f"Query to update bin_info for payment_card_type as CREDIT : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from bin_info for payment_card_type as CREDIT : {result}")
+            refresh_db()
+            logger.debug(f"Refreshing the DB after reverting the bin_info table: {result}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -810,13 +816,15 @@ def test_common_100_115_07_084():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update bin_info set payment_card_type = 'CREDIT' where bin = '417666' and bank_code = 'HDFC' and bank = 'HDFC'"
-        logger.debug(f"Query to update bin_info for payment_card_type as CREDIT : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from bin_info for payment_card_type as CREDIT : {result}")
-        refresh_db()
-        logger.debug(f"Refreshing the DB after reverting the bin_info table: {result}")
-
+        try:
+            query = f"update bin_info set payment_card_type = 'CREDIT' where bin = '417666' and bank_code = 'HDFC' and bank = 'HDFC'"
+            logger.debug(f"Query to update bin_info for payment_card_type as CREDIT : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from bin_info for payment_card_type as CREDIT : {result}")
+            refresh_db()
+            logger.debug(f"Refreshing the DB after reverting the bin_info table: {result}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

@@ -4902,14 +4902,17 @@ def test_common_100_115_07_127():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
+        try:
+            testsuite_teardown.update_subvention_plan_status(org_code=org_code, brand_id=brand_id, card_type='DEBIT', status=1)
 
-        testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as active for credit card")
+            testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
+            logger.debug(f"updated emi settings for {org_code} as active for credit card")
 
-        query = f"update subvention_plan set status = 1 where brand_id ='{brand_id}' and bank='ICICI' and org_code='{org_code}'"
-        logger.debug(f"Query to update subvention_plan with status as ACTIVE for an org code : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
-        refresh_db()
+            query = f"update subvention_plan set status = 1 where brand_id ='{brand_id}' and bank='ICICI' and org_code='{org_code}'"
+            logger.debug(f"Query to update subvention_plan with status as ACTIVE for an org code : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

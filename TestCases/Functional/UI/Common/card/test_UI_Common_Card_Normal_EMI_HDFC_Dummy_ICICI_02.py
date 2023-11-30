@@ -354,12 +354,15 @@ def test_common_100_115_05_087():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        query = f"update bin_info set emi_enabled=b'1' where bin='428090';"
-        logger.debug(f"Query to update bin_info table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
+        try:
+            query = f"update bin_info set emi_enabled=b'1' where bin='428090';"
+            logger.debug(f"Query to update bin_info table: {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

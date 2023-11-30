@@ -1326,11 +1326,14 @@ def test_common_100_115_11_035():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update rule set status = 'ACTIVE' where org_code='{org_code}' and name LIKE '{brand_name}_HDFC_CREDIT%'"
-        logger.debug(f"Query to update rule with status as ACTIVE : {query}")
-        result = DBProcessor.setValueToDB(query=query, db_name='rule_engine')
-        logger.debug(f"Query to fetch result from rule for status as ACTIVE : {result}")
-        refresh_db()
+        try:
+            query = f"update rule set status = 'ACTIVE' where org_code='{org_code}' and name LIKE '{brand_name}_HDFC_CREDIT%'"
+            logger.debug(f"Query to update rule with status as ACTIVE : {query}")
+            result = DBProcessor.setValueToDB(query=query, db_name='rule_engine')
+            logger.debug(f"Query to fetch result from rule for status as ACTIVE : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1616,11 +1619,14 @@ def test_common_100_115_11_036():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update rule set status='INACTIVE' where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_ICICI_CREDIT%'"
-        logger.debug(f"Query to update rule table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from rule table : {result}")
-        refresh_db()
+        try:
+            query = f"update rule set status='INACTIVE' where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_ICICI_CREDIT%'"
+            logger.debug(f"Query to update rule table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from rule table : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1935,16 +1941,20 @@ def test_common_100_115_11_037():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update emi set min_amount ='{emi_min_amt}'  where id='{emi_id}'"
-        logger.debug(f"Query to update emi table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from emi table : {result}")
+        try:
+            query = f"update emi set min_amount ='{emi_min_amt}'  where id='{emi_id}'"
+            logger.debug(f"Query to update emi table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from emi table : {result}")
 
-        query = f"update brand_sku_details set min_amount ='{prod_min_amt}'  where brand_id='{str(brand_id)}' and sku_name='{brand_sku_name}'"
-        logger.debug(f"Query to update brand_sku_details table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from brand_sku_details table : {result}")
-        refresh_db()
+            query = f"update brand_sku_details set min_amount ='{prod_min_amt}'  where brand_id='{str(brand_id)}' and sku_name='{brand_sku_name}'"
+            logger.debug(f"Query to update brand_sku_details table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query to fetch result from brand_sku_details table : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
+
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2256,10 +2266,13 @@ def test_common_100_115_11_038():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update rule set end_date='{bo_end_date}' where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_HDFC_CREDIT%'"
-        logger.debug(f"Query to update rule end date : {query}")
-        result = DBProcessor.setValueToDB(query=query, db_name='rule_engine')
-        logger.debug(f"Query to fetch result from rule end date : {result}")
-        logger.debug(f"Query to fetch result from rule for status as ACTIVE : {result}")
-        refresh_db()
+        try:
+            query = f"update rule set end_date='{bo_end_date}' where org_code='{org_code}' and credit_type='CASHBACK' and name LIKE '{brand_name}_HDFC_CREDIT%'"
+            logger.debug(f"Query to update rule end date : {query}")
+            result = DBProcessor.setValueToDB(query=query, db_name='rule_engine')
+            logger.debug(f"Query to fetch result from rule end date : {result}")
+            logger.debug(f"Query to fetch result from rule for status as ACTIVE : {result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -158,6 +159,8 @@ def test_common_100_115_05_082():
             txn_history_page = TransHistoryPage(driver=app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \

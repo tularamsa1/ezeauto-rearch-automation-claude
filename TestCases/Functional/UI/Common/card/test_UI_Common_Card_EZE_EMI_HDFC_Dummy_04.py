@@ -1734,15 +1734,17 @@ def test_common_100_115_11_026():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-
-        query = f"update ezeemi_club_wallet_account set wallet_balance = '1000000.0000', wallet_limit = " \
-                f"'1200000.0000', max_topup_limit = '1700000.0000' where org_code = '{org_code}' and brand_id = '{brand_id}' and wallet_type = " \
-                f"'MCEW';"
-        logger.debug(f"Query to update ezeemi_club_wallet_account table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
+        try:
+            query = f"update ezeemi_club_wallet_account set wallet_balance = '1000000.0000', wallet_limit = " \
+                    f"'1200000.0000', max_topup_limit = '1700000.0000' where org_code = '{org_code}' and brand_id = '{brand_id}' and wallet_type = " \
+                    f"'MCEW';"
+            logger.debug(f"Query to update ezeemi_club_wallet_account table: {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

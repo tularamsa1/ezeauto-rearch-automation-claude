@@ -381,6 +381,24 @@ def test_common_100_115_07_087():
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
 
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
+                f"and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
+        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for subvention_plan_details table : {result}")
+        subvention_entity = result['subventing_entity'].values[0]
+        logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
+        subvention_type = result['subvention_type'].values[0]
+        logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
+        subvention_value_type = result['subvention_value_type'].values[0]
+        logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
+        subvention_value = result['subvention_value'].values[0]
+        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
+        subvention_tenure = result['tenure'].values[0]
+        logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
+        subvention_discount_type = result['discount_type'].values[0]
+        logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
+
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -432,23 +450,6 @@ def test_common_100_115_07_087():
                 payment_page.select_emi_plan(emi_plan_in_months)
                 logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
                 payment_page.click_on_proceed_homepage()
-
-                query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
-                logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result for subvention_plan_details table : {result}")
-                subvention_entity = result['subventing_entity'].values[0]
-                logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
-                subvention_type = result['subvention_type'].values[0]
-                logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
-                subvention_value_type = result['subvention_value_type'].values[0]
-                logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
-                subvention_value = result['subvention_value'].values[0]
-                logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
-                subvention_tenure = result['tenure'].values[0]
-                logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
-                subvention_discount_type = result['discount_type'].values[0]
-                logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
 
                 #Calculating the emi's using formula
                 cal_additional_payback = (amount * (subvention_value / 100))
@@ -1153,21 +1154,24 @@ def test_common_100_115_07_087():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
-                f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
-                f"and tid_type='SUBVENTION'"
-        logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result after reverting back the  updated interest_rate in emi table :{result}")
+        try:
+            query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
+                    f"issuer_code='HDFC' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                    f"and tid_type='SUBVENTION'"
+            logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result after reverting back the  updated interest_rate in emi table :{result}")
 
-        query = f"update subvention_plan_details set subvention_value='{sub_value}' where subvention_plan_id='{subvention_plan_id}' and " \
-                f"subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
-        logger.debug(f"Reverting back the  updated subvention_value in subvention_plan_details table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result after reverting back the updated subvention_value in subvention_plan_details table : {result}")
+            query = f"update subvention_plan_details set subvention_value='{sub_value}' where subvention_plan_id='{subvention_plan_id}' and " \
+                    f"subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
+            logger.debug(f"Reverting back the  updated subvention_value in subvention_plan_details table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result after reverting back the updated subvention_value in subvention_plan_details table : {result}")
 
-        refresh_db()
-        logger.debug(f"Refreshing the DB after reverting interest_rate and subvention_value : {result}")
+            refresh_db()
+            logger.debug(f"Refreshing the DB after reverting interest_rate and subvention_value : {result}")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2155,21 +2159,24 @@ def test_common_100_115_07_088():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
-        query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
+        try:
+            query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
                 f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
-        logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result after reverting back the  updated interest_rate in emi table :{result}")
+            logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result after reverting back the  updated interest_rate in emi table :{result}")
 
-        query = f"update subvention_plan_details set subvention_value='{sub_value}' where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
-                f"and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
-        logger.debug(f"Reverting back the subvention_value in subvention_plan_details table : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query result after reverting back subvention_value in subvention_plan_details table : {result}")
-        refresh_db()
-        logger.debug(f"DB refresh after reverting subvention_value and interest_rate : {result}")
+            query = f"update subvention_plan_details set subvention_value='{sub_value}' where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
+                    f"and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
+            logger.debug(f"Reverting back the subvention_value in subvention_plan_details table : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Query result after reverting back subvention_value in subvention_plan_details table : {result}")
+            refresh_db()
+            logger.debug(f"DB refresh after reverting subvention_value and interest_rate : {result}")
 
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

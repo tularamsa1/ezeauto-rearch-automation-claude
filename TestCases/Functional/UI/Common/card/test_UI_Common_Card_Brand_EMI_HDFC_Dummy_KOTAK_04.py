@@ -219,9 +219,12 @@ def test_common_100_115_07_149():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation-------------------------------------------------
     finally:
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakDCEMIcheckEligibility' where id='508';"
-        logger.debug(f"Query to update config_data table to revert back setup : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
+        try:
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakDCEMIcheckEligibility' where id='508';"
+            logger.debug(f"Query to update config_data table to revert back setup : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

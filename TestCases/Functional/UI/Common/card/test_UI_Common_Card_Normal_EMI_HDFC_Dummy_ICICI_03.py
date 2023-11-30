@@ -808,13 +808,15 @@ def test_common_100_115_05_089():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
-        logger.debug(f"Query to update config_data table to revert set up : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
-
+        try:
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            logger.debug(f"Query to update config_data table to revert set up : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -952,7 +954,7 @@ def test_common_100_115_05_095():
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
             payment_page.select_emi_plan(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected emi plan is {emi_plan_in_months} month")
-            payment_page.click_on_ok_error_btn_for_normal_emi()
+            payment_page.click_on_ok_error_btn_for_normal_Eze_emi()
 
             query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
                     f"issuer_code='ICICI' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='NORMAL'" \
@@ -1606,13 +1608,15 @@ def test_common_100_115_05_095():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
-        logger.debug(f"Query to update config_data table to revert set up : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
-        logger.debug(f"Database refreshed")
-
+        try:
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            logger.debug(f"Query to update config_data table to revert set up : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -2580,9 +2584,12 @@ def test_common_100_115_05_104():
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
     finally:
-        query = f"update config_data set param_value='10000' where id='386';"
-        logger.debug(f"Query to update config_data table to revert back setup : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result from query :{result}")
-        refresh_db()
+        try:
+            query = f"update config_data set param_value='10000' where id='386';"
+            logger.debug(f"Query to update config_data table to revert back setup : {query}")
+            result = DBProcessor.setValueToDB(query)
+            logger.debug(f"Fetching result from query :{result}")
+            refresh_db()
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
