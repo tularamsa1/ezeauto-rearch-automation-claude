@@ -1,5 +1,7 @@
 import random
 import sys
+import time
+
 import pytest
 from datetime import datetime
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -130,6 +132,9 @@ def test_common_100_115_236():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(2)
+            logger.debug(f"Sleep for 2 secs : {txn_id}")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")
@@ -690,6 +695,9 @@ def test_common_100_115_237():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(2)
+            logger.debug(f"Sleep for 2 secs : {txn_id}")
 
             query = f"select * from txn where id ='{str(txn_id)}'"
             logger.debug(f"Query to fetch txn data from the txn : {query}")

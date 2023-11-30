@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from time import sleep
 import pytest
 from datetime import datetime
@@ -146,6 +147,9 @@ def test_common_100_115_010():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(2)
+            logger.debug(f"Sleep for 2 secs : {txn_id}")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
@@ -637,6 +641,9 @@ def test_common_100_115_011():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(2)
+            logger.debug(f"Sleep for 2 secs : {txn_id}")
+
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1125,6 +1132,9 @@ def test_common_100_115_012():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(2)
+            logger.debug(f"Sleep for 2 secs : {txn_id}")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
