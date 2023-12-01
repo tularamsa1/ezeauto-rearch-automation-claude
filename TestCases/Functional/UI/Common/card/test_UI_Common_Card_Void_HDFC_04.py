@@ -691,7 +691,7 @@ def test_common_100_115_189():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -760,7 +760,7 @@ def test_common_100_115_189():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.db_datetime(posting_date)
+                date_and_time = date_time_converter.db_datetime(txn_created_time)
                 expected_api_values = {
                     "pmt_status": "VOIDED",
                     "txn_amt": float(amount),

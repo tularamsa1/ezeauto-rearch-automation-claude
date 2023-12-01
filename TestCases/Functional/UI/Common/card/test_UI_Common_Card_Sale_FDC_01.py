@@ -163,6 +163,7 @@ def test_common_100_115_019():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -173,7 +174,7 @@ def test_common_100_115_019():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -192,7 +193,7 @@ def test_common_100_115_019():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -475,7 +476,7 @@ def test_common_100_115_019():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -643,6 +644,7 @@ def test_common_100_115_020():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -653,7 +655,7 @@ def test_common_100_115_020():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -672,7 +674,7 @@ def test_common_100_115_020():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -955,7 +957,7 @@ def test_common_100_115_020():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -1125,6 +1127,7 @@ def test_common_100_115_021():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -1135,7 +1138,7 @@ def test_common_100_115_021():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1154,7 +1157,7 @@ def test_common_100_115_021():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -1437,7 +1440,7 @@ def test_common_100_115_021():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -1607,6 +1610,7 @@ def test_common_100_115_022():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -1617,7 +1621,7 @@ def test_common_100_115_022():
                          f", device_serial_db:{device_serial_db}, org_code_db:{org_code_db}, payment_card_bin_db:"
                          f"{payment_card_bin_db}, payment_card_brand_db:{payment_card_brand_db}, payment_card_type_db:"
                          f"{payment_card_type_db}, txn_type_db:{txn_type_db}, card_txn_type_db:{card_txn_type_db}, "
-                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}")
+                         f"card_last_four_digit_db:{card_last_four_digit_db}, merchant_name:{merchant_name}, posting_date:{posting_date}")
 
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1636,7 +1640,7 @@ def test_common_100_115_022():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -1919,7 +1923,7 @@ def test_common_100_115_022():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -2089,6 +2093,7 @@ def test_common_100_115_023():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -2118,7 +2123,7 @@ def test_common_100_115_023():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -2401,7 +2406,7 @@ def test_common_100_115_023():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'SALE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,

@@ -781,7 +781,7 @@ def test_common_100_115_184():
                     "device_serial": device_serial,
                     "ext_ref_number": order_id,
                     "merchant_name": merchant_name,
-                    "payer_name": "RAJA",
+                    "payer_name": "RAJA                     /",
                     "pmt_card_bin": "428090",
                     "pmt_card_brand": "VISA",
                     "pmt_card_type": "DEBIT",
@@ -1883,8 +1883,8 @@ def test_common_100_115_186():
                     "terminal_info_id": terminal_info_id,
                     "txn_type": txn_type_db,
                     "card_txn_type": card_txn_type_db,
-                    # "customer_name": customer_name,
-                    # "payer_name": payer_name_db,
+                    "customer_name": customer_name,
+                    "payer_name": payer_name_db,
                     "card_last_four_digit": card_last_four_digit_db
                 }
                 logger.debug(f"actual_db_values : {actual_db_values}")
