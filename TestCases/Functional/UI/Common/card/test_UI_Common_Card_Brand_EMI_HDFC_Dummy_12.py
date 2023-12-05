@@ -121,7 +121,7 @@ def test_common_100_115_07_086():
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, middlewareLog=True, q2_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")

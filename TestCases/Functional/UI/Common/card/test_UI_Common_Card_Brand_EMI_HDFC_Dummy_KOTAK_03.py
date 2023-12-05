@@ -4013,7 +4013,7 @@ def test_common_100_115_07_148():
             card_page.select_cardtype("EMV_WITH_PIN_VISA_DEBIT_428090")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
 
-            query = f"select * from debit_emi_txn_request where org_code={org_code} order by id desc limit 1;"
+            query = f"select * from debit_emi_txn_request where org_code='{org_code}' order by id desc limit 1;"
             logger.debug(f"Query to fetch data from debit_emi_txn_request table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result for debit_emi_txn_request table : {result} ")

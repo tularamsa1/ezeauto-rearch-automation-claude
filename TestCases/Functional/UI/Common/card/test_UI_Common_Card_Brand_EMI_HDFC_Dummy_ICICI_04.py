@@ -3044,7 +3044,7 @@ def test_common_100_115_07_143():
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, middlewareLog=True, q2_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -3084,7 +3084,7 @@ def test_common_100_115_07_143():
             card_page.select_cardtype("EMV_WITH_PIN_VISA_DEBIT_428090")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
 
-            query = f"select * from debit_emi_txn_request where org_code={org_code} order by id desc limit 1;"
+            query = f"select * from debit_emi_txn_request where org_code='{org_code}' order by id desc limit 1;"
             logger.debug(f"Query to fetch data from debit_emi_txn_request table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result for debit_emi_txn_request table : {result} ")

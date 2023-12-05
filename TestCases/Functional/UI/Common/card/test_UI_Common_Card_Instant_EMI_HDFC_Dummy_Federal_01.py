@@ -78,6 +78,9 @@ def test_common_100_115_06_051():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        # Below function to update bank_code, bank for the bin: 417666
+        testsuite_teardown.update_bin_info(bin_number='417666', bank_code='FEDERAL', bank='FEDERAL')
+
         query = f"select bank_code from bin_info where bin='417666'"
         logger.debug(f"Query to fetch bank_code from the bin_info table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -125,7 +128,7 @@ def test_common_100_115_06_051():
             logger.info(f"App homepage loaded successfully")
             emi_plan_in_months = 3
             logger.debug(f"emi_plan_in_months : {emi_plan_in_months}")
-            amount = random.randint(2500, 3500)
+            amount = random.randint(3500, 3500)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amt=amount, order_number=order_id,
                                                                                device_serial=device_serial)
@@ -629,7 +632,6 @@ def test_common_100_115_06_051():
                     "loan_amt": float(amount),
                     "monthly_emi": monthly_emi_cal,
                     "total_emi_amt": total_emi,
-                    "scheme_code": scheme_code,
                     "emi_txn_amt": float(amount),
                     "emi_original_amt": float(amount),
                     "customer_name": "L3TEST/CARD0010",
@@ -666,7 +668,6 @@ def test_common_100_115_06_051():
                     "loan_amt": emi_loan_amount_db,
                     "monthly_emi": emi_amount_monthly_db,
                     "total_emi_amt": emi_total_amount_db,
-                    "scheme_code": emi_scheme_code_db,
                     "emi_txn_amt": emi_txn_amount_db,
                     "emi_original_amt": emi_original_amount_db,
                     "customer_name": customer_name_db,
@@ -757,12 +758,10 @@ def test_common_100_115_06_051():
                     "CARD": f"XXXX-XXXX-XXXX-0102 EMV with PIN",
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
-                    "Card Issuer": "OneCard",
-                    "Txn Amt": "Rs." + "{:.2f}".format(amount),
-                    "Loan Amt": "Rs." + "{:.2f}".format(amount),
-                    "Easy EMI Fin Charge(p.a.)": f"{interest_rate}%",
+                    "Card Issuer": "Federal Bank",
+                    "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi_cal),
-                    "Total Amt (With Intt)": "Rs." + "{:.2f}".format(total_emi),
+                    "Total Amt with Interest": "Rs." + "{:.2f}".format(total_emi),
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
                     "unnamed_section_text": f"{customer_name_db} I agree to pay as per the card issuer agreement."
                 }

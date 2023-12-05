@@ -2380,11 +2380,9 @@ def test_common_100_115_05_096():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Txn Amt": "Rs." + "{:.2f}".format(amount),
-                    "Loan Amt": "Rs." + "{:.2f}".format(amount),
-                    "Easy EMI Fin Charge(p.a.)": f"{interest_rate}%",
+                    "Rate of Interest (P.A.)": f"{interest_rate}%",
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
-                    "Total Amt (With Intt)": "Rs." + "{:.2f}".format(total_emi),
+                    "Total Amt with Interest": "Rs." + "{:.2f}".format(total_emi),
                     "INVOICE NO": invoice_number,
                     "APP": "VISA",
                     "CARD": f"XXXX-XXXX-XXXX-0321 EMV with PIN",
@@ -2538,7 +2536,7 @@ def test_common_100_115_05_104():
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_DEBIT_428090")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
 
-            query = f"select * from debit_emi_txn_request where org_code={org_code} order by id desc limit 1;"
+            query = f"select * from debit_emi_txn_request where org_code='{org_code}' order by id desc limit 1;"
             logger.debug(f"Query to fetch data from debit_emi_txn_request table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result for debit_emi_txn_request table : {result} ")

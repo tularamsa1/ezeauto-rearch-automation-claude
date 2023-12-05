@@ -1750,7 +1750,7 @@ def test_common_100_115_05_078():
             payment_page.select_emi_plan(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected emi plan is {emi_plan_in_months} month")
 
-            query = f"select * from debit_emi_txn_request where org_code={org_code} order by id desc limit 1;"
+            query = f"select * from debit_emi_txn_request where org_code='{org_code}' order by id desc limit 1;"
             logger.debug(f"Query to fetch data from debit_emi_txn_request table : {query}")
             result = DBProcessor.getValueFromDB(query=query)
             logger.debug(f"Fetching result for debit_emi_txn_request table : {result} ")

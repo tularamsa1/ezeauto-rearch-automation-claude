@@ -803,7 +803,7 @@ def test_common_100_115_07_100():
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
                     "subvention_scheme_name": api_scheme_name,
-                    "subvention_org_code": "NEWMERCHANTDURGA001",
+                    "subvention_org_code": org_code,
                     "subvention_brand_id": str(brand_id),
                     "subvention_card_type": 'CREDIT',
                     "subvention_entity": "BRAND",

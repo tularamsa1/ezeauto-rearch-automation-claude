@@ -104,9 +104,6 @@ def test_common_100_115_07_139():
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code value from the bin_info table : {issuer_code}")
 
-        testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='DEBIT', status='ACTIVE')
-        logger.debug(f"updated emi settings for {org_code} as inactive for debit card")
-
         emi_plan_in_months = 3
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
@@ -119,7 +116,7 @@ def test_common_100_115_07_139():
                                                           status='INACTIVE', issuer_code=issuer_code, emi_type='NORMAL')
         logger.debug(f"updated emi settings for {root_org_code} as inactive for debit card for {issuer_code}")
 
-        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+        query = f"select * from emi where org_code='{org_code}' and " \
                 f"issuer_code='KOTAK' and card_type='DEBIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
         logger.debug(f"Query to fetch data from the emi table : {query}")
@@ -155,56 +152,13 @@ def test_common_100_115_07_139():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='KOTAK' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
-        logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result for subvention_plan table : {result}")
-        subvention_plan_id = result['id'].values[0]
-        logger.debug(f"Fetching subvention_id from subvention_plan table : {subvention_plan_id}")
-        subvention_plan_org_code = result['org_code'].values[0]
-        logger.debug(f"Fetching org_code from subvention_plan table : {subvention_plan_org_code}")
-        subvention_plan_brand_id = result['brand_id'].values[0]
-        logger.debug(f"Fetching brand_id from subvention_plan table : {subvention_plan_brand_id}")
-        subvention_plan_card_type = result['card_type'].values[0]
-        logger.debug(f"Fetching card_type from subvention_plan table : {subvention_plan_card_type}")
-        subvention_scheme_name = result['scheme_name'].values[0]
-        logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
-
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='BRAND' and subvention_value_type= 'FIXED' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
-        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result for subvention_plan_details table : {result}")
-        subvention_entity = result['subventing_entity'].values[0]
-        logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
-        subvention_type = result['subvention_type'].values[0]
-        logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
-        subvention_value_type = result['subvention_value_type'].values[0]
-        logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
-        subvention_value = result['subvention_value'].values[0]
-        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
-        subvention_tenure = result['tenure'].values[0]
-        logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
-        subvention_discount_type = result['discount_type'].values[0]
-        logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
-
-        # updating the status as inactive in subvention_plan_details table
-        testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
-
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_type='PAYBACK' and subvention_value_type='FIXED' and tenure='{emi_plan_in_months} month'"
-        logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
-
-        refresh_db()
-        logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
-
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, middlewareLog=True, q2_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -302,8 +256,8 @@ def test_common_100_115_07_139():
 @pytest.mark.appVal
 def test_common_100_115_07_140():
     """
-    Sub Feature Code: UI_Common_Card_Brand_EMI_Txn_ICICI_Debit_Issuer_Not_Enabled_In_Org_Settings_For_An_Org_HDFC_Dummy_Kotak_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
-    Sub Feature Description: Performing the brand EMI transaction when ICICI debit issuer is not enabled in the org settings for an org (not ezetap) via HDFC
+    Sub Feature Code: UI_Common_Card_Brand_EMI_Txn_Debit_Issuer_Not_Enabled_In_Org_Settings_For_An_Org_HDFC_Dummy_Kotak_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
+    Sub Feature Description: Performing the brand EMI transaction when debit issuer is not enabled in the org settings for an org (not ezetap) via HDFC
     Dummy PG for Kotak issuer using EMV VISA Debit card with pin for 3 months tenure (bin: 428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand_EMI, 140: TC140
     """
@@ -422,56 +376,13 @@ def test_common_100_115_07_140():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='KOTAK' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
-        logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result for subvention_plan table : {result}")
-        subvention_plan_id = result['id'].values[0]
-        logger.debug(f"Fetching subvention_id from subvention_plan table : {subvention_plan_id}")
-        subvention_plan_org_code = result['org_code'].values[0]
-        logger.debug(f"Fetching org_code from subvention_plan table : {subvention_plan_org_code}")
-        subvention_plan_brand_id = result['brand_id'].values[0]
-        logger.debug(f"Fetching brand_id from subvention_plan table : {subvention_plan_brand_id}")
-        subvention_plan_card_type = result['card_type'].values[0]
-        logger.debug(f"Fetching card_type from subvention_plan table : {subvention_plan_card_type}")
-        subvention_scheme_name = result['scheme_name'].values[0]
-        logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
-
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='BRAND' and subvention_value_type= 'FIXED' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
-        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result for subvention_plan_details table : {result}")
-        subvention_entity = result['subventing_entity'].values[0]
-        logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
-        subvention_type = result['subvention_type'].values[0]
-        logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
-        subvention_value_type = result['subvention_value_type'].values[0]
-        logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
-        subvention_value = result['subvention_value'].values[0]
-        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
-        subvention_tenure = result['tenure'].values[0]
-        logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
-        subvention_discount_type = result['discount_type'].values[0]
-        logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
-
-        # updating the status as inactive in subvention_plan_details table
-        testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
-
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_type='PAYBACK' and subvention_value_type='FIXED' and tenure='{emi_plan_in_months} month'"
-        logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
-
-        refresh_db()
-        logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
-
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, middlewareLog=True, q2_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -683,56 +594,13 @@ def test_common_100_115_07_141():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='KOTAK' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
-        logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result for subvention_plan table : {result}")
-        subvention_plan_id = result['id'].values[0]
-        logger.debug(f"Fetching subvention_id from subvention_plan table : {subvention_plan_id}")
-        subvention_plan_org_code = result['org_code'].values[0]
-        logger.debug(f"Fetching org_code from subvention_plan table : {subvention_plan_org_code}")
-        subvention_plan_brand_id = result['brand_id'].values[0]
-        logger.debug(f"Fetching brand_id from subvention_plan table : {subvention_plan_brand_id}")
-        subvention_plan_card_type = result['card_type'].values[0]
-        logger.debug(f"Fetching card_type from subvention_plan table : {subvention_plan_card_type}")
-        subvention_scheme_name = result['scheme_name'].values[0]
-        logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
-
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='BRAND' and subvention_value_type= 'FIXED' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
-        logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"Query result for subvention_plan_details table : {result}")
-        subvention_entity = result['subventing_entity'].values[0]
-        logger.debug(f"Fetching subventing_entity from subvention_plan_details table : {subvention_entity}")
-        subvention_type = result['subvention_type'].values[0]
-        logger.debug(f"Fetching subvention_type from subvention_plan_details table : {subvention_type}")
-        subvention_value_type = result['subvention_value_type'].values[0]
-        logger.debug(f"Fetching subvention_value_type from subvention_plan_details table : {subvention_value_type}")
-        subvention_value = result['subvention_value'].values[0]
-        logger.debug(f"Fetching subvention_value from subvention_plan_details table : {subvention_value}")
-        subvention_tenure = result['tenure'].values[0]
-        logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
-        subvention_discount_type = result['discount_type'].values[0]
-        logger.debug(f"Fetching discount_type from subvention_plan_details table : {subvention_discount_type}")
-
-        # updating the status as inactive in subvention_plan_details table
-        testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
-
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_type='PAYBACK' and subvention_value_type='FIXED' and tenure='{emi_plan_in_months} month'"
-        logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
-
-        refresh_db()
-        logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
-
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
 
         # Set the below variables depending on the log capturing need of the test case.
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, middlewareLog=True, q2_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, middlewareLog=True, q2_log=True)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")

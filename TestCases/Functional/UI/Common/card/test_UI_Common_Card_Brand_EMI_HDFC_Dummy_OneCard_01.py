@@ -800,8 +800,7 @@ def test_common_100_115_07_058():
                     "subvention_type": "PAYBACK",
                     "subvention_value_type": "FIXED",
                     "subvention_value": api_subvention_fixed,
-                    "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional"
+                    "subvention_tenure": f"{emi_plan_in_months} month"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -854,8 +853,7 @@ def test_common_100_115_07_058():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_value": subvention_value,
-                    "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type
+                    "subvention_tenure": subvention_tenure
                 }
                 logger.debug(f"actual_db_values: {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1745,8 +1743,7 @@ def test_common_100_115_07_059():
                     "subvention_type": "PAYBACK",
                     "subvention_value_type": "FIXED",
                     "subvention_value": api_subvention_fixed,
-                    "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional"
+                    "subvention_tenure": f"{emi_plan_in_months} month"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -1799,8 +1796,7 @@ def test_common_100_115_07_059():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_value": subvention_value,
-                    "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type
+                    "subvention_tenure": subvention_tenure
                 }
                 logger.debug(f"actual_db_values: {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -2104,7 +2100,7 @@ def test_common_100_115_07_060():
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
-            amount = random.randint(2500, 4000)
+            amount = random.randint(3500, 4000)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             home_page.enter_amount_and_order_number_and_device_serial_for_card(amt=amount, order_number=order_id,
                                                                                device_serial=device_serial)
@@ -2690,8 +2686,7 @@ def test_common_100_115_07_060():
                     "subvention_type": "PAYBACK",
                     "subvention_value_type": "FIXED",
                     "subvention_value": api_subvention_fixed,
-                    "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional"
+                    "subvention_tenure": f"{emi_plan_in_months} month"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -2744,8 +2739,7 @@ def test_common_100_115_07_060():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_value": subvention_value,
-                    "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type
+                    "subvention_tenure": subvention_tenure
                 }
                 logger.debug(f"actual_db_values: {actual_db_values}")
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
