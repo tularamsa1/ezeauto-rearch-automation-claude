@@ -119,7 +119,7 @@ def test_common_100_115_113():
             card_page.select_cardtype(text="CTLS_RUPAY_DEBIT_608326")
             logger.debug(f"selected the card type as : CTLS_RUPAY_DEBIT_608326")
             payment_page.click_on_proceed_to_home_page_for_failed_txn()
-            app_driver.back()
+            payment_page.click_on_back_btn_in_enter_amt_window()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -181,6 +181,8 @@ def test_common_100_115_113():
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
             merchant_name = result['merchant_name'].values[0]
             logger.debug(f"Fetching merchant name from txn table : {merchant_name}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -201,7 +203,7 @@ def test_common_100_115_113():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -656,7 +658,7 @@ def test_common_100_115_114():
             card_page.select_cardtype(text="CTLS_WITH_PIN_MASTER_CREDIT_541333")
             logger.debug(f"selected the card type as : CTLS_WITH_PIN_MASTER_CREDIT_541333")
             payment_page.click_on_proceed_to_home_page_for_failed_txn()
-            app_driver.back()
+            payment_page.click_on_back_btn_in_enter_amt_window()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -718,6 +720,8 @@ def test_common_100_115_114():
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
             merchant_name = result['merchant_name'].values[0]
             logger.debug(f"Fetching merchant name from txn table : {merchant_name}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -738,7 +742,7 @@ def test_common_100_115_114():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1193,7 +1197,7 @@ def test_common_100_115_115():
             card_page.select_cardtype(text="CTLS_VISA_CREDIT_417666")
             logger.debug(f"selected the card type as : CTLS_VISA_CREDIT_417666")
             payment_page.click_on_proceed_to_home_page_for_failed_txn()
-            app_driver.back()
+            payment_page.click_on_back_btn_in_enter_amt_window()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -1252,6 +1256,8 @@ def test_common_100_115_115():
             logger.debug(f"Fetching card last four digit from txn table : {card_last_four_digit_db}")
             merchant_name = result['merchant_name'].values[0]
             logger.debug(f"Fetching merchant name from txn table : {merchant_name}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1272,7 +1278,7 @@ def test_common_100_115_115():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": str(amount) + ".00",
                     "pmt_mode": "CARD",
@@ -1707,7 +1713,7 @@ def test_common_100_115_116():
             card_page.select_cardtype(text="CTLS_MASTER_CREDIT_541333")
             logger.debug(f"selected the card type as : CTLS_MASTER_CREDIT_541333")
             payment_page.click_on_proceed_to_home_page_for_failed_txn()
-            app_driver.back()
+            payment_page.click_on_back_btn_in_enter_amt_window()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -1769,6 +1775,8 @@ def test_common_100_115_116():
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
             merchant_name = result['merchant_name'].values[0]
             logger.debug(f"Fetching merchant name from txn table : {merchant_name}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1789,7 +1797,7 @@ def test_common_100_115_116():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": str(amount) + ".00",
                     "pmt_mode": "CARD",
@@ -2306,6 +2314,8 @@ def test_common_100_115_173():
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
             merchant_name = result['merchant_name'].values[0]
             logger.debug(f"Fetching merchant name from txn table : {merchant_name}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2326,7 +2336,7 @@ def test_common_100_115_173():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_and_time_app = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": str(amount) + ".00",
                     "pmt_mode": "CARD",

@@ -212,6 +212,8 @@ def test_common_100_115_04_001():
             logger.debug(f"Fetching card_txn_type from the txn table : {card_txn_type}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table : {posting_date}")
 
             query = f"select * from txn where org_code='{org_code}' and orig_txn_id='{txn_id}'"
             logger.debug(f"Query to fetch txn details for refund txn from the txn table : {query}")
@@ -273,6 +275,8 @@ def test_common_100_115_04_001():
             logger.debug(f"Fetching card_txn_type from the txn table for refund txn : {refund_card_txn_type}")
             refund_org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table for refund txn : {refund_org_code_txn}")
+            refund_posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for refund txn : {refund_posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -293,8 +297,8 @@ def test_common_100_115_04_001():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -962,7 +966,7 @@ def test_common_100_115_04_001():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=refund_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=refund_posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
@@ -1188,6 +1192,8 @@ def test_common_100_115_04_002():
             logger.debug(f"Fetching card_txn_type from the txn table : {card_txn_type}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table : {posting_date}")
 
             query = f"select * from txn where org_code='{org_code}' and orig_txn_id='{txn_id}'"
             logger.debug(f"Query to fetch txn details for refund txn from the txn table : {query}")
@@ -1249,6 +1255,8 @@ def test_common_100_115_04_002():
             logger.debug(f"Fetching card_txn_type from the txn table for refund txn : {refund_card_txn_type}")
             refund_org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table for refund txn : {refund_org_code_txn}")
+            refund_posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for refund txn : {refund_posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1269,8 +1277,8 @@ def test_common_100_115_04_002():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1938,7 +1946,7 @@ def test_common_100_115_04_002():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=refund_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=refund_posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
@@ -2164,6 +2172,8 @@ def test_common_100_115_04_003():
             logger.debug(f"Fetching card_txn_type from the txn table : {card_txn_type}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table : {org_code_txn}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table : {posting_date}")
 
             query = f"select * from txn where org_code='{org_code}' and orig_txn_id='{txn_id}'"
             logger.debug(f"Query to fetch txn details for refund txn from the txn table : {query}")
@@ -2225,6 +2235,8 @@ def test_common_100_115_04_003():
             logger.debug(f"Fetching card_txn_type from the txn table for refund txn : {refund_card_txn_type}")
             refund_org_code_txn = result['org_code'].values[0]
             logger.debug(f"Fetching org_code from the txn table for refund txn : {refund_org_code_txn}")
+            refund_posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table for refund txn : {refund_posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -2245,8 +2257,8 @@ def test_common_100_115_04_003():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
-                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
+                refund_date_and_time = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2914,7 +2926,7 @@ def test_common_100_115_04_003():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=refund_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=refund_posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "SALE AMOUNT:": "Rs." + "{:,.2f}".format(amount),

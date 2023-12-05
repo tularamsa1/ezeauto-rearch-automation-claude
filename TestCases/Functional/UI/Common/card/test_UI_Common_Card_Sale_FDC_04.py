@@ -183,6 +183,8 @@ def test_common_100_115_217():
             logger.debug(f"Query result, card_txn_type : {card_txn_type}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code : {org_code_txn}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Query result, posting_date : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -203,7 +205,7 @@ def test_common_100_115_217():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -552,7 +554,7 @@ def test_common_100_115_217():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
@@ -748,6 +750,8 @@ def test_common_100_115_218():
             logger.debug(f"Query result, card_txn_type : {card_txn_type}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code : {org_code_txn}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Query result, posting_date : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -768,7 +772,7 @@ def test_common_100_115_218():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1116,7 +1120,7 @@ def test_common_100_115_218():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),
@@ -1313,6 +1317,8 @@ def test_common_100_115_219():
             logger.debug(f"Query result, card_txn_type : {card_txn_type}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code : {org_code_txn}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Query result, posting_date : {posting_date}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1333,7 +1339,7 @@ def test_common_100_115_219():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_app_format(posting_date_db=created_time)
+                date_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1682,7 +1688,7 @@ def test_common_100_115_219():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount),

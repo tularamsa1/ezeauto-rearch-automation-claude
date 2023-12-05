@@ -146,6 +146,8 @@ def test_common_100_115_03_013():
             logger.debug(f"Fetching rr_number value from the txn table for first txn_id : {original_rrn}")
             original_txn_created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time value from the txn table for first txn_id : {original_txn_created_time}")
+            original_txn_posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table for first txn_id : {original_txn_posting_date}")
 
             txn_history_page.click_on_transaction_by_txn_id(original_txn_id)
             txn_history_page.click_on_confirm_pre_auth()
@@ -289,6 +291,8 @@ def test_common_100_115_03_013():
             logger.debug(f"Fetching external_ref value from the txn table after confirm pre_auth txn : {order_id_db_2}")
             merchant_code_db_2 = result["merchant_code"].iloc[0]
             logger.debug(f"Fetching merchant_code value from the txn table after confirm pre_auth txn: {merchant_code_db_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table after confirm pre_auth txn : {posting_date_2}")
 
             query = f"select * from txn where id='{refund_txn_id}'"
             logger.debug(f"Query to fetch data from the txn table for refund txn : {query}")
@@ -340,6 +344,8 @@ def test_common_100_115_03_013():
             logger.debug(f"Fetching card_txn_type value from the txn table for refund txn : {card_txn_type_db_3}")
             card_last_four_digit_db_3 = result["card_last_four_digit"].iloc[0]
             logger.debug(f"Fetching card_last_four_digit value from the txn table for refund txn : {card_last_four_digit_db_3}")
+            posting_date_3 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table for refund txn : {posting_date_3}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -359,9 +365,9 @@ def test_common_100_115_03_013():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(original_txn_created_time)
-                date_and_time_2 = date_time_converter.to_app_format(txn_created_time_2)
-                date_and_time_3 = date_time_converter.to_app_format(refund_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=original_txn_posting_date)
+                date_and_time_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
+                date_and_time_3 = date_time_converter.to_app_format(posting_date_db=posting_date_3)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1102,7 +1108,7 @@ def test_common_100_115_03_013():
                 transaction_type_3 = transaction_details[2]['Type']
                 status_3 = transaction_details[2]['Status']
                 username_3 = transaction_details[2]['Username']
-                auth_code_portal_3 = transaction_details[1]['Auth Code']
+                auth_code_portal_3 = transaction_details[2]['Auth Code']
 
                 date_time_2 = transaction_details[1]['Date & Time']
                 transaction_id_2 = transaction_details[1]['Transaction ID']
@@ -1162,9 +1168,8 @@ def test_common_100_115_03_013():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(original_txn_created_time)
-                txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=original_txn_posting_date)
+                txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(original_rrn),
@@ -1344,6 +1349,8 @@ def test_common_100_115_03_014():
             logger.debug(f"Fetching rr_number value from the txn table for first txn_id : {original_rrn}")
             original_txn_created_time = result['created_time'].values[0]
             logger.debug(f"Fetching created_time value from the txn table for first txn_id : {original_txn_created_time}")
+            original_txn_posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table for first txn_id : {original_txn_posting_date}")
 
             txn_history_page.click_on_transaction_by_txn_id(original_txn_id)
             txn_history_page.click_on_confirm_pre_auth()
@@ -1487,6 +1494,8 @@ def test_common_100_115_03_014():
             logger.debug(f"Fetching external_ref value from the txn table after confirm pre_auth txn : {order_id_db_2}")
             merchant_code_db_2 = result["merchant_code"].iloc[0]
             logger.debug(f"Fetching merchant_code value from the txn table after confirm pre_auth txn: {merchant_code_db_2}")
+            posting_date_2 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table after confirm pre_auth txn: {posting_date_2}")
 
             query = f"select * from txn where id='{refund_txn_id}'"
             logger.debug(f"Query to fetch data from the txn table for refund txn : {query}")
@@ -1538,6 +1547,8 @@ def test_common_100_115_03_014():
             logger.debug(f"Fetching card_txn_type value from the txn table for refund txn : {card_txn_type_db_3}")
             card_last_four_digit_db_3 = result["card_last_four_digit"].iloc[0]
             logger.debug(f"Fetching card_last_four_digit value from the txn table for refund txn : {card_last_four_digit_db_3}")
+            posting_date_3 = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date value from the txn table for refund txn : {posting_date_3}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1557,9 +1568,9 @@ def test_common_100_115_03_014():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(original_txn_created_time)
-                date_and_time_2 = date_time_converter.to_app_format(txn_created_time_2)
-                date_and_time_3 = date_time_converter.to_app_format(refund_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=original_txn_posting_date)
+                date_and_time_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
+                date_and_time_3 = date_time_converter.to_app_format(posting_date_db=posting_date_3)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2300,7 +2311,7 @@ def test_common_100_115_03_014():
                 transaction_type_3 = transaction_details[2]['Type']
                 status_3 = transaction_details[2]['Status']
                 username_3 = transaction_details[2]['Username']
-                auth_code_portal_3 = transaction_details[1]['Auth Code']
+                auth_code_portal_3 = transaction_details[2]['Auth Code']
 
                 date_time_2 = transaction_details[1]['Date & Time']
                 transaction_id_2 = transaction_details[1]['Transaction ID']
@@ -2360,9 +2371,8 @@ def test_common_100_115_03_014():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(original_txn_created_time)
-                txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(txn_created_time_2)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=original_txn_posting_date)
+                txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(posting_date_db=posting_date_2)
                 expected_charge_slip_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(original_rrn),
