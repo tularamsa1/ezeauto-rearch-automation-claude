@@ -202,6 +202,8 @@ def test_common_100_115_02_011():
             logger.debug(f"Fetching payer name from txn table : {payer_name_db}")
             payment_card_bin_db = result["payment_card_bin"].iloc[0]
             logger.debug(f"Fetching payment card bin from txn table : {payment_card_bin_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -219,7 +221,7 @@ def test_common_100_115_02_011():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(posting_date_db=created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -338,7 +340,7 @@ def test_common_100_115_02_011():
                     "card_last_four_digit": "0453",
                     "customer_name": "L3TEST/CARD1045",
                     "ext_ref_number": order_id,
-                    "merchant_name": "NEWMERCHANTDURGA001",
+                    "merchant_name": merchant_code_db,
                     "payer_name": "L3TEST/CARD1045",
                     "pmt_card_bin": "476173",
                     "card_type": "VISA",
@@ -774,6 +776,8 @@ def test_common_100_115_02_012():
             logger.debug(f"Fetching card last four digit from txn table : {card_last_four_digit_db}")
             payment_card_bin_db = result["payment_card_bin"].iloc[0]
             logger.debug(f"Fetching payment card bin from txn table : {payment_card_bin_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from the txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -791,7 +795,7 @@ def test_common_100_115_02_012():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(posting_date_db=created_time)
+            date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -905,7 +909,7 @@ def test_common_100_115_02_012():
                     "sale_amt": sale_amount,
                     "card_last_four_digit": "0018",
                     "ext_ref_number": order_id,
-                    "merchant_name": "NEWMERCHANTDURGA001",
+                    "merchant_name": merchant_code_db,
                     "pmt_card_bin": "417666",
                     "card_type": "VISA",
                     "card_txn_type_desc": "CTLS",

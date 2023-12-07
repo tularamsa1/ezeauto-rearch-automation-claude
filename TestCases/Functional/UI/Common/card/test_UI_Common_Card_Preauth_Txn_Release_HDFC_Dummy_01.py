@@ -203,6 +203,8 @@ def test_common_100_115_03_011():
             logger.debug(f"Fetching org_code value from the txn table : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref value from the txn table : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -222,7 +224,7 @@ def test_common_100_115_03_011():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -537,32 +539,6 @@ def test_common_100_115_03_011():
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
-                logger.info(f"date and time is: {txn_date},{txn_time}")
-                expected_values = {
-                    'merchant_ref_no': 'Ref # ' + str(order_id),
-                    'RRN': str(rrn),
-                    'date': txn_date, 'time': txn_time,
-                    'BATCH NO': batch_number,
-                    'CARD TYPE': 'VISA',
-                    'AUTH CODE': auth_code,
-                    'payment_option': 'PREAUTH RELEASE',
-                    "TID": tid,
-                    "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount)
-                }
-
-                receipt_validator.perform_charge_slip_validations(txn_id,{"username": app_username,
-                                                                          "password": app_password},
-                                                                  expected_values)
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -749,6 +725,8 @@ def test_common_100_115_03_012():
             logger.debug(f"Fetching org_code from the txn table : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref from the txn table : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -768,7 +746,7 @@ def test_common_100_115_03_012():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1095,32 +1073,6 @@ def test_common_100_115_03_012():
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
 
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
-            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
-                logger.info(f"date and time is: {txn_date},{txn_time}")
-                expected_values = {
-                    'merchant_ref_no': 'Ref # ' + str(order_id),
-                    'RRN': str(rrn),
-                    'date': txn_date, 'time': txn_time,
-                    'BATCH NO': batch_number,
-                    'CARD TYPE': 'MasterCard',
-                    'AUTH CODE': auth_code,
-                    'payment_option': 'PREAUTH RELEASE',
-                    "TID": tid,
-                    "BASE AMOUNT:": "Rs." + "{:,.2f}".format(amount)
-                }
-
-                receipt_validator.perform_charge_slip_validations(txn_id,{"username": app_username,
-                                                                          "password": app_password},
-                                                                  expected_values)
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
-        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
-
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -1134,6 +1086,7 @@ def test_common_100_115_03_012():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_115_03_015():
     """
         Sub Feature Code: UI_Common_Card_Preauth_Txn_Release_Success_Txn_HDFC_Dummy_VISA_CreditCard_417666
@@ -1301,6 +1254,8 @@ def test_common_100_115_03_015():
             logger.debug(f"Fetching org_code from the txn table : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref from the txn table : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1320,7 +1275,7 @@ def test_common_100_115_03_015():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1653,8 +1608,7 @@ def test_common_100_115_03_015():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
-                logger.info(f"date and time is: {txn_date},{txn_time}")
+                txn_date, txn_time =  date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),
@@ -1688,6 +1642,7 @@ def test_common_100_115_03_015():
 @pytest.mark.dbVal
 @pytest.mark.portalVal
 @pytest.mark.appVal
+@pytest.mark.chargeSlipVal
 def test_common_100_115_03_016():
     """
         Sub Feature Code: UI_Common_Card_Preauth_Txn_Release_Success_Txn_HDFC_Dummy_MASTER_CreditCard_541333
@@ -1855,6 +1810,8 @@ def test_common_100_115_03_016():
             logger.debug(f"Fetching org_code from the txn table : {org_code_db}")
             order_id_db = result["external_ref"].iloc[0]
             logger.debug(f"Fetching external_ref from the txn table : {order_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1874,7 +1831,7 @@ def test_common_100_115_03_016():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
+                date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2207,7 +2164,7 @@ def test_common_100_115_03_016():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 logger.info(f"date and time is: {txn_date},{txn_time}")
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),

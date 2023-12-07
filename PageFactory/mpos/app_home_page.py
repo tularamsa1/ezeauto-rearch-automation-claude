@@ -303,7 +303,7 @@ class HomePage(BasePage):
         self.perform_click(self.txt_date_txn_history)
         self.perform_click(self.button1)
         self.perform_click(self.btn_authenticate)
-        self.visibility_of_elements(self.txnCard)
+        self.wait_for_visibility_of_elements(self.txnCard)
         txn_locator_list = self.driver.find_elements(By.ID, 'com.ezetap.basicapp:id/txnCard')
         txn_locator_list[0].click()
         self.perform_click(self.btn_refund)

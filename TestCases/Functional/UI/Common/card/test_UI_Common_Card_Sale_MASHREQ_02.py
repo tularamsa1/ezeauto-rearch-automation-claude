@@ -23,12 +23,12 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_234():
+def test_common_100_115_276():
     """
     Sub Feature Code: UI_Common_Card_Sale_MASHREQ_CTLS_WITH_PIN_VISA_DEBIT_476173
     Sub Feature Description:  Performing the EMV sale transaction via MASHREQ PG using CTLS With Pin VISA Debit card
     having 16 digit PAN length with pin (bin: 476173)
-    TC naming code description:  100: Payment Method, 115: CARD_UI, 234: TC234
+    TC naming code description:  100: Payment Method, 115: CARD_UI, 276: TC276
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -513,12 +513,12 @@ def test_common_100_115_234():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_235():
+def test_common_100_115_277():
     """
     Sub Feature Code: UI_Common_Card_Sale_MASHREQ_CTLS_WITH_PIN_MASTER_DEBIT_222360
     Sub Feature Description:  Performing the EMV sale transaction via MASHREQ PG using CTLS With Pin MASTER Debit card
     having 16 digit PAN length with pin (bin: 222360)
-    TC naming code description:  100: Payment Method, 115: CARD_UI, 235: TC235
+    TC naming code description:  100: Payment Method, 115: CARD_UI, 277: TC277
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -987,11 +987,11 @@ def test_common_100_115_235():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_236():
+def test_common_100_115_278():
     """
     Sub Feature Code: UI_Common_Card_Sale_MASHREQ_EMV_VISA_CreditCard_Without_Pin_417666
     Sub Feature Description:  Performing the EMV sale transaction via MASHREQ PG using VISA Credit card having 16 digit PAN length without pin (bin: 417666)
-    TC naming code description:  100: Payment Method, 115: CARD_UI, 236: TC236
+    TC naming code description:  100: Payment Method, 115: CARD_UI, 278: TC278
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1548,11 +1548,11 @@ def test_common_100_115_236():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_237():
+def test_common_100_115_279():
     """
     Sub Feature Code: UI_Common_Card_Sale_MASHREQ_EMV_MASTER_CreditCard_Without_Pin_541333
     Sub Feature Description:  Performing the EMV sale transaction via MASHREQ PG using MASTER Credit card having 16 digit PAN length without pin (bin: 541333)
-    TC naming code description:  100: Payment Method, 115: CARD_UI, 237: TC237
+    TC naming code description:  100: Payment Method, 115: CARD_UI, 279: TC279
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

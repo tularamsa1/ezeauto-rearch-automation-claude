@@ -145,9 +145,9 @@ class RefundPage(BasePage):
         or: online_refund
         return: online_refund_txn_data: dict
         """
-        self.visibility_of_elements(self.status_field)
+        self.wait_for_visibility_of_elements(self.status_field)
         self.driver.back()
-        self.visibility_of_elements(self.btn_Refund)
+        self.wait_for_visibility_of_elements(self.btn_Refund)
         self.perform_click(self.btn_Refund)
         self.perform_sendkeys(self.txt_password, password)
         self.perform_click(self.btn_proceed)
@@ -155,7 +155,7 @@ class RefundPage(BasePage):
         self.perform_click(self.txt_date_txn_history)
         self.perform_click(self.button1)
         self.perform_click(self.btn_authenticate)
-        self.visibility_of_elements(self.txnCard)
+        self.wait_for_visibility_of_elements(self.txnCard)
         txn_locator_list = self.driver.find_elements(By.ID, 'com.ezetap.basicapp:id/txnCard')
 
         txn_locator_list[0].click()
@@ -207,11 +207,11 @@ class RefundPage(BasePage):
                 online_refund_txn_data["or_customer_name_3"] = self.fetch_customer_name_text()
 
         self.driver.back()
-        self.visibility_of_elements(self.txnCard)
+        self.wait_for_visibility_of_elements(self.txnCard)
         self.driver.back()
-        self.visibility_of_elements(self.txt_last_digits_card)
+        self.wait_for_visibility_of_elements(self.txt_last_digits_card)
         self.driver.back()
-        self.visibility_of_elements(self.txt_password)
+        self.wait_for_visibility_of_elements(self.txt_password)
         self.driver.back()
         home_page = HomePage(driver=self.driver)
         home_page.wait_for_home_page_load()
