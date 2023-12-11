@@ -27,10 +27,6 @@ from datetime import datetime, timedelta
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-@pytest.mark.dbVal
-@pytest.mark.portalVal
-@pytest.mark.appVal
-@pytest.mark.chargeSlipVal
 def test_common_100_103_077():
     """
     Sub Feature Code: UI_Common_PM_CNP_Cyber_bumpCount_CnpSettigs
@@ -92,9 +88,7 @@ def test_common_100_103_077():
         # -----------------------------PreConditions(Completed)-----------------------------
 
         # ---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
-
+        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False)
         msg=''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -149,18 +143,6 @@ def test_common_100_103_077():
             bumptime = result['setting_value'].values[0]
             logger.debug(f"Query result, bumptime : {bumptime}")
 
-
-
-            # remote_pay_txn = remotePayTxnPage(ui_driver)
-            # remote_pay_txn.waitForExpiryElement()
-            # expiryMessage = str(remote_pay_txn.expiryMessage())
-            # logger.info(f"Your expiryMessage is:  {expiryMessage}")
-            # logger.info(f"Your expiryMessage is:  {expectedExpiryMessage}")
-            # if expiryMessage == (expectedExpiryMessage):
-            #     pass
-            # else:
-            #     raise Exception("Expiry Messages are not matching.")
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -186,7 +168,7 @@ def test_common_100_103_077():
 def test_common_100_103_090():
     """
     Sub Feature Code: UI_Common_PM_CNP_Cyber_bumpTime_CnpSettigs
-    Sub Feature Description: Verification the bump time via cnp link.
+    Sub Feature Description: Verification of the bump time via cnp link.
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -231,9 +213,7 @@ def test_common_100_103_090():
         # -----------------------------PreConditions(Completed)---------------------------------------------------
 
         # ---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
-                                                   config_log=False)
-
+        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False)
         msg=''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -300,16 +280,15 @@ def test_common_100_103_090():
             modified_time1 = date_time_converter.bump_datetime(modified_time)
             logger.info(f"expiry with bump time:{modified_time1}")
             created_time = pd.to_datetime(modified_time1)
-            print(created_time)
-            print(type(created_time))
+            logger.info(f"created_time:{created_time}")
             date_time_str = str(created_time)
             date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S').strftime("%H:%M:%S")
             date_time_obj = datetime.strptime(date_time_obj, "%H:%M:%S")
             t = date_time_obj + timedelta(0, bump_time1)
             t2 = t.strftime("%H:%M:%S")
-            print(type(t2))
+            logger.info(f"T2 value:{t2}")
             t1 = datetime.strptime(t2, "%H:%M:%S")
-            print(t1)
+            logger.info(f"T1 value:{t1}")
 
             query = "select * from payment_intent where org_code='" + org_code + "' and id ='" + payment_intent_id + "'"
             logger.debug(f"Query to fetch expire_by_time from the DB : {query}")
@@ -319,12 +298,8 @@ def test_common_100_103_090():
             time = datetime.strptime(expiry_with_bump1, "%H:%M:%S").strftime("%H:%M:%S")
             time1 = datetime.strptime(time, "%H:%M:%S")
             logger.debug(f"Query result, modified time : {time1}")
-            print(t1)
-            print(time1)
-            print(type(t1))
-            print(type(time1))
             if t1 == time1:
-                print("time is matching")
+                logger.info("time is matching")
 
             else:
                 raise Exception ("modified time is not matching with Expiry time")

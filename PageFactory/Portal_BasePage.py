@@ -108,15 +108,13 @@ class BasePage:
         self.page.wait_for_load_state('domcontentloaded', timeout=60000)
         self.page.expect_popup(timeout=45000)
         self.page.on("dialog", lambda dialog: dialog.accept())
-        # self.page.wait_for_load_state('networkidle', timeout=60000)
-        # self.page.on("dialog", lambda dialog: print(dialog.message))
-        # self.page.get_by_role("button").click(timeout=45000) # Will hang here
-#     def wait_for_alert_read_text_and_accept(self, time = 45):
-#         WebDriverWait(self.driver, time).until(EC.alert_is_present())
-#         alert = self.driver.switch_to.alert
-#         text = alert.text
-#         alert.accept()
-#         return text
+
+    def switch_frame(self, locator):
+        """In playwright, frame_locator method retrieves the iframe
+        Returns FrameLocator which can be used to retrieve elements in the iframe"""
+        iframe_element = self.page.frame_locator(locator)
+        iframe_element.get_by_placeholder(" Enter Code Here").fill("1234")
+        iframe_element.locator("//input[@value='SUBMIT']").click()
 
     def perform_click_cnp(self, locator):
         self.page.wait_for_selector(selector=locator, timeout=45000, state="visible").click(timeout=45000)
