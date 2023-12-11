@@ -180,7 +180,6 @@ def test_common_100_103_004():
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
-                app_date_and_time = txn_history_page.fetch_date_time_text()
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
                 logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")

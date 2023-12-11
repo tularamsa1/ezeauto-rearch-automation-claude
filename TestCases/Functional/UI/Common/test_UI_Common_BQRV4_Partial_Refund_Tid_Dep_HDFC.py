@@ -2645,7 +2645,7 @@ def test_common_100_102_123():
                     "date_2": date_new_2,
                     "order_id_2": order_id,
                     #"device_serial_2": str(device_serial),
-                    "error_message": "Amount to refund is greater than refundable amount."
+                    "error_message": f"Transaction declined. Amount entered is more than maximum allowed for the transaction. Maximum Allowed: 100.00"
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
