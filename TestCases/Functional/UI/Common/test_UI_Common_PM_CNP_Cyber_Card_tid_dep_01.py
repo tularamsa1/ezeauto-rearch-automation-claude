@@ -110,8 +110,8 @@ def test_common_100_103_149():
             logger.debug(f"Query to fetch id from the terminal info table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of terminal_info table is : {result}")
-            # terminal_info_id = result['id'].values[0]
-            # logger.debug(f"Query result, terminal_info_id from db : {terminal_info_id}")
+            terminal_info_id = result['id'].values[0]
+            logger.debug(f"Query result, terminal_info_id from db : {terminal_info_id}")
             mid_db = result['mid'].values[0]
             logger.debug(f"Query result, mid from db : {mid_db}")
             device_serial_db = result['device_serial'].values[0]
@@ -173,8 +173,8 @@ def test_common_100_103_149():
             logger.debug(f"Query result, txn_issuer_code : {txn_issuer_code}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time from db : {created_time}")
-            # txn_terminal_info_id = result['terminal_info_id'].values[0]
-            # logger.debug(f"Query result, tid from db : {txn_terminal_info_id}")
+            txn_terminal_info_id = result['terminal_info_id'].values[0]
+            logger.debug(f"Query result, tid from db : {txn_terminal_info_id}")
             txn_mid = result['mid'].values[0]
             logger.debug(f"Query result, mid from db : {txn_mid}")
             txn_tid = result['tid'].values[0]

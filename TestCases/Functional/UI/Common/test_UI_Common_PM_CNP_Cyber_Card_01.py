@@ -121,8 +121,8 @@ def test_common_100_103_001():
             logger.debug(f"Query result, db date from db : {posting_date}")
             txn_auth_code = result['auth_code'].values[0]
             logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
-            # txn_terminal_info_id = result['terminal_info_id'].values[0]
-            # logger.debug(f"Query result, tid from db : {txn_terminal_info_id}")
+            txn_terminal_info_id = result['terminal_info_id'].values[0]
+            logger.debug(f"Query result, tid from db : {txn_terminal_info_id}")
 
             query = "select * from merchant_pg_config where org_code = '" + str(
                 org_code) + "' and payment_gateway = 'CYBERSOURCE'"
@@ -134,7 +134,7 @@ def test_common_100_103_001():
             query = "select * from terminal_info where tid='" + str(tid_settings) + "';"
             logger.debug(f"Query to fetch id from the termial info table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            # terminal_info_id = result['id'].values[0]
+            terminal_info_id = result['id'].values[0]
             logger.info(f"id from setting is: {tid_settings}")
             query = "select * from cnp_txn where txn_id='" + txn_id + "';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -324,7 +324,7 @@ def test_common_100_103_001():
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_intent_status": "COMPLETED",
-                                    # "tid":txn_terminal_info_id
+                                    "tid":txn_terminal_info_id
                                     }
 
                 logger.debug(f"expectedDBValues: {expectedDBValues}")
@@ -357,7 +357,7 @@ def test_common_100_103_001():
                                   "cnpware_pmt_gateway": cnpware_payment_gateway,
                                   "pmt_flow": cnp_payment_flow,
                                   "pmt_intent_status": payment_intent_status,
-                                  # "tid":terminal_info_id
+                                  "tid":terminal_info_id
                                   }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")
@@ -381,7 +381,7 @@ def test_common_100_103_001():
                     "txn_amt": str(amount) + ".00",
                     "username": app_username,
                     'AUTH CODE': txn_auth_code,
-                    # 'rrn': cnp_txn_rrn
+                    'rrn': cnp_txn_rrn
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
@@ -401,7 +401,7 @@ def test_common_100_103_001():
                     "txn_amt": total_amount[1],
                     "username": username,
                     "AUTH CODE": auth_code,
-                    # "rrn":rr_number
+                    "rrn":rr_number
                 }
                 logger.debug(f"expected_portal_values : {actual_portal_values}")
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
