@@ -120,6 +120,8 @@ def test_common_100_115_07_042():
         card_type = result['card_type'].values[0]
         logger.debug(f"Fetching card_type from the emi table : {card_type}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -130,7 +132,7 @@ def test_common_100_115_07_042():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -141,7 +143,7 @@ def test_common_100_115_07_042():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -1091,6 +1093,8 @@ def test_common_100_115_07_044():
         card_type = result['card_type'].values[0]
         logger.debug(f"Fetching card_type from the emi table : {card_type}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -1101,7 +1105,7 @@ def test_common_100_115_07_044():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -1112,7 +1116,7 @@ def test_common_100_115_07_044():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'DEBIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'DEBIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -2052,6 +2056,8 @@ def test_common_100_115_07_046():
         card_type = result['card_type'].values[0]
         logger.debug(f"Fetching card_type from the emi table : {card_type}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -2062,7 +2068,7 @@ def test_common_100_115_07_046():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -2073,7 +2079,7 @@ def test_common_100_115_07_046():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'DEBIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'DEBIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -3013,6 +3019,8 @@ def test_common_100_115_07_048():
         card_type = result['card_type'].values[0]
         logger.debug(f"Fetching card_type from the emi table : {card_type}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -3023,7 +3031,7 @@ def test_common_100_115_07_048():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -3034,7 +3042,7 @@ def test_common_100_115_07_048():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'DEBIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'DEBIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")

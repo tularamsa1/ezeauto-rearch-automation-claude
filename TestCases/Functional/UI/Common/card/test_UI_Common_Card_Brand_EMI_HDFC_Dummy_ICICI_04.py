@@ -1182,7 +1182,14 @@ def test_common_100_115_07_136():
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
 
-            query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='375';"
+            query = f"select * from emi_issuer_config where issuer_code='ICICI' and card_type='DEBIT';"
+            logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result for emi_issuer_config table : {result}")
+            entity_id = result['id'].values[0]
+            logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+            query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='ORDER_CONFIRMATION_URL';"
             logger.debug(f"Query to update config_data table : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -1934,7 +1941,7 @@ def test_common_100_115_07_136():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='ORDER_CONFIRMATION_URL';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -2110,7 +2117,14 @@ def test_common_100_115_07_137():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
-        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='375';"
+        query = f"select * from emi_issuer_config where issuer_code='ICICI' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='ORDER_CONFIRMATION_URL';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -2915,7 +2929,7 @@ def test_common_100_115_07_137():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='ORDER_CONFIRMATION_URL';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -3032,7 +3046,14 @@ def test_common_100_115_07_143():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        query = f"update config_data set param_value='10' where id='386';"
+        query = f"select * from emi_issuer_config where issuer_code='ICICI' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='10' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='REQUEST_TIMEOUT_IN_MS';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -3129,7 +3150,7 @@ def test_common_100_115_07_143():
         # -----------------------------------------End of DB Validation-------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='10000' where id='386';"
+            query = f"update config_data set param_value='10000' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='REQUEST_TIMEOUT_IN_MS';"
             logger.debug(f"Query to update config_data table to revert back setup : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")

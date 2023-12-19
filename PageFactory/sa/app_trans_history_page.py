@@ -403,6 +403,7 @@ class TransHistoryPage(BasePage):
         This method is used to fetch scheme text from transaction history page.
         return: scheme: str
         """
+        self.scroll_to_text("SCHEME")
         return self.fetch_text(self.txt_scheme)
 
     def fetch_product_text(self) -> str:

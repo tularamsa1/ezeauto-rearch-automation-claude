@@ -3147,7 +3147,14 @@ def test_common_100_115_07_116():
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
 
-            query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+            query = f"select * from emi_issuer_config where issuer_code='HDFC' and card_type='DEBIT';"
+            logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result for emi_issuer_config table : {result}")
+            entity_id = result['id'].values[0]
+            logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+            query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -3515,9 +3522,9 @@ def test_common_100_115_07_116():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "VOIDED",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
-                    "interest_amt": total_interest,
+                    "interest_amt": round(total_interest, 2),
                     "total_emi_amt": total_emi,
                     "net_cost": total_emi,
                     "emi_type": "BRAND_EMI",
@@ -3727,7 +3734,7 @@ def test_common_100_115_07_116():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'PAYBACK',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -3903,7 +3910,7 @@ def test_common_100_115_07_116():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -4078,7 +4085,14 @@ def test_common_100_115_07_117():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
-        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+        query = f"select * from emi_issuer_config where issuer_code='HDFC' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -4474,7 +4488,7 @@ def test_common_100_115_07_117():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "VOIDED",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -4711,7 +4725,7 @@ def test_common_100_115_07_117():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'PAYBACK',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -4886,7 +4900,7 @@ def test_common_100_115_07_117():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")

@@ -181,6 +181,8 @@ def test_common_100_115_271():
             logger.debug(f"Fetching merchant_name value from the txn table : {merchant_name}")
             terminal_info_id_db = result["terminal_info_id"].iloc[0]
             logger.debug(f"Fetching  terminal_info_id value from the txn table : {terminal_info_id_db}")
+            posting_date = result["posting_date"].iloc[0]
+            logger.debug(f"Fetching  posting_date value from the txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -549,7 +551,7 @@ def test_common_100_115_271():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),
@@ -742,6 +744,8 @@ def test_common_100_115_272():
             logger.debug(f"Fetching merchant_name value from the txn table : {merchant_name}")
             terminal_info_id_db = result["terminal_info_id"].iloc[0]
             logger.debug(f"Fetching  terminal_info_id value from the txn table : {terminal_info_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1110,7 +1114,7 @@ def test_common_100_115_272():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),
@@ -1303,6 +1307,8 @@ def test_common_100_115_273():
             logger.debug(f"Fetching merchant_name value from the txn table : {merchant_name}")
             terminal_info_id_db = result["terminal_info_id"].iloc[0]
             logger.debug(f"Fetching  terminal_info_id value from the txn table : {terminal_info_id_db}")
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -1672,7 +1678,7 @@ def test_common_100_115_273():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),
@@ -1838,6 +1844,8 @@ def test_common_100_115_274():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -2159,7 +2167,7 @@ def test_common_100_115_274():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),'BASE AMOUNT:': "AED" + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
@@ -2328,6 +2336,8 @@ def test_common_100_115_275():
             card_txn_type_db = result['card_txn_type'].values[0]
             card_last_four_digit_db = result['card_last_four_digit'].values[0]
             merchant_name = result['merchant_name'].values[0]
+            posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from txn table : {posting_date}")
 
             logger.debug(f"txn_created_time:{txn_created_time}, txn_id:{txn_id}, rrn:{rrn}, auth_code:{auth_code}, "
                          f"batch_number:{batch_number}, customer_name:{customer_name}, amount_db:{amount_db}, "
@@ -2633,7 +2643,7 @@ def test_common_100_115_275():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
                 expected_values = {
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn),'BASE AMOUNT:': "AED" + str(amount) + ".00", 'date': txn_date, 'time': txn_time,

@@ -203,7 +203,7 @@ def test_common_100_115_11_014():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -254,7 +254,7 @@ def test_common_100_115_11_014():
             payment_page.click_on_proceed_homepage()
 
             logger.debug(f"Started calculating emi part")
-            cal_subvention_value = round((amount * (subvention_value / 100)), 2)
+            cal_subvention_value = (amount * (subvention_value / 100))
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
             cal_monthly_emi_amt = (amount - cal_subvention_value) * monthly_interest_rate * (
@@ -370,7 +370,7 @@ def test_common_100_115_11_014():
             emi_cashback_type = result['emi_cashback_type'].values[0]
             logger.debug(f"Fetching emi cashback type from txn_emi table : {emi_cashback_type}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -822,7 +822,6 @@ def test_common_100_115_11_014():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_before_txn - amount,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_before_txn - amount
                 }
@@ -875,7 +874,6 @@ def test_common_100_115_11_014():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_after_txn,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_after_txn
                 }
@@ -1389,7 +1387,7 @@ def test_common_100_115_11_016():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -1554,7 +1552,7 @@ def test_common_100_115_11_016():
             emi_cashback_type = result['emi_cashback_type'].values[0]
             logger.debug(f"Fetching emi cashback type from txn_emi table : {emi_cashback_type}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -2006,7 +2004,6 @@ def test_common_100_115_11_016():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_before_txn - amount,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_before_txn - amount
                 }
@@ -2059,7 +2056,6 @@ def test_common_100_115_11_016():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_after_txn,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_after_txn
                 }
@@ -2136,7 +2132,7 @@ def test_common_100_115_11_016():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Loan Amount": f"Rs.{round(amount - cal_subvention_value, 2)}",
+                    "Loan Amount": "Rs." + "{:,.2f}".format(round(amount - cal_subvention_value, 2)),
                     "Applicable Intt Rate(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),

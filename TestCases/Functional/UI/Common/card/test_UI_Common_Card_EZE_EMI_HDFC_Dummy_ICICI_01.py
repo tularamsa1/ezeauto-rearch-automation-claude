@@ -26,9 +26,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_115_11_019():
     """
-    Sub Feature Code: UI_Common_Card_Eze_EMI_Subvented_By_Ezetap_Block_Success_Txn_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_CreditCard_With_Pin_428090_For_6_Months_Tenure
+    Sub Feature Code: UI_Common_Card_Eze_EMI_Subvented_By_Ezetap_Block_Success_Txn_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_DebitCard_With_Pin_428090_For_6_Months_Tenure
     Sub Feature Description: Performing the eze EMI subvented by ezetap success transaction for an org (not ezetap) via HDFC
-    Dummy PG for icici issuer using EMV VISA Credit card with pin for 6 months tenure (bin: 428090)
+    Dummy PG for icici issuer using EMV VISA Debit card with pin for 6 months tenure (bin: 428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 11: Eze EMI, 019: TC019
     """
     try:
@@ -206,7 +206,7 @@ def test_common_100_115_11_019():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -238,7 +238,7 @@ def test_common_100_115_11_019():
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
-            logger.debug(f"Selected payment mode is Brand EMI")
+            logger.debug(f"Selected payment mode is Eze EMI")
             payment_page.click_and_enter_search_products_or_brands(prod=brand_sku_name)
             logger.debug(f"Entered the products")
             customer_no = '2222222222'
@@ -384,7 +384,7 @@ def test_common_100_115_11_019():
             txn_amount_posting_status = result['txn_amount_posting_status'].values[0]
             logger.debug(f"Fetching txn_amount_posting_status from debit_emi_txn_request : {txn_amount_posting_status}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -611,7 +611,7 @@ def test_common_100_115_11_019():
                     "sku_code": brand_sku_code,
                     "entity": "EZETAP",
                     "subvention_type": "INSTANT",
-                    "subvention_amount": cal_subvention_value,
+                    "subvention_amount": round(cal_subvention_value, 2),
                     "emi_interest_rate": interest_rate,
                     "total_amount_with_int": total_emi,
                     "product_serial": str(imei_no),
@@ -836,9 +836,8 @@ def test_common_100_115_11_019():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
-                    "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_before_txn - amount,
-                    "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_before_txn - amount,
+                    "MCEW_wallet_balance_after_txn": round((MCEW_wallet_balance_before_txn - amount),2),
+                    "GCEW_wallet_balance_after_txn": round((GCEW_wallet_balance_before_txn - amount), 2),
                     "txn_amt_posting_status": "BLOCKED",
                     "eligibility_status": "PROCESSED"
                 }
@@ -875,7 +874,7 @@ def test_common_100_115_11_019():
                     "monthly_emi": emi_amount_monthly,
                     "total_emi_amt": emi_total_amount,
                     "scheme_code": emi_scheme_code,
-                    "emi_txn_amt": float(emi_txn_amount),
+                    "emi_txn_amt": round(emi_txn_amount, 2),
                     "emi_original_amt": emi_original_amount,
                     "emi_total_amount": emi_total_amount,
                     "emi_cashback_type": emi_cashback_type,
@@ -891,9 +890,8 @@ def test_common_100_115_11_019():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
-                    "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_after_txn,
-                    "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_after_txn,
+                    "MCEW_wallet_balance_after_txn": round(MCEW_wallet_balance_after_txn, 2),
+                    "GCEW_wallet_balance_after_txn": round(GCEW_wallet_balance_after_txn, 2),
                     "txn_amt_posting_status": txn_amount_posting_status,
                     "eligibility_status": eligibility_status
                 }
@@ -1008,9 +1006,9 @@ def test_common_100_115_11_019():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_11_020():
     """
-    Sub Feature Code: UI_Common_Card_Eze_EMI_Subvented_By_Ezetap_Unblock_Success_Txn_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_428090_For_6_Months_Tenure
+    Sub Feature Code: UI_Common_Card_Eze_EMI_Subvented_By_Ezetap_Unblock_Success_Txn_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_DebitCard_With_Pin_428090_For_6_Months_Tenure
     Sub Feature Description: Performing the eze EMI subvented by ezetap unblock success transaction for an org (not ezetap) via HDFC
-    Dummy PG using EMV VISA Credit card with pin for 6 months tenure (bin: 428090)
+    Dummy PG for icici issuer using EMV VISA Debit card with pin for 6 months tenure (bin: 428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 11: Eze EMI, 020: TC020
     """
     try:
@@ -1195,7 +1193,7 @@ def test_common_100_115_11_020():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -1227,7 +1225,7 @@ def test_common_100_115_11_020():
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
-            logger.debug(f"Selected payment mode is Brand EMI")
+            logger.debug(f"Selected payment mode is Eze EMI")
             payment_page.click_and_enter_search_products_or_brands(prod=brand_sku_name)
             logger.debug(f"Entered the products")
             customer_no = '2222222222'
@@ -1260,7 +1258,7 @@ def test_common_100_115_11_020():
             txn_history_page.click_back_Btn_transaction_details()
 
             logger.debug(f"Started calculating emi part")
-            cal_subvention_value = round((amount * (subvention_value / 100)), 2)
+            cal_subvention_value = (amount * (subvention_value / 100))
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
             cal_monthly_emi_amt = (amount - cal_subvention_value) * monthly_interest_rate * (
@@ -1385,7 +1383,7 @@ def test_common_100_115_11_020():
             txn_amount_posting_status = result['txn_amount_posting_status'].values[0]
             logger.debug(f"Fetching txn_amount_posting_status from debit_emi_txn_request : {txn_amount_posting_status}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -1419,7 +1417,7 @@ def test_common_100_115_11_020():
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date_db=posting_date)
                 expected_app_values = {
-                    "txn_amt": "{:.2f}".format(amount - cal_subvention_value, 2),
+                    "txn_amt": "{:,.2f}".format(amount - cal_subvention_value, 2),
                     "pmt_mode": "CARD",
                     "txn_id": txn_id,
                     "pmt_status": "VOIDED",
@@ -1567,7 +1565,7 @@ def test_common_100_115_11_020():
             try:
                 expected_date_and_time = date_time_converter.db_datetime(date_from_db=txn_created_time)
                 expected_api_values = {
-                    "txn_amt": "{:,.2f}".format(amount - cal_subvention_value, 2),
+                    "txn_amt": round(amount - cal_subvention_value, 2),
                     "pmt_mode": "CARD",
                     "pmt_status": "VOIDED",
                     "pmt_state": "VOIDED",
@@ -1609,7 +1607,7 @@ def test_common_100_115_11_020():
                     "sku_code": brand_sku_code,
                     "entity": "EZETAP",
                     "subvention_type": "INSTANT",
-                    "subvention_amount": cal_subvention_value,
+                    "subvention_amount": round(cal_subvention_value, 2),
                     "emi_interest_rate": interest_rate,
                     "total_amount_with_int": total_emi,
                     "product_serial": str(imei_no),
@@ -1814,7 +1812,7 @@ def test_common_100_115_11_020():
                     "monthly_emi": monthly_emi,
                     "total_emi_amt": total_emi,
                     "scheme_code": scheme_code,
-                    "emi_txn_amt": float(amount - cal_subvention_value),
+                    "emi_txn_amt": round((amount - cal_subvention_value), 2),
                     "emi_original_amt": float(amount),
                     "emi_status": "VOIDED",
                     "emi_term": (f"{emi_plan_in_months} month"),
@@ -1834,7 +1832,6 @@ def test_common_100_115_11_020():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance": MCEW_wallet_balance_before_txn,
                     "GCEW_wallet_balance": GCEW_wallet_balance_before_txn,
                     "txn_amt_posting_status": "UNBLOCKED",
@@ -1873,7 +1870,7 @@ def test_common_100_115_11_020():
                     "monthly_emi": emi_amount_monthly,
                     "total_emi_amt": emi_total_amount,
                     "scheme_code": emi_scheme_code,
-                    "emi_txn_amt": float(emi_txn_amount),
+                    "emi_txn_amt": round(emi_txn_amount, 2),
                     "emi_original_amt": emi_original_amount,
                     "emi_total_amount": emi_total_amount,
                     "emi_cashback_type": emi_cashback_type,
@@ -1889,7 +1886,6 @@ def test_common_100_115_11_020():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
                     "MCEW_wallet_balance": MCEW_wallet_balance_after_txn,
                     "GCEW_wallet_balance": GCEW_wallet_balance_after_txn,
                     "txn_amt_posting_status": txn_amount_posting_status,
@@ -1978,7 +1974,6 @@ def test_common_100_115_11_020():
                     "Product Name": brand_sku_name,
                     "Product Desc": brand_sku_code,
                     "Sr. No.": str(imei_no),
-                    "pin_verified_section_text": "PIN VERIFIED OK",
                     "unnamed_section_text": f"RAJA /"
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
@@ -2008,9 +2003,9 @@ def test_common_100_115_11_020():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_11_021():
     """
-    Sub Feature Code: UI_Common_Card_Eze_EMI_Subvented_By_Ezetap_Block_Failed_Txn_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_CreditCard_With_Pin_428090_For_6_Months_Tenure
+    Sub Feature Code: UI_Common_Card_Eze_EMI_Subvented_By_Ezetap_Block_Failed_Txn_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_DebitCard_With_Pin_428090_For_6_Months_Tenure
     Sub Feature Description: Performing the eze EMI subvented by ezetap block failed transaction for an org (not ezetap) via HDFC
-    Dummy PG for icici issuer using EMV VISA Credit card with pin for 6 months tenure (bin: 428090)
+    Dummy PG for icici issuer using EMV VISA Debit card with pin for 6 months tenure (bin: 428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 11: Eze EMI, 021: TC021
     """
     try:
@@ -2168,7 +2163,14 @@ def test_common_100_115_11_021():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
-        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='375';"
+        query = f"select * from emi_issuer_config where issuer_code='ICICI' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='ORDER_CONFIRMATION_URL';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -2192,7 +2194,7 @@ def test_common_100_115_11_021():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -2243,7 +2245,7 @@ def test_common_100_115_11_021():
             payment_page.click_on_ok_error_btn_for_normal_Eze_emi()
 
             logger.debug(f"Started calculating emi part")
-            cal_subvention_value = round((amount * (subvention_value / 100)), 2)
+            cal_subvention_value = (amount * (subvention_value / 100))
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
             cal_monthly_emi_amt = (amount - cal_subvention_value) * monthly_interest_rate * (
@@ -2366,7 +2368,7 @@ def test_common_100_115_11_021():
             txn_amount_posting_status = result['txn_amount_posting_status'].values[0]
             logger.debug(f"Fetching txn_amount_posting_status from debit_emi_txn_request : {txn_amount_posting_status}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -2822,7 +2824,6 @@ def test_common_100_115_11_021():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_before_txn,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_before_txn,
                     "txn_amt_posting_status": "BLOCK_FAILED",
@@ -2877,7 +2878,6 @@ def test_common_100_115_11_021():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_after_txn,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_after_txn,
                     "txn_amt_posting_status": txn_amount_posting_status,
@@ -2985,7 +2985,7 @@ def test_common_100_115_11_021():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where id='375';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/jRMKzK/application/WoUSRI/emi-block' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='ORDER_CONFIRMATION_URL';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -3103,7 +3103,14 @@ def test_common_100_115_11_022():
         brand_sku_name = result['sku_name'].values[0]
         logger.debug(f"Fetching sku_name value from the brand_sku_details table : {brand_sku_name}")
 
-        query = f"update config_data set param_value='10' where id='386';"
+        query = f"select * from emi_issuer_config where issuer_code='ICICI' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='10' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='REQUEST_TIMEOUT_IN_MS';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -3143,7 +3150,7 @@ def test_common_100_115_11_022():
             payment_page = PaymentPage(app_driver)
             payment_page.is_payment_page_displayed_card(amount=amount, order_id=order_id, device_serial=device_serial)
             payment_page.click_on_eze_emi_pmt_mode()
-            logger.debug(f"Selected payment mode is Brand EMI")
+            logger.debug(f"Selected payment mode is Eze EMI")
             payment_page.click_and_enter_search_products_or_brands(prod=brand_sku_name)
             logger.debug(f"Entered the products")
             customer_no = '9988776655'
@@ -3203,7 +3210,7 @@ def test_common_100_115_11_022():
         # -----------------------------------------End of DB Validation-------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='10000' where id='386';"
+            query = f"update config_data set param_value='10000' where entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG' and param_key='REQUEST_TIMEOUT_IN_MS';"
             logger.debug(f"Query to update config_data table to revert back setup : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
