@@ -107,7 +107,7 @@ def test_common_100_103_149():
 
             # get the deviceSerial from terminal_info
             query = "select * from terminal_info where tid='" + str(tid_settings) + "';"
-            logger.debug(f"Query to fetch id from the termial info table : {query}")
+            logger.debug(f"Query to fetch id from the terminal info table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of terminal_info table is : {result}")
             terminal_info_id = result['id'].values[0]
@@ -131,25 +131,22 @@ def test_common_100_103_149():
             logger.debug(f"response of remotepay initiate {response}")
 
             if response['success'] == False:
-                raise Exception("Api could not initate a cnp txn.")
+                raise Exception("Api could not initiate a cnp txn.")
 
             else:
                 payment_link_url = response.get('paymentLink')
                 payment_intent_id = response.get('paymentIntentId')
-                # portal_driver = TestSuiteSetup.initialize_portal_driver()
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
                 ui_browser.goto(payment_link_url)
                 remote_pay_txn = RemotePayTxnPage(ui_browser)
                 remote_pay_txn.clickOnCreditCardToExpand()
-                remote_pay_txn.enterNameOnTheCard("Sandeep")
-                remote_pay_txn.enterCreditCardNumber("4000 0000 0000 0119")
+                remote_pay_txn.enterNameOnTheCard("EzeAuto")
+                remote_pay_txn.enterCreditCardNumber("4000 0000 0000 1091")
                 remote_pay_txn.enterCreditCardExpiryMonth("12")
                 remote_pay_txn.enterCreditCardExpiryYear("2050")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                """Commenting the below line of code due to an existing cybersource issue
-                The issue is related to OTP on successful transaction"""
-                # remote_pay_txn.clickOnSubmitButton()
+                remote_pay_txn.switch_to_iframe()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {success_message}")
                 logger.info(f"Your expiryMessage is:  {expected_message}")
@@ -474,7 +471,6 @@ def test_common_100_103_149():
                 Configuration.perform_db_val_exception(testcase_id, e)
             logger.info(f"Completed DB validation for the test case : {testcase_id}")
         # -----------------------------------------End of DB Validation---------------------------------------
-        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         # -----------------------------------------Start of Portal Validation---------------------------------
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started PORTAL validation for the test case : {testcase_id}")
@@ -517,8 +513,8 @@ def test_common_100_103_149():
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
-            # -----------------------------------------End of Portal Validation---------------------------------------
-
+        # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
 
@@ -562,7 +558,7 @@ def test_common_100_103_150():
     Sub Feature Description: Tid Dep - Verification of failed remote pay credit card txn for cybersource pg
     TC naming code description:100: Payment Method,103: RemotePay,150: TC_150
     """
-    expected_failed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact support@ezetap.com for further clarifications."
+    expected_failed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact pos-support@razorpay.com for further clarifications."
 
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -614,7 +610,7 @@ def test_common_100_103_150():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -663,12 +659,11 @@ def test_common_100_103_150():
             logger.debug(f"response of remotepay initiate {response}")
 
             if response['success'] == False:
-                raise Exception("Api could not initate a cnp txn.")
+                raise Exception("Api could not initiate a cnp txn.")
             else:
                 response = APIProcessor.send_request(api_details)
                 payment_link_url = response.get('paymentLink')
                 payment_intent_id = response.get('paymentIntentId')
-                # ui_driver = TestSuiteSetup.initialize_portal_driver()
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
                 ui_browser.goto(payment_link_url)
                 remote_pay_txn = RemotePayTxnPage(ui_browser)

@@ -399,7 +399,7 @@ def test_common_100_101_158():
                     "org_code_2": org_code_txn,
                     "date": date_and_time,
                     "date_2": refund_date_and_time,
-                    "error_message": "Amount to refund is greater than refundable amount.",
+                    "error_message": f"Transaction declined. Amount entered is more than maximum allowed for the transaction. Maximum Allowed: 100.00",
                     "device_serial": str(device_serial)
                 }
 

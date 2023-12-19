@@ -341,7 +341,7 @@ def update_terminal_details_of_all_merchants():
         conn = sqlite3.connect(GlobalConstants.SQLITE_DB_PATH)
         cursor = conn.cursor()
         cursor.execute(f"Select MerchantCode from merchants where CreationStatus in ('Created','Existed') and "
-                       "Availability = 'Available';")
+                       "Availability = 'Available' and MerchantCode != 'EZETAP' ;")
         merchants = cursor.fetchall()
         for merchant in merchants:
             update_terminal_details_of_merchant(merchant[0])

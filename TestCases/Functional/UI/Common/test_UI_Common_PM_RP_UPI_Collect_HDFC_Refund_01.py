@@ -2890,7 +2890,7 @@ def test_common_100_103_045():
                     "refund_auth_code": refund_auth_code,
                     "original_auth_code": auth_code,
                     "date": date,
-                    "error_message": "Amount to refund is greater than refundable amount."
+                    "error_message": f"Transaction declined. Amount entered is more than maximum allowed for the transaction. Maximum Allowed: 150.00"
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")
