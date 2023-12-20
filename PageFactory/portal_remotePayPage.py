@@ -17,9 +17,11 @@ class RemotePayTxnPage(BasePage):
     ddl_debitCardExpiryYear = "//*[@id='cdk-accordion-child-1']//div/div[4]/div/select"
     # ddl_debitCardExpiryYear = (By.XPATH, "//body/my-app[1]/div[1]/div[1]/div[1]/div[1]/mat-accordion[1]/div[1]/div[
     # 2]/mat-expansion-panel[1]/div[1]/div[1]/div[1]/div[4]/div[1]/select[1]")
+    iframe_cybsource = "css=[id^='cardinal-stepUpIframe-']"
 
     btn_proceedToPay = "//button[contains(text(),'Proceed to pay')]"
     btn_submitButton = "//input[@value='Submit']"
+    btn_cyberSourceSubmitButton = "//input[@value='SUBMIT']"
     btn_successMessage = "//h3[contains(text(),'Your payment is successfully completed! You may cl')]"
     # btn_successMessage = "//h3[contains(text(),'Your payment was successful. You may close the bro')]"
     # txt_failedMessage = (By.XPATH, "//h3[contains(text(),'Sorry! Your payment could not be processed. Please')]")
@@ -171,3 +173,10 @@ class RemotePayTxnPage(BasePage):
 
     def wait_for_failed_message(self):
         self.wait_for_element(self.txt_failedMessage)
+
+    def switch_to_iframe(self):
+        """Below method is used to pass the iframe locator path to switch the context to iframe"""
+        iframe_element = self.page.frame_locator(self.iframe_cybsource)
+        iframe_element.get_by_placeholder(" Enter Code Here").fill("1234")
+        iframe_element.locator(self.btn_cyberSourceSubmitButton).click()
+

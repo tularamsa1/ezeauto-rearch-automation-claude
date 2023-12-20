@@ -111,12 +111,12 @@ class BasePage:
         # self.page.wait_for_load_state('networkidle', timeout=60000)
         # self.page.on("dialog", lambda dialog: print(dialog.message))
         # self.page.get_by_role("button").click(timeout=45000) # Will hang here
-#     def wait_for_alert_read_text_and_accept(self, time = 45):
-#         WebDriverWait(self.driver, time).until(EC.alert_is_present())
-#         alert = self.driver.switch_to.alert
-#         text = alert.text
-#         alert.accept()
-#         return text
+        #     def wait_for_alert_read_text_and_accept(self, time = 45):
+        #         WebDriverWait(self.driver, time).until(EC.alert_is_present())
+        #         alert = self.driver.switch_to.alert
+        #         text = alert.text
+        #         alert.accept()
+        #         return text
 
     def perform_click_cnp(self, locator):
         self.page.wait_for_selector(selector=locator, timeout=45000, state="visible").click(timeout=45000)

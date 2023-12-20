@@ -97,13 +97,13 @@ def test_common_100_112_001():
                 portal_driver.goto(paymentLinkUrl)
                 remotePayTxn = RemotePayTxnPage(portal_driver)
                 remotePayTxn.clickOnCreditCardToExpand()
-                remotePayTxn.enterNameOnTheCard("Sandeep")
-                remotePayTxn.enterCreditCardNumber("4000 0000 0000 0119")
+                remotePayTxn.enterNameOnTheCard("EzeAuto")
+                remotePayTxn.enterCreditCardNumber("4000 0000 0000 1091")
                 remotePayTxn.enterCreditCardExpiryMonth("12")
                 remotePayTxn.enterCreditCardExpiryYear("2050")
                 remotePayTxn.enterCreditCardCvv("111")
                 remotePayTxn.clickOnProceedToPay()
-                # remotePayTxn.clickOnSubmitButton()
+                remotePayTxn.switch_to_iframe()
                 successMessage = str(remotePayTxn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {successMessage}")
                 logger.info(f"Your expiryMessage is:  {expectedMessage}")
@@ -376,7 +376,7 @@ def test_common_100_112_001():
                     "cnpware_pmt_gateway": cnpware_payment_gateway,
                     "pmt_flow": cnp_payment_flow,
                     "pmt_intent_status": payment_intent_status,
-                    "tid": terminal_info_id,
+                     "tid": terminal_info_id,
                     "acc_label_id": str(label_ids)
 
                 }
@@ -545,13 +545,13 @@ def test_common_100_112_002():
                 portal_driver.goto(paymentLinkUrl)
                 remotePayTxn = RemotePayTxnPage(portal_driver)
                 remotePayTxn.clickOnCreditCardToExpand()
-                remotePayTxn.enterNameOnTheCard("Sandeep")
-                remotePayTxn.enterCreditCardNumber("4000 0000 0000 0119")
+                remotePayTxn.enterNameOnTheCard("EzeAuto")
+                remotePayTxn.enterCreditCardNumber("4000 0000 0000 1091")
                 remotePayTxn.enterCreditCardExpiryMonth("12")
                 remotePayTxn.enterCreditCardExpiryYear("2050")
                 remotePayTxn.enterCreditCardCvv("111")
                 remotePayTxn.clickOnProceedToPay()
-                # remotePayTxn.clickOnSubmitButton()
+                remotePayTxn.switch_to_iframe()
                 successMessage = str(remotePayTxn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {successMessage}")
                 logger.info(f"Your expiryMessage is:  {expectedMessage}")
@@ -791,7 +791,7 @@ def test_common_100_112_002():
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_intent_status": "COMPLETED",
-                                    "tid": txn_terminal_info_id,
+                                    # "tid": txn_terminal_info_id,
                                     "acc_label_id": str(acc_label_id)
                                     }
 
@@ -824,7 +824,7 @@ def test_common_100_112_002():
                     "cnpware_pmt_gateway": cnpware_payment_gateway,
                     "pmt_flow": cnp_payment_flow,
                     "pmt_intent_status": payment_intent_status,
-                    "tid": terminal_info_id,
+                    # "tid": terminal_info_id,
                     "acc_label_id": str(label_ids)
 
                 }

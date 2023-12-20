@@ -130,7 +130,6 @@ def test_common_100_103_151():
             logger.debug(f"response of remotepay initiate {response}")
 
             payment_link_url = response['paymentLink']
-            # ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_browser = TestSuiteSetup.initialize_ui_browser()
             payment_intent_id = response.get('paymentIntentId')
             logger.info("Initiating a Remote pay Link")
@@ -139,15 +138,13 @@ def test_common_100_103_151():
             remote_pay_txn = RemotePayTxnPage(ui_browser)
             remote_pay_txn.clickOnDebitCardToExpand()
             logger.info("Enter Debit card details")
-            remote_pay_txn.enterNameOnTheCard("Sandeep")
-            remote_pay_txn.enterCreditCardNumber("4000 0000 0000 0119")
+            remote_pay_txn.enterNameOnTheCard("EzeAuto")
+            remote_pay_txn.enterCreditCardNumber("4000 0000 0000 1091")
             remote_pay_txn.enterDebitCardExpiryMonth("12")
             remote_pay_txn.enterDebitCardExpiryYear("2050")
             remote_pay_txn.enterCreditCardCvv("111")
             remote_pay_txn.clickOnProceedToPay()
-            """Commenting the below line of code because of open issue 
-            for otp submit"""
-            # remote_pay_txn.clickOnSubmitButton()
+            remote_pay_txn.switch_to_iframe()
             remote_pay_txn.wait_for_success_message()
             success_message = str(remote_pay_txn.succcessScreenMessage())
             logger.info(f"Your success message is:  {success_message}")
@@ -598,7 +595,7 @@ def test_common_100_103_152():
     Sub Feature Description: Tid Dep - Verification debit card failed txn for cybersource pg
     TC naming code description:100: Payment Method,103: RemotePay,152: TC_152
     """
-    expectedfailed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact support@ezetap.com for further clarifications."
+    expectedfailed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact pos-support@razorpay.com for further clarifications."
 
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -651,9 +648,7 @@ def test_common_100_103_152():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
-                                                   config_log=False)
-
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -700,7 +695,6 @@ def test_common_100_103_152():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"response of remotepay initiate {response}")
 
-            # ui_driver = TestSuiteSetup.initialize_portal_driver()
             ui_browser = TestSuiteSetup.initialize_ui_browser()
             payment_link_url = response['paymentLink']
             payment_intent_id = response.get('paymentIntentId')
@@ -1078,7 +1072,7 @@ def test_common_100_103_152():
 def test_common_100_103_153():
     """
     Sub Feature Code: UI_Common_PM_CNP_Refund_Card_txn_Tid_dep
-    Sub Feature Description: Tid Dep - Veification of a refund for card txn using remote pay.
+    Sub Feature Description: Tid Dep - Verification of a refund for card txn using remote pay.
     TC naming code description:100: Payment Method,103: RemotePay,153: TC_153
     """
     expectedMessage = "Your payment is successfully completed! You may close the browser now."
@@ -1190,14 +1184,13 @@ def test_common_100_103_153():
                 remotePayTxn = RemotePayTxnPage(page)
                 remotePayTxn.clickOnCreditCardToExpand()
                 logger.info("Enter Debit card details")
-                remotePayTxn.enterNameOnTheCard("Sandeep")
-                remotePayTxn.enterCreditCardNumber("4000 0000 0000 0119")
+                remotePayTxn.enterNameOnTheCard("EzeAuto")
+                remotePayTxn.enterCreditCardNumber("4000 0000 0000 1091")
                 remotePayTxn.enterCreditCardExpiryMonth("12")
                 remotePayTxn.enterCreditCardExpiryYear("2050")
                 remotePayTxn.enterCreditCardCvv("111")
                 remotePayTxn.clickOnProceedToPay()
-                # remotePayTxn.clickOnSubmitButton()
-
+                remotePayTxn.switch_to_iframe()
                 remotePayTxn.wait_for_success_message()
                 successMessage = str(remotePayTxn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {successMessage}")
@@ -1720,7 +1713,8 @@ def test_common_100_103_153():
                     "pmt_type_2": "CNP",
                     "txn_amt_2": str(amount) + ".00",
                     "username_2": app_username,
-                    "txn_id_2": txn_id_after_refund
+                    "txn_id_2": txn_id_after_refund,
+
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1765,6 +1759,28 @@ def test_common_100_103_153():
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
+        # -----------------------------------------Start of Chargeslip Validation---------------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date)
+                logger.info(f"date and time is: {txn_date},{txn_time}")
+                expectedValues = {
+                    'CARD TYPE': 'VISA',
+                    'merchant_ref_no': 'Ref # ' + str(order_id),
+                    'RRN': str(original_rrn_cnp_txn),
+                    'BASE AMOUNT:': "Rs." + str(amount) + ".00",
+                    'date': txn_date,
+                    'time': txn_time,
+                    "AUTH CODE": txn_auth_code
+                }
+                receipt_validator.perform_charge_slip_validations(original_txn_id,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expectedValues)
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
