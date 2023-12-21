@@ -819,4 +819,8 @@ def test_common_100_103_05_001():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        try:
+            testsuite_teardown.update_bin_info(bin_number='400000', bank_code='HDFC', bank='HDFC')
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)
