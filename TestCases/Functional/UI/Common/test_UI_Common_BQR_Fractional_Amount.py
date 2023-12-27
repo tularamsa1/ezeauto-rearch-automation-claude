@@ -350,12 +350,14 @@ def test_common_100_102_422():
                                     "bqr_pmt_status": bqr_status_db,
                                     "bqr_pmt_state": bqr_state_db,
                                     "bqr_txn_amt": float(bqr_amount_db),
-                                    "bqr_txn_type": bqr_txn_type_db, "brq_terminal_info_id": brq_terminal_info_id_db,
+                                    "bqr_txn_type": bqr_txn_type_db,
+                                    "brq_terminal_info_id": brq_terminal_info_id_db,
                                     "bqr_bank_code": bqr_bank_code_db,
                                     "bqr_merchant_config_id": bqr_merchant_config_id_db,
                                     "bqr_txn_primary_id": bqr_txn_primary_id_db,
                                     "bqr_merchant_pan": bqr_merchant_pan_db,
-                                    "bqr_rrn": bqr_rrn_db, "bqr_org_code": bqr_org_code_db
+                                    "bqr_rrn": bqr_rrn_db,
+                                    "bqr_org_code": bqr_org_code_db
                                     }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
