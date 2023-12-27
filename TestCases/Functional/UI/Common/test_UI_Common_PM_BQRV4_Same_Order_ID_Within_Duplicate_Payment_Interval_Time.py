@@ -66,6 +66,13 @@ def test_common_100_102_427():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code='{org_code}' and " \
                 "status = 'ACTIVE' and bank_code='HDFC'"
@@ -179,7 +186,6 @@ def test_common_100_102_427():
                     "auth_code": auth_code,
                     "date": date_and_time
                 }
-
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -254,7 +260,6 @@ def test_common_100_102_427():
                     "tid": tid,
                     "org_code": org_code,
                     "order_id": str(order_id),
-
                     "pmt_success_2": False,
                     "errorMessage": f"You have already made a similar payment for the same "
                                     f"Ref# {order_id} and amount {amount:.2f}. Please check"
@@ -312,7 +317,6 @@ def test_common_100_102_427():
                     "tid": tid_api,
                     "org_code": org_code_api,
                     "order_id": str(order_id_api),
-
                     "pmt_success_2": success_2,
                     "errorMessage": error_message,
                     "errorCode": error_code
@@ -548,6 +552,13 @@ def test_common_100_102_428():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code='{org_code}' and " \
                 "status = 'ACTIVE' and bank_code='YES'"
@@ -734,7 +745,6 @@ def test_common_100_102_428():
                     "tid": tid,
                     "org_code": org_code,
                     "order_id": str(order_id),
-
                     "pmt_success_2": False,
                     "errorMessage": f"You have already made a similar payment for the same "
                                     f"Ref# {order_id} and amount {amount:.2f}. Please check"
@@ -779,7 +789,6 @@ def test_common_100_102_428():
                     "tid": tid_api,
                     "org_code": org_code_api,
                     "order_id": str(order_id_api),
-
                     "pmt_success_2": success_2,
                     "errorMessage": error_message,
                     "errorCode": error_code
@@ -1014,6 +1023,13 @@ def test_common_100_102_429():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code='{org_code}' and " \
                 "status = 'ACTIVE' and bank_code='AXIS'"
@@ -1202,7 +1218,6 @@ def test_common_100_102_429():
                     "tid": tid,
                     "org_code": org_code,
                     "order_id": str(order_id),
-
                     "pmt_success_2": False,
                     "errorMessage": f"You have already made a similar payment for the same "
                                     f"Ref# {order_id} and amount {amount:.2f}. Please check"
@@ -1247,7 +1262,6 @@ def test_common_100_102_429():
                     "tid": tid_api,
                     "org_code": org_code_api,
                     "order_id": str(order_id_api),
-
                     "pmt_success_2": success_2,
                     "errorMessage": error_message,
                     "errorCode": error_code
@@ -1484,6 +1498,13 @@ def test_common_100_102_430():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code ='{str(org_code)}' AND status = 'ACTIVE' AND " \
                 f"bank_code = 'KOTAK_WL'"
@@ -1672,7 +1693,6 @@ def test_common_100_102_430():
                     "tid": tid,
                     "org_code": org_code,
                     "order_id": str(order_id),
-
                     "pmt_success_2": False,
                     "errorMessage": f"You have already made a similar payment for the same "
                                     f"Ref# {order_id} and amount {amount:.2f}. Please check"
@@ -1717,7 +1737,6 @@ def test_common_100_102_430():
                     "tid": tid_api,
                     "org_code": org_code_api,
                     "order_id": str(order_id_api),
-
                     "pmt_success_2": success_2,
                     "errorMessage": error_message,
                     "errorCode": error_code
@@ -1952,6 +1971,13 @@ def test_common_100_102_431():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' " \
                 f"AND bank_code = 'FDC_ICICI'"
@@ -2142,7 +2168,6 @@ def test_common_100_102_431():
                     "tid": tid,
                     "org_code": org_code,
                     "order_id": str(order_id),
-
                     "pmt_success_2": False,
                     "errorMessage": f"You have already made a similar payment for the same "
                                     f"Ref# {order_id} and amount {amount:.2f}. Please check"
@@ -2187,7 +2212,6 @@ def test_common_100_102_431():
                     "tid": tid_api,
                     "org_code": org_code_api,
                     "order_id": str(order_id_api),
-
                     "pmt_success_2": success_2,
                     "errorMessage": error_message,
                     "errorCode": error_code

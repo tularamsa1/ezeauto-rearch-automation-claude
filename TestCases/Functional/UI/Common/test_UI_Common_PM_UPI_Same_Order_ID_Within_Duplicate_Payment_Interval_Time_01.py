@@ -60,7 +60,13 @@ def test_common_100_101_317():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
         query = f"select * from upi_merchant_config where org_code ='{str(org_code)}' and status = 'ACTIVE' and " \
                 f"bank_code = 'HDFC';"
         logger.debug(f"Query to fetch data from the upi_merchant_config table for the {org_code} : {query}")
@@ -576,7 +582,13 @@ def test_common_100_101_319():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
         query = f"select * from upi_merchant_config where org_code ='{str(org_code)}' and status = 'ACTIVE' and " \
                 f"bank_code = 'KOTAK_WL';"
         logger.debug(f"Query to fetch data from the upi_merchant_config table for the {org_code} : {query}")
@@ -1092,7 +1104,13 @@ def test_common_100_101_321():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
+        api_details = DBProcessor.get_api_details('org_settings_update', request_body={"username": portal_username,
+                                                                                       "password": portal_password,
+                                                                                       "settingForOrgCode": org_code})
+        api_details["RequestBody"]["settings"]["duplicatePaymentCheckEnabledAcrossPaymentModes"] = "true"
+        logger.debug(f"API details  : {api_details} ")
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting preconditions is : {response}")
         query = f"select * from upi_merchant_config where org_code ='{str(org_code)}' and status = 'ACTIVE' and " \
                 f"bank_code = 'AXIS_DIRECT';"
         logger.debug(f"Query to fetch data from the upi_merchant_config table for the {org_code} : {query}")
