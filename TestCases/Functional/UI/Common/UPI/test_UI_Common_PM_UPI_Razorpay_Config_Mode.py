@@ -22,8 +22,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 def test_common_100_101_222():
     """
-    Sub Feature Code: UI_Common_PM_UPI_with_RZP_UPI_Config_Online_Mode
-    Sub Feature Description: Should not be able to create UPI QR with RZP UPI Config set to Online Mode
+    Sub Feature Code: UI_Common_PM_UPI_Razorpay_Config_Online_Mode
+    Sub Feature Description: Should not be able to create UPI QR with Razorpay UPI Config set to Online Mode
     TC naming code description:
     100: Payment Method
     101: UPI
@@ -155,8 +155,8 @@ def test_common_100_101_222():
 @pytest.mark.chargeSlipVal
 def test_common_100_101_240():
     """
-    Sub Feature Code: UI_Common_PM_UPI_with_RZP_UPI_Config_Offline_Mode
-    Sub Feature Description: Should be able to generate UPI QR and perform a UPI payment with RZP UPI Config set to Offline Mode
+    Sub Feature Code: UI_Common_PM_UPI_Razorpay_Config_Offline_Mode
+    Sub Feature Description: Should be able to generate UPI QR and perform a UPI payment with Razorpay UPI Config set to Offline Mode
     TC naming code description:
     100: Payment Method
     101: UPI
@@ -578,8 +578,8 @@ def test_common_100_101_240():
 @pytest.mark.chargeSlipVal
 def test_common_100_101_247():
     """
-    Sub Feature Code: UI_Common_PM_UPI_with_RZP_UPI_Config_Hybrid_Mode
-    Sub Feature Description: Perform a UPI QR payment with RZP UPI Config set to Hybrid Mode
+    Sub Feature Code: UI_Common_PM_UPI_Razorpay_Config_Hybrid_Mode
+    Sub Feature Description: Perform a UPI QR payment with Razorpay UPI Config set to Hybrid Mode
     TC naming code description:
     100: Payment Method
     101: UPI
@@ -1000,7 +1000,7 @@ def test_common_100_101_247():
 @pytest.mark.chargeSlipVal
 def test_common_100_101_233():
     """
-    Sub Feature Code: UI_Common_PM_UPI_with_UPI_Config_RZP_Offline_HDFC_Online
+    Sub Feature Code: UI_Common_PM_UPI_with_UPI_Config_Razorpay_Offline_HDFC_Online
     Sub Feature Description: Perform UPI QR Payment and Confirm RAZORPAY OFFLINE config only picked when multiple UPI configs RAZOR PAY OFFLINE and HDFC Online are available
     TC naming code description:
     100: Payment Method
@@ -1437,7 +1437,7 @@ def test_common_100_101_233():
 @pytest.mark.chargeSlipVal
 def test_common_100_101_234():
     """
-    Sub Feature Code: UI_Common_PM_UPI_with_UPI_Config_HDFC_Offline_RZP_Online
+    Sub Feature Code: UI_Common_PM_UPI_with_UPI_Config_HDFC_Offline_Razorpay_Online
     Sub Feature Description: Perform UPI QR Payment and Confirm HDFC OFFLINE config only picked when multiple UPI configs HDFC OFFLINE and RAZORPAY Online are available
     TC naming code description:
     100: Payment Method

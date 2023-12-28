@@ -26,8 +26,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_103_300():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_with_RZP_UPI_Config_Online_Mode
-    Sub Feature Description: Should be able to Perform a Remotepay UPI payment with RZP UPI Config set to Online Mode
+    Sub Feature Code: UI_Common_PM_RP_UPI_Razorpay_Config_Online_Mode
+    Sub Feature Description: Should be able to Perform a Remotepay UPI payment with Razorpay UPI Config set to Online Mode
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -448,8 +448,8 @@ def test_common_100_103_300():
 @pytest.mark.portalVal
 def test_common_100_103_301():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_with_RZP_UPI_Config_Offline_Mode
-    Sub Feature Description: Should not be able to  Remotepay UPI txn with RZP UPI Config set to Offline Mode
+    Sub Feature Code: UI_Common_PM_RP_UPI_Razorpay_Config_Offline_Mode
+    Sub Feature Description: Should not be able to  Remotepay UPI txn with Razorpay UPI Config set to Offline Mode
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -581,8 +581,8 @@ def test_common_100_103_301():
 @pytest.mark.chargeSlipVal
 def test_common_100_103_302():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_with_RZP_UPI_Config_Hybrid_Mode
-    Sub Feature Description: Perform a Remotepay UPI payment with RZP UPI Config set to Hybrid Mode
+    Sub Feature Code: UI_Common_PM_RP_UPI_Razorpay_Config_Hybrid_Mode
+    Sub Feature Description: Perform a Remotepay UPI payment with Razorpay UPI Config set to Hybrid Mode
     TC naming code description:
     100: Payment Method
     103: RemotePay
@@ -1005,7 +1005,7 @@ def test_common_100_103_302():
 @pytest.mark.chargeSlipVal
 def test_common_100_103_303():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_with_UPI_Config_RZP_Online_HDFC_Offline
+    Sub Feature Code: UI_Common_PM_RP_UPI_with_UPI_Config_Razorpay_Online_HDFC_Offline
     Sub Feature Description: Perform Remotepay UPI txn and Confirm RAZOR PAY Online config only picked when multiple UPI configs Razorpay Online and HDFC Offline are available
     TC naming code description:
     100: Payment Method
@@ -1446,7 +1446,7 @@ def test_common_100_103_303():
 @pytest.mark.chargeSlipVal
 def test_common_100_103_304():
     """
-    Sub Feature Code: UI_Common_PM_RP_UPI_with_UPI_Config_HDFC_Online_RZP_Offline
+    Sub Feature Code: UI_Common_PM_RP_UPI_with_UPI_Config_HDFC_Online_Razorpay_Offline
     Sub Feature Description: Perform Remotepay UPI txn Confirm HDFC Online config only picked when multiple UPI configs HDFC Online and Razorpay Offline are available
     TC naming code description:
     100: Payment Method
