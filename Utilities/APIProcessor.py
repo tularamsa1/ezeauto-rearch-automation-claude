@@ -102,6 +102,38 @@ def send_request(api_details):
                 f"payload : {json.dumps(payload)} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
             return json_resp
 
+        # For Razorpay_Callback
+        if api_details['ApiName'] == 'razorpay_callback_generator_HMAC':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            query = "select psp_base_url from upi_psp_config where bank_code='RAZORPAY_PSP';"
+            logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            psp_base_url = result['psp_base_url'].values[0]
+            logger.debug(f"psp_base_url from the upi_psp_config table is : {psp_base_url}")
+            url = str(psp_base_url).replace('localhost', str(router_ip)) + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
+        # For Mintoak_Callback
+        if api_details['ApiName'] == 'mintoak_encryption_callback':
+            router_ip = Base_Actions.get_environment("str_exe_env_ip")
+            query = "select provider_base_url from bharatqr_provider_config where provider_name='HDFC_MINTOAK'"
+            logger.debug(f"Query to fetch provider_base_url from the DB : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            provider_base_url = result['provider_base_url'].values[0]
+            logger.debug(f"provider_base_url from the bharatqr_provider_config table is : {provider_base_url}")
+            url = str(provider_base_url).replace('localhost', str(router_ip)) + endPoint
+            resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload))
+            update_api_details_to_report_variables(resp)
+            json_resp = json.loads(resp.text)
+            logger.debug(
+                f"payload : {json.dumps(payload)} to trigger the {url} api and the API_OUTPUT is : {json_resp}")
+            return json_resp
+
         # For IDFC Callback
         if api_details['ApiName'] == 'hmac_merch_cred':
             router_ip = Base_Actions.get_environment("str_exe_env_ip")

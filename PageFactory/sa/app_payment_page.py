@@ -92,6 +92,8 @@ class PaymentPage(BasePage):
     ok_error_btn = (By.ID, "com.ezetap.service.demo:id/rightButton")
     razorpay_emi_discount = (By.XPATH, f"//*[contains(@text,'Razorpay EMI Discount')]")
     bo_element = (By.XPATH, '//*[@text="Instant Discount(Offer)"]/following-sibling::android.widget.TextView[2]')
+    lbl_upi_err_msg = (By.XPATH, '//*[contains(@text,"Valid UPI configuration not found for merchant")]')
+
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -183,6 +185,9 @@ class PaymentPage(BasePage):
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
+
+    def validate_upi_err_msg(self):
+        return self.fetch_text(self.lbl_upi_err_msg)
 
     def is_payment_page_displayed(self, amount, order_id):
         try:
