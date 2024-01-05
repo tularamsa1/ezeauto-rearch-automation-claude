@@ -967,6 +967,8 @@ def test_d102_102_042():
         logger.debug(f"fetched upi_mc_id : {mid}")
         upi_pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"fetched upi_pg merchant id : {upi_pg_merchant_id}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetched vpa : {vpa}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -977,6 +979,8 @@ def test_d102_102_042():
 
         logger.debug(f"Fetching terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1272,6 +1276,8 @@ def test_d102_102_043():
         logger.debug(f"fetched upi_mc_id : {mid}")
         upi_pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"fetched upi_pg merchant id : {upi_pg_merchant_id}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetched vpa : {vpa}")
 
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                         "status = 'ACTIVE' and bank_code='HDFC'"
@@ -1282,6 +1288,8 @@ def test_d102_102_043():
 
         logger.debug(f"Fetching terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

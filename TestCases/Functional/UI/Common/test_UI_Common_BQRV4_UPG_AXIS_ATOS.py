@@ -116,6 +116,7 @@ def test_common_100_102_147():
             api_details = DBProcessor.get_api_details('callbackUpiAXIS',
                                                       request_body={"primary_id": upg_txn_id, "txn_amount": str(amount),
                                                                     "merchant_vpa": vpa, "customer_vpa": customer_vpa,
+                                                                    "mid": mid,
                                                                     "auth_code": auth_code, "ref_no": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -519,6 +520,7 @@ def test_common_100_102_148():
             api_details = DBProcessor.get_api_details('callbackUpiAXIS',
                                                       request_body={"primary_id": upg_txn_id, "txn_amount": str(amount),
                                                                     "merchant_vpa": vpa, "customer_vpa": customer_vpa,
+                                                                    "mid": mid,
                                                                     "auth_code": auth_code, "ref_no": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -923,6 +925,7 @@ def test_common_100_102_149():
             api_details = DBProcessor.get_api_details('callbackUpiAXIS',
                                                       request_body={"primary_id": upg_txn_id, "txn_amount": str(amount),
                                                                     "merchant_vpa": vpa, "customer_vpa": customer_vpa,
+                                                                    "mid": mid,
                                                                     "auth_code": auth_code, "ref_no": rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")

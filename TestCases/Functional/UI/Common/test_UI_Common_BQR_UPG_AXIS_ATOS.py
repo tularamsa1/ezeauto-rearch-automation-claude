@@ -107,6 +107,7 @@ def test_common_100_102_251():
                                                       request_body={"primary_id": upg_txn_id,
                                                                     "txn_amount": str(amount),
                                                                     "mpan": merchant_id,
+                                                                    "mid": mid,
                                                                     "auth_code": auth_code, "ref_no":rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -504,6 +505,7 @@ def test_common_100_102_252():
                                                       request_body={"primary_id": upg_txn_id,
                                                                     "txn_amount": str(amount),
                                                                     "mpan": merchant_id,
+                                                                    "mid": mid,
                                                                     "auth_code": auth_code, "ref_no":rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")
@@ -905,6 +907,7 @@ def test_common_100_102_253():
                                                       request_body={"primary_id": upg_txn_id,
                                                                     "txn_amount": str(amount),
                                                                     "mpan": merchant_id,
+                                                                    "mid": mid,
                                                                     "auth_code": auth_code, "ref_no":rrn})
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Fetching API Response for call back : {response}")

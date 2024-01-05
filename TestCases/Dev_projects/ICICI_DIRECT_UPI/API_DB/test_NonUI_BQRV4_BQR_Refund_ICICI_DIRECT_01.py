@@ -1580,6 +1580,22 @@ def test_d102_102_032():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['virtual_tid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {tid}")
+        mid = result['virtual_mid'].values[0]
+        logger.debug(f"fetched upi_mc_id : {mid}")
+        upi_pg_merchant_id = result['pgMerchantId'].values[0]
+        logger.debug(f"fetched upi_pg merchant id : {upi_pg_merchant_id}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetched vpa : {upi_pg_merchant_id}")
+
         query = "select * from bharatqr_merchant_config where org_code='" + org_code + "' and " \
                                                                                        "status = 'ACTIVE' and bank_code='HDFC'"
         result = DBProcessor.getValueFromDB(query)
@@ -1591,6 +1607,8 @@ def test_d102_102_032():
 
         logger.debug(f"Fetching mid, tid,terminal_info_id,bqr_mc_id,bqr_m_pan  from database for current merchant:"
                      f"{mid}, {tid}, {terminal_info_id}, {bqr_mc_id}, {bqr_m_pan}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")

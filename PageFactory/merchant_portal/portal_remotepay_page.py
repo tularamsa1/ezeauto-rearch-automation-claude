@@ -54,17 +54,13 @@ class RemotePayTxnPage(BasePage):
     btn_netbanking_proceed = "proceed"
     btn_netbanking_cancel = (By.NAME, "cancel")
 
-    # below locator are for emi on cnp flow
-    lbl_card_number = '//*[@id="card-number"]'
-    lbl_expiry_month = '// *[ @ id = "valid-through-expiry-month"]'
-    lbl_expiry_year = '//*[@id="valid-through-expiry-year"]'
-    lbl_cvv = '//*[@id="valid-through-cvv"]'
-    lbl_name_on_card = '//app-emi-options-landing-page/div/div[1]/app-card-details/div/div/div[3]/input'
-    btn_proceed = "//button[text()='Proceed']"
-    btn_three_months_emi_plan = '//p[normalize-space(text()="3 EMI")]'
-    btn_six_months_emi_plan = '//p[normalize-space(text()="6 EMI")]'
-    btn_nine_months_emi_plan = '//p[normalize-space(text()="9 EMI")]'
-    btn_twelve_months_emi_plan = '//p[normalize-space(text()="12 EMI")]'
+    txt_otp_field = "//input[@placeholder='OTP']"
+    btn_submit_otp = "//button[@type='submit']"
+    btn_failure = "//button[text()='Failure']"
+    btn_success = "//button[text()='Success']"
+    txt_failure_msg = "//*[@id='page-wrapper']/div/div/div/div/h3/text()"
+    lbl_input_debit_card_num = "//input[@placeholder='Card number']"
+    btn_select_netbanking_Rzp = "AU Small Finance Bank"
 
     def __init__(self, page):
         super().__init__(page)
@@ -184,40 +180,31 @@ class RemotePayTxnPage(BasePage):
     def wait_for_failed_message(self):
         self.wait_for_element(self.txt_failedMessage)
 
-    def enter_card_details_emi(self, card_number: str, expiry_month: str, expiry_year: str, cvv: str, name_on_card: str):
-        """
-        This method is used to enter card details for EMI on CNP flow
-        param: card_number str
-        param: expiry_month str
-        param: expiry_year str
-        param: cvv str
-        param: name_on_card str
-        """
-        self.perform_fill(self.lbl_card_number, card_number)
-        self.perform_fill(self.lbl_expiry_month, expiry_month)
-        self.perform_fill(self.lbl_expiry_year, expiry_year)
-        self.perform_fill(self.lbl_cvv, cvv)
-        self.perform_fill(self.lbl_name_on_card, name_on_card)
+    def enter_otp(self, otp):
+        self.wait_for_element(self.txt_otp_field)
+        self.perform_fill(self.txt_otp_field, otp)
 
-    def click_on_proceed(self):
-        """
-        This method is used to click on proceed button
-        """
-        self.wait_for_element(self.btn_proceed)
-        self.perform_click(self.btn_proceed)
+    def submit_otp(self):
+        self.wait_for_element(self.btn_submit_otp)
+        self.perform_click_cnp(self.btn_submit_otp)
 
-    def select_emi_plan(self, emi_plan_in_months: int):
-        """
-        This method is used to select emi plan
-        param: emi_plan_in_months int
-        """
-        if emi_plan_in_months == 3:
-            self.perform_click(self.btn_three_months_emi_plan)
-        elif emi_plan_in_months == 6:
-            self.perform_click(self.btn_six_months_emi_plan)
-        elif emi_plan_in_months == 9:
-            self.perform_click(self.btn_nine_months_emi_plan)
-        elif emi_plan_in_months == 12:
-            self.perform_click(self.btn_twelve_months_emi_plan)
-        else:
-            raise Exception("Preferred emi plan is invalid")
+    def click_failure_pmt_btn(self):
+        self.wait_for_element(self.btn_failure)
+        self.perform_click(self.btn_failure)
+
+    def fetch_failure_message(self):
+        self.wait_for_element(self.txt_failure_msg)
+        self.fetch_text(self.txt_failure_msg)
+
+    def click_success_pmt_btn(self):
+        self.wait_for_element(self.btn_success)
+        self.perform_click(self.btn_success)
+
+    def remote_pay_select_netbanking_Rzp(self):
+        self.select_from_drop_down_combobox(self.btn_select_netbanking_Rzp)
+
+    def enter_debit_card_number(self, value):
+        self.perform_fill(self.lbl_input_debit_card_num, value)
+
+    def enter_debit_card_cvv(self, value):
+        self.perform_fill(self.lbl_cardCvv, value)
