@@ -1,0 +1,1865 @@
+import random
+import sys
+import time
+from datetime import datetime
+import pytest
+from Configuration import TestSuiteSetup, Configuration, testsuite_teardown
+from DataProvider import GlobalVariables
+from PageFactory.merchant_portal.portal_trans_history_page import get_transaction_details_for_portal
+from PageFactory.mpos.app_home_page import HomePage
+from PageFactory.mpos.app_login_page import LoginPage
+from PageFactory.sa.app_payment_page import PaymentPage
+from PageFactory.sa.app_trans_history_page import TransHistoryPage
+from Utilities import Validator, ConfigReader, APIProcessor, DBProcessor, receipt_validator, ResourceAssigner, \
+    date_time_converter
+from Utilities.execution_log_processor import EzeAutoLogger
+from Utilities.merchant_configurer import refresh_db
+
+logger = EzeAutoLogger(__name__)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.appVal
+def test_common_100_101_222():
+    """
+    Sub Feature Code: UI_Common_PM_UPI_Razorpay_Config_Online_Mode
+    Sub Feature Description: Should not be able to create UPI QR with Razorpay UPI Config set to Online Mode
+    TC naming code description:
+    100: Payment Method
+    101: UPI
+    222: TC222
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = f"select org_code from org_employee where username='{app_username}';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = f"update upi_merchant_config set status = 'INACTIVE' where org_code='{org_code}';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating upi_merchant_config table inactive: {result}")
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='RAZORPAY_PSP' and allowed_mode='ONLINE';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"RESULT of updating DB setting active: {result}")
+
+        refresh_db
+        logger.info(f"DB refreshed ")
+
+        TestSuiteSetup.launch_browser_and_context_initialize()
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False, config_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login(app_username, app_password)
+            amount = random.randint(2100, 2200)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            home_page = HomePage(app_driver)
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
+            home_page.check_home_page_logo()
+            home_page.enter_amount_and_order_number(amount, order_id)
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed(amount, order_id)
+            payment_page.click_on_Upi_paymentMode()
+            logger.info("Selected payment mode is UPI")
+
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+        # -----------------------------------------End of Test Execution--------------------------------------
+
+        # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                expected_error_message=f"Valid UPI configuration not found for merchant :for OrgCode {org_code}"
+                expected_app_values = {"error_message": expected_error_message}
+
+                error_message = payment_page.validate_upi_err_msg()
+                logger.info("Config not Found ")
+
+                actual_app_values = {"error_message": error_message}
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
+@pytest.mark.appVal
+@pytest.mark.chargeSlipVal
+def test_common_100_101_240():
+    """
+    Sub Feature Code: UI_Common_PM_UPI_Razorpay_Config_Offline_Mode
+    Sub Feature Description: Should be able to generate UPI QR and perform a UPI payment with Razorpay UPI Config set to Offline Mode
+    TC naming code description:
+    100: Payment Method
+    101: UPI
+    240: TC240
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+
+        logger.info(f"RESULT of updating upi_merchant_config table inactive: {result}")
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='RAZORPAY_PSP' and allowed_mode='OFFLINE';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug("RESULT of updating DB setting active", result)
+
+        refresh_db
+        logger.info(f"DB refreshed ")
+
+        query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='OFFLINE';"
+        logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched tid : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched mid : {mid}")
+
+        TestSuiteSetup.launch_browser_and_context_initialize()
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+            # ------------------------------------------------------------------------------------------------
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login(app_username, app_password)
+            amount = random.randint(2100, 2200)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            home_page = HomePage(app_driver)
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
+            home_page.check_home_page_logo()
+            home_page.enter_amount_and_order_number(amount, order_id)
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed(amount, order_id)
+            payment_page.click_on_Upi_paymentMode()
+            logger.info("Selected payment mode is UPI")
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.info("Clicking on proceed to home page button on the Payment successful screen on the MPOS")
+            payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}';"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
+            payer_name = result['payer_name'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            status_db = result["status"].values[0]
+            logger.debug(f"fetched status_db from txn table is : {status_db}")
+            payment_mode_db = result["payment_mode"].values[0]
+            logger.debug(f"fetched status_db from txn table is : {status_db}")
+            amount_db = int(result["amount"].values[0])
+            logger.debug(f"fetched amount from txn table is : {amount_db}")
+            state_db = result["state"].values[0]
+            logger.debug(f"fetched state from txn table is : {state_db}")
+            payment_gateway_db = result["payment_gateway"].values[0]
+            logger.debug(f"fetched payment_gateway from txn table is : {payment_gateway_db}")
+            acquirer_code_db = result["acquirer_code"].values[0]
+            logger.debug(f"fetched acquirer_code from txn table is : {acquirer_code_db}")
+            bank_code_db = result["bank_code"].values[0]
+            logger.debug(f"fetched bank_code from txn table is : {bank_code_db}")
+            settlement_status_db = result["settlement_status"].values[0]
+            logger.debug(f"fetched settlement_status from txn table is : {settlement_status_db}")
+
+            # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+        # -----------------------------------------End of Test Execution--------------------------------------
+
+        # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time = date_time_converter.to_app_format(created_time)
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": customer_name,
+                    "payer_name": payer_name,
+                    "order_id": order_id,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_settlement_status}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                app_rrn = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching rrn from txn history for the txn : {txn_id}, {app_rrn}")
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date = date_time_converter.db_datetime(created_time)
+                expected_api_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "RAZORPAY",
+                    "issuer_code": "RAZORPAY",
+                    "txn_type": txn_type,
+                    "org_code": org_code_txn,
+                    "date": date
+                }
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = int(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                txn_type_api = response["txnType"]
+                date_api = response["createdTime"]
+
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "org_code": orgCode_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                expected_db_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "upi_txn_status": "AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "RAZORPAY",
+                    "bank_code": "RAZORPAY",
+                    "pmt_gateway": "RAZORPAY",
+                    "upi_txn_type": "PAY_QR",
+                    "upi_bank_code": "RAZORPAY_PSP",
+                    "upi_mc_id": upi_mc_id
+                }
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].values[0]
+                upi_txn_type_db = result["txn_type"].values[0]
+                upi_bank_code_db = result["bank_code"].values[0]
+                upi_mc_id_db = result["upi_mc_id"].values[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db
+                }
+                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": rrn
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
+                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                   'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount), 'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': "" if auth_code is None else auth_code
+                                   }
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
+@pytest.mark.appVal
+@pytest.mark.chargeSlipVal
+def test_common_100_101_247():
+    """
+    Sub Feature Code: UI_Common_PM_UPI_Razorpay_Config_Hybrid_Mode
+    Sub Feature Description: Perform a UPI QR payment with Razorpay UPI Config set to Hybrid Mode
+    TC naming code description:
+    100: Payment Method
+    101: UPI
+    247: TC247
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = f"select org_code from org_employee where username='{app_username}';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating upi_merchant_config table inactive: {result}")
+
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug("RESULT of updating DB setting active", result)
+
+        refresh_db
+        logger.info(f"DB refreshed ")
+
+        query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
+        logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched tid : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched mid : {mid}")
+
+        TestSuiteSetup.launch_browser_and_context_initialize()
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+            # ------------------------------------------------------------------------------------------------
+
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login(app_username, app_password)
+            amount = random.randint(2100, 2200)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            home_page = HomePage(app_driver)
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
+            home_page.check_home_page_logo()
+            home_page.enter_amount_and_order_number(amount, order_id)
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed(amount, order_id)
+            payment_page.click_on_Upi_paymentMode()
+            logger.info("Selected payment mode is UPI")
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Clicking on proceed to home page button on the Payment successful screen on the MPOS")
+            payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}' order by created_time desc limit 1 ;"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
+            payer_name = result['payer_name'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+
+            # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+            # -----------------------------------------End of Test Execution--------------------------------------
+
+            # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time = date_time_converter.to_app_format(created_time)
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": customer_name,
+                    "payer_name": payer_name,
+                    "order_id": order_id,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                app_rrn = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date = date_time_converter.db_datetime(created_time)
+                expected_api_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "RAZORPAY",
+                    "issuer_code": "RAZORPAY",
+                    "txn_type": txn_type,
+                    "org_code": org_code_txn,
+                    "date": date
+                }
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                txn_type_api = response["txnType"]
+                date_api = response["createdTime"]
+
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "org_code": orgCode_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                expected_db_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "upi_txn_status": "AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "RAZORPAY",
+                    "bank_code": "RAZORPAY",
+                    "pmt_gateway": "RAZORPAY",
+                    "upi_txn_type": "PAY_QR",
+                    "upi_bank_code": "RAZORPAY_PSP",
+                    "upi_mc_id": upi_mc_id
+                }
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db = result["status"].values[0]
+                payment_mode_db = result["payment_mode"].values[0]
+                amount_db = int(result["amount"].values[0])
+                state_db = result["state"].values[0]
+                payment_gateway_db = result["payment_gateway"].values[0]
+                acquirer_code_db = result["acquirer_code"].values[0]
+                bank_code_db = result["bank_code"].values[0]
+                settlement_status_db = result["settlement_status"].values[0]
+
+                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].values[0]
+                upi_txn_type_db = result["txn_type"].values[0]
+                upi_bank_code_db = result["bank_code"].values[0]
+                upi_mc_id_db = result["upi_mc_id"].values[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db
+                }
+                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": rrn
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
+                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                   'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount), 'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': "" if auth_code is None else auth_code
+                                   }
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
+@pytest.mark.appVal
+@pytest.mark.chargeSlipVal
+def test_common_100_101_233():
+    """
+    Sub Feature Code: UI_Common_PM_UPI_with_UPI_Config_Razorpay_Offline_HDFC_Online
+    Sub Feature Description: Perform UPI QR Payment and Confirm RAZORPAY OFFLINE config only picked when multiple UPI configs RAZOR PAY OFFLINE and HDFC Online are available
+    TC naming code description:
+    100: Payment Method
+    101: UPI
+    233: TC233
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"RESULT of updating upi_merchant_config table inactive: {result}")
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='RAZORPAY_PSP' and allowed_mode='OFFLINE';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug("RESULT of updating DB setting active for Razorpay OFFLINE", result)
+
+        query = f"select * from upi_merchant_config where org_code ='{org_code}'  AND bank_code = 'HDFC' ;"
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug("RESULT of searching upi config for bank_code= HDFC ", result)
+        config_allowed_mode = result['allowed_mode'].values[0]
+        logger.debug(f"fetched config_allowed_mode for HDFC : {config_allowed_mode}")
+
+        if config_allowed_mode=='OFFLINE':
+            query = f"update upi_merchant_config set allowed_mode = 'ONLINE' where org_code='{org_code}' and bank_code='HDFC' ;"
+            result = DBProcessor.setValueToDB(query)
+            logger.debug("RESULT of updating upi config allowed_mode from OFFLINE to ONLINE  for HDFC ", result)
+        else:
+            pass
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='HDFC' and allowed_mode='ONLINE';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug("RESULT of updating DB setting active for HDFC ONLINE", result)
+
+        refresh_db
+        logger.info(f"DB refreshed ")
+
+        query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='OFFLINE';"
+        logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched tid : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched mid : {mid}")
+
+        TestSuiteSetup.launch_browser_and_context_initialize()
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+            # ------------------------------------------------------------------------------------------------
+
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login(app_username, app_password)
+            amount = random.randint(2100, 2200)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            home_page = HomePage(app_driver)
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
+            home_page.check_home_page_logo()
+            home_page.enter_amount_and_order_number(amount, order_id)
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed(amount, order_id)
+            payment_page.click_on_Upi_paymentMode()
+            logger.info("Selected payment mode is UPI")
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Clicking on proceed to home page button on the Payment successful screen on the MPOS")
+            payment_page.click_on_proceed_homepage()
+
+            query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
+                order_id) + "';"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
+            payer_name = result['payer_name'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+            # -----------------------------------------End of Test Execution--------------------------------------
+
+            # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time = date_time_converter.to_app_format(created_time)
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": customer_name,
+                    "payer_name": payer_name,
+                    "order_id": order_id,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                app_rrn = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date = date_time_converter.db_datetime(created_time)
+                expected_api_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "RAZORPAY",
+                    "issuer_code": "RAZORPAY",
+                    "txn_type": txn_type,
+                    "org_code": org_code_txn,
+                    "date": date
+                }
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = int(response["amount"])
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                txn_type_api = response["txnType"]
+                date_api = response["createdTime"]
+
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "org_code": orgCode_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                expected_db_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "upi_txn_status": "AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "RAZORPAY",
+                    "bank_code": "RAZORPAY",
+                    "pmt_gateway": "RAZORPAY",
+                    "upi_txn_type": "PAY_QR",
+                    "upi_bank_code": "RAZORPAY_PSP",
+                    "upi_mc_id": upi_mc_id
+                }
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db = result["status"].values[0]
+                payment_mode_db = result["payment_mode"].values[0]
+                amount_db = int(result["amount"].values[0])
+                state_db = result["state"].values[0]
+                payment_gateway_db = result["payment_gateway"].values[0]
+                acquirer_code_db = result["acquirer_code"].values[0]
+                bank_code_db = result["bank_code"].values[0]
+                settlement_status_db = result["settlement_status"].values[0]
+
+                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].values[0]
+                upi_txn_type_db = result["txn_type"].values[0]
+                upi_bank_code_db = result["bank_code"].values[0]
+                upi_mc_id_db = result["upi_mc_id"].values[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db
+                }
+                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": rrn
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
+                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                   'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount), 'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': "" if auth_code is None else auth_code
+                                   }
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.apiVal
+@pytest.mark.dbVal
+@pytest.mark.portalVal
+@pytest.mark.appVal
+@pytest.mark.chargeSlipVal
+def test_common_100_101_234():
+    """
+    Sub Feature Code: UI_Common_PM_UPI_with_UPI_Config_HDFC_Offline_Razorpay_Online
+    Sub Feature Description: Perform UPI QR Payment and Confirm HDFC OFFLINE config only picked when multiple UPI configs HDFC OFFLINE and RAZORPAY Online are available
+    TC naming code description:
+    100: Payment Method
+    101: UPI
+    234: TC234
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
+        logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
+        app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
+        logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
+        portal_username = portal_cred['Username']
+        portal_password = portal_cred['Password']
+
+        query = "select org_code from org_employee where username='" + str(app_username) + "';"
+        logger.debug(f"Query to fetch org_code from the DB : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        org_code = result['org_code'].values[0]
+        logger.debug(f"Query result, org_code : {org_code}")
+
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+                                                           portal_pw=portal_password, payment_mode='UPI')
+
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = "update upi_merchant_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating upi_merchant_config table inactive: {result}")
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='RAZORPAY_PSP' and allowed_mode='ONLINE';"
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active for Razorpay OFFLINE", result)
+
+        query = f"select * from upi_merchant_config where org_code ='{org_code}'  AND bank_code = 'HDFC' ;"
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug("RESULT of searching upi config for bank_code= HDFC ", result)
+        config_allowed_mode = result['allowed_mode'].values[0]
+        logger.debug(f"fetched config_allowed_mode for HDFC : {config_allowed_mode}")
+
+        if config_allowed_mode=='ONLINE':
+            query = f"update upi_merchant_config set allowed_mode = 'OFFLINE' where org_code='{org_code}' and bank_code='HDFC' ;"
+            result = DBProcessor.setValueToDB(query)
+            logger.debug("RESULT of updating upi config allowed_mode from ONLINE to OFFLINE for HDFC ", result)
+        else:
+            pass
+        query = f"update upi_merchant_config set status = 'ACTIVE' where org_code='{org_code}' and bank_code='HDFC' and allowed_mode='OFFLINE';"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug("RESULT of updating DB setting active for HDFC ONLINE", result)
+
+        refresh_db
+        logger.info(f"DB refreshed ")
+
+        query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'HDFC' and allowed_mode='OFFLINE';"
+        logger.debug(f"Query to fetch upi_mc_id,tid,mid from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        tid = result['tid'].values[0]
+        logger.debug(f"fetched tid : {tid}")
+        mid = result['mid'].values[0]
+        logger.debug(f"fetched mid : {mid}")
+
+        TestSuiteSetup.launch_browser_and_context_initialize()
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False, config_log=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of Test Execution-------------------------------------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+            # ------------------------------------------------------------------------------------------------
+
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            logger.info(
+                f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login(app_username, app_password)
+            amount = random.randint(2100, 2200)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            home_page = HomePage(app_driver)
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
+            home_page.check_home_page_logo()
+            home_page.enter_amount_and_order_number(amount, order_id)
+            logger.debug(f"Entered amount is : {amount}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed(amount, order_id)
+            payment_page.click_on_Upi_paymentMode()
+            logger.info("Selected payment mode is UPI")
+            payment_page.validate_upi_bqr_payment_screen()
+            logger.info("Payment QR generated and displayed successfully")
+            payment_page.click_on_back_btn()
+            payment_page.click_on_transaction_cancel_yes()
+            logger.debug("Clicking on proceed to home page button on the Payment successful screen on the MPOS")
+            payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}';"
+            logger.debug(f"Query to fetch txn data from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            rrn = result['rr_number'].values[0]
+            logger.debug(f"fetched rrn from txn table is : {rrn}")
+            customer_name = result['customer_name'].values[0]
+            logger.debug(f"fetched customer_name from txn table is : {customer_name}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"fetched txn_id from txn table is : {txn_id}")
+            payer_name = result['payer_name'].values[0]
+            logger.debug(f"fetched payer_name from txn table is : {payer_name}")
+            org_code_txn = result['org_code'].values[0]
+            logger.debug(f"fetched org_code_txn from txn table is : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
+            logger.debug(f"fetched txn_type from txn table is : {txn_type}")
+            created_time = result['created_time'].values[0]
+            logger.debug(f"fetched created_time from txn table is : {created_time}")
+            auth_code = result['auth_code'].values[0]
+            logger.debug(f"fetched auth_code from txn table is : {auth_code}")
+            # ------------------------------------------------------------------------------------------------
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+            GlobalVariables.time_calc.execution.pause()
+            logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
+            logger.info(f"Execution is completed for the test case : {testcase_id}")
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+            # -----------------------------------------End of Test Execution--------------------------------------
+
+            # -----------------------------------------Start of Validation----------------------------------------
+        logger.info(f"Starting Validation for the test case : {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
+
+        # -----------------------------------------Start of App Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+            logger.info(f"Started APP validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time = date_time_converter.to_app_format(created_time)
+                expected_app_values = {
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": txn_id,
+                    "rrn": str(rrn),
+                    "customer_name": customer_name,
+                    "payer_name": payer_name,
+                    "order_id": order_id,
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+
+                home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
+                home_page.check_home_page_logo()
+                home_page.click_on_history()
+                txn_history_page = TransHistoryPage(app_driver)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                payment_status = txn_history_page.fetch_txn_status_text()
+                logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
+                app_date_and_time = txn_history_page.fetch_date_time_text()
+                logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
+                payment_mode = txn_history_page.fetch_txn_type_text()
+                logger.info(f"Fetching payment mode from txn history for the txn : {txn_id}, {payment_mode}")
+                app_txn_id = txn_history_page.fetch_txn_id_text()
+                logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
+                app_amount = txn_history_page.fetch_txn_amount_text()
+                logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching txn customer name from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_settlement_status = txn_history_page.fetch_settlement_status_text()
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {txn_id}, {app_customer_name}")
+                app_payer_name = txn_history_page.fetch_payer_name_text()
+                logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
+                app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
+                logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                app_order_id = txn_history_page.fetch_order_id_text()
+                logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
+                app_rrn = txn_history_page.fetch_RRN_text()
+                logger.info(
+                    f"Fetching txn_id from txn history for the txn : {txn_id}, {app_rrn}")
+
+                actual_app_values = {
+                    "pmt_mode": payment_mode,
+                    "pmt_status": payment_status.split(':')[1],
+                    "txn_amt": app_amount.split(' ')[1],
+                    "txn_id": app_txn_id,
+                    "rrn": str(app_rrn),
+                    "customer_name": app_customer_name,
+                    "settle_status": app_settlement_status,
+                    "payer_name": app_payer_name,
+                    "order_id": app_order_id,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
+                logger.debug(f"actual_app_values: {actual_app_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # -----------------------------------------End of App Validation---------------------------------------
+
+        # -----------------------------------------Start of API Validation------------------------------------
+        if (ConfigReader.read_config("Validations", "api_validation")) == "True":
+            logger.info(f"Started API validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date = date_time_converter.db_datetime(created_time)
+                expected_api_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
+                    "txn_type": txn_type,
+                    "org_code": org_code_txn,
+                    "date": date
+                }
+                logger.debug(f"expected_api_values: {expected_api_values}")
+
+                api_details = DBProcessor.get_api_details('txnlist',
+                                                          request_body={"username": app_username,
+                                                                        "password": app_password})
+                logger.debug(f"API DETAILS for txn : {api_details}")
+                response = APIProcessor.send_request(api_details)
+                logger.debug(f"Response received for transaction list api is : {response}")
+                response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
+                logger.debug(f"Response after filtering data of current txn is : {response}")
+                status_api = response["status"]
+                amount_api = int(response["amount"])  # actual=345.00, expected should be in the same format
+                payment_mode_api = response["paymentMode"]
+                state_api = response["states"][0]
+                settlement_status_api = response["settlementStatus"]
+                issuer_code_api = response["issuerCode"]
+                acquirer_code_api = response["acquirerCode"]
+                orgCode_api = response["orgCode"]
+                txn_type_api = response["txnType"]
+                date_api = response["createdTime"]
+
+                actual_api_values = {
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "org_code": orgCode_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
+                logger.debug(f"actual_api_values: {actual_api_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
+            except Exception as e:
+                Configuration.perform_api_val_exception(testcase_id, e)
+            logger.info(f"Completed API validation for the test case : {testcase_id}")
+        # -----------------------------------------End of API Validation---------------------------------------
+
+        # -----------------------------------------Start of DB Validation--------------------------------------
+        if (ConfigReader.read_config("Validations", "db_validation")) == "True":
+            logger.info(f"Started DB validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                expected_db_values = {
+                    "pmt_status": "AUTHORIZED",
+                    "pmt_state": "SETTLED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "upi_txn_status": "AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "HDFC",
+                    "upi_txn_type": "PAY_QR",
+                    "upi_bank_code": "HDFC",
+                    "upi_mc_id": upi_mc_id
+                }
+                logger.debug(f"expected_db_values: {expected_db_values}")
+
+                query = "select * from txn where id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                status_db = result["status"].values[0]
+                payment_mode_db = result["payment_mode"].values[0]
+                amount_db = int(result["amount"].values[0])
+                state_db = result["state"].values[0]
+                payment_gateway_db = result["payment_gateway"].values[0]
+                acquirer_code_db = result["acquirer_code"].values[0]
+                bank_code_db = result["bank_code"].values[0]
+                settlement_status_db = result["settlement_status"].values[0]
+
+                query = "select * from upi_txn where txn_id='" + txn_id + "'"
+                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                result = DBProcessor.getValueFromDB(query)
+                logger.debug(f"Query result : {result}")
+                upi_status_db = result["status"].values[0]
+                upi_txn_type_db = result["txn_type"].values[0]
+                upi_bank_code_db = result["bank_code"].values[0]
+                upi_mc_id_db = result["upi_mc_id"].values[0]
+
+                actual_db_values = {
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db
+                }
+                logger.debug(f"actual_db_values : {actual_db_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
+            except Exception as e:
+                Configuration.perform_db_val_exception(testcase_id, e)
+            logger.info(f"Completed DB validation for the test case : {testcase_id}")
+        # -----------------------------------------End of DB Validation---------------------------------------
+
+        # -----------------------------------------Start of Portal Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
+            logger.info(f"Started Portal validation for the test case : {testcase_id}")
+            try:
+                # --------------------------------------------------------------------------------------------
+                date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                expected_portal_values = {
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": "{:,.2f}".format(amount),
+                    "username": app_username,
+                    "txn_id": txn_id,
+                    "auth_code": "-" if auth_code is None else auth_code,
+                    "rrn": rrn
+                }
+                logger.debug(f"expected_portal_values : {expected_portal_values}")
+
+                transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
+                date_time = transaction_details[0]['Date & Time']
+                transaction_id = transaction_details[0]['Transaction ID']
+                total_amount = transaction_details[0]['Total Amount'].split()
+                auth_code_portal = transaction_details[0]['Auth Code']
+                rr_number = transaction_details[0]['RR Number']
+                transaction_type = transaction_details[0]['Type']
+                status = transaction_details[0]['Status']
+                username = transaction_details[0]['Username']
+
+                actual_portal_values = {
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
+
+                logger.debug(f"actual_portal_values : {actual_portal_values}")
+
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
+            except Exception as e:
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+        # -----------------------------------------End of Portal Validation---------------------------------------
+
+        # -----------------------------------------Start of ChargeSlip Validation---------------------------------
+        if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
+            logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
+            try:
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
+                expected_values = {'PAID BY:': 'UPI', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
+                                   'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount), 'date': txn_date,
+                                   'time': txn_time,
+                                   'AUTH CODE': "" if auth_code is None else auth_code
+                                   }
+                receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                  {"username": app_username, "password": app_password},
+                                                                  expected_values)
+
+            except Exception as e:
+                Configuration.perform_charge_slip_val_exception(testcase_id, e)
+            logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")
+        # -----------------------------------------End of ChargeSlip Validation---------------------------------------
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
+        logger.info(f"Completed Validation for the test case : {testcase_id}")
+        # -------------------------------------------End of Validation---------------------------------------------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
