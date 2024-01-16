@@ -821,7 +821,7 @@ def test_common_100_115_05_063():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "Canara Bank",
-                    "Transaction Amount": "Rs." + "{:.2f}".format(amount),
+                    "Transaction Amount": "Rs. " + "{:.2f}".format(amount - discount_value),
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "Discount": "Rs." + "{:.2f}".format(discount_value),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),

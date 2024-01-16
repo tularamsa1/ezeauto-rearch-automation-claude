@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -968,7 +969,7 @@ def test_common_100_115_11_019():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Loan Amount": f"Rs.{round(amount - cal_subvention_value, 2)}",
+                    "Loan Amount": "Rs." + "{:.2f}".format(amount - cal_subvention_value),
                     "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
@@ -2245,7 +2246,7 @@ def test_common_100_115_11_021():
             payment_page.click_on_ok_error_btn_for_normal_Eze_emi()
 
             logger.debug(f"Started calculating emi part")
-            cal_subvention_value = (amount * (subvention_value / 100))
+            cal_subvention_value = amount * (subvention_value / 100)
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
             cal_monthly_emi_amt = (amount - cal_subvention_value) * monthly_interest_rate * (
@@ -2599,7 +2600,7 @@ def test_common_100_115_11_021():
                     "sku_code": brand_sku_code,
                     "entity": "EZETAP",
                     "subvention_type": "INSTANT",
-                    "subvention_amount": cal_subvention_value,
+                    "subvention_amount": round(cal_subvention_value, 2),
                     "emi_interest_rate": interest_rate,
                     "total_amount_with_int": total_emi,
                     "product_serial": str(imei_no),
@@ -2804,7 +2805,7 @@ def test_common_100_115_11_021():
                     "monthly_emi": monthly_emi,
                     "total_emi_amt": total_emi,
                     "scheme_code": scheme_code,
-                    "emi_txn_amt": float(amount - cal_subvention_value),
+                    "emi_txn_amt": round((amount - cal_subvention_value), 2),
                     "emi_original_amt": float(amount),
                     "emi_status": "VOIDED",
                     "emi_term": (f"{emi_plan_in_months} month"),
@@ -2956,7 +2957,7 @@ def test_common_100_115_11_021():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Loan Amount": f"Rs."+ "{:,.2f}".format(amount - cal_subvention_value, 2),
+                    "Loan Amount": f"Rs."+ "{:.2f}".format(amount - cal_subvention_value, 2),
                     "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
@@ -3081,7 +3082,7 @@ def test_common_100_115_11_022():
         testsuite_teardown.update_emi_status_for_org(org_code, 'DEBIT', 'ACTIVE')
         logger.debug(f"updated emi settings for {org_code} as active for debit card")
 
-        emi_plan_in_months = 3
+        emi_plan_in_months = 6
         logger.debug(f"Value of emi plan in months is : {emi_plan_in_months}")
 
         query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
@@ -3164,6 +3165,9 @@ def test_common_100_115_11_022():
             logger.debug(f"Selecting the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_DEBIT_428090")
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from debit_emi_txn_request table")
 
             query = f"select * from debit_emi_txn_request where org_code='{org_code}' order by id desc limit 1;"
             logger.debug(f"Query to fetch data from debit_emi_txn_request table : {query}")

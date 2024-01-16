@@ -158,7 +158,7 @@ def test_common_100_115_11_014():
         subvention_scheme_name = result['scheme_name'].values[0]
         logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
 
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and tenure='{emi_plan_in_months} month' ;"
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month' ;"
         logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan_details table : {result}")
@@ -178,7 +178,7 @@ def test_common_100_115_11_014():
         # updating the status as inactive in subvention_plan_details table
         testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
 
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and tenure='{emi_plan_in_months} month'"
+        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month'"
         logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
@@ -597,7 +597,7 @@ def test_common_100_115_11_014():
                     "sku_code": brand_sku_code,
                     "entity": "EZETAP",
                     "subvention_type": "INSTANT",
-                    "subvention_amount": cal_subvention_value,
+                    "subvention_amount": round(cal_subvention_value, 2),
                     "emi_interest_rate": interest_rate,
                     "total_amount_with_int": total_emi,
                     "product_serial": str(imei_no),
@@ -802,7 +802,7 @@ def test_common_100_115_11_014():
                     "monthly_emi": monthly_emi,
                     "total_emi_amt": total_emi,
                     "scheme_code": scheme_code,
-                    "emi_txn_amt": float(amount - cal_subvention_value),
+                    "emi_txn_amt": round((amount - cal_subvention_value), 2),
                     "emi_original_amt": float(amount),
                     "emi_status": "PENDING",
                     "emi_term": (f"{emi_plan_in_months} month"),
@@ -1342,7 +1342,7 @@ def test_common_100_115_11_016():
         subvention_scheme_name = result['scheme_name'].values[0]
         logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
 
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and tenure='{emi_plan_in_months} month' ;"
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month' ;"
         logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan_details table : {result}")
@@ -1362,7 +1362,7 @@ def test_common_100_115_11_016():
         # updating the status as inactive in subvention_plan_details table
         testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
 
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and tenure='{emi_plan_in_months} month'"
+        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month'"
         logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
@@ -2132,7 +2132,7 @@ def test_common_100_115_11_016():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Loan Amount": "Rs." + "{:,.2f}".format(round(amount - cal_subvention_value, 2)),
+                    "Loan Amount": "Rs." + "{:.2f}".format(round(amount - cal_subvention_value, 2)),
                     "Applicable Intt Rate(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),

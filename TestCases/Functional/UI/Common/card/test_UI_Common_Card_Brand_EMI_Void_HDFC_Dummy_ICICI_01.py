@@ -935,7 +935,7 @@ def test_common_100_115_07_128():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "ICICI Bank",
-                    "Total Cashback Amt": "Rs. " + "{:.2f}".format(emi_cashback_amount),
+                    "Total Payback Amount": "Rs." + "{:.2f}".format(emi_cashback_amount),
                     "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
@@ -945,8 +945,7 @@ def test_common_100_115_07_128():
                     "Product Name": brand_sku_name,
                     "Product Desc": brand_sku_code,
                     "Sr. No.": str(imei_no),
-                    "unnamed_section_text": "RAJA /",
-                    "Net cost": "Rs." + "{:,.2f}".format(total_emi - emi_cashback_amount)
+                    "unnamed_section_text": "RAJA /"
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
 

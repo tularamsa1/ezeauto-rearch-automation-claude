@@ -1216,7 +1216,7 @@ def test_common_100_115_07_145():
             logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
 
             #Calculating the emi's using formula
-            cal_additional_payback = (amount * (subvention_value / 100))
+            cal_additional_payback = amount * (subvention_value / 100)
             logger.debug(f"cal_additional_payback is : {cal_additional_payback}")
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
@@ -1548,7 +1548,7 @@ def test_common_100_115_07_145():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "VOIDED",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -1760,7 +1760,7 @@ def test_common_100_115_07_145():
                      "emi_total_amount": api_total_emi_amt,
                      "emi_cashback_type": 'PAYBACK',
                      "emi_interest_rate": interest_rate,
-                     "loan_amt": float(amount - cal_additional_payback),
+                     "loan_amt": round((amount - cal_additional_payback), 2),
                      "brand_name": api_manufacturer,
                      "brand_sku": api_sku_code,
                      "brand_sku_code": api_sku_code,

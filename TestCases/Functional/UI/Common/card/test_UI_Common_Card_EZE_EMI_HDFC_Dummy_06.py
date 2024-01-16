@@ -285,7 +285,7 @@ def test_common_100_115_11_029():
             logger.debug(f"Calculated monthly_emi amount : {monthly_emi}")
             total_emi = round((monthly_emi * emi_plan_in_months), 2)
             logger.debug(f"total_emi amount is : {total_emi}")
-            total_interest = round((total_emi - (final_amount)), 2)
+            total_interest = round((total_emi - final_amount), 2)
             logger.debug(f"total_interest amount is : {total_interest}")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
@@ -585,7 +585,7 @@ def test_common_100_115_11_029():
             try:
                 expected_date_and_time = date_time_converter.db_datetime(date_from_db=txn_created_time)
                 expected_api_values = {
-                    "txn_amt": float(final_amount),
+                    "txn_amt": round(final_amount, 2),
                     "pmt_mode": "CARD",
                     "pmt_status": "AUTHORIZED",
                     "pmt_state": "AUTHORIZED",
@@ -616,7 +616,7 @@ def test_common_100_115_11_029():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "PENDING",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback - total_discount_value),
+                    "loan_amt": round((amount - cal_additional_payback - total_discount_value), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -857,7 +857,7 @@ def test_common_100_115_11_029():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'INSTANT',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback - total_discount_value),
+                    "loan_amt": round((amount - cal_additional_payback - total_discount_value), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -1010,9 +1010,8 @@ def test_common_100_115_11_029():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Payback": f"{subvention_value}%",
                     "Loan Amount": "Rs." + "{:.2f}".format(amount - cal_additional_payback - total_discount_value),
-                    "Rate of Interest(P.A.)": f"{interest_rate}%",
+                    "Applicable Intt Rate(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
                     "Total Amt with Interest": "Rs." + "{:.2f}".format(total_emi),
@@ -3049,7 +3048,7 @@ def test_common_100_115_11_031():
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "HDFC Bank",
                     "Total Cashback Amt": "Rs. " + "{:.2f}".format(emi_instant_discount + total_discount_value - cal_additional_payback),
-                    "Rate of Interest(P.A.)": f"{interest_rate}%",
+                    "Applicable Intt Rate(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
                     "Total Amt with Interest": "Rs." + "{:.2f}".format(total_emi),
@@ -3333,7 +3332,7 @@ def test_common_100_115_11_032():
             logger.debug(f"Started calculating emi part")
             final_amount = amount - total_discount_value
             logger.debug(f"final amount after deducting discount amount: {final_amount}")
-            cal_additional_payback = (amount * (subvention_value / 100))
+            cal_additional_payback = amount * (subvention_value / 100)
             logger.debug(f"cal_additional_payback is : {cal_additional_payback}")
             final_amount = final_amount - cal_additional_payback
             logger.debug(f"final amount after deducting discount amount: {final_amount}")
@@ -3350,7 +3349,7 @@ def test_common_100_115_11_032():
             logger.debug(f"total_emi amount is : {total_emi}")
             net_amt = total_emi - total_discount_value - subvention_value
             logger.debug(f"net_amt after deducting cashback amt {net_amt}")
-            total_interest = round((total_emi - final_amount - total_discount_value), 2)
+            total_interest = round((total_emi - (final_amount + total_discount_value)), 2)
             logger.debug(f"total_interest amount is : {total_interest}")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
@@ -3648,7 +3647,7 @@ def test_common_100_115_11_032():
             try:
                 expected_date_and_time = date_time_converter.db_datetime(date_from_db=txn_created_time)
                 expected_api_values = {
-                    "txn_amt": float(amount - cal_additional_payback),
+                    "txn_amt": round((amount - cal_additional_payback), 2),
                     "pmt_mode": "CARD",
                     "pmt_status": "AUTHORIZED",
                     "pmt_state": "AUTHORIZED",
@@ -3679,7 +3678,7 @@ def test_common_100_115_11_032():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "PENDING",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -3920,7 +3919,7 @@ def test_common_100_115_11_032():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'INSTANT',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -4069,7 +4068,7 @@ def test_common_100_115_11_032():
                     "APP": "Visa Credit",
                     "payment_option": "EMI SALE",
                     "CARD": f"XXXX-XXXX-XXXX-0102 EMV with PIN",
-                    "CARD TYPE": "Visa",
+                    "CARD TYPE": "VISA",
                     "AUTH CODE": str(auth_code).strip(),
                     "RRN": rrn,
                     "EMI Txn Id": txn_id,
@@ -4703,7 +4702,7 @@ def test_common_100_115_11_033():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "PENDING",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback - total_discount_value),
+                    "loan_amt": round((amount - (cal_additional_payback + total_discount_value)), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
