@@ -49,7 +49,8 @@ def test_common_100_102_354():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC_MINTOAK', portal_username, portal_password, 'BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, 'HDFC_MINTOAK', portal_username, portal_password,
+                                                           'BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -66,7 +67,7 @@ def test_common_100_102_354():
         logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code='{org_code}' and " \
-                                                                                       "status = 'ACTIVE' and bank_code='HDFC_MINTOAK'"
+                "status = 'ACTIVE' and bank_code='HDFC_MINTOAK'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].values[0]
         tid = result["tid"].values[0]
@@ -115,7 +116,7 @@ def test_common_100_102_354():
             app_driver.reset()
 
             query = f"select id from txn where org_code='{org_code}' and external_ref='{order_id}' " \
-                                                                                                           "order by created_time desc limit 1"
+                    "order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].values[0]

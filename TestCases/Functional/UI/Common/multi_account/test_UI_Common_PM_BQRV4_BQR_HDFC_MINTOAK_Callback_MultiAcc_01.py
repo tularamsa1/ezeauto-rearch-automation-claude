@@ -9,7 +9,8 @@ from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
-from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, date_time_converter
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, receipt_validator, ResourceAssigner, \
+    date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -50,7 +51,9 @@ def test_common_100_110_047():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username, portal_pw=portal_password, payment_mode='BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username, portal_pw=portal_password,
+                                                           payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -410,7 +413,8 @@ def test_common_100_110_047():
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -476,7 +480,9 @@ def test_common_100_110_048():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username, portal_pw=portal_password, payment_mode='BQRV4')
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username, portal_pw=portal_password,
+                                                           payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -830,7 +836,8 @@ def test_common_100_110_048():
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")

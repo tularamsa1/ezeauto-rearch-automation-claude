@@ -997,7 +997,8 @@ def test_common_100_108_043():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -1032,7 +1033,8 @@ def test_common_100_108_043():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC_MINTOAK', request_body={
                 "username": portal_username,
@@ -1102,7 +1104,8 @@ def test_common_100_108_043():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for second callback_confirm_mintoak api is : {response}")
 
-            query = f"select * from txn where org_code = '{org_code}' and rr_number = '" + str(rrn) + "'order by created_time desc limit 1; "
+            query = f"select * from txn where org_code = '{org_code}' and rr_number = '" + str(
+                rrn) + "'order by created_time desc limit 1; "
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
@@ -1170,14 +1173,14 @@ def test_common_100_108_043():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 expected_app_values = {
-                                            "pmt_mode": "BHARAT QR",
-                                            "txn_id": db_txn_id,
-                                            "pmt_status": "AUTHORIZED",
-                                            "txn_amt": str("%.2f" % amount),
-                                            "settle_status": "SETTLED",
-                                            "rrn": str(db_txn_rrn),
-                                            "pmt_msg": "PAYMENT SUCCESSFUL"
-                                        }
+                    "pmt_mode": "BHARAT QR",
+                    "txn_id": db_txn_id,
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str("%.2f" % amount),
+                    "settle_status": "SETTLED",
+                    "rrn": str(db_txn_rrn),
+                    "pmt_msg": "PAYMENT SUCCESSFUL"
+                }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
@@ -1208,14 +1211,14 @@ def test_common_100_108_043():
                 logger.debug(f"RRN: {app_rrn_2}")
 
                 actual_app_values = {
-                                        "pmt_mode": payment_mode_2,
-                                        "txn_id": app_txn_id_2,
-                                        "pmt_status": payment_status_2.split(':')[1],
-                                        "txn_amt": app_amount_2.split(' ')[1],
-                                        "rrn": str(app_rrn_2),
-                                        "settle_status": app_settlement_status_2,
-                                        "pmt_msg": app_payment_msg_2
-                                    }
+                    "pmt_mode": payment_mode_2,
+                    "txn_id": app_txn_id_2,
+                    "pmt_status": payment_status_2.split(':')[1],
+                    "txn_amt": app_amount_2.split(' ')[1],
+                    "rrn": str(app_rrn_2),
+                    "settle_status": app_settlement_status_2,
+                    "pmt_msg": app_payment_msg_2
+                }
                 logger.debug(f"actual_app_values: {actual_app_values}")
 
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
@@ -1248,7 +1251,8 @@ def test_common_100_108_043():
                 mid_api = response["mid"]
                 tid_api = response["tid"]
                 txn_type_api = response["txnType"]
-                logger.debug(f"API Details for original txn : status:{status_api}, amount:{amount_api}, payment mode:{payment_mode_api}, state:{state_api}, settlement status:{settlement_status_api}, issuer code:{issuer_code_api}, acquirer code:{acquirer_code_api}, org code:{org_code_api}, mid:{mid_api}, tid:{tid_api}, txn type:{txn_type_api}")
+                logger.debug(
+                    f"API Details for original txn : status:{status_api}, amount:{amount_api}, payment mode:{payment_mode_api}, state:{state_api}, settlement status:{settlement_status_api}, issuer code:{issuer_code_api}, acquirer code:{acquirer_code_api}, org code:{org_code_api}, mid:{mid_api}, tid:{tid_api}, txn type:{txn_type_api}")
 
                 response = [x for x in response1["txns"] if x["txnId"] == db_txn_id_2][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
@@ -1264,40 +1268,41 @@ def test_common_100_108_043():
                 mid_api_2 = response["mid"]
                 tid_api_2 = response["tid"]
                 txn_type_api_2 = response["txnType"]
-                logger.debug(f"API Details for original txn : status:{status_api_2}, amount:{amount_api_2}, payment mode:{payment_mode_api_2}, state:{state_api_2}, settlement status:{settlement_status_api_2}, issuer code:{issuer_code_api_2}, acquirer code:{acquirer_code_api_2}, org code:{org_code_api_2}, mid:{mid_api_2}, tid:{tid_api_2}, txn type:{txn_type_api_2}")
+                logger.debug(
+                    f"API Details for original txn : status:{status_api_2}, amount:{amount_api_2}, payment mode:{payment_mode_api_2}, state:{state_api_2}, settlement status:{settlement_status_api_2}, issuer code:{issuer_code_api_2}, acquirer code:{acquirer_code_api_2}, org code:{org_code_api_2}, mid:{mid_api_2}, tid:{tid_api_2}, txn type:{txn_type_api_2}")
 
                 expected_api_values = {
-                                            "txn_id": db_txn_id,
-                                            "pmt_status": status_api,
-                                            "txn_amt": amount_api,
-                                            "pmt_mode": payment_mode_api,
-                                            "pmt_state": state_api,
-                                            "rrn": str(rrn_api),
-                                            "settle_status": settlement_status_api,
-                                            "acquirer_code": acquirer_code_api,
-                                            "issuer_code": issuer_code_api,
-                                            "txn_type": txn_type_api,
-                                            "mid": mid_api,
-                                            "tid": tid_api,
-                                            "org_code": org_code_api,
-                                        }
+                    "txn_id": db_txn_id,
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "org_code": org_code_api,
+                }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
-                                            "txn_id": db_txn_id_2,
-                                            "pmt_status": status_api_2,
-                                            "txn_amt": amount_api_2,
-                                            "pmt_mode": payment_mode_api_2,
-                                            "pmt_state": state_api_2,
-                                            "rrn": str(rrn_api_2),
-                                            "settle_status": settlement_status_api_2,
-                                            "acquirer_code": acquirer_code_api_2,
-                                            "issuer_code": issuer_code_api_2,
-                                            "mid": mid_api_2,
-                                            "tid": tid_api_2,
-                                            "txn_type": txn_type_api_2,
-                                            "org_code": org_code_api_2
-                                        }
+                    "txn_id": db_txn_id_2,
+                    "pmt_status": status_api_2,
+                    "txn_amt": amount_api_2,
+                    "pmt_mode": payment_mode_api_2,
+                    "pmt_state": state_api_2,
+                    "rrn": str(rrn_api_2),
+                    "settle_status": settlement_status_api_2,
+                    "acquirer_code": acquirer_code_api_2,
+                    "issuer_code": issuer_code_api_2,
+                    "mid": mid_api_2,
+                    "tid": tid_api_2,
+                    "txn_type": txn_type_api_2,
+                    "org_code": org_code_api_2
+                }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -1364,51 +1369,51 @@ def test_common_100_108_043():
                 logger.debug(f"Fetching Org Code from bqr txn table: {bqr_org_code_db}")
 
                 expected_db_values = {
-                                        "txn_amt": db_txn_amount,
-                                        "pmt_mode": db_txn_payment_mode,
-                                        "pmt_status": bqr_status_db,
-                                        "pmt_state": bqr_state_db,
-                                        "mid": db_txn_mid,
-                                        "tid": db_txn_tid,
-                                        "bank_code": db_txn_bank_code,
-                                        "org_code": db_org_code,
-                                        "username": db_txn_username,
-                                        "bqr_pmt_status": bqr_status_db,
-                                        "bqr_pmt_state": bqr_state_db,
-                                        "bqr_txn_amt": bqr_amount_db,
-                                        "bqr_txn_type": bqr_txn_type_db,
-                                        "bqr_terminal_info_id": brq_terminal_info_id_db,
-                                        "bqr_bank_code": bqr_bank_code_db,
-                                        "bqr_merchant_config_id": bqr_merchant_config_id_db,
-                                        "bqr_txn_primary_id": bqr_txn_primary_id_db,
-                                        "bqr_merchant_pan": bqr_merchant_pan_db,
-                                        "bqr_rrn": str(bqr_rrn_db),
-                                        "bqr_org_code": bqr_org_code_db
-                                    }
+                    "txn_amt": db_txn_amount,
+                    "pmt_mode": db_txn_payment_mode,
+                    "pmt_status": bqr_status_db,
+                    "pmt_state": bqr_state_db,
+                    "mid": db_txn_mid,
+                    "tid": db_txn_tid,
+                    "bank_code": db_txn_bank_code,
+                    "org_code": db_org_code,
+                    "username": db_txn_username,
+                    "bqr_pmt_status": bqr_status_db,
+                    "bqr_pmt_state": bqr_state_db,
+                    "bqr_txn_amt": bqr_amount_db,
+                    "bqr_txn_type": bqr_txn_type_db,
+                    "bqr_terminal_info_id": brq_terminal_info_id_db,
+                    "bqr_bank_code": bqr_bank_code_db,
+                    "bqr_merchant_config_id": bqr_merchant_config_id_db,
+                    "bqr_txn_primary_id": bqr_txn_primary_id_db,
+                    "bqr_merchant_pan": bqr_merchant_pan_db,
+                    "bqr_rrn": str(bqr_rrn_db),
+                    "bqr_org_code": bqr_org_code_db
+                }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 actual_db_values = {
-                                        "txn_amt": db_txn_amount_2,
-                                        "pmt_mode": db_txn_payment_mode_2,
-                                        "pmt_status": bqr_status_db_2,
-                                        "pmt_state": bqr_state_db_2,
-                                        "mid": db_txn_mid_2,
-                                        "tid": db_txn_tid_2,
-                                        "bank_code": db_txn_bank_code_2,
-                                        "org_code": db_org_code_2,
-                                        "username": db_txn_username_2,
-                                        "bqr_pmt_status": bqr_status_db_2,
-                                        "bqr_pmt_state": bqr_state_db_2,
-                                        "bqr_txn_amt": bqr_amount_db_2,
-                                        "bqr_txn_type": bqr_txn_type_db_2,
-                                        "bqr_terminal_info_id": brq_terminal_info_id_db_2,
-                                        "bqr_bank_code": bqr_bank_code_db_2,
-                                        "bqr_merchant_config_id": bqr_merchant_config_id_db_2,
-                                        "bqr_txn_primary_id": bqr_txn_primary_id_db_2,
-                                        "bqr_merchant_pan": bqr_merchant_pan_db_2,
-                                        "bqr_rrn": str(bqr_rrn_db_2),
-                                        "bqr_org_code": bqr_org_code_db_2
-                                    }
+                    "txn_amt": db_txn_amount_2,
+                    "pmt_mode": db_txn_payment_mode_2,
+                    "pmt_status": bqr_status_db_2,
+                    "pmt_state": bqr_state_db_2,
+                    "mid": db_txn_mid_2,
+                    "tid": db_txn_tid_2,
+                    "bank_code": db_txn_bank_code_2,
+                    "org_code": db_org_code_2,
+                    "username": db_txn_username_2,
+                    "bqr_pmt_status": bqr_status_db_2,
+                    "bqr_pmt_state": bqr_state_db_2,
+                    "bqr_txn_amt": bqr_amount_db_2,
+                    "bqr_txn_type": bqr_txn_type_db_2,
+                    "bqr_terminal_info_id": brq_terminal_info_id_db_2,
+                    "bqr_bank_code": bqr_bank_code_db_2,
+                    "bqr_merchant_config_id": bqr_merchant_config_id_db_2,
+                    "bqr_txn_primary_id": bqr_txn_primary_id_db_2,
+                    "bqr_merchant_pan": bqr_merchant_pan_db_2,
+                    "bqr_rrn": str(bqr_rrn_db_2),
+                    "bqr_org_code": bqr_org_code_db_2
+                }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1422,15 +1427,15 @@ def test_common_100_108_043():
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
                 expected_portal_values = {
-                                            "date_time": date_and_time_portal,
-                                            "pmt_state": "AUTHORIZED",
-                                            "pmt_type": "BHARATQR",
-                                            "txn_amt": str(amount) + ".00",
-                                            "username": app_username,
-                                            "txn_id": db_txn_id,
-                                            "auth_code": "-" if db_txn_auth_code is None else db_txn_auth_code,
-                                            "rrn": "-" if db_txn_rrn is None else db_txn_rrn
-                                        }
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "BHARATQR",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": db_txn_id,
+                    "auth_code": "-" if db_txn_auth_code is None else db_txn_auth_code,
+                    "rrn": "-" if db_txn_rrn is None else db_txn_rrn
+                }
 
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1453,15 +1458,15 @@ def test_common_100_108_043():
                 logger.debug(f"Username from portal: {username}")
 
                 actual_portal_values = {
-                                            "date_time": date_time,
-                                            "pmt_state": str(status),
-                                            "pmt_type": transaction_type,
-                                            "txn_amt": total_amount[1],
-                                            "username": username,
-                                            "txn_id": transaction_id,
-                                            "auth_code": auth_code_portal,
-                                            "rrn": rr_number
-                                        }
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,

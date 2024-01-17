@@ -50,7 +50,8 @@ def test_common_100_113_015():
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching org_code from org_employee table: {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -60,7 +61,8 @@ def test_common_100_113_015():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(org_code,
-                                                                portal_un=portal_username, portal_pw=portal_password)
+                                                                                       portal_un=portal_username,
+                                                                                       portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetching account_label_name : {account_label_name}")
 
@@ -99,7 +101,8 @@ def test_common_100_113_015():
             amount = random.randint(251, 300)
             logger.info(f"Generated random amount is: {amount}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC_MINTOAK', request_body={
                 "username": portal_username,
@@ -519,7 +522,8 @@ def test_common_100_113_015():
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -592,7 +596,8 @@ def test_common_100_113_016():
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching org_code from org_employee table: {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -602,7 +607,8 @@ def test_common_100_113_016():
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         account_labels = testsuite_teardown.get_account_labels_and_set_default_account(org_code,
-                                                                portal_un=portal_username, portal_pw=portal_password)
+                                                                                       portal_un=portal_username,
+                                                                                       portal_pw=portal_password)
         account_label_name = account_labels['name1']
         logger.debug(f"fetching account_label_name : {account_label_name}")
 
@@ -649,7 +655,8 @@ def test_common_100_113_016():
             amount = random.randint(251, 300)
             logger.info(f"Generated random amount is: {amount}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC_MINTOAK', request_body={
                 "username": portal_username,
@@ -1081,7 +1088,8 @@ def test_common_100_113_016():
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")

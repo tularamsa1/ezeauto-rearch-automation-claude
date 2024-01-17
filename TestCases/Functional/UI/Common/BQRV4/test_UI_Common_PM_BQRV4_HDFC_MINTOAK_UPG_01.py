@@ -9,6 +9,7 @@ from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
+
 logger = EzeAutoLogger(__name__)
 
 
@@ -47,7 +48,8 @@ def test_common_100_102_421():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK',
-                                            portal_un=portal_username, portal_pw=portal_password, payment_mode='BQRV4')
+                                                           portal_un=portal_username, portal_pw=portal_password,
+                                                           payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -198,20 +200,21 @@ def test_common_100_102_421():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                                            "pmt_mode": "UPI",
-                                            "pmt_status": "UPG_AUTHORIZED",
-                                            "settle_status": "SETTLED",
-                                            "txn_id": ipr_txn_id,
-                                            "txn_amt": "{:.2f}".format(amount),
-                                            "rrn": str(rrn),
-                                            "pmt_msg": "PAYMENT SUCCESSFUL",
-                                            "date": date_and_time
-                                        }
+                    "pmt_mode": "UPI",
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "txn_id": ipr_txn_id,
+                    "txn_amt": "{:.2f}".format(amount),
+                    "rrn": str(rrn),
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "date": date_and_time
+                }
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
 
                 loginPage = LoginPage(app_driver)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
@@ -232,22 +235,23 @@ def test_common_100_102_421():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {ipr_txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {ipr_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {ipr_txn_id}, {app_payment_msg}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn from txn history for the txn : {ipr_txn_id}, {app_rrn}")
 
                 actual_app_values = {
-                                        "pmt_status": app_payment_status.split(':')[1],
-                                        "pmt_mode": app_payment_mode,
-                                        "txn_id": app_txn_id,
-                                        "txn_amt": str(app_amount).split(' ')[1],
-                                        "rrn": str(app_rrn),
-                                        "settle_status": app_settlement_status,
-                                        "pmt_msg": app_payment_msg,
-                                        "date": app_date_and_time
-                                    }
+                    "pmt_status": app_payment_status.split(':')[1],
+                    "pmt_mode": app_payment_mode,
+                    "txn_id": app_txn_id,
+                    "txn_amt": str(app_amount).split(' ')[1],
+                    "rrn": str(app_rrn),
+                    "settle_status": app_settlement_status,
+                    "pmt_msg": app_payment_msg,
+                    "date": app_date_and_time
+                }
 
                 logger.debug(f"actualAppValues: {actual_app_values}")
 
@@ -263,20 +267,20 @@ def test_common_100_102_421():
             try:
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
-                                            "pmt_status": "UPG_AUTHORIZED",
-                                            "txn_amt": amount,
-                                            "pmt_mode": "UPI",
-                                            "pmt_state": "UPG_AUTHORIZED",
-                                            "rrn": str(rrn),
-                                            "settle_status": "SETTLED",
-                                            "acquirer_code": "HDFC",
-                                            "issuer_code": "HDFC",
-                                            "txn_type": txn_type,
-                                            "mid": mid,
-                                            "tid": tid,
-                                            "org_code": org_code_txn,
-                                            "date": date
-                                        }
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "txn_amt": amount,
+                    "pmt_mode": "UPI",
+                    "pmt_state": "UPG_AUTHORIZED",
+                    "rrn": str(rrn),
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
+                    "txn_type": txn_type,
+                    "mid": mid,
+                    "tid": tid,
+                    "org_code": org_code_txn,
+                    "date": date
+                }
 
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -316,20 +320,20 @@ def test_common_100_102_421():
                 logger.debug(f"fetched date from API response is : {date_api}")
 
                 actual_api_values = {
-                                        "pmt_status": status_api,
-                                        "txn_amt": amount_api,
-                                        "pmt_mode": payment_mode_api,
-                                        "pmt_state": state_api,
-                                        "rrn": str(rrn_api),
-                                        "settle_status": settlement_status_api,
-                                        "acquirer_code": acquirer_code_api,
-                                        "issuer_code": issuer_code_api,
-                                        "txn_type": txn_type_api,
-                                        "mid": mid_api,
-                                        "tid": tid_api,
-                                        "org_code": org_code_api,
-                                        "date": date_time_converter.from_api_to_datetime_format(date_api)
-                                    }
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "org_code": org_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
+                }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)
@@ -343,31 +347,31 @@ def test_common_100_102_421():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                                        "pmt_status": "UPG_AUTHORIZED",
-                                        "pmt_state": "UPG_AUTHORIZED",
-                                        "pmt_mode": "UPI",
-                                        "txn_amt": amount,
-                                        "upi_txn_status": "UPG_AUTHORIZED",
-                                        "settle_status": "SETTLED",
-                                        "acquirer_code": "HDFC",
-                                        "bank_code": "HDFC",
-                                        "pmt_gateway": "MINTOAK",
-                                        "upi_txn_type": "UNKNOWN",
-                                        "upi_bank_code": "HDFC_MINTOAK",
-                                        "upi_mc_id": upi_mc_id,
-                                        "mid": mid,
-                                        "tid": tid,
-                                        "ipr_pmt_mode": "UPI",
-                                        "ipr_bank_code": "HDFC",
-                                        "ipr_org_code": org_code,
-                                        "ipr_auth_code": auth_code,
-                                        "ipr_rrn": str(rrn),
-                                        "ipr_txn_amt": amount,
-                                        "ipr_mid": mid,
-                                        "ipr_tid": tid,
-                                        "ipr_config_id": upi_mc_id,
-                                        "ipr_pg_merchant_id": pg_merchant_id,
-                                    }
+                    "pmt_status": "UPG_AUTHORIZED",
+                    "pmt_state": "UPG_AUTHORIZED",
+                    "pmt_mode": "UPI",
+                    "txn_amt": amount,
+                    "upi_txn_status": "UPG_AUTHORIZED",
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "bank_code": "HDFC",
+                    "pmt_gateway": "MINTOAK",
+                    "upi_txn_type": "UNKNOWN",
+                    "upi_bank_code": "HDFC_MINTOAK",
+                    "upi_mc_id": upi_mc_id,
+                    "mid": mid,
+                    "tid": tid,
+                    "ipr_pmt_mode": "UPI",
+                    "ipr_bank_code": "HDFC",
+                    "ipr_org_code": org_code,
+                    "ipr_auth_code": auth_code,
+                    "ipr_rrn": str(rrn),
+                    "ipr_txn_amt": amount,
+                    "ipr_mid": mid,
+                    "ipr_tid": tid,
+                    "ipr_config_id": upi_mc_id,
+                    "ipr_pg_merchant_id": pg_merchant_id,
+                }
 
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -385,31 +389,31 @@ def test_common_100_102_421():
                 logger.debug(f"fetched upi_mc_id from upi_txn table is : {upi_mc_id_db}")
 
                 actual_db_values = {
-                                        "pmt_status": status_db,
-                                        "pmt_state": state_db,
-                                        "pmt_mode": payment_mode_db,
-                                        "txn_amt": amount_db,
-                                        "upi_txn_status": upi_status_db,
-                                        "settle_status": settlement_status_db,
-                                        "acquirer_code": acquirer_code_db,
-                                        "bank_code": bank_code_db,
-                                        "pmt_gateway": payment_gateway_db,
-                                        "upi_txn_type": upi_txn_type_db,
-                                        "upi_bank_code": upi_bank_code_db,
-                                        "upi_mc_id": upi_mc_id_db,
-                                        "mid": mid_db,
-                                        "tid": tid_db,
-                                        "ipr_pmt_mode": ipr_payment_mode,
-                                        "ipr_bank_code": ipr_bank_code,
-                                        "ipr_org_code": ipr_org_code,
-                                        "ipr_auth_code": ipr_auth_code,
-                                        "ipr_rrn": str(ipr_rrn),
-                                        "ipr_txn_amt": ipr_amount,
-                                        "ipr_mid": ipr_mid,
-                                        "ipr_tid": ipr_tid,
-                                        "ipr_config_id": ipr_config_id,
-                                        "ipr_pg_merchant_id": ipr_pg_merchant_id,
-                                    }
+                    "pmt_status": status_db,
+                    "pmt_state": state_db,
+                    "pmt_mode": payment_mode_db,
+                    "txn_amt": amount_db,
+                    "upi_txn_status": upi_status_db,
+                    "settle_status": settlement_status_db,
+                    "acquirer_code": acquirer_code_db,
+                    "bank_code": bank_code_db,
+                    "pmt_gateway": payment_gateway_db,
+                    "upi_txn_type": upi_txn_type_db,
+                    "upi_bank_code": upi_bank_code_db,
+                    "upi_mc_id": upi_mc_id_db,
+                    "mid": mid_db,
+                    "tid": tid_db,
+                    "ipr_pmt_mode": ipr_payment_mode,
+                    "ipr_bank_code": ipr_bank_code,
+                    "ipr_org_code": ipr_org_code,
+                    "ipr_auth_code": ipr_auth_code,
+                    "ipr_rrn": str(ipr_rrn),
+                    "ipr_txn_amt": ipr_amount,
+                    "ipr_mid": ipr_mid,
+                    "ipr_tid": ipr_tid,
+                    "ipr_config_id": ipr_config_id,
+                    "ipr_pg_merchant_id": ipr_pg_merchant_id,
+                }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
@@ -425,15 +429,15 @@ def test_common_100_102_421():
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 expected_portal_values = {
-                                            "date_time": date_and_time_portal,
-                                            "pmt_state": "UPG_AUTHORIZED",
-                                            "pmt_type": "UPI",
-                                            "txn_amt": f"{str(amount)}.00",
-                                            "username": "EZETAP",
-                                            "txn_id": ipr_txn_id,
-                                            "rrn": str(rrn),
-                                            "auth_code": '-' if auth_code is None else auth_code
-                                        }
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "UPG_AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": f"{str(amount)}.00",
+                    "username": "EZETAP",
+                    "txn_id": ipr_txn_id,
+                    "rrn": str(rrn),
+                    "auth_code": '-' if auth_code is None else auth_code
+                }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, external_ref)
@@ -455,18 +459,19 @@ def test_common_100_102_421():
                 logger.debug(f"fetched Auth Code from portal is : {auth_code_portal}")
 
                 actual_portal_values = {
-                                            "date_time": date_time,
-                                            "pmt_state": str(status),
-                                            "pmt_type": transaction_type,
-                                            "txn_amt": total_amount[1],
-                                            "username": username,
-                                            "txn_id": transaction_id,
-                                            "rrn": rr_number,
-                                            "auth_code": auth_code_portal
-                                        }
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "rrn": rr_number,
+                    "auth_code": auth_code_portal
+                }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")

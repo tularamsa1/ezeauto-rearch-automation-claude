@@ -50,7 +50,8 @@ def test_common_100_108_038():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -93,7 +94,9 @@ def test_common_100_108_038():
         db_upi_mc_id = result['id'].values[0]
         logger.info(f"fetched id is : {db_upi_mc_id}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username, portal_password=portal_password, org_code=org_code)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username,
+                                                                          portal_password=portal_password,
+                                                                          org_code=org_code)
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -221,7 +224,8 @@ def test_common_100_108_038():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -242,7 +246,8 @@ def test_common_100_108_038():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
                 app_rrn = txn_history_page.fetch_RRN_text()
@@ -273,19 +278,19 @@ def test_common_100_108_038():
                 # --------------------------------------------------------------------------------------------
                 date = date_time_converter.db_datetime(db_txn_created_time)
                 expected_api_values = {
-                   "pmt_status": "AUTHORIZED",
-                   "txn_amt": float(amount),
-                   "pmt_mode": "UPI",
-                   "pmt_state": "SETTLED",
-                   "rrn": str(rrn),
-                   "settle_status": "SETTLED",
-                   "acquirer_code": "HDFC",
-                   "issuer_code": "HDFC",
-                   "txn_type": "CHARGE",
-                   "mid": db_bqr_config_mid,
-                   "tid": db_bqr_conig_tid,
-                   "org_code": org_code,
-                   "date": date
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": float(amount),
+                    "pmt_mode": "UPI",
+                    "pmt_state": "SETTLED",
+                    "rrn": str(rrn),
+                    "settle_status": "SETTLED",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
+                    "txn_type": "CHARGE",
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_conig_tid,
+                    "org_code": org_code,
+                    "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -326,19 +331,19 @@ def test_common_100_108_038():
                 logger.debug(f"Fetching date from api : {date_api}")
 
                 actual_api_values = {
-                     "pmt_status": status_api,
-                     "txn_amt": amount_api,
-                     "pmt_mode": payment_mode_api,
-                     "pmt_state": state_api,
-                     "rrn": str(rrn_api),
-                     "settle_status": settlement_status_api,
-                     "acquirer_code": acquirer_code_api,
-                     "issuer_code": issuer_code_api,
-                     "mid": mid_api,
-                     "tid": tid_api,
-                     "txn_type": txn_type_api,
-                     "org_code": org_code_api,
-                     "date": date_time_converter.from_api_to_datetime_format(date_api)
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "txn_type": txn_type_api,
+                    "org_code": org_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -427,7 +432,8 @@ def test_common_100_108_038():
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, db_txn_external_ref)
+                transaction_details = get_transaction_details_for_portal(app_username, app_password,
+                                                                         db_txn_external_ref)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
@@ -449,7 +455,8 @@ def test_common_100_108_038():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -518,7 +525,8 @@ def test_common_100_108_039():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -561,7 +569,9 @@ def test_common_100_108_039():
         db_upi_mc_id = result['id'].values[0]
         logger.info(f"fetched id is : {db_upi_mc_id}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username, portal_password=portal_password, org_code=org_code)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username,
+                                                                          portal_password=portal_password,
+                                                                          org_code=org_code)
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -630,7 +640,8 @@ def test_common_100_108_039():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for callback_confirm_mintoak api is : {response}")
 
-            query = f"select * from txn where org_code = '{str(org_code)}' and rr_number = '" + str(rrn) + "'order by created_time desc limit 1"
+            query = f"select * from txn where org_code = '{str(org_code)}' and rr_number = '" + str(
+                rrn) + "'order by created_time desc limit 1"
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
@@ -689,7 +700,8 @@ def test_common_100_108_039():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -710,7 +722,8 @@ def test_common_100_108_039():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {db_txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id}, {app_payment_msg}")
                 app_rrn = txn_history_page.fetch_RRN_text()
@@ -740,19 +753,19 @@ def test_common_100_108_039():
             try:
                 date = date_time_converter.db_datetime(db_txn_created_time)
                 expected_api_values = {
-                   "pmt_status": "FAILED",
-                   "txn_amt": float(amount),
-                   "pmt_mode": "UPI",
-                   "pmt_state": "FAILED",
-                   "rrn": str(rrn),
-                   "settle_status": "FAILED",
-                   "acquirer_code": "HDFC",
-                   "issuer_code": "HDFC",
-                   "txn_type": "CHARGE",
-                   "mid": db_bqr_config_mid,
-                   "tid": db_bqr_conig_tid,
-                   "org_code": org_code,
-                   "date": date
+                    "pmt_status": "FAILED",
+                    "txn_amt": float(amount),
+                    "pmt_mode": "UPI",
+                    "pmt_state": "FAILED",
+                    "rrn": str(rrn),
+                    "settle_status": "FAILED",
+                    "acquirer_code": "HDFC",
+                    "issuer_code": "HDFC",
+                    "txn_type": "CHARGE",
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_conig_tid,
+                    "org_code": org_code,
+                    "date": date
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -793,19 +806,19 @@ def test_common_100_108_039():
                 logger.debug(f"Fetching date from api : {date_api}")
 
                 actual_api_values = {
-                     "pmt_status": status_api,
-                     "txn_amt": amount_api,
-                     "pmt_mode": payment_mode_api,
-                     "pmt_state": state_api,
-                     "rrn": str(rrn_api),
-                     "settle_status": settlement_status_api,
-                     "acquirer_code": acquirer_code_api,
-                     "issuer_code": issuer_code_api,
-                     "mid": mid_api,
-                     "tid": tid_api,
-                     "txn_type": txn_type_api,
-                     "org_code": org_code_api,
-                     "date": date_time_converter.from_api_to_datetime_format(date_api)
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
+                    "pmt_mode": payment_mode_api,
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
+                    "settle_status": settlement_status_api,
+                    "acquirer_code": acquirer_code_api,
+                    "issuer_code": issuer_code_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
+                    "txn_type": txn_type_api,
+                    "org_code": org_code_api,
+                    "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
@@ -894,7 +907,8 @@ def test_common_100_108_039():
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
-                transaction_details = get_transaction_details_for_portal(app_username, app_password, db_txn_external_ref)
+                transaction_details = get_transaction_details_for_portal(app_username, app_password,
+                                                                         db_txn_external_ref)
                 date_time = transaction_details[0]['Date & Time']
                 transaction_id = transaction_details[0]['Transaction ID']
                 total_amount = transaction_details[0]['Total Amount'].split()
@@ -916,7 +930,8 @@ def test_common_100_108_039():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -964,7 +979,8 @@ def test_common_100_108_040():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -1141,18 +1157,19 @@ def test_common_100_108_040():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 expected_app_values = {
-                                        "pmt_mode": "UPI",
-                                        "pmt_status": "AUTHORIZED",
-                                        "txn_amt": str("%.2f" % amount),
-                                        "settle_status": "SETTLED",
-                                        "txn_id": db_txn_id,
-                                        "rrn": str(rrn),
-                                        "pmt_msg": "PAYMENT SUCCESSFUL",
-                                    }
+                    "pmt_mode": "UPI",
+                    "pmt_status": "AUTHORIZED",
+                    "txn_amt": str("%.2f" % amount),
+                    "settle_status": "SETTLED",
+                    "txn_id": db_txn_id,
+                    "rrn": str(rrn),
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
-                logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
+                logger.info(
+                    f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
                 login_page = LoginPage(app_driver)
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
@@ -1173,7 +1190,8 @@ def test_common_100_108_040():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {db_txn_id_2}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching txn settlement_status from txn history for the txn : {db_txn_id_2}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching txn settlement_status from txn history for the txn : {db_txn_id_2}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {db_txn_id_2}, {app_payment_msg}")
                 app_rrn = txn_history_page.fetch_RRN_text()
@@ -1330,41 +1348,41 @@ def test_common_100_108_040():
                 logger.debug(f"Fetching Transaction Type from upi_txn table: {upi_txn_type_2}")
 
                 expected_db_values = {
-                                        "amount": db_txn_amount,
-                                        "bank_code": db_txn_bank_code,
-                                        "org_code": org_code,
-                                        "username": db_txn_username,
-                                        "tid": db_txn_tid,
-                                        "mid": db_txn_mid,
-                                        "payment_mode": db_txn_payment_mode,
-                                        "upi_txn_ref": upi_txn_txn_ref,
-                                        "upi_additional_field1": upi_txn_additional_field1,
-                                        "upi_additional_field2": upi_txn_additional_field2,
-                                        "upi_additional_field3": upi_txn_additional_field3,
-                                        "upi_resp_code": upi_txn_resp_code,
-                                        "upi_org_code": upi_txn_org_code,
-                                        "upi_txn_status": upi_txn_status,
-                                        "upi_txn_type": upi_txn_type
-                                    }
+                    "amount": db_txn_amount,
+                    "bank_code": db_txn_bank_code,
+                    "org_code": org_code,
+                    "username": db_txn_username,
+                    "tid": db_txn_tid,
+                    "mid": db_txn_mid,
+                    "payment_mode": db_txn_payment_mode,
+                    "upi_txn_ref": upi_txn_txn_ref,
+                    "upi_additional_field1": upi_txn_additional_field1,
+                    "upi_additional_field2": upi_txn_additional_field2,
+                    "upi_additional_field3": upi_txn_additional_field3,
+                    "upi_resp_code": upi_txn_resp_code,
+                    "upi_org_code": upi_txn_org_code,
+                    "upi_txn_status": upi_txn_status,
+                    "upi_txn_type": upi_txn_type
+                }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 actual_db_values = {
-                                        "amount": db_txn_amount_2,
-                                        "bank_code": db_txn_bank_code_2,
-                                        "org_code": db_org_code_2,
-                                        "username": db_txn_username_2,
-                                        "tid": db_txn_tid_2,
-                                        "mid": db_txn_mid_2,
-                                        "payment_mode": db_txn_payment_mode_2,
-                                        "upi_txn_ref": upi_txn_txn_ref_2,
-                                        "upi_additional_field1": upi_txn_additional_field1_2,
-                                        "upi_additional_field2": upi_txn_additional_field2_2,
-                                        "upi_additional_field3": upi_txn_additional_field3_2,
-                                        "upi_resp_code": upi_txn_resp_code_2,
-                                        "upi_org_code": upi_txn_org_code_2,
-                                        "upi_txn_status": upi_txn_status_2,
-                                        "upi_txn_type": upi_txn_type_2
-                                    }
+                    "amount": db_txn_amount_2,
+                    "bank_code": db_txn_bank_code_2,
+                    "org_code": db_org_code_2,
+                    "username": db_txn_username_2,
+                    "tid": db_txn_tid_2,
+                    "mid": db_txn_mid_2,
+                    "payment_mode": db_txn_payment_mode_2,
+                    "upi_txn_ref": upi_txn_txn_ref_2,
+                    "upi_additional_field1": upi_txn_additional_field1_2,
+                    "upi_additional_field2": upi_txn_additional_field2_2,
+                    "upi_additional_field3": upi_txn_additional_field3_2,
+                    "upi_resp_code": upi_txn_resp_code_2,
+                    "upi_org_code": upi_txn_org_code_2,
+                    "upi_txn_status": upi_txn_status_2,
+                    "upi_txn_type": upi_txn_type_2
+                }
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
                 Validator.validateAgainstDB(expectedDB=expected_db_values, actualDB=actual_db_values)
@@ -1379,15 +1397,15 @@ def test_common_100_108_040():
                 date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
 
                 expected_portal_values = {
-                                            "date_time": date_and_time_portal,
-                                            "pmt_state": "AUTHORIZED",
-                                            "pmt_type": "UPI",
-                                            "txn_amt": str(amount) + ".00",
-                                            "username": app_username,
-                                            "txn_id": db_txn_id_2,
-                                            "auth_code": '-' if db_txn_auth_code is None else db_txn_auth_code,
-                                            "rrn": '-' if db_txn_rrn is None else db_txn_rrn
-                                        }
+                    "date_time": date_and_time_portal,
+                    "pmt_state": "AUTHORIZED",
+                    "pmt_type": "UPI",
+                    "txn_amt": str(amount) + ".00",
+                    "username": app_username,
+                    "txn_id": db_txn_id_2,
+                    "auth_code": '-' if db_txn_auth_code is None else db_txn_auth_code,
+                    "rrn": '-' if db_txn_rrn is None else db_txn_rrn
+                }
 
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -1411,15 +1429,15 @@ def test_common_100_108_040():
                 logger.debug(f"Username: {username}")
 
                 actual_portal_values = {
-                                            "date_time": date_time,
-                                            "pmt_state": str(status),
-                                            "pmt_type": transaction_type,
-                                            "txn_amt": total_amount[1],
-                                            "username": username,
-                                            "txn_id": transaction_id,
-                                            "auth_code": auth_code_portal,
-                                            "rrn": rr_number
-                                        }
+                    "date_time": date_time,
+                    "pmt_state": str(status),
+                    "pmt_type": transaction_type,
+                    "txn_amt": total_amount[1],
+                    "username": username,
+                    "txn_id": transaction_id,
+                    "auth_code": auth_code_portal,
+                    "rrn": rr_number
+                }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
@@ -1433,4 +1451,4 @@ def test_common_100_108_040():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-         Configuration.executeFinallyBlock(testcase_id)
+        Configuration.executeFinallyBlock(testcase_id)

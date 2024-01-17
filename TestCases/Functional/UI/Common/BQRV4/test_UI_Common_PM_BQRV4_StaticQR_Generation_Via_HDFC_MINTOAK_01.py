@@ -43,7 +43,8 @@ def test_common_100_108_033():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -70,7 +71,9 @@ def test_common_100_108_033():
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username, portal_password=portal_password, org_code=org_code)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username,
+                                                                          portal_password=portal_password,
+                                                                          org_code=org_code)
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -210,7 +213,8 @@ def test_common_100_108_034():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -322,7 +326,8 @@ def test_common_100_108_034():
                         "merchantVpa": db_upi_config_vpa
                     })
                     response = APIProcessor.send_request(api_details)
-                    logger.debug(f"Response received for static_qrcode_generate_hdfc_mintoak api for second QR is : {response}")
+                    logger.debug(
+                        f"Response received for static_qrcode_generate_hdfc_mintoak api for second QR is : {response}")
                     regenerateqr_publish_id = response["publishId"]
                     logger.debug(f"regenerateqr_publish_id is : {regenerateqr_publish_id}")
                 else:
@@ -342,7 +347,8 @@ def test_common_100_108_034():
                     "merchantVpa": db_upi_config_vpa
                 })
                 response = APIProcessor.send_request(api_details)
-                logger.debug(f"Response received for regenerating static_qrcode_hdfc_mintoak api second QR is : {response}")
+                logger.debug(
+                    f"Response received for regenerating static_qrcode_hdfc_mintoak api second QR is : {response}")
                 regenerateqr_publish_id = response["publishId"]
                 logger.debug(f"regenerateqr_publish_id is : {regenerateqr_publish_id}")
 
@@ -363,28 +369,28 @@ def test_common_100_108_034():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                                        "publish_id": generateqr_publish_id,
-                                        "org_code": org_code,
-                                        "merchant_pan": db_bqr_config_merchant_pan,
-                                        "vpa": db_upi_config_vpa,
-                                        "user_mobile": app_username,
-                                        "user_name": app_username,
-                                        "mid": db_bqr_config_mid,
-                                        "tid": db_bqr_config_tid,
-                                        "qr_type": "BHARATQR",
-                                        "intent_type": "STATIC_QR",
+                    "publish_id": generateqr_publish_id,
+                    "org_code": org_code,
+                    "merchant_pan": db_bqr_config_merchant_pan,
+                    "vpa": db_upi_config_vpa,
+                    "user_mobile": app_username,
+                    "user_name": app_username,
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_config_tid,
+                    "qr_type": "BHARATQR",
+                    "intent_type": "STATIC_QR",
 
-                                        "publish_id_2": regenerateqr_publish_id,
-                                        "org_code_2": org_code,
-                                        "merchant_pan_2": db_bqr_config_merchant_pan,
-                                        "vpa_2": db_upi_config_vpa,
-                                        "user_mobile_2": second_app_username,
-                                        "user_name_2": second_app_username,
-                                        "mid_2": db_bqr_config_mid,
-                                        "tid_2": db_bqr_config_tid,
-                                        "qr_type_2": "BHARATQR",
-                                        "intent_type_2": "STATIC_QR"
-                                    }
+                    "publish_id_2": regenerateqr_publish_id,
+                    "org_code_2": org_code,
+                    "merchant_pan_2": db_bqr_config_merchant_pan,
+                    "vpa_2": db_upi_config_vpa,
+                    "user_mobile_2": second_app_username,
+                    "user_name_2": second_app_username,
+                    "mid_2": db_bqr_config_mid,
+                    "tid_2": db_bqr_config_tid,
+                    "qr_type_2": "BHARATQR",
+                    "intent_type_2": "STATIC_QR"
+                }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = f"select * from staticqr_intent where publish_id='{generateqr_publish_id}';"
@@ -418,49 +424,59 @@ def test_common_100_108_034():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result for second publish_id: {result}")
                 db_staticqr_intent_publish_id_2 = result["publish_id"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_publish_id_2: {db_staticqr_intent_publish_id_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_publish_id_2: {db_staticqr_intent_publish_id_2}")
                 db_staticqr_intent_org_code_2 = result["org_code"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_org_code_2: {db_staticqr_intent_org_code_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_org_code_2: {db_staticqr_intent_org_code_2}")
                 db_staticqr_intent_merchant_pan_2 = result["merchant_pan"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_merchant_pan_2: {db_staticqr_intent_merchant_pan_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_merchant_pan_2: {db_staticqr_intent_merchant_pan_2}")
                 db_staticqr_intent_vpa_2 = result["vpa"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_vpa_2: {db_staticqr_intent_vpa_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_vpa_2: {db_staticqr_intent_vpa_2}")
                 db_staticqr_intent_user_mobile_2 = result["user_mobile"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_user_mobile_2: {db_staticqr_intent_user_mobile_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_user_mobile_2: {db_staticqr_intent_user_mobile_2}")
                 db_staticqr_intent_user_name_2 = result["user_name"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_user_name_2: {db_staticqr_intent_user_name_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_user_name_2: {db_staticqr_intent_user_name_2}")
                 db_staticqr_intent_mid_2 = result["mid"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_mid_2: {db_staticqr_intent_mid_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_mid_2: {db_staticqr_intent_mid_2}")
                 db_staticqr_intent_tid_2 = result["tid"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_tid_2: {db_staticqr_intent_tid_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_tid_2: {db_staticqr_intent_tid_2}")
                 db_staticqr_intent_qrtype_2 = result["qr_type"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_qrtype_2: {db_staticqr_intent_qrtype_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_qrtype_2: {db_staticqr_intent_qrtype_2}")
                 db_staticqr_intent_intent_type_2 = result["intent_type"].values[0]
-                logger.debug(f" static_qr_intent values for second publish id db_staticqr_intent_intent_type_2: {db_staticqr_intent_intent_type_2}")
+                logger.debug(
+                    f" static_qr_intent values for second publish id db_staticqr_intent_intent_type_2: {db_staticqr_intent_intent_type_2}")
 
                 actual_db_values = {
-                                        "publish_id": db_staticqr_intent_publish_id,
-                                        "org_code": db_staticqr_intent_org_code,
-                                        "merchant_pan": db_staticqr_intent_merchant_pan,
-                                        "vpa": db_staticqr_intent_vpa,
-                                        "user_mobile": db_staticqr_intent_user_mobile,
-                                        "user_name": db_staticqr_intent_user_name,
-                                        "mid": db_staticqr_intent_mid,
-                                        "tid": db_staticqr_intent_tid,
-                                        "qr_type": db_staticqr_intent_qrtype,
-                                        "intent_type": db_staticqr_intent_intent_type,
+                    "publish_id": db_staticqr_intent_publish_id,
+                    "org_code": db_staticqr_intent_org_code,
+                    "merchant_pan": db_staticqr_intent_merchant_pan,
+                    "vpa": db_staticqr_intent_vpa,
+                    "user_mobile": db_staticqr_intent_user_mobile,
+                    "user_name": db_staticqr_intent_user_name,
+                    "mid": db_staticqr_intent_mid,
+                    "tid": db_staticqr_intent_tid,
+                    "qr_type": db_staticqr_intent_qrtype,
+                    "intent_type": db_staticqr_intent_intent_type,
 
-                                        "publish_id_2": db_staticqr_intent_publish_id_2,
-                                        "org_code_2": db_staticqr_intent_org_code_2,
-                                        "merchant_pan_2": db_staticqr_intent_merchant_pan_2,
-                                        "vpa_2": db_staticqr_intent_vpa_2,
-                                        "user_mobile_2": db_staticqr_intent_user_mobile_2,
-                                        "user_name_2": db_staticqr_intent_user_name_2,
-                                        "mid_2": db_staticqr_intent_mid_2,
-                                        "tid_2": db_staticqr_intent_tid_2,
-                                        "qr_type_2": db_staticqr_intent_qrtype_2,
-                                        "intent_type_2": db_staticqr_intent_intent_type_2
-                                    }
+                    "publish_id_2": db_staticqr_intent_publish_id_2,
+                    "org_code_2": db_staticqr_intent_org_code_2,
+                    "merchant_pan_2": db_staticqr_intent_merchant_pan_2,
+                    "vpa_2": db_staticqr_intent_vpa_2,
+                    "user_mobile_2": db_staticqr_intent_user_mobile_2,
+                    "user_name_2": db_staticqr_intent_user_name_2,
+                    "mid_2": db_staticqr_intent_mid_2,
+                    "tid_2": db_staticqr_intent_tid_2,
+                    "qr_type_2": db_staticqr_intent_qrtype_2,
+                    "intent_type_2": db_staticqr_intent_intent_type_2
+                }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
@@ -507,7 +523,8 @@ def test_common_100_108_035():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -572,7 +589,8 @@ def test_common_100_108_035():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for generating static_qrcode_hdfc_mintoak api is : {response}")
             res_generateqr_publish_id = response["publishId"]
-            logger.debug(f"Publish id received for generating static_qrcode_hdfc_mintoak api is : {res_generateqr_publish_id}")
+            logger.debug(
+                f"Publish id received for generating static_qrcode_hdfc_mintoak api is : {res_generateqr_publish_id}")
 
             api_details = DBProcessor.get_api_details('generate_BQRV4_staticqr_HDFC_MINTOAK', request_body={
                 "username": portal_username,
@@ -609,17 +627,17 @@ def test_common_100_108_035():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                                        "publish_id": res_generateqr_publish_id,
-                                        "org_code": org_code,
-                                        "merchant_pan": db_bqr_config_merchant_pan,
-                                        "vpa": db_upi_config_vpa,
-                                        "user_mobile": app_username,
-                                        "user_name": app_username,
-                                        "mid": db_bqr_config_mid,
-                                        "tid": db_bqr_config_tid,
-                                        "qr_type": "BHARATQR",
-                                        "intent_type": "STATIC_QR"
-                                    }
+                    "publish_id": res_generateqr_publish_id,
+                    "org_code": org_code,
+                    "merchant_pan": db_bqr_config_merchant_pan,
+                    "vpa": db_upi_config_vpa,
+                    "user_mobile": app_username,
+                    "user_name": app_username,
+                    "mid": db_bqr_config_mid,
+                    "tid": db_bqr_config_tid,
+                    "qr_type": "BHARATQR",
+                    "intent_type": "STATIC_QR"
+                }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = f"select * from staticqr_intent where publish_id='{regeneration_publish_id}';"
@@ -638,7 +656,8 @@ def test_common_100_108_035():
                 db_staticqr_intent_user_mobile = result["user_mobile"].values[0]
                 logger.debug(f"Fetching User Mobile from staticqr_intent table: {db_staticqr_intent_user_mobile}")
                 db_staticqr_intent_user_name = result["user_name"].values[0]
-                logger.debug(f"Fetching db_staticqr_intent_user_name from staticqr_intent table: {db_staticqr_intent_user_name}")
+                logger.debug(
+                    f"Fetching db_staticqr_intent_user_name from staticqr_intent table: {db_staticqr_intent_user_name}")
                 db_staticqr_intent_mid = result["mid"].values[0]
                 logger.debug(f"Fetching MID from staticqr_intent table: {db_staticqr_intent_mid}")
                 db_staticqr_intent_tid = result["tid"].values[0]
@@ -649,17 +668,17 @@ def test_common_100_108_035():
                 logger.debug(f"Fetching Intent Type from staticqr_intent table: {db_staticqr_intent_intent_type}")
 
                 actual_db_values = {
-                                        "publish_id": db_staticqr_intent_publish_id,
-                                        "org_code": db_staticqr_intent_org_code,
-                                        "merchant_pan": db_staticqr_intent_merchant_pan,
-                                        "vpa": db_staticqr_intent_vpa,
-                                        "user_mobile": db_staticqr_intent_user_mobile,
-                                        "user_name": db_staticqr_intent_user_name,
-                                        "mid": db_staticqr_intent_mid,
-                                        "tid": db_staticqr_intent_tid,
-                                        "qr_type": db_staticqr_intent_qrtype,
-                                        "intent_type": db_staticqr_intent_intent_type
-                                    }
+                    "publish_id": db_staticqr_intent_publish_id,
+                    "org_code": db_staticqr_intent_org_code,
+                    "merchant_pan": db_staticqr_intent_merchant_pan,
+                    "vpa": db_staticqr_intent_vpa,
+                    "user_mobile": db_staticqr_intent_user_mobile,
+                    "user_name": db_staticqr_intent_user_name,
+                    "mid": db_staticqr_intent_mid,
+                    "tid": db_staticqr_intent_tid,
+                    "qr_type": db_staticqr_intent_qrtype,
+                    "intent_type": db_staticqr_intent_intent_type
+                }
 
                 logger.debug(f"actual_db_values : {actual_db_values}")
 
@@ -708,7 +727,8 @@ def test_common_100_108_036():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code=org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -735,7 +755,9 @@ def test_common_100_108_036():
         db_upi_config_vpa = result['vpa'].values[0]
         logger.info(f"fetched vpa is : {db_upi_config_vpa}")
 
-        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username, portal_password=portal_password, org_code=org_code)
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username=portal_username,
+                                                                          portal_password=portal_password,
+                                                                          org_code=org_code)
 
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -794,11 +816,11 @@ def test_common_100_108_036():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expected_api_values = {
-                     "success": False,
-                     "message": "You do not have permission to perform this operation.",
-                     "errorCode": "EZETAP_0000193",
-                     "errorMessage": "You do not have permission to perform this operation.",
-                     "realCode": "UNAUTHORIZED_OPERATION"
+                    "success": False,
+                    "message": "You do not have permission to perform this operation.",
+                    "errorCode": "EZETAP_0000193",
+                    "errorMessage": "You do not have permission to perform this operation.",
+                    "realCode": "UNAUTHORIZED_OPERATION"
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -854,7 +876,8 @@ def test_common_100_108_037():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC_MINTOAK',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='BQRV4')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -935,17 +958,17 @@ def test_common_100_108_037():
             logger.info(f"Started API validation for the test case : {testcase_id}")
             try:
                 expected_api_values = {
-                                       "success": False,
-                                       "errorCode": "EZETAP_0001606",
-                                       "errorMessage": "USER_DETAILS_NOT_MATCHED"
-                                       }
+                    "success": False,
+                    "errorCode": "EZETAP_0001606",
+                    "errorMessage": "USER_DETAILS_NOT_MATCHED"
+                }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
                 actual_api_values = {
-                                     "success": res_success,
-                                     "errorCode": res_error_code,
-                                     "errorMessage": res_error_message,
-                                     }
+                    "success": res_success,
+                    "errorCode": res_error_code,
+                    "errorMessage": res_error_message,
+                }
                 logger.debug(f"actual_api_values: {actual_api_values}")
 
                 Validator.validationAgainstAPI(expectedAPI=expected_api_values, actualAPI=actual_api_values)

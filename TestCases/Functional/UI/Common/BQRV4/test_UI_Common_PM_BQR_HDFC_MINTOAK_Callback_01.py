@@ -546,7 +546,7 @@ def test_common_100_102_357():
         logger.debug(f"Response received for setting preconditions is : {response}")
 
         query = f"select * from bharatqr_merchant_config where org_code='{org_code}' and " \
-                                                                                       "status = 'ACTIVE' and bank_code='HDFC_MINTOAK'"
+                "status = 'ACTIVE' and bank_code='HDFC_MINTOAK'"
         result = DBProcessor.getValueFromDB(query)
         mid = result["mid"].values[0]
         tid = result["tid"].values[0]
@@ -1044,7 +1044,7 @@ def test_common_100_102_365():
             payment_page.validate_upi_bqr_payment_screen()
             logger.info("Payment QR generated and displayed successfully")
             query = f"select id from txn where org_code='{org_code}' and external_ref='{order_id}' " \
-                                                                                                           "order by created_time desc limit 1"
+                    "order by created_time desc limit 1"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result["id"].values[0]
@@ -1124,7 +1124,8 @@ def test_common_100_102_365():
             api_details_encryption['RequestBody']['payload']['amount'] = amount
             api_details_encryption['RequestBody']['payload']['subType'] = "BharatQR-Cards"
 
-            logger.debug(f"api_details for mintoak_encryption_callback API for second callback is: {api_details_encryption}")
+            logger.debug(
+                f"api_details for mintoak_encryption_callback API for second callback is: {api_details_encryption}")
             response = APIProcessor.send_request(api_details_encryption)
             logger.debug(f"Response received for  mintoak_encryption_callback API for second callback  is : {response}")
             encrypted_data = response['encryptedData']
@@ -1140,7 +1141,7 @@ def test_common_100_102_365():
             logger.debug(f"Response received for callback_confirm_mintoak api for second callback is : {response}")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' " \
-                                                                                                          "order by created_time desc limit 1"
+                    "order by created_time desc limit 1"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id_new = result["id"].values[0]
@@ -1581,20 +1582,25 @@ def test_common_100_102_365():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time_new)
-                expected_values_1 = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
-                                   'AUTH CODE': "" if auth_code is None else auth_code
-                                   }
-                expected_values_2 = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id), 'RRN': str(rrn_new),
-                                   'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2, 'time': txn_time_2,
-                                   'AUTH CODE': "" if auth_code_new is None else auth_code_new
-                                   }
-                charge_slip_val_result_1=receipt_validator.perform_charge_slip_validations(txn_id,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_values_1)
-                charge_slip_val_result_2=receipt_validator.perform_charge_slip_validations(txn_id_new,
-                                                                  {"username": app_username, "password": app_password},
-                                                                  expected_values_2)
+                expected_values_1 = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                     'RRN': str(rrn),
+                                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
+                                     'AUTH CODE': "" if auth_code is None else auth_code
+                                     }
+                expected_values_2 = {'PAID BY:': 'BHARATQR', 'merchant_ref_no': 'Ref # ' + str(order_id),
+                                     'RRN': str(rrn_new),
+                                     'BASE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date_2,
+                                     'time': txn_time_2,
+                                     'AUTH CODE': "" if auth_code_new is None else auth_code_new
+                                     }
+                charge_slip_val_result_1 = receipt_validator.perform_charge_slip_validations(txn_id,
+                                                                                             {"username": app_username,
+                                                                                              "password": app_password},
+                                                                                             expected_values_1)
+                charge_slip_val_result_2 = receipt_validator.perform_charge_slip_validations(txn_id_new,
+                                                                                             {"username": app_username,
+                                                                                              "password": app_password},
+                                                                                             expected_values_2)
 
                 if charge_slip_val_result_1 and charge_slip_val_result_2:
                     GlobalVariables.str_chargeslip_val_result = 'Pass'
