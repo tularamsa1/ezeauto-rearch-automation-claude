@@ -59,7 +59,7 @@ def test_common_100_107_046():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -211,7 +211,7 @@ def test_common_100_107_053():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"

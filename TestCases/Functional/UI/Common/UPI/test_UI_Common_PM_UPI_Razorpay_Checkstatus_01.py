@@ -71,7 +71,7 @@ def test_common_100_101_209():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='" + str(
@@ -515,7 +515,7 @@ def test_common_100_101_210():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='" + str(
@@ -940,7 +940,7 @@ def test_common_100_101_212():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='" + str(
@@ -1354,7 +1354,7 @@ def test_common_100_101_213():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='" + str(
@@ -1776,7 +1776,7 @@ def test_common_100_101_214():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='" + str(

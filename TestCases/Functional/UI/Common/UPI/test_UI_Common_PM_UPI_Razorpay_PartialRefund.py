@@ -70,7 +70,7 @@ def test_common_100_101_288():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' and" \
@@ -700,7 +700,7 @@ def test_common_100_101_288():
 def test_common_100_101_289():
     """
     Sub Feature Code: UI_Common_PM_UPI_Two_Times_Partial_Refund_Via_API_Amount_Greater_Than_Original_Amount_Razorpay
-    Sub Feature Description: VVerification of a UPI partial refund via api when partial refund amount is greater than original amount for Razorpay
+    Sub Feature Description: Verification of a UPI partial refund via api when partial refund amount is greater than original amount for Razorpay
     TC naming code description:
     100: Payment Method
     101: UPI
@@ -749,7 +749,7 @@ def test_common_100_101_289():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' and" \
@@ -1414,7 +1414,7 @@ def test_common_100_101_290():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' and" \
@@ -2328,7 +2328,7 @@ def test_common_100_101_291():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' and" \

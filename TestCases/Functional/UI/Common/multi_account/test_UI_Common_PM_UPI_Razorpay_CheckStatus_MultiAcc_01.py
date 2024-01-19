@@ -55,16 +55,16 @@ def test_common_100_109_037():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name1']
-        logger.debug(f"fetched account_label_name : {account_label_name}")
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name1']
+        logger.debug(f"fetched account_label_name : {account_label_name}")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND " \
                 f"bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
@@ -484,16 +484,16 @@ def test_common_100_109_038():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name1']
-        logger.debug(f"fetched account_label_name : {account_label_name}")
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name1']
+        logger.debug(f"fetched account_label_name : {account_label_name}")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND " \
                 f"bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
@@ -883,16 +883,16 @@ def test_common_100_109_041():
                                                            portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name2']
-        logger.debug(f"fetched account_label_name : {account_label_name}")
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name2']
+        logger.debug(f"fetched account_label_name : {account_label_name}")
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
             "username": portal_username, "password": portal_password, "settingForOrgCode": org_code})

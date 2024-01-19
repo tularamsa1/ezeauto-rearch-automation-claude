@@ -69,7 +69,7 @@ def test_common_100_101_222():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
@@ -203,7 +203,7 @@ def test_common_100_101_240():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='OFFLINE';"
@@ -626,7 +626,7 @@ def test_common_100_101_247():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -1063,7 +1063,7 @@ def test_common_100_101_233():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active for HDFC ONLINE", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='OFFLINE';"
@@ -1500,7 +1500,7 @@ def test_common_100_101_234():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active for HDFC ONLINE", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'HDFC' and allowed_mode='OFFLINE';"
