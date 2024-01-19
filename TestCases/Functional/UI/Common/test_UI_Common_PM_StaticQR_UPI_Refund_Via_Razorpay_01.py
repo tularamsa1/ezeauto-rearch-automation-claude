@@ -52,7 +52,8 @@ def test_common_100_107_048():
         mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -60,7 +61,6 @@ def test_common_100_107_048():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
 
         query = f"update upi_merchant_config set status = 'INACTIVE' where org_code='{org_code}';"
         result = DBProcessor.setValueToDB(query)
@@ -70,7 +70,7 @@ def test_common_100_107_048():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -103,7 +103,8 @@ def test_common_100_107_048():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('static_qrcode_generate_razorpay', request_body={
                 "username": portal_username,
@@ -129,88 +130,18 @@ def test_common_100_107_048():
             amount_api = amount * 100
             payment_id = publish_id.replace("qr_", "pay_")
 
-            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                "entity": "event",
-                "account_id": pg_merchant_id,
-                "event": "qr_code.credited",
-                "contains": [
-                    "payment",
-                    "qr_code"
-                ],
-                "payload": {
-                    "payment": {
-                        "entity": {
-                            "id": payment_id,
-                            "entity": "payment",
-                            "amount": amount_api,
-                            "currency": "INR",
-                            "status": "captured",
-                            "order_id": None,
-                            "invoice_id": None,
-                            "international": None,
-                            "method": "upi",
-                            "amount_refunded": 0,
-                            "refund_status": None,
-                            "captured": True,
-                            "description": "QRv2 Payment",
-                            "card_id": None,
-                            "bank": None,
-                            "wallet": None,
-                            "vpa": "random@icici",
-                            "email": None,
-                            "contact": None,
-                            "notes": {
-                                "receiver_type": "offline"
-                            },
-                            "fee": 1,
-                            "tax": 0,
-                            "error_code": None,
-                            "error_description": None,
-                            "error_source": None,
-                            "error_step": None,
-                            "error_reason": None,
-                            "acquirer_data": {
-                                "rrn": rrn
-                            },
-                            "created_at": 1689868958
-                        }
-                    },
-                    "qr_code": {
-                        "entity": {
-                            "id": publish_id,
-                            "entity": "qr_code",
-                            "created_at": 1689168867,
-                            "name": None,
-                            "usage": "multiple_use",
-                            "type": "upi_qr",
-                            "image_url": "https:\/\/api-web.dev.razorpay.in\/v1\/t\/qrcode\/qr_MCuMM7hc1QCMxa",
-                            "payment_amount": None,
-                            "status": "active",
-                            "description": None,
-                            "fixed_amount": False,
-                            "payments_amount_received": 200,
-                            "payments_count_received": 1,
-                            "notes": [],
-                            "customer_id": None,
-                            "close_by": None,
-                            "closed_at": None,
-                            "close_reason": None,
-                            "image_content": "upi:\/\/pay?ver=01&mode=01&pa=random@razorpay&pn=PeoplinkServicesPrivateLimited&tr=RZPMCuMM7hc1QCMxaqrv2&cu=INR&mc=8062&qrMedium=04&tn=PaymenttoPeoplinkServicesPrivateLimited",
-                            "tax_invoice": [],
-                            "request_source": "ezetap"
-                        }
-                    }
-
-                },
-                "created_at": 1689168959
-            })
+            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = payment_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount_api
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = rrn
+            api_details_hmac['RequestBody']['payload']['qr_code']['entity']['id'] = publish_id
             logger.debug(f"api_details for razorpay_callback_generator_HMAC is: {api_details_hmac}")
 
             response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
-            logger.debug(
-                f"razorpay_signature received for razorpay_callback_generator_HMAC api is : {razorpay_signature}")
+            logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is{razorpay_signature}")
             logger.debug(f"performing upi callback for razorpay")
             api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
                                                       request_body=api_details_hmac['RequestBody'])
@@ -789,7 +720,8 @@ def test_common_100_107_049():
         mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -806,7 +738,7 @@ def test_common_100_107_049():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -839,7 +771,8 @@ def test_common_100_107_049():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('static_qrcode_generate_razorpay', request_body={
                 "username": portal_username,
@@ -865,88 +798,18 @@ def test_common_100_107_049():
             amount_api = amount * 100
             payment_id = publish_id.replace("qr_", "pay_")
 
-            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                "entity": "event",
-                "account_id": pg_merchant_id,
-                "event": "qr_code.credited",
-                "contains": [
-                    "payment",
-                    "qr_code"
-                ],
-                "payload": {
-                    "payment": {
-                        "entity": {
-                            "id": payment_id,
-                            "entity": "payment",
-                            "amount": amount_api,
-                            "currency": "INR",
-                            "status": "captured",
-                            "order_id": None,
-                            "invoice_id": None,
-                            "international": None,
-                            "method": "upi",
-                            "amount_refunded": 0,
-                            "refund_status": None,
-                            "captured": True,
-                            "description": "QRv2 Payment",
-                            "card_id": None,
-                            "bank": None,
-                            "wallet": None,
-                            "vpa": "random@icici",
-                            "email": None,
-                            "contact": None,
-                            "notes": {
-                                "receiver_type": "offline"
-                            },
-                            "fee": 1,
-                            "tax": 0,
-                            "error_code": None,
-                            "error_description": None,
-                            "error_source": None,
-                            "error_step": None,
-                            "error_reason": None,
-                            "acquirer_data": {
-                                "rrn": rrn
-                            },
-                            "created_at": 1689868958
-                        }
-                    },
-                    "qr_code": {
-                        "entity": {
-                            "id": publish_id,
-                            "entity": "qr_code",
-                            "created_at": 1689168867,
-                            "name": None,
-                            "usage": "multiple_use",
-                            "type": "upi_qr",
-                            "image_url": "https:\/\/api-web.dev.razorpay.in\/v1\/t\/qrcode\/qr_MCuMM7hc1QCMxa",
-                            "payment_amount": None,
-                            "status": "active",
-                            "description": None,
-                            "fixed_amount": False,
-                            "payments_amount_received": 200,
-                            "payments_count_received": 1,
-                            "notes": [],
-                            "customer_id": None,
-                            "close_by": None,
-                            "closed_at": None,
-                            "close_reason": None,
-                            "image_content": "upi:\/\/pay?ver=01&mode=01&pa=random@razorpay&pn=PeoplinkServicesPrivateLimited&tr=RZPMCuMM7hc1QCMxaqrv2&cu=INR&mc=8062&qrMedium=04&tn=PaymenttoPeoplinkServicesPrivateLimited",
-                            "tax_invoice": [],
-                            "request_source": "ezetap"
-                        }
-                    }
-
-                },
-                "created_at": 1689168959
-            })
+            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = payment_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount_api
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = rrn
+            api_details_hmac['RequestBody']['payload']['qr_code']['entity']['id'] = publish_id
             logger.debug(f"api_details for razorpay_callback_generator_HMAC is: {api_details_hmac}")
 
             response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
-            logger.debug(
-                f"razorpay_signature received for razorpay_callback_generator_HMAC api is : {razorpay_signature}")
+            logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is{razorpay_signature}")
             logger.debug(f"performing upi callback for razorpay")
             api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
                                                       request_body=api_details_hmac['RequestBody'])
@@ -1462,7 +1325,7 @@ def test_common_100_107_049():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(refund_created_time)
                 expected_charge_slip_values_1 = {
                     'PAID BY:': 'UPI',
-                    'BASE AMOUNT:': "Rs."+"{:,.2f}".format(refund_amt),
+                    'BASE AMOUNT:': "Rs." + "{:,.2f}".format(refund_amt),
                     'date': txn_date, 'time': txn_time,
                     'AUTH CODE': "" if refund_auth_code is None else refund_auth_code
                 }
@@ -1537,7 +1400,8 @@ def test_common_100_107_050():
         mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -1554,7 +1418,7 @@ def test_common_100_107_050():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -1587,7 +1451,8 @@ def test_common_100_107_050():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('static_qrcode_generate_razorpay', request_body={
                 "username": portal_username,
@@ -1613,88 +1478,18 @@ def test_common_100_107_050():
             amount_api = amount * 100
             payment_id = publish_id.replace("qr_", "pay_")
 
-            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                "entity": "event",
-                "account_id": pg_merchant_id,
-                "event": "qr_code.credited",
-                "contains": [
-                    "payment",
-                    "qr_code"
-                ],
-                "payload": {
-                    "payment": {
-                        "entity": {
-                            "id": payment_id,
-                            "entity": "payment",
-                            "amount": amount_api,
-                            "currency": "INR",
-                            "status": "captured",
-                            "order_id": None,
-                            "invoice_id": None,
-                            "international": None,
-                            "method": "upi",
-                            "amount_refunded": 0,
-                            "refund_status": None,
-                            "captured": True,
-                            "description": "QRv2 Payment",
-                            "card_id": None,
-                            "bank": None,
-                            "wallet": None,
-                            "vpa": "random@icici",
-                            "email": None,
-                            "contact": None,
-                            "notes": {
-                                "receiver_type": "offline"
-                            },
-                            "fee": 1,
-                            "tax": 0,
-                            "error_code": None,
-                            "error_description": None,
-                            "error_source": None,
-                            "error_step": None,
-                            "error_reason": None,
-                            "acquirer_data": {
-                                "rrn": rrn
-                            },
-                            "created_at": 1689868958
-                        }
-                    },
-                    "qr_code": {
-                        "entity": {
-                            "id": publish_id,
-                            "entity": "qr_code",
-                            "created_at": 1689168867,
-                            "name": None,
-                            "usage": "multiple_use",
-                            "type": "upi_qr",
-                            "image_url": "https:\/\/api-web.dev.razorpay.in\/v1\/t\/qrcode\/qr_MCuMM7hc1QCMxa",
-                            "payment_amount": None,
-                            "status": "active",
-                            "description": None,
-                            "fixed_amount": False,
-                            "payments_amount_received": 200,
-                            "payments_count_received": 1,
-                            "notes": [],
-                            "customer_id": None,
-                            "close_by": None,
-                            "closed_at": None,
-                            "close_reason": None,
-                            "image_content": "upi:\/\/pay?ver=01&mode=01&pa=random@razorpay&pn=PeoplinkServicesPrivateLimited&tr=RZPMCuMM7hc1QCMxaqrv2&cu=INR&mc=8062&qrMedium=04&tn=PaymenttoPeoplinkServicesPrivateLimited",
-                            "tax_invoice": [],
-                            "request_source": "ezetap"
-                        }
-                    }
-
-                },
-                "created_at": 1689168959
-            })
+            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = payment_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount_api
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = rrn
+            api_details_hmac['RequestBody']['payload']['qr_code']['entity']['id'] = publish_id
             logger.debug(f"api_details for razorpay_callback_generator_HMAC is: {api_details_hmac}")
 
             response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
-            logger.debug(
-                f"razorpay_signature received for razorpay_callback_generator_HMAC api is : {razorpay_signature}")
+            logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is{razorpay_signature}")
             logger.debug(f"performing upi callback for razorpay")
             api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
                                                       request_body=api_details_hmac['RequestBody'])
@@ -2199,7 +1994,7 @@ def test_common_100_107_050():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_values = {
-                    'PAID BY:': 'UPI', 'RRN': str(rrn), 'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount),
+                    'PAID BY:': 'UPI', 'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + "{:,.2f}".format(amount),
                     'date': txn_date, 'time': txn_time,
                     'AUTH CODE': "" if auth_code is None else auth_code
                 }
@@ -2256,7 +2051,8 @@ def test_common_100_107_051():
         mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -2272,7 +2068,7 @@ def test_common_100_107_051():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -2305,7 +2101,8 @@ def test_common_100_107_051():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('static_qrcode_generate_razorpay', request_body={
                 "username": portal_username,
@@ -2331,88 +2128,18 @@ def test_common_100_107_051():
             amount_api = amount * 100
             payment_id = publish_id.replace("qr_", "pay_")
 
-            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                "entity": "event",
-                "account_id": pg_merchant_id,
-                "event": "qr_code.credited",
-                "contains": [
-                    "payment",
-                    "qr_code"
-                ],
-                "payload": {
-                    "payment": {
-                        "entity": {
-                            "id": payment_id,
-                            "entity": "payment",
-                            "amount": amount_api,
-                            "currency": "INR",
-                            "status": "captured",
-                            "order_id": None,
-                            "invoice_id": None,
-                            "international": None,
-                            "method": "upi",
-                            "amount_refunded": 0,
-                            "refund_status": None,
-                            "captured": True,
-                            "description": "QRv2 Payment",
-                            "card_id": None,
-                            "bank": None,
-                            "wallet": None,
-                            "vpa": "random@icici",
-                            "email": None,
-                            "contact": None,
-                            "notes": {
-                                "receiver_type": "offline"
-                            },
-                            "fee": 1,
-                            "tax": 0,
-                            "error_code": None,
-                            "error_description": None,
-                            "error_source": None,
-                            "error_step": None,
-                            "error_reason": None,
-                            "acquirer_data": {
-                                "rrn": rrn
-                            },
-                            "created_at": 1689868958
-                        }
-                    },
-                    "qr_code": {
-                        "entity": {
-                            "id": publish_id,
-                            "entity": "qr_code",
-                            "created_at": 1689168867,
-                            "name": None,
-                            "usage": "multiple_use",
-                            "type": "upi_qr",
-                            "image_url": "https:\/\/api-web.dev.razorpay.in\/v1\/t\/qrcode\/qr_MCuMM7hc1QCMxa",
-                            "payment_amount": None,
-                            "status": "active",
-                            "description": None,
-                            "fixed_amount": False,
-                            "payments_amount_received": 200,
-                            "payments_count_received": 1,
-                            "notes": [],
-                            "customer_id": None,
-                            "close_by": None,
-                            "closed_at": None,
-                            "close_reason": None,
-                            "image_content": "upi:\/\/pay?ver=01&mode=01&pa=random@razorpay&pn=PeoplinkServicesPrivateLimited&tr=RZPMCuMM7hc1QCMxaqrv2&cu=INR&mc=8062&qrMedium=04&tn=PaymenttoPeoplinkServicesPrivateLimited",
-                            "tax_invoice": [],
-                            "request_source": "ezetap"
-                        }
-                    }
-
-                },
-                "created_at": 1689168959
-            })
+            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = payment_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount_api
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = rrn
+            api_details_hmac['RequestBody']['payload']['qr_code']['entity']['id'] = publish_id
             logger.debug(f"api_details for razorpay_callback_generator_HMAC is: {api_details_hmac}")
 
             response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
-            logger.debug(
-                f"razorpay_signature received for razorpay_callback_generator_HMAC api is : {razorpay_signature}")
+            logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is{razorpay_signature}")
             logger.debug(f"performing upi callback for razorpay")
             api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
                                                       request_body=api_details_hmac['RequestBody'])
@@ -2919,7 +2646,7 @@ def test_common_100_107_051():
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
                 expected_values = {
-                    'PAID BY:': 'UPI', 'RRN': str(rrn), 'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount),
+                    'PAID BY:': 'UPI', 'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + "{:,.2f}".format(amount),
                     'date': txn_date, 'time': txn_time,
                     'AUTH CODE': "" if auth_code is None else auth_code
                 }
@@ -2977,7 +2704,8 @@ def test_common_100_107_052():
         mobile_number = result['mobile_number'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP', portal_un=portal_username,
+        testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP',
+                                                           portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
@@ -2994,7 +2722,7 @@ def test_common_100_107_052():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' and allowed_mode='HYBRID' and card_terminal_acquirer_code='NONE';"
@@ -3026,7 +2754,8 @@ def test_common_100_107_052():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
+            testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password,
+                                                                              org_code)
 
             api_details = DBProcessor.get_api_details('static_qrcode_generate_razorpay', request_body={
                 "username": portal_username,
@@ -3052,88 +2781,18 @@ def test_common_100_107_052():
             amount_api = amount * 100
             payment_id = publish_id.replace("qr_", "pay_")
 
-            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                "entity": "event",
-                "account_id": pg_merchant_id,
-                "event": "qr_code.credited",
-                "contains": [
-                    "payment",
-                    "qr_code"
-                ],
-                "payload": {
-                    "payment": {
-                        "entity": {
-                            "id": payment_id,
-                            "entity": "payment",
-                            "amount": amount_api,
-                            "currency": "INR",
-                            "status": "captured",
-                            "order_id": None,
-                            "invoice_id": None,
-                            "international": None,
-                            "method": "upi",
-                            "amount_refunded": 0,
-                            "refund_status": None,
-                            "captured": True,
-                            "description": "QRv2 Payment",
-                            "card_id": None,
-                            "bank": None,
-                            "wallet": None,
-                            "vpa": "random@icici",
-                            "email": None,
-                            "contact": None,
-                            "notes": {
-                                "receiver_type": "offline"
-                            },
-                            "fee": 1,
-                            "tax": 0,
-                            "error_code": None,
-                            "error_description": None,
-                            "error_source": None,
-                            "error_step": None,
-                            "error_reason": None,
-                            "acquirer_data": {
-                                "rrn": rrn
-                            },
-                            "created_at": 1689868958
-                        }
-                    },
-                    "qr_code": {
-                        "entity": {
-                            "id": publish_id,
-                            "entity": "qr_code",
-                            "created_at": 1689168867,
-                            "name": None,
-                            "usage": "multiple_use",
-                            "type": "upi_qr",
-                            "image_url": "https:\/\/api-web.dev.razorpay.in\/v1\/t\/qrcode\/qr_MCuMM7hc1QCMxa",
-                            "payment_amount": None,
-                            "status": "active",
-                            "description": None,
-                            "fixed_amount": False,
-                            "payments_amount_received": 200,
-                            "payments_count_received": 1,
-                            "notes": [],
-                            "customer_id": None,
-                            "close_by": None,
-                            "closed_at": None,
-                            "close_reason": None,
-                            "image_content": "upi:\/\/pay?ver=01&mode=01&pa=random@razorpay&pn=PeoplinkServicesPrivateLimited&tr=RZPMCuMM7hc1QCMxaqrv2&cu=INR&mc=8062&qrMedium=04&tn=PaymenttoPeoplinkServicesPrivateLimited",
-                            "tax_invoice": [],
-                            "request_source": "ezetap"
-                        }
-                    }
-
-                },
-                "created_at": 1689168959
-            })
+            api_details_hmac = DBProcessor.get_api_details('razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = payment_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount_api
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = rrn
+            api_details_hmac['RequestBody']['payload']['qr_code']['entity']['id'] = publish_id
             logger.debug(f"api_details for razorpay_callback_generator_HMAC is: {api_details_hmac}")
 
             response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
-            logger.debug(
-                f"razorpay_signature received for razorpay_callback_generator_HMAC api is : {razorpay_signature}")
+            logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is{razorpay_signature}")
             logger.debug(f"performing upi callback for razorpay")
             api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
                                                       request_body=api_details_hmac['RequestBody'])
@@ -3654,14 +3313,14 @@ def test_common_100_107_052():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(refund_created_time)
                 expected_charge_slip_values_1 = {
                     'PAID BY:': 'UPI',
-                    'BASE AMOUNT:': "Rs."+"{:,.2f}".format(refund_amt),
+                    'BASE AMOUNT:': "Rs." + "{:,.2f}".format(refund_amt),
                     'date': txn_date, 'time': txn_time,
                     'AUTH CODE': "" if refund_auth_code is None else refund_auth_code
                 }
                 txn_date_2, txn_time_2 = date_time_converter.to_chargeslip_format(created_time)
                 expected_charge_slip_values_2 = {
                     'PAID BY:': 'UPI',
-                    'RRN': str(rrn), 'BASE AMOUNT:': "Rs."+"{:,.2f}".format(amount),
+                    'RRN': str(rrn), 'BASE AMOUNT:': "Rs." + "{:,.2f}".format(amount),
                     'date': txn_date_2, 'time': txn_time_2,
                     'AUTH CODE': "" if auth_code is None else auth_code
                 }

@@ -66,7 +66,7 @@ def test_common_100_101_293():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"RESULT of updating DB setting active: {result}")
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         TestSuiteSetup.launch_browser_and_context_initialize()

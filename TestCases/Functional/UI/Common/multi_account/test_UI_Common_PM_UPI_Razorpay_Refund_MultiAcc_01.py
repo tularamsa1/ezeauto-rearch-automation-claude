@@ -920,9 +920,6 @@ def test_common_100_109_040():
                 app_payment_status_refunded = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status from transaction history of MPOS app: Txn status = {app_payment_status_refunded}")
-                # app_auth_code_refunded = transactions_history_page.fetch_auth_code_text()
-                # logger.info(
-                #     f"Fetching AUTH CODE from txn history for the txn : {refund_txn_id}, {app_auth_code_refunded}")
                 app_payment_mode_refunded = transactions_history_page.fetch_txn_type_text()
                 logger.debug(
                     f"Fetching Transaction payment mode from transaction history of MPOS app: Txn Mode = {app_payment_mode_refunded}")
@@ -949,9 +946,6 @@ def test_common_100_109_040():
                     f"Fetching date from txn history for the txn : {txn_id_original}, {app_date_and_time}")
                 app_rrn_original = transactions_history_page.fetch_RRN_text()
                 logger.debug(f"Fetching txn_id from txn history for the txn : {txn_id_original}, {app_rrn_original}")
-                # app_auth_code_original = transactions_history_page.fetch_auth_code_text()
-                # logger.info(
-                #     f"Fetching AUTH CODE from txn history for the txn : {txn_id_original}, {app_auth_code_original}")
                 app_payment_status_original = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")
@@ -1082,7 +1076,6 @@ def test_common_100_109_040():
                 payer_name_api = response["payerName"]
                 account_label_name_api = response["accountLabel"]
 
-                # Fetching txn data from the same response for refunded txn
                 response = [x for x in txn_list_response["txns"] if x["txnId"] == refund_txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_refunded = response["status"]
