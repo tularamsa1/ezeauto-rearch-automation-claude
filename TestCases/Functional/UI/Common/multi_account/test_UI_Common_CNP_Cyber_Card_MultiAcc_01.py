@@ -791,7 +791,7 @@ def test_common_100_112_002():
                                     "cnpware_pmt_gateway": "CYBERSOURCE",
                                     "pmt_flow": "REMOTEPAY",
                                     "pmt_intent_status": "COMPLETED",
-                                    # "tid": txn_terminal_info_id,
+                                    "tid": txn_terminal_info_id,
                                     "acc_label_id": str(acc_label_id)
                                     }
 
@@ -824,9 +824,8 @@ def test_common_100_112_002():
                     "cnpware_pmt_gateway": cnpware_payment_gateway,
                     "pmt_flow": cnp_payment_flow,
                     "pmt_intent_status": payment_intent_status,
-                    # "tid": terminal_info_id,
+                    "tid": terminal_info_id,
                     "acc_label_id": str(label_ids)
-
                 }
 
                 logger.debug(f"actualDBValues : {actualDBValues}")

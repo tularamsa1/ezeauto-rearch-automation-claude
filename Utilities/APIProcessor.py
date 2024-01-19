@@ -103,7 +103,7 @@ def send_request(api_details):
             return json_resp
 
         # For Razorpay_Callback
-        if api_details['ApiName'] == 'razorpay_callback_generator_HMAC':
+        if api_details['ApiName'] == 'razorpay_callback_generator_HMAC_success' or api_details['ApiName'] == 'razorpay_callback_generator_HMAC_failed':
             router_ip = Base_Actions.get_environment("str_exe_env_ip")
             query = "select psp_base_url from upi_psp_config where bank_code='RAZORPAY_PSP';"
             logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
@@ -119,7 +119,7 @@ def send_request(api_details):
             return json_resp
 
         # For Mintoak_Callback
-        if api_details['ApiName'] == 'mintoak_encryption_callback':
+        if api_details['ApiName'] == 'mintoak_encryption_callback_success' or  api_details['ApiName'] == 'mintoak_encryption_callback_failed':
             router_ip = Base_Actions.get_environment("str_exe_env_ip")
             query = "select provider_base_url from bharatqr_provider_config where provider_name='HDFC_MINTOAK'"
             logger.debug(f"Query to fetch provider_base_url from the DB : {query}")
