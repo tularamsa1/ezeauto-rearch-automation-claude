@@ -1875,7 +1875,7 @@ def test_common_100_115_07_124():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "ICICI Bank",
-                    "Payback": "{:.2f}".format(emi_payback_percentage)+"%",
+                    "Payback": f"{emi_payback_percentage}%",
                     "Total Payback Amount": "Rs." + "{:.2f}".format(emi_payback_amount),
                     "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
